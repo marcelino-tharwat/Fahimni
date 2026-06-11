@@ -1,0 +1,17 @@
+{
+  "dashboard": "لوحة الطالب",
+  "myCourses": "دوراتي",
+  "allContent": "كل المحتوى",
+  "progress": "التقدم",
+  "locked": "مقفول",
+  "unlocked": "متاح",
+  "subscribe": "اشترك",
+  "price": "{{price}} ج.م",
+  "watchLesson": "شاهد الدرس",
+  "downloadPdf": "تحميل الملف",
+  "takeQuiz": "ابدأ الاختبار",
+  "quizResults": "نتيجة الاختبار",
+  "score": "الدرجة: {{score}} من {{total}}",
+  "aiTutor": { "title": "المساعد الذكي", "placeholder": "اكتب سؤالك هنا...", "send": "إرسال", "remainingQuestions": "{{count}} أسئلة متبقية اليوم", "source": "المصدر: {{lesson}}" },
+  "payment": { "title": "الاشتراك في {{chapter}}", "payWithCard": "الدفع بالبطاقة", "usePromoCode": "عندي كود خصم", "enterCode": "ادخل الكود", "apply": "تطبيق", "success": "تم الاشتراك بنجاح!", "error": "حصل مشكلة في الدفع، حاول تاني" }
+}

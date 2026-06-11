@@ -1,0 +1,107 @@
+{
+  "brand": "Fahimni",
+  "nav": {
+    "home": "Home",
+    "content": "Content",
+    "testimonials": "Reviews",
+    "login": "Log In",
+    "register": "Register as Student",
+    "registerMobile": "Get Started"
+  },
+  "hero": {
+    "breadcrumb": "Chemistry • Secondary Section",
+    "academyName": "Mr. Ahmed's Chemistry Academy",
+    "teacherName": "Mr. Ahmed Mohamed",
+    "bio": "Chemistry teacher with 15 years of experience teaching secondary school. Holds a master's degree in Organic Chemistry from Cairo University.",
+    "photoAlt": "Mr. Ahmed Mohamed",
+    "stats": {
+      "students": "Students",
+      "chapters": "Published Chapters",
+      "quizzes": "Quizzes"
+    },
+    "cta": "Start Learning Now",
+    "ctaSubscribe": "Subscribe to the Course Now",
+    "ctaTrial": "Try a Free Lesson"
+  },
+  "chapters": {
+    "title": "Available Chapters",
+    "subtitle": "Pick a chapter and start your journey to excellence",
+    "lessons": "lessons",
+    "minutes": "minutes",
+    "subscribe": "Subscribe Now",
+    "comingSoon": "Coming Soon",
+    "priceUnit": "EGP"
+  },
+  "features": {
+    "title": "What will you get in every chapter?",
+    "video": {
+      "title": "Detailed Video Lessons",
+      "desc": "High-quality video lessons with a simple, step-by-step explanation"
+    },
+    "pdf": {
+      "title": "PDF Summaries",
+      "desc": "Ready-to-download PDF files to study anytime"
+    },
+    "quizzes": {
+      "title": "Smart Quizzes",
+      "desc": "AI-powered quizzes that assess your level and reveal your weak points"
+    },
+    "tutor": {
+      "title": "24/7 Smart Assistant",
+      "desc": "Ask any question about the subject and get an instant answer from the lesson content"
+    }
+  },
+  "howItWorks": {
+    "title": "How to Subscribe",
+    "step1": { "title": "Create your account", "desc": "Set up a free account in seconds" },
+    "step2": { "title": "Pick a chapter", "desc": "Subscribe to the chapter you want to study" },
+    "step3": { "title": "Start studying", "desc": "Watch the lessons, take the quizzes, and ask the smart assistant" }
+  },
+  "testimonials": {
+    "title": "Reviews from Our Top Students",
+    "items": [
+      {
+        "quote": "Mr. Ahmed's explanation is one of the best I've ever seen. The smart quizzes helped me discover my weak points.",
+        "name": "Youssef Ahmed",
+        "role": "Grade 12 Student"
+      },
+      {
+        "quote": "Chemistry was my hardest subject, but with Mr. Ahmed everything changed. The explanation is very simple and there are plenty of quizzes.",
+        "name": "Mohamed Ahmed",
+        "role": "Grade 12 Student"
+      },
+      {
+        "quote": "The platform is super easy and the summaries saved me a lot of study time.",
+        "name": "Mariam Ali",
+        "role": "Grade 11 Student"
+      }
+    ]
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      { "q": "How do I subscribe to a chapter?", "a": "Pick the chapter you want, pay by card, Vodafone Cash, or a discount code, and start right away." },
+      { "q": "Can I watch the lessons more than once?", "a": "Yes! Once you subscribe to a chapter, access is for life. Watch the lessons as many times as you like." },
+      { "q": "What is the smart assistant?", "a": "An AI chatbot that answers your questions directly from the lesson content — available 24 hours a day." },
+      { "q": "What payment methods are available?", "a": "Bank cards, Vodafone Cash, Fawry, and discount codes." },
+      { "q": "Who do I contact if I have a problem?", "a": "You can reach us via WhatsApp anytime." }
+    ]
+  },
+  "cta": {
+    "title": "What are you waiting for? Start studying now",
+    "subtitle": "Join 147 students studying and excelling with Mr. Ahmed in Chemistry",
+    "btn": "Sign Up & Start"
+  },
+  "footer": {
+    "academyName": "Mr. Ahmed's Chemistry Academy",
+    "platformDesc": "A smart learning platform that helps teachers manage their content and students",
+    "curriculum": "Curriculum Content",
+    "curriculumLinks": ["Acids and Bases", "Electrochemistry", "Organic Chemistry"],
+    "importantLinks": "Important Links",
+    "contactUs": "Contact Us",
+    "faqLink": "FAQ",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "copyright": "© 2024 Fahimni. All rights reserved"
+  }
+}

@@ -1,0 +1,16 @@
+/* Real CSS @import must precede Tailwind's expanded rules, so the font import
+   comes first (before @import "tailwindcss"). */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* Load the v3-style theme (custom colors, radii, fonts) from tailwind.config.ts.
+   Tailwind v4 does not auto-discover a JS config — this directive is required
+   for utilities like bg-accent, text-text-primary, rounded-card, etc. to exist. */
+@config "../../tailwind.config.ts";
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}

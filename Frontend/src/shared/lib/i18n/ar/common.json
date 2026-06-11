@@ -1,0 +1,41 @@
+{
+  "appName": "فَهِّمْنِي",
+  "nav": {
+    "home": "الرئيسية",
+    "dashboard": "لوحة التحكم",
+    "courses": "الدورات",
+    "content": "المحتوى",
+    "quizzes": "الاختبارات",
+    "students": "الطلاب",
+    "settings": "الإعدادات",
+    "branding": "الهوية البصرية",
+    "aiTutor": "المساعد الذكي",
+    "profile": "الملف الشخصي",
+    "promoCodes": "أكواد الخصم",
+    "studentLookup": "بحث الطلاب",
+    "tenants": "الأكاديميات"
+  },
+  "actions": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "search": "بحث",
+    "logout": "تسجيل الخروج",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "submit": "إرسال",
+    "back": "رجوع",
+    "next": "التالي",
+    "publish": "نشر",
+    "generate": "توليد"
+  },
+  "status": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "empty": "لا توجد بيانات",
+    "success": "تم بنجاح"
+  },
+  "language": { "ar": "العربية", "en": "English" }
+}

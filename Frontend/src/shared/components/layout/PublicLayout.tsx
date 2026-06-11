@@ -1,0 +1,32 @@
+import { Outlet, useLocation } from 'react-router-dom';
+import { Topbar } from './Topbar';
+
+/**
+ * The landing page ('/' and tenant landing '/t/:slug') ships its own full-width
+ * navbar and edge-to-edge gradient sections, so it opts out of the shared Topbar
+ * and the centered max-width container that wrap the rest of the public routes.
+ */
+function isLandingRoute(pathname: string): boolean {
+  return pathname === '/' || /^\/t\/[^/]+\/?$/.test(pathname);
+}
+
+export function PublicLayout() {
+  const { pathname } = useLocation();
+
+  if (isLandingRoute(pathname)) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Outlet />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Topbar showMenu={false} />
+      <main className="mx-auto max-w-7xl px-4 py-8">
+        <Outlet />
+      </main>
+    </div>
+  );
+}

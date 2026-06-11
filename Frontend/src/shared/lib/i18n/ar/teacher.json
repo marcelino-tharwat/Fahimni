@@ -1,0 +1,51 @@
+{
+  "dashboard": "لوحة المعلم",
+  "stats": { "totalStudents": "إجمالي الطلاب", "activeThisMonth": "نشطين هذا الشهر", "publishedChapters": "الأبواب المنشورة", "quizzesCreated": "الاختبارات" },
+  "quickActions": { "addLesson": "أضف درس", "generateQuiz": "أنشئ اختبار" },
+  "contentManager": { "title": "إدارة المحتوى", "selectLesson": "اختر درس للتعديل", "stages": "المراحل", "chapters": "الأبواب", "lessons": "الدروس" },
+  "quizGenerator": { "title": "مُنشئ الاختبارات بالذكاء الاصطناعي", "step1": "إعدادات", "step2": "مراجعة", "step3": "نشر", "topic": "الموضوع", "questionCount": "عدد الأسئلة", "questionTypes": "أنواع الأسئلة", "difficulty": "مستوى الصعوبة", "generateBtn": "ولّد الاختبار" },
+  "branding": { "title": "الهوية البصرية", "logo": "الشعار", "colors": "الألوان", "teacherPhoto": "صورة المعلم" },
+  "settings": {
+    "pageTitle": "إعدادات الحساب",
+    "pageSubtitle": "قم بتحديث معلوماتك الشخصية وهوية أكاديميتك",
+    "unsavedChanges": "تعديلات غير محفوظة",
+    "saved": "تم حفظ التغييرات بنجاح",
+    "personal": {
+      "title": "البيانات الشخصية",
+      "saveBtn": "حفظ التعديلات",
+      "changePhoto": "تغيير الصورة",
+      "photoHint": "JPG, PNG — أقصى حجم ٥ ميجا",
+      "fullName": "الاسم بالكامل",
+      "fullNamePlaceholder": "محمد أحمد محمود",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "m.ahmed@fahimni.com",
+      "mobile": "رقم الموبايل",
+      "mobileDesktop": "رقم الجوال",
+      "mobilePlaceholder": "1012345678"
+    },
+    "teaching": {
+      "title": "بيانات التدريس",
+      "saveBtn": "حفظ",
+      "subject": "المادة الدراسية",
+      "subjectOptions": [
+        "اللغة العربية - الثانوية العامة",
+        "اللغة العربية - الصف الأول الثانوي",
+        "اللغة العربية - الصف الثاني الثانوي",
+        "اللغة الإنجليزية - الثانوية العامة"
+      ],
+      "bio": "النبذة التعريفية",
+      "bioPlaceholder": "اكتب نبذة عن نفسك وخبرتك... هتظهر للطلاب في صفحة الأكاديمية"
+    },
+    "branding": {
+      "title": "هوية الأكاديمية",
+      "logoLabel": "شعار الأكاديمية",
+      "uploadText": "اضغط لرفع الشعار أو اسحبه هنا",
+      "uploadHint": "PNG, JPG (الحد الأقصى 2MB)",
+      "previewLabel": "هكذا سيظهر الشعار للطلاب",
+      "previewTitle": "معاينة الشعار",
+      "academyName": "أكاديمية المعلم",
+      "navPreview": "معاينة شريط التنقل",
+      "applyBtn": "تطبيق الهوية"
+    }
+  }
+}

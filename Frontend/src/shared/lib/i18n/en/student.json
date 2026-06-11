@@ -1,0 +1,17 @@
+{
+  "dashboard": "Student Dashboard",
+  "myCourses": "My Courses",
+  "allContent": "All Content",
+  "progress": "Progress",
+  "locked": "Locked",
+  "unlocked": "Unlocked",
+  "subscribe": "Subscribe",
+  "price": "{{price}} EGP",
+  "watchLesson": "Watch Lesson",
+  "downloadPdf": "Download File",
+  "takeQuiz": "Take Quiz",
+  "quizResults": "Quiz Results",
+  "score": "Score: {{score}} out of {{total}}",
+  "aiTutor": { "title": "AI Tutor", "placeholder": "Type your question here...", "send": "Send", "remainingQuestions": "{{count}} questions remaining today", "source": "Source: {{lesson}}" },
+  "payment": { "title": "Subscribe to {{chapter}}", "payWithCard": "Pay with Card", "usePromoCode": "I have a promo code", "enterCode": "Enter code", "apply": "Apply", "success": "Subscribed successfully!", "error": "There was a payment problem, please try again" }
+}

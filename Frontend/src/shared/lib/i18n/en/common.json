@@ -1,0 +1,41 @@
+{
+  "appName": "Fahimni",
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "courses": "Courses",
+    "content": "Content",
+    "quizzes": "Quizzes",
+    "students": "Students",
+    "settings": "Settings",
+    "branding": "Branding",
+    "aiTutor": "AI Tutor",
+    "profile": "Profile",
+    "promoCodes": "Promo Codes",
+    "studentLookup": "Student Lookup",
+    "tenants": "Academies"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "logout": "Logout",
+    "login": "Sign In",
+    "register": "Sign Up",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "publish": "Publish",
+    "generate": "Generate"
+  },
+  "status": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "empty": "No data",
+    "success": "Success"
+  },
+  "language": { "ar": "العربية", "en": "English" }
+}
