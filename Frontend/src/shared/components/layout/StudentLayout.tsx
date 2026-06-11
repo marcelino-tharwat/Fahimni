@@ -1,0 +1,50 @@
+import { Outlet, NavLink } from 'react-router-dom';
+import { LayoutDashboard, BookOpen, Bot, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Topbar } from './Topbar';
+import { Sidebar, type SidebarItem } from './Sidebar';
+import { cn } from '@/shared/lib/utils/cn';
+
+export function StudentLayout() {
+  const { t } = useTranslation();
+
+  const items: SidebarItem[] = [
+    { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/student/dashboard' },
+    { label: t('nav.courses'), icon: BookOpen, path: '/student/courses' },
+    { label: t('nav.aiTutor'), icon: Bot, path: '/student/ai-tutor' },
+    { label: t('nav.profile'), icon: User, path: '/student/profile' },
+  ];
+
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Student mobile nav is the bottom tab bar, so no hamburger here. */}
+      <Topbar showMenu={false} />
+
+      <div className="flex flex-1">
+        <Sidebar items={items} />
+        <main className="flex-1 px-4 py-6 pb-24 md:pb-6">
+          <Outlet />
+        </main>
+      </div>
+
+      {/* Mobile bottom tab bar */}
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t border-border bg-surface md:hidden">
+        {items.map(({ label, icon: Icon, path }) => (
+          <NavLink
+            key={path}
+            to={path}
+            className={({ isActive }) =>
+              cn(
+                'flex flex-1 flex-col items-center gap-1 py-2 font-cairo text-xs transition-colors',
+                isActive ? 'text-accent' : 'text-text-secondary',
+              )
+            }
+          >
+            <Icon size={20} />
+            <span>{label}</span>
+          </NavLink>
+        ))}
+      </nav>
+    </div>
+  );
+}

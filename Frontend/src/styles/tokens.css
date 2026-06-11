@@ -1,0 +1,21 @@
+:root {
+  --color-primary: #1A103D;
+  --color-secondary: #37306B;
+  --color-accent: #00C9DB;
+  --color-success: #10B981;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+  --color-info: #7C3AED;
+  --color-background: #F4F3FB;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1A103D;
+  --color-text-secondary: #6B7280;
+  --color-border: #E5E7EB;
+  --radius-card: 14px;
+  --radius-button: 12px;
+  --radius-input: 10px;
+  --font-family: 'Cairo', sans-serif;
+  --tenant-primary: var(--color-primary);
+  --tenant-secondary: var(--color-secondary);
+  --tenant-accent: var(--color-accent);
+}

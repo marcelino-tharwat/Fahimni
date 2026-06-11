@@ -1,0 +1,51 @@
+{
+  "dashboard": "Teacher Dashboard",
+  "stats": { "totalStudents": "Total Students", "activeThisMonth": "Active This Month", "publishedChapters": "Published Chapters", "quizzesCreated": "Quizzes" },
+  "quickActions": { "addLesson": "Add Lesson", "generateQuiz": "Generate Quiz" },
+  "contentManager": { "title": "Content Management", "selectLesson": "Select a lesson to edit", "stages": "Stages", "chapters": "Chapters", "lessons": "Lessons" },
+  "quizGenerator": { "title": "AI Quiz Generator", "step1": "Settings", "step2": "Review", "step3": "Publish", "topic": "Topic", "questionCount": "Question Count", "questionTypes": "Question Types", "difficulty": "Difficulty Level", "generateBtn": "Generate Quiz" },
+  "branding": { "title": "Branding", "logo": "Logo", "colors": "Colors", "teacherPhoto": "Teacher Photo" },
+  "settings": {
+    "pageTitle": "Account Settings",
+    "pageSubtitle": "Update your personal information and academy branding",
+    "unsavedChanges": "Unsaved changes",
+    "saved": "Changes saved successfully",
+    "personal": {
+      "title": "Personal Information",
+      "saveBtn": "Save Changes",
+      "changePhoto": "Change Photo",
+      "photoHint": "JPG, PNG — max size 5MB",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Mohamed Ahmed Mahmoud",
+      "email": "Email Address",
+      "emailPlaceholder": "m.ahmed@fahimni.com",
+      "mobile": "Mobile Number",
+      "mobileDesktop": "Phone Number",
+      "mobilePlaceholder": "1012345678"
+    },
+    "teaching": {
+      "title": "Teaching Information",
+      "saveBtn": "Save",
+      "subject": "Subject",
+      "subjectOptions": [
+        "Arabic - Secondary",
+        "Arabic - Grade 1 Secondary",
+        "Arabic - Grade 2 Secondary",
+        "English - Secondary"
+      ],
+      "bio": "Bio",
+      "bioPlaceholder": "Write a bio about yourself and your experience... it will appear to students on the academy page"
+    },
+    "branding": {
+      "title": "Academy Branding",
+      "logoLabel": "Academy Logo",
+      "uploadText": "Click to upload the logo or drag it here",
+      "uploadHint": "PNG, JPG (max 2MB)",
+      "previewLabel": "This is how the logo will appear to students",
+      "previewTitle": "Logo Preview",
+      "academyName": "Teacher Academy",
+      "navPreview": "Navigation bar preview",
+      "applyBtn": "Apply Branding"
+    }
+  }
+}
