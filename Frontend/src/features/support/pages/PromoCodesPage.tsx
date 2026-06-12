@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Badge, Button, Table } from '@/shared/components/ui';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import { useAppDispatch } from '@/shared/store/hooks';
@@ -14,14 +15,15 @@ function studentName(studentId?: string): string {
 
 export function PromoCodesPage() {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-cairo text-2xl font-bold text-text-primary">أكواد الخصم</h1>
-        <Button onClick={() => dispatch(addToast({ type: 'success', message: 'تم إنشاء كود خصم جديد' }))}>
+        <h1 className="font-cairo text-2xl font-bold text-text-primary">{t('support.promoCodes')}</h1>
+        <Button onClick={() => dispatch(addToast({ type: 'success', message: t('support.codeCreated') }))}>
           <Plus size={18} />
-          إنشاء كود جديد
+          {t('support.createCode')}
         </Button>
       </div>
 
@@ -30,26 +32,26 @@ export function PromoCodesPage() {
         columns={[
           {
             key: 'code',
-            header: 'الكود',
+            header: t('support.code'),
             render: (promo) => <span className="font-mono">{promo.code}</span>,
           },
           {
             key: 'status',
-            header: 'الحالة',
+            header: t('support.status'),
             render: (promo) => (
               <Badge variant={promo.used ? 'default' : 'success'}>
-                {promo.used ? 'مستخدم' : 'متاح'}
+                {promo.used ? t('support.used') : t('support.available')}
               </Badge>
             ),
           },
           {
             key: 'student',
-            header: 'الطالب',
+            header: t('support.student'),
             render: (promo) => studentName(promo.usedByStudentId),
           },
           {
             key: 'date',
-            header: 'التاريخ',
+            header: t('support.date'),
             render: (promo) => formatDate(promo.createdAt),
           },
         ]}
