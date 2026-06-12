@@ -37,5 +37,31 @@
     "empty": "لا توجد بيانات",
     "success": "تم بنجاح"
   },
+  "admin": {
+    "tenants": "الأكاديميات",
+    "tenantName": "اسم الأكاديمية",
+    "link": "الرابط",
+    "teacher": "المعلم",
+    "subject": "المادة",
+    "status": "الحالة",
+    "studentCount": "عدد الطلاب",
+    "chapterCount": "عدد الأبواب",
+    "revenue": "الإيرادات",
+    "active": "نشط",
+    "trial": "تجريبي",
+    "expired": "منتهي",
+    "suspended": "موقوف"
+  },
+  "support": {
+    "promoCodes": "أكواد الخصم",
+    "createCode": "إنشاء كود جديد",
+    "codeCreated": "تم إنشاء كود خصم جديد",
+    "code": "الكود",
+    "status": "الحالة",
+    "student": "الطالب",
+    "date": "التاريخ",
+    "used": "مستخدم",
+    "available": "متاح"
+  },
   "language": { "ar": "العربية", "en": "English" }
 }

@@ -12,7 +12,7 @@ export default {
         danger: "#EF4444",
         warning: "#F59E0B",
         info: "#7C3AED",
-        background: "#F4F3FB",
+        background: "#F4F4F4",
         surface: "#FFFFFF",
         "text-primary": "#1A103D",
         "text-secondary": "#6B7280",
