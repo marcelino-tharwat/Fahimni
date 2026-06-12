@@ -72,6 +72,7 @@ model Otp {
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
+  verifiedAt DateTime?
   usedAt    DateTime?
   createdAt DateTime  @default(now())
 

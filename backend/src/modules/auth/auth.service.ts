@@ -8,6 +8,7 @@ import type {
   RegisterInput,
   LoginInput,
   ForgotPasswordInput,
+  VerifyOtpInput,
   ResetPasswordInput,
 } from "./auth.validation.js";
 import type { ApiError } from "../../shared/types/common.types.js";
@@ -124,9 +125,9 @@ export class AuthService {
   }
 
   public async forgotPassword(input: ForgotPasswordInput) {
-    // 1. Find user by mobile
+    // 1. Find user by email
     const user = await prisma.user.findUnique({
-      where: { mobile: input.mobile },
+      where: { email: input.email },
       select: { id: true },
     });
 
@@ -170,16 +171,15 @@ export class AuthService {
       },
     });
 
-    // 6. MVP: console.log — SMS integration in v2
-    console.log(`[OTP] ${input.mobile}: ${otp}`);
+    // 6. MVP: console.log — SMS/email integration in v2
+    console.log(`[OTP] ${input.email}: ${otp}`);
 
     return { message: "OTP sent successfully" };
   }
 
-  public async resetPassword(input: ResetPasswordInput) {
-    // 1. Find user by mobile
+  public async verifyOtp(input: VerifyOtpInput) {
     const user = await prisma.user.findUnique({
-      where: { mobile: input.mobile },
+      where: { email: input.email },
       select: { id: true },
     });
 
@@ -189,11 +189,57 @@ export class AuthService {
       throw error;
     }
 
-    // 2. Find latest unused, non-expired PASSWORD_RESET OTP
     const storedOtp = await prisma.otp.findFirst({
       where: {
         userId: user.id,
         type: OtpType.PASSWORD_RESET,
+        usedAt: null,
+        verifiedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!storedOtp) {
+      const error = new Error("OTP has expired") as ApiError;
+      error.status = 410;
+      throw error;
+    }
+
+    const isValid = await bcrypt.compare(input.otp, storedOtp.code);
+    if (!isValid) {
+      const error = new Error("Invalid OTP code") as ApiError;
+      error.status = 400;
+      throw error;
+    }
+
+    await prisma.otp.update({
+      where: { id: storedOtp.id },
+      data: { verifiedAt: new Date() },
+    });
+
+    return { message: "OTP verified successfully" };
+  }
+
+  public async resetPassword(input: ResetPasswordInput) {
+    // 1. Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email: input.email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      const error = new Error("User not found") as ApiError;
+      error.status = 404;
+      throw error;
+    }
+
+    // 2. Find the verified, unused, non-expired PASSWORD_RESET OTP
+    const storedOtp = await prisma.otp.findFirst({
+      where: {
+        userId: user.id,
+        type: OtpType.PASSWORD_RESET,
+        verifiedAt: { not: null },
         usedAt: null,
         expiresAt: { gt: new Date() },
       },
@@ -201,16 +247,7 @@ export class AuthService {
     });
 
     if (!storedOtp) {
-      const error = new Error("Invalid or expired OTP") as ApiError;
-      error.status = 400;
-      throw error;
-    }
-
-    // 3. Verify OTP against stored hash
-    const isOtpValid = await bcrypt.compare(input.otp, storedOtp.code);
-
-    if (!isOtpValid) {
-      const error = new Error("Invalid or expired OTP") as ApiError;
+      const error = new Error("Please verify your OTP first") as ApiError;
       error.status = 400;
       throw error;
     }

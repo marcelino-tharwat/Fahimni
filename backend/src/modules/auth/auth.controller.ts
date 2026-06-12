@@ -3,6 +3,7 @@ import {
   forgotPasswordSchema,
   registerSchema,
   resetPasswordSchema,
+  verifyOtpSchema,
 } from "./auth.validation.js";
 import { AuthService } from "./auth.service.js";
 import { loginSchema } from "./auth.validation.js";
@@ -93,6 +94,30 @@ export class AuthController {
       }
 
       const response = await authService.forgotPassword(parsed.data);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public verifyOtp = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = verifyOtpSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        res.status(400).json({
+          success: false,
+          message: "Validation error",
+          errors: parsed.error.flatten().fieldErrors,
+        });
+        return;
+      }
+
+      const response = await authService.verifyOtp(parsed.data);
       res.status(200).json(response);
     } catch (error) {
       next(error);

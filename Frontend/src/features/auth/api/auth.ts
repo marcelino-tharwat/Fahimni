@@ -15,15 +15,21 @@ export const authApi = {
       .then((res) => res.data.data);
   },
 
-  forgotPassword(email: string): Promise<{ message: string }> {
+  sendOtp(email: string): Promise<{ message: string }> {
     return apiClient
       .post<{ message: string }>("/v1/auth/forgot-password", { email })
       .then((res) => res.data);
   },
 
-  resetPassword(token: string, password: string): Promise<{ message: string }> {
+  verifyOtp(email: string, otp: string): Promise<{ message: string }> {
     return apiClient
-      .post<{ message: string }>("/v1/auth/reset-password", { token, password })
+      .post<{ message: string }>("/v1/auth/verify-otp", { email, otp })
+      .then((res) => res.data);
+  },
+
+  resetPasswordWithOtp(email: string, otp: string, password: string): Promise<{ message: string }> {
+    return apiClient
+      .post<{ message: string }>("/v1/auth/reset-password", { email, otp, newPassword: password })
       .then((res) => res.data);
   },
 };

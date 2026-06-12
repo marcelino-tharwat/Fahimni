@@ -17,7 +17,7 @@ import { NotFoundPage } from '@/features/landing/pages/NotFoundPage';
 
 // Auth pages
 import { AuthPage } from '@/features/auth/pages/AuthPage';
-import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
+import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage';
 
 // Student pages
 import { StudentDashboardPage } from '@/features/student/pages/StudentDashboardPage';
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <LandingPage /> },
       { path: '/auth', element: <AuthPage /> },
-      { path: '/forgot-password', element: <ForgotPasswordPage /> },
+      { path: '/forgot-password', element: <ResetPasswordPage /> },
       { path: '/t/:tenantSlug', element: <LandingPage /> },
       { path: '/t/:tenantSlug/auth', element: <AuthPage /> },
     ],

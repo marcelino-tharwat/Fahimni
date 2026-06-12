@@ -66,14 +66,15 @@ enum OtpType {
 }
 
 model Otp {
-  id        String    @id @default(uuid())
-  code      String
-  type      OtpType
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
+  id         String    @id @default(uuid())
+  code       String
+  type       OtpType
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
 
   @@map("otps")
 }

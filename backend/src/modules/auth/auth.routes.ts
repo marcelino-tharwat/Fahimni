@@ -15,4 +15,7 @@ router.post('/forgot-password', controller.forgotPassword);
 // POST /api/v1/auth/reset-password
 router.post('/reset-password', controller.resetPassword);
 
+// POST /api/v1/auth/verify-otp
+router.post('/verify-otp', controller.verifyOtp);
+
 export default router;
