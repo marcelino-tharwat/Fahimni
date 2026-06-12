@@ -53,4 +53,18 @@ i18n
     },
   });
 
+/**
+ * i18next is the single source of truth for language/direction. Keep the
+ * <html lang/dir> attributes in lockstep with it — on the initial load (after
+ * the detector runs), on reload, and on every switch — so the document
+ * direction can never drift out of sync with the rendered language.
+ */
+function syncHtmlLangDir(lng: string): void {
+  document.documentElement.lang = lng;
+  document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
+}
+
+i18n.on('languageChanged', syncHtmlLangDir);
+syncHtmlLangDir(i18n.language);
+
 export default i18n;

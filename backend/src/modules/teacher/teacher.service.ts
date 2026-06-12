@@ -1,4 +1,5 @@
 import { prisma } from "../../config/database.js";
+import { Prisma } from "../../generated/prisma/client.js";
 import { userPublicFields } from "../users/user.types.js";
 import { teacherPublicFields } from "./teacher.types.js";
 import type { TeacherProfileResponseDTO } from "./teacher.types.js";
@@ -44,11 +45,59 @@ export class TeacherService {
       throw new AppError("Teacher profile not found", 404);
     }
 
-    const data = this.buildUpdateData(input);
+    // 1. Update User fields if provided (fullName, email, mobile live on User).
+    const userData: Record<string, string> = {};
+    if (input.fullName !== undefined && input.fullName !== "") {
+      userData.fullName = input.fullName;
+    }
+    if (input.email !== undefined && input.email !== "") {
+      userData.email = input.email;
+    }
+    if (input.mobile !== undefined && input.mobile !== "") {
+      userData.mobile = input.mobile;
+    }
 
-    const updated = await prisma.teacherProfile.update({
+    if (Object.keys(userData).length > 0) {
+      try {
+        await prisma.user.update({
+          where: { id: userId },
+          data: userData,
+        });
+      } catch (error) {
+        // A unique-constraint violation (email or mobile already in use)
+        // surfaces as Prisma error code P2002.
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2002"
+        ) {
+          // `meta.target` lists the column(s) that violated the unique
+          // constraint, so we can point the user at the right field.
+          const target = (error.meta?.target as string[]) || [];
+          if (target.includes("email")) {
+            throw new AppError("This email is already registered", 409);
+          }
+          if (target.includes("mobile")) {
+            throw new AppError("This mobile number is already registered", 409);
+          }
+          throw new AppError("This value is already registered", 409);
+        }
+        throw error;
+      }
+    }
+
+    // 2. Update TeacherProfile fields (subject, bio, photoUrl, logoUrl).
+    const teacherData = this.buildUpdateData(input);
+
+    if (Object.keys(teacherData).length > 0) {
+      await prisma.teacherProfile.update({
+        where: { userId },
+        data: teacherData,
+      });
+    }
+
+    // 3. Return the full updated profile (including fresh user data).
+    const updated = await prisma.teacherProfile.findUnique({
       where: { userId },
-      data,
       select: {
         ...teacherPublicFields,
         user: { select: userPublicFields },
