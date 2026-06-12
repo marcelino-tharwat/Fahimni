@@ -59,22 +59,27 @@ function Field({
   registration: UseFormRegisterReturn;
   trailing?: React.ReactNode;
 } & React.InputHTMLAttributes<HTMLInputElement>) {
+  const { i18n } = useTranslation();
+  const isRtl = i18n.language === "ar";
+
   return (
     <div className="mb-[18px]">
       <label className="mb-2 block text-sm font-semibold text-text-primary">{label}</label>
-      <div className="relative">
-        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#9AA0AE]">
+      {/* Flex row: leading icon → gap → input → optional trailing (eye) toggle.
+          The row inherits the page direction, so the icon lands on the start
+          side (right in RTL, left in LTR) and the eye toggle on the opposite
+          edge — no absolute positioning, no big gap. */}
+      <div className="flex h-[50px] items-center gap-2 rounded-xl border border-border bg-[#F6F6FB] px-4 transition focus-within:border-accent focus-within:bg-white focus-within:ring-4 focus-within:ring-accent/10">
+        <span className="shrink-0 text-[#9AA0AE]">
           <Icon size={19} strokeWidth={2} />
         </span>
         <input
           {...registration}
           {...props}
-          dir="ltr"
-          className={`h-[50px] w-full rounded-xl border border-border bg-[#F6F6FB] text-left text-sm text-text-primary outline-none transition placeholder:text-[#9CA3AF] focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/10 ${
-            trailing ? "px-12" : "pr-12 pl-4"
-          }`}
+          dir={isRtl ? "rtl" : "ltr"}
+          className="min-w-0 flex-1 bg-transparent text-start text-sm text-text-primary outline-none placeholder:text-[#9CA3AF]"
         />
-        {trailing && <span className="absolute left-3 top-1/2 -translate-y-1/2">{trailing}</span>}
+        {trailing && <span className="flex shrink-0">{trailing}</span>}
       </div>
       {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
     </div>

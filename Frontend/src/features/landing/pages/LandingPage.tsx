@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useInView } from 'framer-motion';
@@ -168,13 +168,16 @@ function LandingNavbar() {
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-          <button
-            type="button"
-            onClick={() => handleNav('hero')}
-            className="font-cairo text-lg font-bold text-primary md:text-xl"
+          <a
+            href="#hero"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="font-cairo text-lg font-bold text-primary transition-opacity hover:opacity-80 md:text-xl cursor-pointer"
           >
             {t('brand')}
-          </button>
+          </a>
         </div>
 
         {/* Center (desktop): nav links */}
@@ -196,27 +199,13 @@ function LandingNavbar() {
           ))}
         </div>
 
-        {/* Left (RTL): language + login + register */}
+        {/* Left (RTL): language + single CTA */}
         <div className="flex items-center gap-2">
           <div className="hidden md:flex">
             <LanguageSwitcher />
           </div>
-          <button
-            type="button"
-            onClick={() => navigate('/auth')}
-            className="hidden font-cairo text-sm font-medium text-text-secondary transition-colors hover:text-accent md:inline"
-          >
-            {t('nav.login')}
-          </button>
-          <Button
-            size="sm"
-            className="hidden rounded-full md:inline-flex"
-            onClick={() => navigate('/auth')}
-          >
-            {t('nav.register')}
-          </Button>
-          <Button size="sm" className="rounded-full md:hidden" onClick={() => navigate('/auth')}>
-            {t('nav.registerMobile')}
+          <Button size="sm" className="rounded-full" onClick={() => navigate('/auth')}>
+            {t('nav.startNow')}
           </Button>
         </div>
       </nav>
@@ -235,16 +224,6 @@ function LandingNavbar() {
                 {t(`nav.${link.key}`)}
               </button>
             ))}
-            <button
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                navigate('/auth');
-              }}
-              className="rounded-button px-2 py-2 text-right font-cairo text-sm font-medium text-text-secondary hover:bg-gray-100"
-            >
-              {t('nav.login')}
-            </button>
             <div className="pt-1">
               <LanguageSwitcher />
             </div>
@@ -657,60 +636,6 @@ interface Testimonial {
   initial: string;
 }
 
-const testimonials: Testimonial[] = [
-  {
-    name: 'يوسف أحمد',
-    role: 'طالب بالصف الثالث الثانوي',
-    initial: 'ي',
-    quote:
-      'الشرح بتاع الأستاذ أحمد من أحسن شرح شفته. والاختبارات الذكية ساعدتني أعرف نقاط ضعفي وأحسّن مستوايا.',
-  },
-  {
-    name: 'محمد أحمد',
-    role: 'طالب بالصف الثالث الثانوي',
-    initial: 'م',
-    quote:
-      'الكيمياء كانت أصعب مادة عندي بس مع الأستاذ أحمد الموضوع اختلف تماماً. الشرح بسيط جداً والاختبارات كتير.',
-  },
-  {
-    name: 'مريم علي',
-    role: 'طالبة بالصف الثاني الثانوي',
-    initial: 'م',
-    quote: 'المنصة سهلة جداً والملخصات وفرتلي وقت كتير في المذاكرة. جبت أعلى درجة في الباب التالت!',
-  },
-  {
-    name: 'فاطمة محمود',
-    role: 'طالبة بالصف الثالث الثانوي',
-    initial: 'ف',
-    quote:
-      'المساعد الذكي ده عبقري! بسأله أي سؤال في الكيمياء وبيجاوبني فوراً. زي ما يكون معايا مدرس ٢٤ ساعة.',
-  },
-  {
-    name: 'عمر حسن',
-    role: 'طالب بالصف الثاني الثانوي',
-    initial: 'ع',
-    quote: 'أنا كنت بكره الكيمياء بس بعد ما اشتركت مع الأستاذ أحمد بقيت بحبها. الشرح ممتع ومبسّط.',
-  },
-  {
-    name: 'نور الدين خالد',
-    role: 'طالب بالصف الثالث الثانوي',
-    initial: 'ن',
-    quote: 'الاختبارات بعد كل درس خلتني أتأكد إني فاهم صح. ودرجاتي في المدرسة اتحسنت بشكل ملحوظ.',
-  },
-  {
-    name: 'سلمى إبراهيم',
-    role: 'طالبة بالصف الثاني الثانوي',
-    initial: 'س',
-    quote: 'ملخصات الـ PDF جميلة ومنظمة. بحملها وبذاكر منها في أي وقت. وفرتلي فلوس الدروس الخصوصية.',
-  },
-  {
-    name: 'أحمد ياسر',
-    role: 'طالب بالصف الثالث الثانوي',
-    initial: 'أ',
-    quote: 'أحسن حاجة إن الفيديوهات متاحة ٢٤ ساعة. بشوف الدرس أكتر من مرة لحد ما أفهم كويس.',
-  },
-];
-
 function TestimonialCard({ item }: { item: Testimonial }) {
   return (
     <Card padding="none" className="flex-1 bg-surface p-6 shadow-sm">
@@ -735,8 +660,16 @@ function TestimonialCard({ item }: { item: Testimonial }) {
 }
 
 function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
-  const { t } = useTranslation('landing');
-  const isRtl = useDirection() === 'rtl';
+  const { t, i18n } = useTranslation('landing');
+
+  // Source testimonials from the active language. Memoised on `t` so the array
+  // identity is stable within a language and only changes when the language does
+  // (avoids the autoplay effect churning on every render).
+  const testimonials = useMemo(
+    () =>
+      t('testimonials.items', { returnObjects: true }) as Testimonial[],
+    [t],
+  );
 
   const cardsPerView = isDesktop ? 3 : 1;
   const totalPages = Math.ceil(testimonials.length / cardsPerView);
@@ -751,7 +684,13 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
   const goNext = () => setCurrentIndex((prev) => (prev + 1) % totalPages);
   const goPrev = () => setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
 
-  // Autoplay: advance every 4s unless paused (hover).
+  // Reset to the first page when the language changes (content + count differ).
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [i18n.language]);
+
+  // Autoplay: advance every 4s unless paused (hover). Clears on unmount and
+  // restarts whenever the page count changes.
   useEffect(() => {
     const interval = setInterval(() => {
       if (!pausedRef.current) {
@@ -765,10 +704,6 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
     safeIndex * cardsPerView,
     safeIndex * cardsPerView + cardsPerView,
   );
-
-  // Enter from the leading edge, exit toward the trailing edge (mirrored in RTL).
-  const enterX = isRtl ? -50 : 50;
-  const exitX = isRtl ? 50 : -50;
 
   return (
     <section id="testimonials" className="scroll-mt-16 bg-surface px-4 py-12 md:py-16">
@@ -789,9 +724,9 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
             <AnimatePresence mode="wait">
               <motion.div
                 key={safeIndex}
-                initial={{ opacity: 0, x: enterX }}
+                initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: exitX }}
+                exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.4, ease: 'easeInOut' }}
                 className={cn('flex', isDesktop ? 'gap-6' : 'gap-4')}
               >
@@ -802,16 +737,17 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
             </AnimatePresence>
           </div>
 
-          {/* Arrows + dots */}
-          <div className="mt-6 flex items-center justify-center gap-4">
-            {/* In RTL, ChevronRight points backward (prev) and ChevronLeft forward (next). */}
+          {/* Arrows + dots — fixed directions: left arrow always prev, right
+              arrow always next. dir="ltr" pins the physical order so RTL never
+              flips the controls. */}
+          <div dir="ltr" className="mt-6 flex items-center justify-center gap-4">
             <button
               type="button"
-              onClick={isRtl ? goNext : goPrev}
-              aria-label={isRtl ? t('testimonials.next', 'التالي') : t('testimonials.prev', 'السابق')}
+              onClick={goPrev}
+              aria-label={t('testimonials.prev', 'السابق')}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-text-secondary transition-all duration-200 hover:scale-110 hover:border-accent hover:bg-accent hover:text-white"
             >
-              <ChevronRight size={20} />
+              <ChevronLeft size={20} />
             </button>
 
             <div className="flex items-center gap-2">
@@ -832,11 +768,11 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
 
             <button
               type="button"
-              onClick={isRtl ? goPrev : goNext}
-              aria-label={isRtl ? t('testimonials.prev', 'السابق') : t('testimonials.next', 'التالي')}
+              onClick={goNext}
+              aria-label={t('testimonials.next', 'التالي')}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-text-secondary transition-all duration-200 hover:scale-110 hover:border-accent hover:bg-accent hover:text-white"
             >
-              <ChevronLeft size={20} />
+              <ChevronRight size={20} />
             </button>
           </div>
         </div>
