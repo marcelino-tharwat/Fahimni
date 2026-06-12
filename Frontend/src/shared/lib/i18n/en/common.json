@@ -37,5 +37,31 @@
     "empty": "No data",
     "success": "Success"
   },
+  "admin": {
+    "tenants": "Academies",
+    "tenantName": "Academy Name",
+    "link": "Link",
+    "teacher": "Teacher",
+    "subject": "Subject",
+    "status": "Status",
+    "studentCount": "Number of Students",
+    "chapterCount": "Number of Chapters",
+    "revenue": "Revenue",
+    "active": "Active",
+    "trial": "Trial",
+    "expired": "Expired",
+    "suspended": "Suspended"
+  },
+  "support": {
+    "promoCodes": "Promo Codes",
+    "createCode": "Create New Code",
+    "codeCreated": "A new promo code has been created",
+    "code": "Code",
+    "status": "Status",
+    "student": "Student",
+    "date": "Date",
+    "used": "Used",
+    "available": "Available"
+  },
   "language": { "ar": "العربية", "en": "English" }
 }

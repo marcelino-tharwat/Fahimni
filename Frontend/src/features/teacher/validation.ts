@@ -1,44 +1,46 @@
 import { z } from "zod";
+import type { TFunction } from "i18next";
 
 /**
  * Client-side mirror of the backend `updateTeacherProfileSchema`
  * (backend/src/modules/teacher/teacher.validation.ts).
  *
  * Keep these rules in lockstep with the backend so client validation
- * never disagrees with what the server will accept. Messages are in
- * Arabic to surface directly in the UI.
+ * never disagrees with what the server will accept. Messages are resolved
+ * through i18next at validation time, so the schema must be built with the
+ * current `t` function (factory) rather than defined once as a constant —
+ * that way errors follow the active language, even after a language switch.
  */
-export const updateTeacherProfileSchema = z.object({
-  fullName: z
-    .string()
-    .trim()
-    .min(2, "الاسم لازم يكون حرفين على الأقل")
-    .max(100, "الاسم لازم يكون أقل من ١٠٠ حرف")
-    .optional(),
-  email: z
-    .string()
-    .trim()
-    .email("البريد الإلكتروني غير صحيح")
-    .toLowerCase()
-    .optional(),
-  mobile: z
-    .string()
-    .trim()
-    .regex(
-      /^01[0-9]{9}$/,
-      "رقم الموبايل لازم يكون رقم مصري صحيح (مثال: 01012345678)",
-    )
-    .optional(),
-  subject: z.string().trim().optional(),
-  bio: z
-    .string()
-    .trim()
-    .max(500, "النبذة التعريفية لازم تكون أقل من ٥٠٠ حرف")
-    .optional(),
-});
+export function createTeacherProfileSchema(t: TFunction) {
+  return z.object({
+    fullName: z
+      .string()
+      .trim()
+      .min(3, t("settings.validation.fullNameMin"))
+      .max(100, t("settings.validation.fullNameMax"))
+      .optional(),
+    email: z
+      .string()
+      .trim()
+      .email(t("settings.validation.emailInvalid"))
+      .toLowerCase()
+      .optional(),
+    mobile: z
+      .string()
+      .trim()
+      .regex(/^01[0-9]{9}$/, t("settings.validation.mobileInvalid"))
+      .optional(),
+    subject: z.string().trim().optional(),
+    bio: z
+      .string()
+      .trim()
+      .max(500, t("settings.validation.bioMax"))
+      .optional(),
+  });
+}
 
 export type UpdateTeacherProfileInput = z.infer<
-  typeof updateTeacherProfileSchema
+  ReturnType<typeof createTeacherProfileSchema>
 >;
 
 /**
