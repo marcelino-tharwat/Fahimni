@@ -4,9 +4,7 @@
     "home": "Home",
     "content": "Content",
     "testimonials": "Reviews",
-    "login": "Log In",
-    "register": "Register as Student",
-    "registerMobile": "Get Started"
+    "startNow": "Start Now"
   },
   "hero": {
     "breadcrumb": "Chemistry • Secondary Section",
@@ -60,21 +58,14 @@
   "testimonials": {
     "title": "Reviews from Our Top Students",
     "items": [
-      {
-        "quote": "Mr. Ahmed's explanation is one of the best I've ever seen. The smart quizzes helped me discover my weak points.",
-        "name": "Youssef Ahmed",
-        "role": "Grade 12 Student"
-      },
-      {
-        "quote": "Chemistry was my hardest subject, but with Mr. Ahmed everything changed. The explanation is very simple and there are plenty of quizzes.",
-        "name": "Mohamed Ahmed",
-        "role": "Grade 12 Student"
-      },
-      {
-        "quote": "The platform is super easy and the summaries saved me a lot of study time.",
-        "name": "Mariam Ali",
-        "role": "Grade 11 Student"
-      }
+      { "name": "Youssef Ahmed", "role": "3rd Year Secondary Student", "initial": "Y", "quote": "Mr. Ahmed's explanations are some of the best I've seen. The smart quizzes helped me identify my weak points and improve." },
+      { "name": "Mohamed Ahmed", "role": "3rd Year Secondary Student", "initial": "M", "quote": "Chemistry was my hardest subject but with Mr. Ahmed everything changed. The explanations are simple and there are tons of quizzes." },
+      { "name": "Mariam Ali", "role": "2nd Year Secondary Student", "initial": "M", "quote": "The platform is super easy and the summaries saved me so much time. I got the highest grade in chapter three!" },
+      { "name": "Fatma Mahmoud", "role": "3rd Year Secondary Student", "initial": "F", "quote": "The AI tutor is genius! I ask any chemistry question and it answers instantly. Like having a teacher 24/7." },
+      { "name": "Omar Hassan", "role": "2nd Year Secondary Student", "initial": "O", "quote": "I used to hate chemistry but after subscribing with Mr. Ahmed I started loving it. The explanations are fun and simplified." },
+      { "name": "Nour Eldin Khaled", "role": "3rd Year Secondary Student", "initial": "N", "quote": "The quizzes after each lesson made sure I really understood. My school grades improved noticeably." },
+      { "name": "Salma Ibrahim", "role": "2nd Year Secondary Student", "initial": "S", "quote": "The PDF summaries are beautiful and organized. I download them and study anytime. Saved me the cost of private tutoring." },
+      { "name": "Ahmed Yasser", "role": "3rd Year Secondary Student", "initial": "A", "quote": "The best thing is that videos are available 24 hours. I watch the lesson multiple times until I fully understand." }
     ]
   },
   "faq": {

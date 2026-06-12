@@ -31,9 +31,10 @@ import {
   useUploadTeacherPhoto,
 } from "@/features/teacher/hooks/useTeacherProfile";
 import { getApiErrorMessage, getApiFieldErrors } from "@/shared/lib/api/errors";
+import type { ApiError } from "@/shared/lib/api/client";
 import {
   flattenZodErrors,
-  updateTeacherProfileSchema,
+  createTeacherProfileSchema,
 } from "@/features/teacher/validation";
 
 /** Mirrors the backend multer limit (shared/middlewares/upload.middleware.ts). */
@@ -276,19 +277,37 @@ function PersonalInfoCard() {
       mobile,
     };
 
-    const parsed = updateTeacherProfileSchema.safeParse(payload);
+    // Build the schema with the current `t` so messages match the active language.
+    const parsed = createTeacherProfileSchema(t).safeParse(payload);
     if (!parsed.success) {
       setErrors(flattenZodErrors(parsed.error));
       return;
     }
 
     updateProfile.mutate(parsed.data, {
-      onSuccess: () =>
-        dispatch(addToast({ type: "success", message: t("settings.saved") })),
+      onSuccess: () => {
+        // Reset the dirty baseline to the just-saved values so the "unsaved
+        // changes" badge clears immediately, without waiting for the refetch.
+        setBaseline({ name, email, mobile });
+        dispatch(addToast({ type: "success", message: t("settings.saved") }));
+      },
       onError: (error) => {
+        // The axios interceptor (shared/lib/api/client.ts) normalises rejections
+        // to { statusCode, message }, so check statusCode — not error.response.
+        const apiError = error as ApiError;
+        if (apiError.statusCode === 409) {
+          // The backend message names the conflicting field (email vs mobile).
+          if (apiError.message.toLowerCase().includes("mobile")) {
+            setErrors({ mobile: t("settings.validation.mobileTaken") });
+          } else {
+            setErrors({ email: t("settings.validation.emailTaken") });
+          }
+          return;
+        }
         setErrors(getApiFieldErrors(error));
         dispatch(
           addToast({
+            
             type: "error",
             message: getApiErrorMessage(error, t("settings.saveError")),
           }),
@@ -303,7 +322,10 @@ function PersonalInfoCard() {
     if (!file) return;
     if (file.size > MAX_FILE_SIZE) {
       dispatch(
-        addToast({ type: "error", message: t("settings.fileTooLarge") }),
+        addToast({
+          type: "error",
+          message: t("settings.validation.fileTooLarge"),
+        }),
       );
       return;
     }
@@ -509,15 +531,19 @@ function TeachingInfoCard() {
     setErrors({});
     const payload = { subject, bio: bio.trim() };
 
-    const parsed = updateTeacherProfileSchema.safeParse(payload);
+    const parsed = createTeacherProfileSchema(t).safeParse(payload);
     if (!parsed.success) {
       setErrors(flattenZodErrors(parsed.error));
       return;
     }
 
     updateProfile.mutate(parsed.data, {
-      onSuccess: () =>
-        dispatch(addToast({ type: "success", message: t("settings.saved") })),
+      onSuccess: () => {
+        // Reset the dirty baseline so the "unsaved changes" badge clears
+        // immediately after a successful save.
+        setBaseline({ subject, bio: bio.trim() });
+        dispatch(addToast({ type: "success", message: t("settings.saved") }));
+      },
       onError: (error) => {
         setErrors(getApiFieldErrors(error));
         dispatch(
@@ -631,7 +657,10 @@ function AcademyBrandingCard({ isDesktop }: { isDesktop: boolean }) {
     if (!file) return;
     if (file.size > MAX_FILE_SIZE) {
       dispatch(
-        addToast({ type: "error", message: t("settings.fileTooLarge") }),
+        addToast({
+          type: "error",
+          message: t("settings.validation.fileTooLarge"),
+        }),
       );
       return;
     }

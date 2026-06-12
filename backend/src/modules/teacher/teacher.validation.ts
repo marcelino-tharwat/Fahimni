@@ -5,7 +5,7 @@ export const updateTeacherProfileSchema = z
     fullName: z
       .string()
       .trim()
-      .min(2, "Full name must be at least 2 characters")
+      .min(3, "Full name must be at least 3 characters")
       .max(100, "Full name must not exceed 100 characters")
       .optional(),
     email: z

@@ -10,6 +10,16 @@
     "pageSubtitle": "Update your personal information and academy branding",
     "unsavedChanges": "Unsaved changes",
     "saved": "Changes saved successfully",
+    "validation": {
+      "fullNameMin": "Name must be at least 3 characters",
+      "fullNameMax": "Name must not exceed 100 characters",
+      "emailInvalid": "Invalid email address",
+      "mobileInvalid": "Must be a valid Egyptian number (e.g. 01012345678)",
+      "bioMax": "Bio must not exceed 500 characters",
+      "fileTooLarge": "File size exceeds 5MB limit",
+      "emailTaken": "This email is already registered",
+      "mobileTaken": "This mobile number is already registered"
+    },
     "personal": {
       "title": "Personal Information",
       "saveBtn": "Save Changes",

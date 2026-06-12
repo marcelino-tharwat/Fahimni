@@ -1,5 +1,6 @@
 import { Menu, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { logout } from '@/features/auth/store/authSlice';
 import { toggleSidebar } from '@/shared/store/slices/uiSlice';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
@@ -29,7 +30,12 @@ export function Topbar({ showMenu = true }: TopbarProps) {
             <Menu size={22} />
           </button>
         )}
-        <span className="font-cairo text-lg font-bold text-primary">{t('appName')}</span>
+        <Link
+          to="/"
+          className="font-cairo text-lg font-bold text-primary transition-opacity hover:opacity-80"
+        >
+          {t('appName')}
+        </Link>
       </div>
 
       <div className="flex items-center gap-2">
