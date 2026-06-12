@@ -156,6 +156,7 @@ exports.Prisma.OtpScalarFieldEnum = {
   type: 'type',
   userId: 'userId',
   expiresAt: 'expiresAt',
+  verifiedAt: 'verifiedAt',
   usedAt: 'usedAt',
   createdAt: 'createdAt'
 };

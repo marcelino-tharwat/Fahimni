@@ -35,15 +35,19 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 
 export const forgotPasswordSchema = z.object({
-  mobile: z
+  email: z.string().trim().email("Invalid email").toLowerCase(),
+});
+
+export const verifyOtpSchema = z.object({
+  email: z.string().trim().email("Invalid email").toLowerCase(),
+  otp: z
     .string()
-    .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "Invalid Egyptian phone number"),
+    .length(6, "OTP must be 6 digits")
+    .regex(/^\d{6}$/, "OTP must contain digits only"),
 });
 
 export const resetPasswordSchema = z.object({
-  mobile: z
-    .string()
-    .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "Invalid Egyptian phone number"),
+  email: z.string().trim().email("Invalid email").toLowerCase(),
   otp: z
     .string()
     .length(6, "OTP must be 6 digits")
@@ -52,4 +56,5 @@ export const resetPasswordSchema = z.object({
 });
 
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

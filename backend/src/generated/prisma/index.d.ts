@@ -4681,6 +4681,7 @@ export namespace Prisma {
     type: $Enums.OtpType | null
     userId: string | null
     expiresAt: Date | null
+    verifiedAt: Date | null
     usedAt: Date | null
     createdAt: Date | null
   }
@@ -4691,6 +4692,7 @@ export namespace Prisma {
     type: $Enums.OtpType | null
     userId: string | null
     expiresAt: Date | null
+    verifiedAt: Date | null
     usedAt: Date | null
     createdAt: Date | null
   }
@@ -4701,6 +4703,7 @@ export namespace Prisma {
     type: number
     userId: number
     expiresAt: number
+    verifiedAt: number
     usedAt: number
     createdAt: number
     _all: number
@@ -4713,6 +4716,7 @@ export namespace Prisma {
     type?: true
     userId?: true
     expiresAt?: true
+    verifiedAt?: true
     usedAt?: true
     createdAt?: true
   }
@@ -4723,6 +4727,7 @@ export namespace Prisma {
     type?: true
     userId?: true
     expiresAt?: true
+    verifiedAt?: true
     usedAt?: true
     createdAt?: true
   }
@@ -4733,6 +4738,7 @@ export namespace Prisma {
     type?: true
     userId?: true
     expiresAt?: true
+    verifiedAt?: true
     usedAt?: true
     createdAt?: true
     _all?: true
@@ -4816,6 +4822,7 @@ export namespace Prisma {
     type: $Enums.OtpType
     userId: string
     expiresAt: Date
+    verifiedAt: Date | null
     usedAt: Date | null
     createdAt: Date
     _count: OtpCountAggregateOutputType | null
@@ -4843,6 +4850,7 @@ export namespace Prisma {
     type?: boolean
     userId?: boolean
     expiresAt?: boolean
+    verifiedAt?: boolean
     usedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -4854,6 +4862,7 @@ export namespace Prisma {
     type?: boolean
     userId?: boolean
     expiresAt?: boolean
+    verifiedAt?: boolean
     usedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -4865,6 +4874,7 @@ export namespace Prisma {
     type?: boolean
     userId?: boolean
     expiresAt?: boolean
+    verifiedAt?: boolean
     usedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -4876,11 +4886,12 @@ export namespace Prisma {
     type?: boolean
     userId?: boolean
     expiresAt?: boolean
+    verifiedAt?: boolean
     usedAt?: boolean
     createdAt?: boolean
   }
 
-  export type OtpOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "type" | "userId" | "expiresAt" | "usedAt" | "createdAt", ExtArgs["result"]["otp"]>
+  export type OtpOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "type" | "userId" | "expiresAt" | "verifiedAt" | "usedAt" | "createdAt", ExtArgs["result"]["otp"]>
   export type OtpInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -4902,6 +4913,7 @@ export namespace Prisma {
       type: $Enums.OtpType
       userId: string
       expiresAt: Date
+      verifiedAt: Date | null
       usedAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["otp"]>
@@ -5333,6 +5345,7 @@ export namespace Prisma {
     readonly type: FieldRef<"Otp", 'OtpType'>
     readonly userId: FieldRef<"Otp", 'String'>
     readonly expiresAt: FieldRef<"Otp", 'DateTime'>
+    readonly verifiedAt: FieldRef<"Otp", 'DateTime'>
     readonly usedAt: FieldRef<"Otp", 'DateTime'>
     readonly createdAt: FieldRef<"Otp", 'DateTime'>
   }
@@ -6863,6 +6876,7 @@ export namespace Prisma {
     type: 'type',
     userId: 'userId',
     expiresAt: 'expiresAt',
+    verifiedAt: 'verifiedAt',
     usedAt: 'usedAt',
     createdAt: 'createdAt'
   };
@@ -7209,6 +7223,7 @@ export namespace Prisma {
     type?: EnumOtpTypeFilter<"Otp"> | $Enums.OtpType
     userId?: StringFilter<"Otp"> | string
     expiresAt?: DateTimeFilter<"Otp"> | Date | string
+    verifiedAt?: DateTimeNullableFilter<"Otp"> | Date | string | null
     usedAt?: DateTimeNullableFilter<"Otp"> | Date | string | null
     createdAt?: DateTimeFilter<"Otp"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -7220,6 +7235,7 @@ export namespace Prisma {
     type?: SortOrder
     userId?: SortOrder
     expiresAt?: SortOrder
+    verifiedAt?: SortOrderInput | SortOrder
     usedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -7234,6 +7250,7 @@ export namespace Prisma {
     type?: EnumOtpTypeFilter<"Otp"> | $Enums.OtpType
     userId?: StringFilter<"Otp"> | string
     expiresAt?: DateTimeFilter<"Otp"> | Date | string
+    verifiedAt?: DateTimeNullableFilter<"Otp"> | Date | string | null
     usedAt?: DateTimeNullableFilter<"Otp"> | Date | string | null
     createdAt?: DateTimeFilter<"Otp"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -7245,6 +7262,7 @@ export namespace Prisma {
     type?: SortOrder
     userId?: SortOrder
     expiresAt?: SortOrder
+    verifiedAt?: SortOrderInput | SortOrder
     usedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: OtpCountOrderByAggregateInput
@@ -7261,6 +7279,7 @@ export namespace Prisma {
     type?: EnumOtpTypeWithAggregatesFilter<"Otp"> | $Enums.OtpType
     userId?: StringWithAggregatesFilter<"Otp"> | string
     expiresAt?: DateTimeWithAggregatesFilter<"Otp"> | Date | string
+    verifiedAt?: DateTimeNullableWithAggregatesFilter<"Otp"> | Date | string | null
     usedAt?: DateTimeNullableWithAggregatesFilter<"Otp"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Otp"> | Date | string
   }
@@ -7544,6 +7563,7 @@ export namespace Prisma {
     code: string
     type: $Enums.OtpType
     expiresAt: Date | string
+    verifiedAt?: Date | string | null
     usedAt?: Date | string | null
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutOtpsInput
@@ -7555,6 +7575,7 @@ export namespace Prisma {
     type: $Enums.OtpType
     userId: string
     expiresAt: Date | string
+    verifiedAt?: Date | string | null
     usedAt?: Date | string | null
     createdAt?: Date | string
   }
@@ -7564,6 +7585,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     type?: EnumOtpTypeFieldUpdateOperationsInput | $Enums.OtpType
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOtpsNestedInput
@@ -7575,6 +7597,7 @@ export namespace Prisma {
     type?: EnumOtpTypeFieldUpdateOperationsInput | $Enums.OtpType
     userId?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7585,6 +7608,7 @@ export namespace Prisma {
     type: $Enums.OtpType
     userId: string
     expiresAt: Date | string
+    verifiedAt?: Date | string | null
     usedAt?: Date | string | null
     createdAt?: Date | string
   }
@@ -7594,6 +7618,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     type?: EnumOtpTypeFieldUpdateOperationsInput | $Enums.OtpType
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7604,6 +7629,7 @@ export namespace Prisma {
     type?: EnumOtpTypeFieldUpdateOperationsInput | $Enums.OtpType
     userId?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7935,6 +7961,7 @@ export namespace Prisma {
     type?: SortOrder
     userId?: SortOrder
     expiresAt?: SortOrder
+    verifiedAt?: SortOrder
     usedAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -7945,6 +7972,7 @@ export namespace Prisma {
     type?: SortOrder
     userId?: SortOrder
     expiresAt?: SortOrder
+    verifiedAt?: SortOrder
     usedAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -7955,6 +7983,7 @@ export namespace Prisma {
     type?: SortOrder
     userId?: SortOrder
     expiresAt?: SortOrder
+    verifiedAt?: SortOrder
     usedAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -8448,6 +8477,7 @@ export namespace Prisma {
     code: string
     type: $Enums.OtpType
     expiresAt: Date | string
+    verifiedAt?: Date | string | null
     usedAt?: Date | string | null
     createdAt?: Date | string
   }
@@ -8457,6 +8487,7 @@ export namespace Prisma {
     code: string
     type: $Enums.OtpType
     expiresAt: Date | string
+    verifiedAt?: Date | string | null
     usedAt?: Date | string | null
     createdAt?: Date | string
   }
@@ -8564,6 +8595,7 @@ export namespace Prisma {
     type?: EnumOtpTypeFilter<"Otp"> | $Enums.OtpType
     userId?: StringFilter<"Otp"> | string
     expiresAt?: DateTimeFilter<"Otp"> | Date | string
+    verifiedAt?: DateTimeNullableFilter<"Otp"> | Date | string | null
     usedAt?: DateTimeNullableFilter<"Otp"> | Date | string | null
     createdAt?: DateTimeFilter<"Otp"> | Date | string
   }
@@ -8937,6 +8969,7 @@ export namespace Prisma {
     code: string
     type: $Enums.OtpType
     expiresAt: Date | string
+    verifiedAt?: Date | string | null
     usedAt?: Date | string | null
     createdAt?: Date | string
   }
@@ -8964,6 +8997,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     type?: EnumOtpTypeFieldUpdateOperationsInput | $Enums.OtpType
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8973,6 +9007,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     type?: EnumOtpTypeFieldUpdateOperationsInput | $Enums.OtpType
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8982,6 +9017,7 @@ export namespace Prisma {
     code?: StringFieldUpdateOperationsInput | string
     type?: EnumOtpTypeFieldUpdateOperationsInput | $Enums.OtpType
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
