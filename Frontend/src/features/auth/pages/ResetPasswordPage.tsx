@@ -40,11 +40,17 @@ export function ResetPasswordPage() {
   }, []);
 
   useEffect(() => {
-    setStepVisible(false);
-    const frame = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setStepVisible(true));
+    let frame2: number;
+    const frame1 = requestAnimationFrame(() => {
+      setStepVisible(false);
+      frame2 = requestAnimationFrame(() => {
+        setStepVisible(true);
+      });
     });
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      cancelAnimationFrame(frame1);
+      cancelAnimationFrame(frame2);
+    };
   }, [step]);
 
   const startCooldown = () => {
