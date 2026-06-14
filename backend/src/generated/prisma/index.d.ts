@@ -29,6 +29,11 @@ export type StudentProfile = $Result.DefaultSelection<Prisma.$StudentProfilePayl
  */
 export type TeacherProfile = $Result.DefaultSelection<Prisma.$TeacherProfilePayload>
 /**
+ * Model Stage
+ * 
+ */
+export type Stage = $Result.DefaultSelection<Prisma.$StagePayload>
+/**
  * Model Otp
  * 
  */
@@ -232,6 +237,16 @@ export class PrismaClient<
     * ```
     */
   get teacherProfile(): Prisma.TeacherProfileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.stage`: Exposes CRUD operations for the **Stage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Stages
+    * const stages = await prisma.stage.findMany()
+    * ```
+    */
+  get stage(): Prisma.StageDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.otp`: Exposes CRUD operations for the **Otp** model.
@@ -689,6 +704,7 @@ export namespace Prisma {
     User: 'User',
     StudentProfile: 'StudentProfile',
     TeacherProfile: 'TeacherProfile',
+    Stage: 'Stage',
     Otp: 'Otp',
     RefreshToken: 'RefreshToken'
   };
@@ -706,7 +722,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "otp" | "refreshToken"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "otp" | "refreshToken"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -929,6 +945,80 @@ export namespace Prisma {
           count: {
             args: Prisma.TeacherProfileCountArgs<ExtArgs>
             result: $Utils.Optional<TeacherProfileCountAggregateOutputType> | number
+          }
+        }
+      }
+      Stage: {
+        payload: Prisma.$StagePayload<ExtArgs>
+        fields: Prisma.StageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>
+          }
+          findFirst: {
+            args: Prisma.StageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>
+          }
+          findMany: {
+            args: Prisma.StageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>[]
+          }
+          create: {
+            args: Prisma.StageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>
+          }
+          createMany: {
+            args: Prisma.StageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>[]
+          }
+          delete: {
+            args: Prisma.StageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>
+          }
+          update: {
+            args: Prisma.StageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>
+          }
+          deleteMany: {
+            args: Prisma.StageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>[]
+          }
+          upsert: {
+            args: Prisma.StageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StagePayload>
+          }
+          aggregate: {
+            args: Prisma.StageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStage>
+          }
+          groupBy: {
+            args: Prisma.StageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StageCountArgs<ExtArgs>
+            result: $Utils.Optional<StageCountAggregateOutputType> | number
           }
         }
       }
@@ -1191,6 +1281,7 @@ export namespace Prisma {
     user?: UserOmit
     studentProfile?: StudentProfileOmit
     teacherProfile?: TeacherProfileOmit
+    stage?: StageOmit
     otp?: OtpOmit
     refreshToken?: RefreshTokenOmit
   }
@@ -1275,11 +1366,13 @@ export namespace Prisma {
   export type UserCountOutputType = {
     refreshTokens: number
     otps: number
+    stages: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
     otps?: boolean | UserCountOutputTypeCountOtpsArgs
+    stages?: boolean | UserCountOutputTypeCountStagesArgs
   }
 
   // Custom InputTypes
@@ -1305,6 +1398,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountOtpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OtpWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountStagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StageWhereInput
   }
 
 
@@ -1512,6 +1612,7 @@ export namespace Prisma {
     otps?: boolean | User$otpsArgs<ExtArgs>
     studentProfile?: boolean | User$studentProfileArgs<ExtArgs>
     teacherProfile?: boolean | User$teacherProfileArgs<ExtArgs>
+    stages?: boolean | User$stagesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1557,6 +1658,7 @@ export namespace Prisma {
     otps?: boolean | User$otpsArgs<ExtArgs>
     studentProfile?: boolean | User$studentProfileArgs<ExtArgs>
     teacherProfile?: boolean | User$teacherProfileArgs<ExtArgs>
+    stages?: boolean | User$stagesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1569,6 +1671,7 @@ export namespace Prisma {
       otps: Prisma.$OtpPayload<ExtArgs>[]
       studentProfile: Prisma.$StudentProfilePayload<ExtArgs> | null
       teacherProfile: Prisma.$TeacherProfilePayload<ExtArgs> | null
+      stages: Prisma.$StagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1978,6 +2081,7 @@ export namespace Prisma {
     otps<T extends User$otpsArgs<ExtArgs> = {}>(args?: Subset<T, User$otpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OtpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     studentProfile<T extends User$studentProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$studentProfileArgs<ExtArgs>>): Prisma__StudentProfileClient<$Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     teacherProfile<T extends User$teacherProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherProfileArgs<ExtArgs>>): Prisma__TeacherProfileClient<$Result.GetResult<Prisma.$TeacherProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    stages<T extends User$stagesArgs<ExtArgs> = {}>(args?: Subset<T, User$stagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2492,6 +2596,30 @@ export namespace Prisma {
      */
     include?: TeacherProfileInclude<ExtArgs> | null
     where?: TeacherProfileWhereInput
+  }
+
+  /**
+   * User.stages
+   */
+  export type User$stagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    where?: StageWhereInput
+    orderBy?: StageOrderByWithRelationInput | StageOrderByWithRelationInput[]
+    cursor?: StageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StageScalarFieldEnum | StageScalarFieldEnum[]
   }
 
   /**
@@ -4662,6 +4790,1142 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: TeacherProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Stage
+   */
+
+  export type AggregateStage = {
+    _count: StageCountAggregateOutputType | null
+    _avg: StageAvgAggregateOutputType | null
+    _sum: StageSumAggregateOutputType | null
+    _min: StageMinAggregateOutputType | null
+    _max: StageMaxAggregateOutputType | null
+  }
+
+  export type StageAvgAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type StageSumAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type StageMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    description: string | null
+    sortOrder: number | null
+    teacherId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    deletedAt: Date | null
+  }
+
+  export type StageMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    description: string | null
+    sortOrder: number | null
+    teacherId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    deletedAt: Date | null
+  }
+
+  export type StageCountAggregateOutputType = {
+    id: number
+    name: number
+    description: number
+    sortOrder: number
+    teacherId: number
+    createdAt: number
+    updatedAt: number
+    deletedAt: number
+    _all: number
+  }
+
+
+  export type StageAvgAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type StageSumAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type StageMinAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    sortOrder?: true
+    teacherId?: true
+    createdAt?: true
+    updatedAt?: true
+    deletedAt?: true
+  }
+
+  export type StageMaxAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    sortOrder?: true
+    teacherId?: true
+    createdAt?: true
+    updatedAt?: true
+    deletedAt?: true
+  }
+
+  export type StageCountAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    sortOrder?: true
+    teacherId?: true
+    createdAt?: true
+    updatedAt?: true
+    deletedAt?: true
+    _all?: true
+  }
+
+  export type StageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Stage to aggregate.
+     */
+    where?: StageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Stages to fetch.
+     */
+    orderBy?: StageOrderByWithRelationInput | StageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Stages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Stages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Stages
+    **/
+    _count?: true | StageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: StageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: StageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StageMaxAggregateInputType
+  }
+
+  export type GetStageAggregateType<T extends StageAggregateArgs> = {
+        [P in keyof T & keyof AggregateStage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStage[P]>
+      : GetScalarType<T[P], AggregateStage[P]>
+  }
+
+
+
+
+  export type StageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StageWhereInput
+    orderBy?: StageOrderByWithAggregationInput | StageOrderByWithAggregationInput[]
+    by: StageScalarFieldEnum[] | StageScalarFieldEnum
+    having?: StageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StageCountAggregateInputType | true
+    _avg?: StageAvgAggregateInputType
+    _sum?: StageSumAggregateInputType
+    _min?: StageMinAggregateInputType
+    _max?: StageMaxAggregateInputType
+  }
+
+  export type StageGroupByOutputType = {
+    id: string
+    name: string
+    description: string | null
+    sortOrder: number
+    teacherId: string
+    createdAt: Date
+    updatedAt: Date
+    deletedAt: Date | null
+    _count: StageCountAggregateOutputType | null
+    _avg: StageAvgAggregateOutputType | null
+    _sum: StageSumAggregateOutputType | null
+    _min: StageMinAggregateOutputType | null
+    _max: StageMaxAggregateOutputType | null
+  }
+
+  type GetStageGroupByPayload<T extends StageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StageGroupByOutputType[P]>
+            : GetScalarType<T[P], StageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    sortOrder?: boolean
+    teacherId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    deletedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stage"]>
+
+  export type StageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    sortOrder?: boolean
+    teacherId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    deletedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stage"]>
+
+  export type StageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    sortOrder?: boolean
+    teacherId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    deletedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stage"]>
+
+  export type StageSelectScalar = {
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    sortOrder?: boolean
+    teacherId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    deletedAt?: boolean
+  }
+
+  export type StageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "teacherId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stage"]>
+  export type StageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type StageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type StageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $StagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Stage"
+    objects: {
+      teacher: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      description: string | null
+      sortOrder: number
+      teacherId: string
+      createdAt: Date
+      updatedAt: Date
+      deletedAt: Date | null
+    }, ExtArgs["result"]["stage"]>
+    composites: {}
+  }
+
+  type StageGetPayload<S extends boolean | null | undefined | StageDefaultArgs> = $Result.GetResult<Prisma.$StagePayload, S>
+
+  type StageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StageCountAggregateInputType | true
+    }
+
+  export interface StageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Stage'], meta: { name: 'Stage' } }
+    /**
+     * Find zero or one Stage that matches the filter.
+     * @param {StageFindUniqueArgs} args - Arguments to find a Stage
+     * @example
+     * // Get one Stage
+     * const stage = await prisma.stage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StageFindUniqueArgs>(args: SelectSubset<T, StageFindUniqueArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Stage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StageFindUniqueOrThrowArgs} args - Arguments to find a Stage
+     * @example
+     * // Get one Stage
+     * const stage = await prisma.stage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StageFindUniqueOrThrowArgs>(args: SelectSubset<T, StageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Stage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StageFindFirstArgs} args - Arguments to find a Stage
+     * @example
+     * // Get one Stage
+     * const stage = await prisma.stage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StageFindFirstArgs>(args?: SelectSubset<T, StageFindFirstArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Stage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StageFindFirstOrThrowArgs} args - Arguments to find a Stage
+     * @example
+     * // Get one Stage
+     * const stage = await prisma.stage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StageFindFirstOrThrowArgs>(args?: SelectSubset<T, StageFindFirstOrThrowArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Stages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Stages
+     * const stages = await prisma.stage.findMany()
+     * 
+     * // Get first 10 Stages
+     * const stages = await prisma.stage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const stageWithIdOnly = await prisma.stage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StageFindManyArgs>(args?: SelectSubset<T, StageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Stage.
+     * @param {StageCreateArgs} args - Arguments to create a Stage.
+     * @example
+     * // Create one Stage
+     * const Stage = await prisma.stage.create({
+     *   data: {
+     *     // ... data to create a Stage
+     *   }
+     * })
+     * 
+     */
+    create<T extends StageCreateArgs>(args: SelectSubset<T, StageCreateArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Stages.
+     * @param {StageCreateManyArgs} args - Arguments to create many Stages.
+     * @example
+     * // Create many Stages
+     * const stage = await prisma.stage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StageCreateManyArgs>(args?: SelectSubset<T, StageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Stages and returns the data saved in the database.
+     * @param {StageCreateManyAndReturnArgs} args - Arguments to create many Stages.
+     * @example
+     * // Create many Stages
+     * const stage = await prisma.stage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Stages and only return the `id`
+     * const stageWithIdOnly = await prisma.stage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StageCreateManyAndReturnArgs>(args?: SelectSubset<T, StageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Stage.
+     * @param {StageDeleteArgs} args - Arguments to delete one Stage.
+     * @example
+     * // Delete one Stage
+     * const Stage = await prisma.stage.delete({
+     *   where: {
+     *     // ... filter to delete one Stage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StageDeleteArgs>(args: SelectSubset<T, StageDeleteArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Stage.
+     * @param {StageUpdateArgs} args - Arguments to update one Stage.
+     * @example
+     * // Update one Stage
+     * const stage = await prisma.stage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StageUpdateArgs>(args: SelectSubset<T, StageUpdateArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Stages.
+     * @param {StageDeleteManyArgs} args - Arguments to filter Stages to delete.
+     * @example
+     * // Delete a few Stages
+     * const { count } = await prisma.stage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StageDeleteManyArgs>(args?: SelectSubset<T, StageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Stages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Stages
+     * const stage = await prisma.stage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StageUpdateManyArgs>(args: SelectSubset<T, StageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Stages and returns the data updated in the database.
+     * @param {StageUpdateManyAndReturnArgs} args - Arguments to update many Stages.
+     * @example
+     * // Update many Stages
+     * const stage = await prisma.stage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Stages and only return the `id`
+     * const stageWithIdOnly = await prisma.stage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends StageUpdateManyAndReturnArgs>(args: SelectSubset<T, StageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Stage.
+     * @param {StageUpsertArgs} args - Arguments to update or create a Stage.
+     * @example
+     * // Update or create a Stage
+     * const stage = await prisma.stage.upsert({
+     *   create: {
+     *     // ... data to create a Stage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Stage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StageUpsertArgs>(args: SelectSubset<T, StageUpsertArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Stages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StageCountArgs} args - Arguments to filter Stages to count.
+     * @example
+     * // Count the number of Stages
+     * const count = await prisma.stage.count({
+     *   where: {
+     *     // ... the filter for the Stages we want to count
+     *   }
+     * })
+    **/
+    count<T extends StageCountArgs>(
+      args?: Subset<T, StageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Stage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StageAggregateArgs>(args: Subset<T, StageAggregateArgs>): Prisma.PrismaPromise<GetStageAggregateType<T>>
+
+    /**
+     * Group by Stage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StageGroupByArgs['orderBy'] }
+        : { orderBy?: StageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Stage model
+   */
+  readonly fields: StageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Stage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    teacher<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Stage model
+   */
+  interface StageFieldRefs {
+    readonly id: FieldRef<"Stage", 'String'>
+    readonly name: FieldRef<"Stage", 'String'>
+    readonly description: FieldRef<"Stage", 'String'>
+    readonly sortOrder: FieldRef<"Stage", 'Int'>
+    readonly teacherId: FieldRef<"Stage", 'String'>
+    readonly createdAt: FieldRef<"Stage", 'DateTime'>
+    readonly updatedAt: FieldRef<"Stage", 'DateTime'>
+    readonly deletedAt: FieldRef<"Stage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Stage findUnique
+   */
+  export type StageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * Filter, which Stage to fetch.
+     */
+    where: StageWhereUniqueInput
+  }
+
+  /**
+   * Stage findUniqueOrThrow
+   */
+  export type StageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * Filter, which Stage to fetch.
+     */
+    where: StageWhereUniqueInput
+  }
+
+  /**
+   * Stage findFirst
+   */
+  export type StageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * Filter, which Stage to fetch.
+     */
+    where?: StageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Stages to fetch.
+     */
+    orderBy?: StageOrderByWithRelationInput | StageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Stages.
+     */
+    cursor?: StageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Stages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Stages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Stages.
+     */
+    distinct?: StageScalarFieldEnum | StageScalarFieldEnum[]
+  }
+
+  /**
+   * Stage findFirstOrThrow
+   */
+  export type StageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * Filter, which Stage to fetch.
+     */
+    where?: StageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Stages to fetch.
+     */
+    orderBy?: StageOrderByWithRelationInput | StageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Stages.
+     */
+    cursor?: StageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Stages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Stages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Stages.
+     */
+    distinct?: StageScalarFieldEnum | StageScalarFieldEnum[]
+  }
+
+  /**
+   * Stage findMany
+   */
+  export type StageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * Filter, which Stages to fetch.
+     */
+    where?: StageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Stages to fetch.
+     */
+    orderBy?: StageOrderByWithRelationInput | StageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Stages.
+     */
+    cursor?: StageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Stages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Stages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Stages.
+     */
+    distinct?: StageScalarFieldEnum | StageScalarFieldEnum[]
+  }
+
+  /**
+   * Stage create
+   */
+  export type StageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Stage.
+     */
+    data: XOR<StageCreateInput, StageUncheckedCreateInput>
+  }
+
+  /**
+   * Stage createMany
+   */
+  export type StageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Stages.
+     */
+    data: StageCreateManyInput | StageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Stage createManyAndReturn
+   */
+  export type StageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * The data used to create many Stages.
+     */
+    data: StageCreateManyInput | StageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Stage update
+   */
+  export type StageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Stage.
+     */
+    data: XOR<StageUpdateInput, StageUncheckedUpdateInput>
+    /**
+     * Choose, which Stage to update.
+     */
+    where: StageWhereUniqueInput
+  }
+
+  /**
+   * Stage updateMany
+   */
+  export type StageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Stages.
+     */
+    data: XOR<StageUpdateManyMutationInput, StageUncheckedUpdateManyInput>
+    /**
+     * Filter which Stages to update
+     */
+    where?: StageWhereInput
+    /**
+     * Limit how many Stages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Stage updateManyAndReturn
+   */
+  export type StageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * The data used to update Stages.
+     */
+    data: XOR<StageUpdateManyMutationInput, StageUncheckedUpdateManyInput>
+    /**
+     * Filter which Stages to update
+     */
+    where?: StageWhereInput
+    /**
+     * Limit how many Stages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Stage upsert
+   */
+  export type StageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Stage to update in case it exists.
+     */
+    where: StageWhereUniqueInput
+    /**
+     * In case the Stage found by the `where` argument doesn't exist, create a new Stage with this data.
+     */
+    create: XOR<StageCreateInput, StageUncheckedCreateInput>
+    /**
+     * In case the Stage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StageUpdateInput, StageUncheckedUpdateInput>
+  }
+
+  /**
+   * Stage delete
+   */
+  export type StageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
+    /**
+     * Filter which Stage to delete.
+     */
+    where: StageWhereUniqueInput
+  }
+
+  /**
+   * Stage deleteMany
+   */
+  export type StageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Stages to delete
+     */
+    where?: StageWhereInput
+    /**
+     * Limit how many Stages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Stage without action
+   */
+  export type StageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stage
+     */
+    select?: StageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stage
+     */
+    omit?: StageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StageInclude<ExtArgs> | null
   }
 
 
@@ -6870,6 +8134,20 @@ export namespace Prisma {
   export type TeacherProfileScalarFieldEnum = (typeof TeacherProfileScalarFieldEnum)[keyof typeof TeacherProfileScalarFieldEnum]
 
 
+  export const StageScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    description: 'description',
+    sortOrder: 'sortOrder',
+    teacherId: 'teacherId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    deletedAt: 'deletedAt'
+  };
+
+  export type StageScalarFieldEnum = (typeof StageScalarFieldEnum)[keyof typeof StageScalarFieldEnum]
+
+
   export const OtpScalarFieldEnum: {
     id: 'id',
     code: 'code',
@@ -6980,6 +8258,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'OtpType'
    */
   export type EnumOtpTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OtpType'>
@@ -6994,16 +8286,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
+   * Reference to a field of type 'Float'
    */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
 
 
   /**
-   * Reference to a field of type 'Int[]'
+   * Reference to a field of type 'Float[]'
    */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -7027,6 +8319,7 @@ export namespace Prisma {
     otps?: OtpListRelationFilter
     studentProfile?: XOR<StudentProfileNullableScalarRelationFilter, StudentProfileWhereInput> | null
     teacherProfile?: XOR<TeacherProfileNullableScalarRelationFilter, TeacherProfileWhereInput> | null
+    stages?: StageListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -7043,6 +8336,7 @@ export namespace Prisma {
     otps?: OtpOrderByRelationAggregateInput
     studentProfile?: StudentProfileOrderByWithRelationInput
     teacherProfile?: TeacherProfileOrderByWithRelationInput
+    stages?: StageOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -7062,6 +8356,7 @@ export namespace Prisma {
     otps?: OtpListRelationFilter
     studentProfile?: XOR<StudentProfileNullableScalarRelationFilter, StudentProfileWhereInput> | null
     teacherProfile?: XOR<TeacherProfileNullableScalarRelationFilter, TeacherProfileWhereInput> | null
+    stages?: StageListRelationFilter
   }, "id" | "email" | "mobile">
 
   export type UserOrderByWithAggregationInput = {
@@ -7214,6 +8509,78 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"TeacherProfile"> | Date | string
   }
 
+  export type StageWhereInput = {
+    AND?: StageWhereInput | StageWhereInput[]
+    OR?: StageWhereInput[]
+    NOT?: StageWhereInput | StageWhereInput[]
+    id?: StringFilter<"Stage"> | string
+    name?: StringFilter<"Stage"> | string
+    description?: StringNullableFilter<"Stage"> | string | null
+    sortOrder?: IntFilter<"Stage"> | number
+    teacherId?: StringFilter<"Stage"> | string
+    createdAt?: DateTimeFilter<"Stage"> | Date | string
+    updatedAt?: DateTimeFilter<"Stage"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
+    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type StageOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    sortOrder?: SortOrder
+    teacherId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    teacher?: UserOrderByWithRelationInput
+  }
+
+  export type StageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: StageWhereInput | StageWhereInput[]
+    OR?: StageWhereInput[]
+    NOT?: StageWhereInput | StageWhereInput[]
+    name?: StringFilter<"Stage"> | string
+    description?: StringNullableFilter<"Stage"> | string | null
+    sortOrder?: IntFilter<"Stage"> | number
+    teacherId?: StringFilter<"Stage"> | string
+    createdAt?: DateTimeFilter<"Stage"> | Date | string
+    updatedAt?: DateTimeFilter<"Stage"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
+    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type StageOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    sortOrder?: SortOrder
+    teacherId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    _count?: StageCountOrderByAggregateInput
+    _avg?: StageAvgOrderByAggregateInput
+    _max?: StageMaxOrderByAggregateInput
+    _min?: StageMinOrderByAggregateInput
+    _sum?: StageSumOrderByAggregateInput
+  }
+
+  export type StageScalarWhereWithAggregatesInput = {
+    AND?: StageScalarWhereWithAggregatesInput | StageScalarWhereWithAggregatesInput[]
+    OR?: StageScalarWhereWithAggregatesInput[]
+    NOT?: StageScalarWhereWithAggregatesInput | StageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Stage"> | string
+    name?: StringWithAggregatesFilter<"Stage"> | string
+    description?: StringNullableWithAggregatesFilter<"Stage"> | string | null
+    sortOrder?: IntWithAggregatesFilter<"Stage"> | number
+    teacherId?: StringWithAggregatesFilter<"Stage"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Stage"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Stage"> | Date | string
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"Stage"> | Date | string | null
+  }
+
   export type OtpWhereInput = {
     AND?: OtpWhereInput | OtpWhereInput[]
     OR?: OtpWhereInput[]
@@ -7348,6 +8715,7 @@ export namespace Prisma {
     otps?: OtpCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -7364,6 +8732,7 @@ export namespace Prisma {
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUpdateInput = {
@@ -7380,6 +8749,7 @@ export namespace Prisma {
     otps?: OtpUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -7396,6 +8766,7 @@ export namespace Prisma {
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -7556,6 +8927,82 @@ export namespace Prisma {
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StageCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    teacher: UserCreateNestedOneWithoutStagesInput
+  }
+
+  export type StageUncheckedCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    teacherId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+  }
+
+  export type StageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    teacher?: UserUpdateOneRequiredWithoutStagesNestedInput
+  }
+
+  export type StageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    teacherId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type StageCreateManyInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    teacherId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+  }
+
+  export type StageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type StageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    teacherId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type OtpCreateInput = {
@@ -7744,11 +9191,21 @@ export namespace Prisma {
     isNot?: TeacherProfileWhereInput | null
   }
 
+  export type StageListRelationFilter = {
+    every?: StageWhereInput
+    some?: StageWhereInput
+    none?: StageWhereInput
+  }
+
   export type RefreshTokenOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type OtpOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -7937,11 +9394,15 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type EnumOtpTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.OtpType | EnumOtpTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumOtpTypeFilter<$PrismaModel> | $Enums.OtpType
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -7953,6 +9414,84 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type StageCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    sortOrder?: SortOrder
+    teacherId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrder
+  }
+
+  export type StageAvgOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
+  export type StageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    sortOrder?: SortOrder
+    teacherId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrder
+  }
+
+  export type StageMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    sortOrder?: SortOrder
+    teacherId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    deletedAt?: SortOrder
+  }
+
+  export type StageSumOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumOtpTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.OtpType | EnumOtpTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumOtpTypeFilter<$PrismaModel> | $Enums.OtpType
   }
 
   export type OtpCountOrderByAggregateInput = {
@@ -7996,20 +9535,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOtpTypeFilter<$PrismaModel>
     _max?: NestedEnumOtpTypeFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type RefreshTokenCountOrderByAggregateInput = {
@@ -8059,6 +9584,13 @@ export namespace Prisma {
     connect?: TeacherProfileWhereUniqueInput
   }
 
+  export type StageCreateNestedManyWithoutTeacherInput = {
+    create?: XOR<StageCreateWithoutTeacherInput, StageUncheckedCreateWithoutTeacherInput> | StageCreateWithoutTeacherInput[] | StageUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: StageCreateOrConnectWithoutTeacherInput | StageCreateOrConnectWithoutTeacherInput[]
+    createMany?: StageCreateManyTeacherInputEnvelope
+    connect?: StageWhereUniqueInput | StageWhereUniqueInput[]
+  }
+
   export type RefreshTokenUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<RefreshTokenCreateWithoutUserInput, RefreshTokenUncheckedCreateWithoutUserInput> | RefreshTokenCreateWithoutUserInput[] | RefreshTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: RefreshTokenCreateOrConnectWithoutUserInput | RefreshTokenCreateOrConnectWithoutUserInput[]
@@ -8083,6 +9615,13 @@ export namespace Prisma {
     create?: XOR<TeacherProfileCreateWithoutUserInput, TeacherProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: TeacherProfileCreateOrConnectWithoutUserInput
     connect?: TeacherProfileWhereUniqueInput
+  }
+
+  export type StageUncheckedCreateNestedManyWithoutTeacherInput = {
+    create?: XOR<StageCreateWithoutTeacherInput, StageUncheckedCreateWithoutTeacherInput> | StageCreateWithoutTeacherInput[] | StageUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: StageCreateOrConnectWithoutTeacherInput | StageCreateOrConnectWithoutTeacherInput[]
+    createMany?: StageCreateManyTeacherInputEnvelope
+    connect?: StageWhereUniqueInput | StageWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -8149,6 +9688,20 @@ export namespace Prisma {
     update?: XOR<XOR<TeacherProfileUpdateToOneWithWhereWithoutUserInput, TeacherProfileUpdateWithoutUserInput>, TeacherProfileUncheckedUpdateWithoutUserInput>
   }
 
+  export type StageUpdateManyWithoutTeacherNestedInput = {
+    create?: XOR<StageCreateWithoutTeacherInput, StageUncheckedCreateWithoutTeacherInput> | StageCreateWithoutTeacherInput[] | StageUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: StageCreateOrConnectWithoutTeacherInput | StageCreateOrConnectWithoutTeacherInput[]
+    upsert?: StageUpsertWithWhereUniqueWithoutTeacherInput | StageUpsertWithWhereUniqueWithoutTeacherInput[]
+    createMany?: StageCreateManyTeacherInputEnvelope
+    set?: StageWhereUniqueInput | StageWhereUniqueInput[]
+    disconnect?: StageWhereUniqueInput | StageWhereUniqueInput[]
+    delete?: StageWhereUniqueInput | StageWhereUniqueInput[]
+    connect?: StageWhereUniqueInput | StageWhereUniqueInput[]
+    update?: StageUpdateWithWhereUniqueWithoutTeacherInput | StageUpdateWithWhereUniqueWithoutTeacherInput[]
+    updateMany?: StageUpdateManyWithWhereWithoutTeacherInput | StageUpdateManyWithWhereWithoutTeacherInput[]
+    deleteMany?: StageScalarWhereInput | StageScalarWhereInput[]
+  }
+
   export type RefreshTokenUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<RefreshTokenCreateWithoutUserInput, RefreshTokenUncheckedCreateWithoutUserInput> | RefreshTokenCreateWithoutUserInput[] | RefreshTokenUncheckedCreateWithoutUserInput[]
     connectOrCreate?: RefreshTokenCreateOrConnectWithoutUserInput | RefreshTokenCreateOrConnectWithoutUserInput[]
@@ -8197,6 +9750,20 @@ export namespace Prisma {
     update?: XOR<XOR<TeacherProfileUpdateToOneWithWhereWithoutUserInput, TeacherProfileUpdateWithoutUserInput>, TeacherProfileUncheckedUpdateWithoutUserInput>
   }
 
+  export type StageUncheckedUpdateManyWithoutTeacherNestedInput = {
+    create?: XOR<StageCreateWithoutTeacherInput, StageUncheckedCreateWithoutTeacherInput> | StageCreateWithoutTeacherInput[] | StageUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: StageCreateOrConnectWithoutTeacherInput | StageCreateOrConnectWithoutTeacherInput[]
+    upsert?: StageUpsertWithWhereUniqueWithoutTeacherInput | StageUpsertWithWhereUniqueWithoutTeacherInput[]
+    createMany?: StageCreateManyTeacherInputEnvelope
+    set?: StageWhereUniqueInput | StageWhereUniqueInput[]
+    disconnect?: StageWhereUniqueInput | StageWhereUniqueInput[]
+    delete?: StageWhereUniqueInput | StageWhereUniqueInput[]
+    connect?: StageWhereUniqueInput | StageWhereUniqueInput[]
+    update?: StageUpdateWithWhereUniqueWithoutTeacherInput | StageUpdateWithWhereUniqueWithoutTeacherInput[]
+    updateMany?: StageUpdateManyWithWhereWithoutTeacherInput | StageUpdateManyWithWhereWithoutTeacherInput[]
+    deleteMany?: StageScalarWhereInput | StageScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutStudentProfileInput = {
     create?: XOR<UserCreateWithoutStudentProfileInput, UserUncheckedCreateWithoutStudentProfileInput>
     connectOrCreate?: UserCreateOrConnectWithoutStudentProfileInput
@@ -8229,6 +9796,32 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTeacherProfileInput, UserUpdateWithoutTeacherProfileInput>, UserUncheckedUpdateWithoutTeacherProfileInput>
   }
 
+  export type UserCreateNestedOneWithoutStagesInput = {
+    create?: XOR<UserCreateWithoutStagesInput, UserUncheckedCreateWithoutStagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStagesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type UserUpdateOneRequiredWithoutStagesNestedInput = {
+    create?: XOR<UserCreateWithoutStagesInput, UserUncheckedCreateWithoutStagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStagesInput
+    upsert?: UserUpsertWithoutStagesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutStagesInput, UserUpdateWithoutStagesInput>, UserUncheckedUpdateWithoutStagesInput>
+  }
+
   export type UserCreateNestedOneWithoutOtpsInput = {
     create?: XOR<UserCreateWithoutOtpsInput, UserUncheckedCreateWithoutOtpsInput>
     connectOrCreate?: UserCreateOrConnectWithoutOtpsInput
@@ -8237,10 +9830,6 @@ export namespace Prisma {
 
   export type EnumOtpTypeFieldUpdateOperationsInput = {
     set?: $Enums.OtpType
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type UserUpdateOneRequiredWithoutOtpsNestedInput = {
@@ -8408,13 +9997,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedEnumOtpTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.OtpType | EnumOtpTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumOtpTypeFilter<$PrismaModel> | $Enums.OtpType
-  }
-
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -8426,14 +10008,31 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type NestedEnumOtpTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.OtpType | EnumOtpTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumOtpTypeWithAggregatesFilter<$PrismaModel> | $Enums.OtpType
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumOtpTypeFilter<$PrismaModel>
-    _max?: NestedEnumOtpTypeFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -8448,6 +10047,23 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumOtpTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.OtpType | EnumOtpTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumOtpTypeFilter<$PrismaModel> | $Enums.OtpType
+  }
+
+  export type NestedEnumOtpTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OtpType | EnumOtpTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OtpType[] | ListEnumOtpTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumOtpTypeWithAggregatesFilter<$PrismaModel> | $Enums.OtpType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOtpTypeFilter<$PrismaModel>
+    _max?: NestedEnumOtpTypeFilter<$PrismaModel>
   }
 
   export type RefreshTokenCreateWithoutUserInput = {
@@ -8542,6 +10158,36 @@ export namespace Prisma {
   export type TeacherProfileCreateOrConnectWithoutUserInput = {
     where: TeacherProfileWhereUniqueInput
     create: XOR<TeacherProfileCreateWithoutUserInput, TeacherProfileUncheckedCreateWithoutUserInput>
+  }
+
+  export type StageCreateWithoutTeacherInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+  }
+
+  export type StageUncheckedCreateWithoutTeacherInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+  }
+
+  export type StageCreateOrConnectWithoutTeacherInput = {
+    where: StageWhereUniqueInput
+    create: XOR<StageCreateWithoutTeacherInput, StageUncheckedCreateWithoutTeacherInput>
+  }
+
+  export type StageCreateManyTeacherInputEnvelope = {
+    data: StageCreateManyTeacherInput | StageCreateManyTeacherInput[]
+    skipDuplicates?: boolean
   }
 
   export type RefreshTokenUpsertWithWhereUniqueWithoutUserInput = {
@@ -8654,6 +10300,36 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type StageUpsertWithWhereUniqueWithoutTeacherInput = {
+    where: StageWhereUniqueInput
+    update: XOR<StageUpdateWithoutTeacherInput, StageUncheckedUpdateWithoutTeacherInput>
+    create: XOR<StageCreateWithoutTeacherInput, StageUncheckedCreateWithoutTeacherInput>
+  }
+
+  export type StageUpdateWithWhereUniqueWithoutTeacherInput = {
+    where: StageWhereUniqueInput
+    data: XOR<StageUpdateWithoutTeacherInput, StageUncheckedUpdateWithoutTeacherInput>
+  }
+
+  export type StageUpdateManyWithWhereWithoutTeacherInput = {
+    where: StageScalarWhereInput
+    data: XOR<StageUpdateManyMutationInput, StageUncheckedUpdateManyWithoutTeacherInput>
+  }
+
+  export type StageScalarWhereInput = {
+    AND?: StageScalarWhereInput | StageScalarWhereInput[]
+    OR?: StageScalarWhereInput[]
+    NOT?: StageScalarWhereInput | StageScalarWhereInput[]
+    id?: StringFilter<"Stage"> | string
+    name?: StringFilter<"Stage"> | string
+    description?: StringNullableFilter<"Stage"> | string | null
+    sortOrder?: IntFilter<"Stage"> | number
+    teacherId?: StringFilter<"Stage"> | string
+    createdAt?: DateTimeFilter<"Stage"> | Date | string
+    updatedAt?: DateTimeFilter<"Stage"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
+  }
+
   export type UserCreateWithoutStudentProfileInput = {
     id?: string
     fullName: string
@@ -8667,6 +10343,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -8682,6 +10359,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -8713,6 +10391,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -8728,6 +10407,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserCreateWithoutTeacherProfileInput = {
@@ -8743,6 +10423,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutTeacherProfileInput = {
@@ -8758,6 +10439,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutTeacherProfileInput = {
@@ -8789,6 +10471,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherProfileInput = {
@@ -8804,6 +10487,87 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+  }
+
+  export type UserCreateWithoutStagesInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutStagesInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutStagesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutStagesInput, UserUncheckedCreateWithoutStagesInput>
+  }
+
+  export type UserUpsertWithoutStagesInput = {
+    update: XOR<UserUpdateWithoutStagesInput, UserUncheckedUpdateWithoutStagesInput>
+    create: XOR<UserCreateWithoutStagesInput, UserUncheckedCreateWithoutStagesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutStagesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutStagesInput, UserUncheckedUpdateWithoutStagesInput>
+  }
+
+  export type UserUpdateWithoutStagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutStagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutOtpsInput = {
@@ -8819,6 +10583,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutOtpsInput = {
@@ -8834,6 +10599,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutOtpsInput = {
@@ -8865,6 +10631,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOtpsInput = {
@@ -8880,6 +10647,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserCreateWithoutRefreshTokensInput = {
@@ -8895,6 +10663,7 @@ export namespace Prisma {
     otps?: OtpCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -8910,6 +10679,7 @@ export namespace Prisma {
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -8941,6 +10711,7 @@ export namespace Prisma {
     otps?: OtpUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -8956,6 +10727,7 @@ export namespace Prisma {
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type RefreshTokenCreateManyUserInput = {
@@ -8972,6 +10744,16 @@ export namespace Prisma {
     verifiedAt?: Date | string | null
     usedAt?: Date | string | null
     createdAt?: Date | string
+  }
+
+  export type StageCreateManyTeacherInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type RefreshTokenUpdateWithoutUserInput = {
@@ -9020,6 +10802,36 @@ export namespace Prisma {
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StageUpdateWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type StageUncheckedUpdateWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type StageUncheckedUpdateManyWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 
