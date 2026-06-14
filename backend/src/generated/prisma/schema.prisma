@@ -33,6 +33,7 @@ model User {
   otps           Otp[]
   studentProfile StudentProfile?
   teacherProfile TeacherProfile?
+  stages         Stage[]
 }
 
 model StudentProfile {
@@ -58,6 +59,21 @@ model TeacherProfile {
   updatedAt DateTime @updatedAt
 
   @@map("teacher_profiles")
+}
+
+model Stage {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  sortOrder   Int
+  teacherId   String
+  teacher     User      @relation(fields: [teacherId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([teacherId, sortOrder])
+  @@map("stages")
 }
 
 enum OtpType {
