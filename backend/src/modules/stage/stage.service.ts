@@ -5,6 +5,15 @@ import type { StageResponseDTO } from "./stage.types.js";
 import type { CreateStageInput, UpdateStageInput } from "./stage.validation.js";
 
 export class StageService {
+  private async attachChapterCount<T extends { id: string }>(
+    stage: T,
+  ): Promise<T & { chapterCount: number }> {
+    const count = await prisma.chapter.count({
+      where: { stageId: stage.id, deletedAt: null },
+    });
+    return { ...stage, chapterCount: count };
+  }
+
   public async list(teacherId: string): Promise<StageResponseDTO[]> {
     const stages = await prisma.stage.findMany({
       where: { teacherId, deletedAt: null },
@@ -12,12 +21,11 @@ export class StageService {
       select: stagePublicFields,
     });
 
-    return stages.map((stage) => ({
-      ...stage,
-      // TODO: When the Chapter model is added, replace with a real count:
-      //   _count: { select: { chapters: { where: { deletedAt: null } } } }
-      chapterCount: 0,
-    })) as unknown as StageResponseDTO[];
+    const withCounts = await Promise.all(
+      stages.map((s) => this.attachChapterCount(s)),
+    );
+
+    return withCounts as unknown as StageResponseDTO[];
   }
 
   public async getById(
@@ -33,10 +41,7 @@ export class StageService {
       throw new AppError("Stage not found", 404);
     }
 
-    return {
-      ...stage,
-      chapterCount: 0,
-    } as unknown as StageResponseDTO;
+    return this.attachChapterCount(stage) as unknown as StageResponseDTO;
   }
 
   public async create(
@@ -60,10 +65,7 @@ export class StageService {
       select: stagePublicFields,
     });
 
-    return {
-      ...stage,
-      chapterCount: 0,
-    } as unknown as StageResponseDTO;
+    return { ...stage, chapterCount: 0 } as unknown as StageResponseDTO;
   }
 
   public async update(
@@ -93,10 +95,7 @@ export class StageService {
       select: stagePublicFields,
     });
 
-    return {
-      ...stage,
-      chapterCount: 0,
-    } as unknown as StageResponseDTO;
+    return this.attachChapterCount(stage) as unknown as StageResponseDTO;
   }
 
   public async delete(id: string, teacherId: string): Promise<void> {
@@ -108,17 +107,16 @@ export class StageService {
       throw new AppError("Stage not found", 404);
     }
 
-    // TODO: Add a check here to return 409 Conflict when non-deleted chapters
-    // reference this stage. Example:
-    //   const chaptersCount = await prisma.chapter.count({
-    //     where: { stageId: id, deletedAt: null },
-    //   });
-    //   if (chaptersCount > 0) {
-    //     throw new AppError(
-    //       "Cannot delete stage with existing chapters. Remove or reassign chapters first.",
-    //       409,
-    //     );
-    //   }
+    const chaptersCount = await prisma.chapter.count({
+      where: { stageId: id, deletedAt: null },
+    });
+
+    if (chaptersCount > 0) {
+      throw new AppError(
+        "Cannot delete stage with existing chapters. Remove or reassign chapters first.",
+        409,
+      );
+    }
 
     await prisma.stage.update({
       where: { id },

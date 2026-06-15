@@ -3,13 +3,12 @@ import { StageController } from "./stage.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
-import {
-  createStageSchema,
-  updateStageSchema,
-} from "./stage.validation.js";
+import { createStageSchema, updateStageSchema } from "./stage.validation.js";
+import chapterRouter from "../chapter/chapter.routes.js";
 
 const router = Router();
 const controller = new StageController();
+router.use("/:stageId/chapters", chapterRouter);
 
 router.get(
   "/",

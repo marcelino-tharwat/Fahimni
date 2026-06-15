@@ -71,9 +71,27 @@ model Stage {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+  chapters    Chapter[]
 
   @@index([teacherId, sortOrder])
   @@map("stages")
+}
+
+model Chapter {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  sortOrder   Int
+  price       Decimal? // null = free chapter 
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  stageId     String
+  stage       Stage     @relation(fields: [stageId], references: [id])
+
+  @@index([stageId])
+  @@index([stageId, sortOrder])
+  @@map("chapters")
 }
 
 enum OtpType {
@@ -82,15 +100,15 @@ enum OtpType {
 }
 
 model Otp {
-  id        String    @id @default(uuid())
-  code      String
-  type      OtpType
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
+  id         String    @id @default(uuid())
+  code       String
+  type       OtpType
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
   verifiedAt DateTime?
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
 
   @@map("otps")
 }
