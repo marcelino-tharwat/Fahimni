@@ -10,6 +10,7 @@ import { notFoundHandler } from "./shared/middlewares/notFound.middleware.js";
 import studentRoutes from "./modules/students/student.routes.js";
 import teacherRoutes from "./modules/teacher/teacher.routes.js";
 import stageRoutes from "./modules/stage/stage.routes.js";
+import { chapterStandaloneRouter } from "./modules/chapter/chapter.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -29,6 +30,7 @@ export function createApp(): Application {
   app.use("/api/students", studentRoutes);
   app.use("/api/teachers", teacherRoutes);
   app.use("/api/stages", stageRoutes);
+  app.use("/api/chapters", chapterStandaloneRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

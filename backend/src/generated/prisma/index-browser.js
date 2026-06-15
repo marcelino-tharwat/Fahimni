@@ -161,6 +161,18 @@ exports.Prisma.StageScalarFieldEnum = {
   deletedAt: 'deletedAt'
 };
 
+exports.Prisma.ChapterScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  sortOrder: 'sortOrder',
+  price: 'price',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  stageId: 'stageId'
+};
+
 exports.Prisma.OtpScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -215,6 +227,7 @@ exports.Prisma.ModelName = {
   StudentProfile: 'StudentProfile',
   TeacherProfile: 'TeacherProfile',
   Stage: 'Stage',
+  Chapter: 'Chapter',
   Otp: 'Otp',
   RefreshToken: 'RefreshToken'
 };
