@@ -173,6 +173,19 @@ exports.Prisma.ChapterScalarFieldEnum = {
   stageId: 'stageId'
 };
 
+exports.Prisma.LessonScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  durationMinutes: 'durationMinutes',
+  youtubeUrl: 'youtubeUrl',
+  sortOrder: 'sortOrder',
+  pdfUrls: 'pdfUrls',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  chapterId: 'chapterId'
+};
+
 exports.Prisma.OtpScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -196,6 +209,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -204,6 +222,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
@@ -228,6 +252,7 @@ exports.Prisma.ModelName = {
   TeacherProfile: 'TeacherProfile',
   Stage: 'Stage',
   Chapter: 'Chapter',
+  Lesson: 'Lesson',
   Otp: 'Otp',
   RefreshToken: 'RefreshToken'
 };

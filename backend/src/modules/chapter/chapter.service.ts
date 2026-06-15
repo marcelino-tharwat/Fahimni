@@ -4,15 +4,22 @@ import { chapterPublicFields } from "./chapter.types.js";
 import type { ChapterResponseDTO } from "./chapter.types.js";
 import type { CreateChapterInput, UpdateChapterInput } from "./chapter.validation.js";
 
-function toDTO(chapter: Record<string, unknown>): ChapterResponseDTO {
+function toDTO(
+  chapter: Record<string, unknown>,
+  lessonsCount: number,
+): ChapterResponseDTO {
   return {
     ...chapter,
     price: chapter.price !== null ? Number(chapter.price) : null,
-    lessonsCount: 0,
+    lessonsCount,
   } as unknown as ChapterResponseDTO;
 }
 
 export class ChapterService {
+  private async countLessons(chapterId: string): Promise<number> {
+    return prisma.lesson.count({ where: { chapterId } });
+  }
+
   public async create(
     input: CreateChapterInput,
     stageId: string,
@@ -40,10 +47,22 @@ export class ChapterService {
       },
     });
 
-    return toDTO(chapter as unknown as Record<string, unknown>);
+    return toDTO(chapter as unknown as Record<string, unknown>, 0);
   }
 
-  public async listByStage(stageId: string): Promise<ChapterResponseDTO[]> {
+  public async listByStage(
+    stageId: string,
+    teacherId: string,
+  ): Promise<ChapterResponseDTO[]> {
+    const stage = await prisma.stage.findFirst({
+      where: { id: stageId, teacherId, deletedAt: null },
+      select: { id: true },
+    });
+
+    if (!stage) {
+      throw new AppError("Stage not found", 404);
+    }
+
     const chapters = await prisma.chapter.findMany({
       where: { stageId, deletedAt: null },
       orderBy: { sortOrder: "asc" },
@@ -53,14 +72,22 @@ export class ChapterService {
       },
     });
 
-    return chapters.map((ch) =>
-      toDTO(ch as unknown as Record<string, unknown>),
+    return Promise.all(
+      chapters.map(async (ch) =>
+        toDTO(
+          ch as unknown as Record<string, unknown>,
+          await this.countLessons(ch.id),
+        ),
+      ),
     );
   }
 
-  public async getById(id: string): Promise<ChapterResponseDTO> {
+  public async getById(
+    id: string,
+    teacherId: string,
+  ): Promise<ChapterResponseDTO> {
     const chapter = await prisma.chapter.findFirst({
-      where: { id, deletedAt: null },
+      where: { id, deletedAt: null, stage: { teacherId, deletedAt: null } },
       select: {
         ...chapterPublicFields,
         price: true,
@@ -71,15 +98,19 @@ export class ChapterService {
       throw new AppError("Chapter not found", 404);
     }
 
-    return toDTO(chapter as unknown as Record<string, unknown>);
+    return toDTO(
+      chapter as unknown as Record<string, unknown>,
+      await this.countLessons(chapter.id),
+    );
   }
 
   public async update(
     id: string,
+    teacherId: string,
     input: UpdateChapterInput,
   ): Promise<ChapterResponseDTO> {
     const existing = await prisma.chapter.findFirst({
-      where: { id, deletedAt: null },
+      where: { id, deletedAt: null, stage: { teacherId, deletedAt: null } },
     });
 
     if (!existing) {
@@ -109,28 +140,28 @@ export class ChapterService {
       },
     });
 
-    return toDTO(chapter as unknown as Record<string, unknown>);
+    return toDTO(
+      chapter as unknown as Record<string, unknown>,
+      await this.countLessons(id),
+    );
   }
 
-  public async delete(id: string): Promise<void> {
+  public async delete(id: string, teacherId: string): Promise<void> {
     const existing = await prisma.chapter.findFirst({
-      where: { id, deletedAt: null },
+      where: { id, deletedAt: null, stage: { teacherId, deletedAt: null } },
     });
 
     if (!existing) {
       throw new AppError("Chapter not found", 404);
     }
 
-    // TODO: When the Lesson model is added, replace with a real count:
-    //   const lessonsCount = await prisma.lesson.count({
-    //     where: { chapterId: id, deletedAt: null },
-    //   });
-    //   if (lessonsCount > 0) {
-    //     throw new AppError(
-    //       "Cannot delete chapter with existing lessons. Remove or reassign lessons first.",
-    //       409,
-    //     );
-    //   }
+    const lessonsCount = await this.countLessons(id);
+    if (lessonsCount > 0) {
+      throw new AppError(
+        "Cannot delete chapter with existing lessons. Remove or reassign lessons first.",
+        409,
+      );
+    }
 
     await prisma.chapter.update({
       where: { id },

@@ -4,6 +4,7 @@ import { authenticateMiddleware } from "../../shared/middlewares/authenticate.mi
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import { createChapterSchema, updateChapterSchema } from "./chapter.validation.js";
+import { lessonNestedRouter } from "../lessons/lessons.routes.js";
 
 const controller = new ChapterController();
 
@@ -27,6 +28,9 @@ chapterNestedRouter.get(
 
 // ── Standalone routes (mounted at /chapters) ──────────────────────────
 export const chapterStandaloneRouter = Router();
+
+// Nested lessons (mounted at /chapters/:chapterId/lessons)
+chapterStandaloneRouter.use("/:chapterId/lessons", lessonNestedRouter);
 
 chapterStandaloneRouter.get(
   "/:id",

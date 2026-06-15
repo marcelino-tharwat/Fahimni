@@ -88,10 +88,29 @@ model Chapter {
   deletedAt   DateTime?
   stageId     String
   stage       Stage     @relation(fields: [stageId], references: [id])
+  lessons     Lesson[]
 
   @@index([stageId])
   @@index([stageId, sortOrder])
   @@map("chapters")
+}
+
+model Lesson {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  durationMinutes Int
+  youtubeUrl      String?
+  sortOrder       Int
+  pdfUrls         Json? // array of S3 object keys
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  chapterId       String
+  chapter         Chapter  @relation(fields: [chapterId], references: [id])
+
+  @@index([chapterId])
+  @@index([chapterId, sortOrder])
+  @@map("lessons")
 }
 
 enum OtpType {
