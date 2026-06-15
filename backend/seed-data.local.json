@@ -1,0 +1,197 @@
+{
+  "generatedAt": "2026-06-15T23:12:20.932Z",
+  "seedSummary": {
+    "existingRecordsReused": true,
+    "newDataAdded": false
+  },
+  "changes": {
+    "reused": [
+      "Teacher A user (teacher@example.com)",
+      "Teacher A stage \"First Preparatory\" (seed-stage-1)",
+      "Teacher A stage \"Second Preparatory\" (seed-stage-2)",
+      "Teacher A stage \"Third Preparatory\" (seed-stage-3)",
+      "Teacher A stage \"First Secondary\" (seed-stage-4)",
+      "Teacher A stage \"Second Secondary\" (seed-stage-5)",
+      "Teacher A stage \"Third Secondary\" (seed-stage-6)",
+      "Teacher A chapter \"Algebra\" (seed-chapter-seed-stage-1-1)",
+      "Teacher A chapter \"Geometry\" (seed-chapter-seed-stage-1-2)",
+      "Teacher A chapter \"Algebra\" (seed-chapter-seed-stage-2-1)",
+      "Teacher A chapter \"Geometry\" (seed-chapter-seed-stage-2-2)",
+      "Teacher A chapter \"Algebra\" (seed-chapter-seed-stage-3-1)",
+      "Teacher A chapter \"Geometry\" (seed-chapter-seed-stage-3-2)",
+      "Teacher A chapter \"Algebra\" (seed-chapter-seed-stage-4-1)",
+      "Teacher A chapter \"Geometry\" (seed-chapter-seed-stage-4-2)",
+      "Teacher A chapter \"Algebra\" (seed-chapter-seed-stage-5-1)",
+      "Teacher A chapter \"Geometry\" (seed-chapter-seed-stage-5-2)",
+      "Teacher A chapter \"Algebra\" (seed-chapter-seed-stage-6-1)",
+      "Teacher A chapter \"Geometry\" (seed-chapter-seed-stage-6-2)",
+      "Teacher A lesson \"Introduction to Algebra\" (seed-lesson-seed-chapter-seed-stage-1-1-1)",
+      "Teacher A lesson \"Linear Equations\" (seed-lesson-seed-chapter-seed-stage-1-1-2)",
+      "Teacher A lesson \"Quadratic Equations\" (seed-lesson-seed-chapter-seed-stage-1-1-3)",
+      "Teacher B user (teacher-b@example.com)",
+      "Teacher B stage \"Physics Track\" (seed-stage-b-1)",
+      "Teacher B chapter \"Mechanics\" (seed-chapter-seed-stage-b-1-1)",
+      "Teacher B lesson \"Newton's Laws\" (seed-lesson-seed-chapter-seed-stage-b-1-1-1)"
+    ],
+    "created": [],
+    "updated": [
+      "Admin user (admin@example.com)"
+    ]
+  },
+  "credentials": {
+    "note": "Local development only. Plaintext shown for testing convenience.",
+    "admin": {
+      "email": "admin@example.com",
+      "password": "YOUR_ADMIN_PASSWORD",
+      "role": "ADMIN"
+    },
+    "teacherA": {
+      "email": "teacher@example.com",
+      "password": "Teacher@123456",
+      "role": "OPERATION"
+    },
+    "teacherB": {
+      "email": "teacher-b@example.com",
+      "password": "Teacher@123456",
+      "role": "OPERATION"
+    }
+  },
+  "teacherA": {
+    "user": {
+      "id": "057d7ce3-7a6a-4bf4-a32b-f685066a8eb6",
+      "fullName": "Ahmed Hassan",
+      "email": "teacher@example.com",
+      "mobile": "01100000000",
+      "role": "OPERATION"
+    },
+    "stages": [
+      {
+        "id": "seed-stage-1",
+        "name": "First Preparatory",
+        "sortOrder": 1
+      },
+      {
+        "id": "seed-stage-2",
+        "name": "Second Preparatory",
+        "sortOrder": 2
+      },
+      {
+        "id": "seed-stage-3",
+        "name": "Third Preparatory",
+        "sortOrder": 3
+      },
+      {
+        "id": "seed-stage-4",
+        "name": "First Secondary",
+        "sortOrder": 4
+      },
+      {
+        "id": "seed-stage-5",
+        "name": "Second Secondary",
+        "sortOrder": 5
+      },
+      {
+        "id": "seed-stage-6",
+        "name": "Third Secondary",
+        "sortOrder": 6
+      }
+    ],
+    "chapters": {
+      "multiLesson": {
+        "id": "seed-chapter-seed-stage-1-1",
+        "name": "Algebra",
+        "price": null,
+        "stageId": "seed-stage-1"
+      },
+      "empty": {
+        "id": "seed-chapter-seed-stage-1-2",
+        "name": "Geometry",
+        "price": "49.99",
+        "stageId": "seed-stage-1"
+      },
+      "free": {
+        "id": "seed-chapter-seed-stage-1-1",
+        "name": "Algebra",
+        "price": null,
+        "stageId": "seed-stage-1"
+      },
+      "paid": {
+        "id": "seed-chapter-seed-stage-1-2",
+        "name": "Geometry",
+        "price": "49.99",
+        "stageId": "seed-stage-1"
+      }
+    },
+    "lessons": [
+      {
+        "id": "seed-lesson-seed-chapter-seed-stage-1-1-1",
+        "title": "Introduction to Algebra",
+        "sortOrder": 1,
+        "durationMinutes": 25,
+        "youtubeUrl": "https://www.youtube.com/watch?v=algebra1",
+        "description": "Variables, expressions and basic operations.",
+        "pdfUrls": [
+          "lessons/seed-chapter-seed-stage-1-1/intro-slides.pdf",
+          "lessons/seed-chapter-seed-stage-1-1/intro-exercises.pdf"
+        ]
+      },
+      {
+        "id": "seed-lesson-seed-chapter-seed-stage-1-1-2",
+        "title": "Linear Equations",
+        "sortOrder": 2,
+        "durationMinutes": 40,
+        "youtubeUrl": "https://youtu.be/linear2",
+        "description": null,
+        "pdfUrls": null
+      },
+      {
+        "id": "seed-lesson-seed-chapter-seed-stage-1-1-3",
+        "title": "Quadratic Equations",
+        "sortOrder": 3,
+        "durationMinutes": 55,
+        "youtubeUrl": "https://m.youtube.com/watch?v=quad3",
+        "description": "Solving quadratics by factoring and the formula.",
+        "pdfUrls": [
+          "lessons/seed-chapter-seed-stage-1-1/quadratics.pdf"
+        ]
+      }
+    ]
+  },
+  "teacherB": {
+    "user": {
+      "id": "a7d2fa17-1598-43e9-af1c-b9868ea1b06f",
+      "fullName": "Sara Ali",
+      "email": "teacher-b@example.com",
+      "mobile": "01200000000",
+      "role": "OPERATION"
+    },
+    "stage": {
+      "id": "seed-stage-b-1",
+      "name": "Physics Track"
+    },
+    "chapter": {
+      "id": "seed-chapter-seed-stage-b-1-1",
+      "name": "Mechanics",
+      "price": null
+    },
+    "lesson": {
+      "id": "seed-lesson-seed-chapter-seed-stage-b-1-1-1",
+      "title": "Newton's Laws",
+      "sortOrder": 1
+    }
+  },
+  "students": [],
+  "admin": {
+    "id": "d4a73f5e-03dd-42f9-a625-6cac7cc7b7e0",
+    "fullName": "System Administrator",
+    "email": "admin@example.com",
+    "mobile": "01000000000",
+    "role": "ADMIN"
+  },
+  "manualTestingTargets": {
+    "ownershipDeniedFor": "Teacher B accessing any Teacher A resource (expect 404)",
+    "chapterDeleteBlocked": "seed-chapter-seed-stage-1-1",
+    "chapterSoftDeletable": "seed-chapter-seed-stage-1-2",
+    "lessonForGetUpdateDelete": "seed-lesson-seed-chapter-seed-stage-1-1-1"
+  }
+}

@@ -35,7 +35,7 @@ export class ChapterController {
         throw new AppError("Invalid stage ID", 400);
       }
 
-      const chapters = await chapterService.listByStage(stageId);
+      const chapters = await chapterService.listByStage(stageId, req.user!.id);
 
       res
         .status(200)
@@ -53,7 +53,7 @@ export class ChapterController {
         throw new AppError("Invalid chapter ID", 400);
       }
 
-      const chapter = await chapterService.getById(id);
+      const chapter = await chapterService.getById(id, req.user!.id);
 
       res
         .status(200)
@@ -72,7 +72,7 @@ export class ChapterController {
       }
 
       const input = req.body as UpdateChapterInput;
-      const chapter = await chapterService.update(id, input);
+      const chapter = await chapterService.update(id, req.user!.id, input);
 
       res
         .status(200)
@@ -90,7 +90,7 @@ export class ChapterController {
         throw new AppError("Invalid chapter ID", 400);
       }
 
-      await chapterService.delete(id);
+      await chapterService.delete(id, req.user!.id);
 
       res.status(200).json(okResponse("Chapter deleted successfully"));
     },
