@@ -1,8 +1,13 @@
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
+import { logger } from "../../config/logger.js";
+import { auditLogService } from "../../shared/services/auditLog.service.js";
+import { FilesService } from "../files/files.service.js";
 import { stagePublicFields } from "./stage.types.js";
 import type { StageResponseDTO } from "./stage.types.js";
 import type { CreateStageInput, UpdateStageInput } from "./stage.validation.js";
+
+const filesService = new FilesService();
 
 export class StageService {
   private async attachChapterCount<T extends { id: string }>(
@@ -98,29 +103,94 @@ export class StageService {
     return this.attachChapterCount(stage) as unknown as StageResponseDTO;
   }
 
-  public async delete(id: string, teacherId: string): Promise<void> {
-    const existing = await prisma.stage.findFirst({
+  public async delete(id: string, teacherId: string, force: boolean): Promise<void> {
+    const stage = await prisma.stage.findFirst({
       where: { id, teacherId, deletedAt: null },
+      include: {
+        chapters: {
+          where: { deletedAt: null },
+          include: {
+            lessons: {
+              where: { deletedAt: null },
+              select: { id: true, title: true, pdfUrls: true },
+            },
+          },
+        },
+      },
     });
 
-    if (!existing) {
+    if (!stage) {
       throw new AppError("Stage not found", 404);
     }
 
-    const chaptersCount = await prisma.chapter.count({
-      where: { stageId: id, deletedAt: null },
-    });
+    const chapters = stage.chapters;
+    const allLessons = chapters.flatMap((c) => c.lessons);
 
-    if (chaptersCount > 0) {
+    if (chapters.length > 0 && !force) {
       throw new AppError(
-        "Cannot delete stage with existing chapters. Remove or reassign chapters first.",
+        `This stage contains ${chapters.length} chapters and ${allLessons.length} lessons. Use ?force=true to confirm deletion.`,
         409,
       );
     }
 
-    await prisma.stage.update({
-      where: { id },
-      data: { deletedAt: new Date() },
+    if (chapters.length === 0) {
+      await prisma.stage.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+      });
+      return;
+    }
+
+    const chapterIds = chapters.map((c) => c.id);
+    const lessonIds = allLessons.map((l) => l.id);
+
+    const allPdfUrls = allLessons
+      .flatMap((l) => (l.pdfUrls as string[]) ?? [])
+      .filter(Boolean);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.lesson.updateMany({
+        where: { id: { in: lessonIds } },
+        data: { deletedAt: new Date() },
+      });
+
+      await tx.lessonMaterial.updateMany({
+        where: { lessonId: { in: lessonIds }, deletedAt: null },
+        data: { deletedAt: new Date() },
+      });
+
+      await tx.chapter.updateMany({
+        where: { id: { in: chapterIds } },
+        data: { deletedAt: new Date() },
+      });
+
+      await tx.stage.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          action: "DELETE_STAGE",
+          resourceType: "STAGE",
+          resourceId: id,
+          details: {
+            name: stage.name,
+            chaptersDeleted: chapters.length,
+            lessonsDeleted: allLessons.length,
+            chapterNames: chapters.map((c) => c.name),
+          },
+          userId: teacherId,
+        },
+      });
     });
+
+    await Promise.all(
+      allPdfUrls.map((url) =>
+        filesService.deleteFile(url).catch((err) =>
+          logger.warn(`Failed to delete file from storage: ${url}`, err),
+        ),
+      ),
+    );
   }
 }
