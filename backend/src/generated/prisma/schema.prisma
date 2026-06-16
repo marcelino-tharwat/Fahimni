@@ -132,6 +132,15 @@ model Otp {
   @@map("otps")
 }
 
+model LessonMaterial {
+  id        String   @id @default(cuid())
+  lessonId  String
+  filePath  String
+  createdAt DateTime @default(now())
+
+  @@map("lesson_materials")
+}
+
 model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique

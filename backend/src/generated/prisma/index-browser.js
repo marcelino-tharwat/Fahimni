@@ -197,6 +197,13 @@ exports.Prisma.OtpScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.LessonMaterialScalarFieldEnum = {
+  id: 'id',
+  lessonId: 'lessonId',
+  filePath: 'filePath',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.RefreshTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
@@ -254,6 +261,7 @@ exports.Prisma.ModelName = {
   Chapter: 'Chapter',
   Lesson: 'Lesson',
   Otp: 'Otp',
+  LessonMaterial: 'LessonMaterial',
   RefreshToken: 'RefreshToken'
 };
 

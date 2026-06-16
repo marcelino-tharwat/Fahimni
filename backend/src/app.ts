@@ -12,6 +12,7 @@ import teacherRoutes from "./modules/teacher/teacher.routes.js";
 import stageRoutes from "./modules/stage/stage.routes.js";
 import { chapterStandaloneRouter } from "./modules/chapter/chapter.routes.js";
 import { lessonStandaloneRouter } from "./modules/lessons/lessons.routes.js";
+import filesRoutes from "./modules/files/index.js";
 
 export function createApp(): Application {
   const app = express();
@@ -33,6 +34,7 @@ export function createApp(): Application {
   app.use("/api/stages", stageRoutes);
   app.use("/api/chapters", chapterStandaloneRouter);
   app.use("/api/lessons", lessonStandaloneRouter);
+  app.use("/api/v1", filesRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
