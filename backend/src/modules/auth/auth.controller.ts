@@ -4,7 +4,6 @@ import {
   registerSchema,
   resetPasswordSchema,
   verifyOtpSchema,
-  changePasswordSchema,
 } from "./auth.validation.js";
 import { AuthService } from "./auth.service.js";
 import { loginSchema } from "./auth.validation.js";
@@ -143,33 +142,6 @@ export class AuthController {
       }
 
       const response = await authService.resetPassword(parsed.data);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public changePassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const parsed = changePasswordSchema.safeParse(req.body);
-
-      if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
-      }
-
-      const response = await authService.changePassword(
-        req.user!.id,
-        parsed.data,
-      );
       res.status(200).json(response);
     } catch (error) {
       next(error);

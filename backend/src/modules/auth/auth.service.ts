@@ -10,7 +10,6 @@ import type {
   ForgotPasswordInput,
   VerifyOtpInput,
   ResetPasswordInput,
-  ChangePasswordInput,
 } from "./auth.validation.js";
 import type { ApiError } from "../../shared/types/common.types.js";
 
@@ -268,38 +267,5 @@ export class AuthService {
     ]);
 
     return { message: "Password reset successful" };
-  }
-
-  public async changePassword(userId: string, input: ChangePasswordInput) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, password: true },
-    });
-
-    if (!user) {
-      const error = new Error("User not found") as ApiError;
-      error.status = 404;
-      throw error;
-    }
-
-    const isCurrentPasswordValid = await bcrypt.compare(
-      input.currentPassword,
-      user.password,
-    );
-
-    if (!isCurrentPasswordValid) {
-      const error = new Error("Current password is incorrect") as ApiError;
-      error.status = 401;
-      throw error;
-    }
-
-    const hashedPassword = await bcrypt.hash(input.newPassword, 12);
-
-    await prisma.user.update({
-      where: { id: userId },
-      data: { password: hashedPassword },
-    });
-
-    return { message: "Password changed successfully" };
   }
 }
