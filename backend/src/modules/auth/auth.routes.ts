@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { AuthController } from './auth.controller.js';
-import { authenticateMiddleware } from '../../shared/middlewares/authenticate.middleware.js';
 
 const router = Router();
 const controller = new AuthController();
@@ -18,8 +17,5 @@ router.post('/reset-password', controller.resetPassword);
 
 // POST /api/v1/auth/verify-otp
 router.post('/verify-otp', controller.verifyOtp);
-
-// PATCH /api/v1/auth/change-password (authenticated)
-router.patch('/change-password', authenticateMiddleware, controller.changePassword);
 
 export default router;
