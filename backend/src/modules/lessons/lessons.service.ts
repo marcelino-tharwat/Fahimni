@@ -1,9 +1,14 @@
 import { prisma } from "../../config/database.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../../shared/utils/AppError.js";
+import { logger } from "../../config/logger.js";
+import { auditLogService } from "../../shared/services/auditLog.service.js";
+import { FilesService } from "../files/files.service.js";
 import { lessonPublicFields } from "./lessons.types.js";
 import type { LessonResponseDTO } from "./lessons.types.js";
 import type { CreateLessonInput, UpdateLessonInput } from "./lessons.validation.js";
+
+const filesService = new FilesService();
 
 function toDTO(lesson: Record<string, unknown>): LessonResponseDTO {
   return {
@@ -67,7 +72,7 @@ export class LessonsService {
     await this.assertChapterOwned(chapterId, teacherId);
 
     const lessons = await prisma.lesson.findMany({
-      where: { chapterId },
+      where: { chapterId, deletedAt: null },
       orderBy: { sortOrder: "asc" },
       select: lessonPublicFields,
     });
@@ -82,6 +87,7 @@ export class LessonsService {
     const lesson = await prisma.lesson.findFirst({
       where: {
         id,
+        deletedAt: null,
         chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
       },
       select: lessonPublicFields,
@@ -102,6 +108,7 @@ export class LessonsService {
     const existing = await prisma.lesson.findFirst({
       where: {
         id,
+        deletedAt: null,
         chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
       },
       select: { id: true },
@@ -141,18 +148,54 @@ export class LessonsService {
   }
 
   public async delete(id: string, teacherId: string): Promise<void> {
-    const existing = await prisma.lesson.findFirst({
+    const lesson = await prisma.lesson.findFirst({
       where: {
         id,
+        deletedAt: null,
         chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
       },
-      select: { id: true },
+      select: {
+        id: true,
+        title: true,
+        pdfUrls: true,
+        chapter: { select: { id: true, name: true, stageId: true } },
+      },
     });
 
-    if (!existing) {
+    if (!lesson) {
       throw new AppError("Lesson not found", 404);
     }
 
-    await prisma.lesson.delete({ where: { id } });
+    const pdfUrls = (lesson.pdfUrls as string[]) ?? [];
+
+    await prisma.$transaction(async (tx) => {
+      await tx.lesson.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+      });
+
+      await tx.lessonMaterial.updateMany({
+        where: { lessonId: id, deletedAt: null },
+        data: { deletedAt: new Date() },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          action: "DELETE_LESSON",
+          resourceType: "LESSON",
+          resourceId: id,
+          details: { title: lesson.title, chapterId: lesson.chapter.id },
+          userId: teacherId,
+        },
+      });
+    });
+
+    await Promise.all(
+      pdfUrls.map((url) =>
+        filesService.deleteFile(url).catch((err) =>
+          logger.warn(`Failed to delete file from storage: ${url}`, err),
+        ),
+      ),
+    );
   }
 }
