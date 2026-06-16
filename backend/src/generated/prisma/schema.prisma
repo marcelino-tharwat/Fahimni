@@ -34,6 +34,7 @@ model User {
   studentProfile StudentProfile?
   teacherProfile TeacherProfile?
   stages         Stage[]
+  auditLogs      AuditLog[]
 }
 
 model StudentProfile {
@@ -96,17 +97,18 @@ model Chapter {
 }
 
 model Lesson {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   title           String
   description     String?
   durationMinutes Int
   youtubeUrl      String?
   sortOrder       Int
   pdfUrls         Json? // array of S3 object keys
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
   chapterId       String
-  chapter         Chapter  @relation(fields: [chapterId], references: [id])
+  chapter         Chapter   @relation(fields: [chapterId], references: [id])
 
   @@index([chapterId])
   @@index([chapterId, sortOrder])
@@ -133,12 +135,26 @@ model Otp {
 }
 
 model LessonMaterial {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   lessonId  String
   filePath  String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
 
   @@map("lesson_materials")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  action       String
+  resourceType String
+  resourceId   String
+  details      Json?
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@map("audit_logs")
 }
 
 model RefreshToken {

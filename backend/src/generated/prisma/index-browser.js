@@ -183,6 +183,7 @@ exports.Prisma.LessonScalarFieldEnum = {
   pdfUrls: 'pdfUrls',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
   chapterId: 'chapterId'
 };
 
@@ -201,6 +202,17 @@ exports.Prisma.LessonMaterialScalarFieldEnum = {
   id: 'id',
   lessonId: 'lessonId',
   filePath: 'filePath',
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  resourceType: 'resourceType',
+  resourceId: 'resourceId',
+  details: 'details',
+  userId: 'userId',
   createdAt: 'createdAt'
 };
 
@@ -262,6 +274,7 @@ exports.Prisma.ModelName = {
   Lesson: 'Lesson',
   Otp: 'Otp',
   LessonMaterial: 'LessonMaterial',
+  AuditLog: 'AuditLog',
   RefreshToken: 'RefreshToken'
 };
 
