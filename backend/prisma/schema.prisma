@@ -33,6 +33,7 @@ model User {
   otps           Otp[]
   studentProfile StudentProfile?
   teacherProfile TeacherProfile?
+  stages         Stage[]
 }
 
 model StudentProfile {
@@ -60,23 +61,84 @@ model TeacherProfile {
   @@map("teacher_profiles")
 }
 
+model Stage {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  sortOrder   Int
+  teacherId   String
+  teacher     User      @relation(fields: [teacherId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  chapters    Chapter[]
+
+  @@index([teacherId, sortOrder])
+  @@map("stages")
+}
+
+model Chapter {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  sortOrder   Int
+  price       Decimal? // null = free chapter 
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  stageId     String
+  stage       Stage     @relation(fields: [stageId], references: [id])
+  lessons     Lesson[]
+
+  @@index([stageId])
+  @@index([stageId, sortOrder])
+  @@map("chapters")
+}
+
+model Lesson {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  durationMinutes Int
+  youtubeUrl      String?
+  sortOrder       Int
+  pdfUrls         Json? // array of S3 object keys
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  chapterId       String
+  chapter         Chapter  @relation(fields: [chapterId], references: [id])
+
+  @@index([chapterId])
+  @@index([chapterId, sortOrder])
+  @@map("lessons")
+}
+
 enum OtpType {
   EMAIL_VERIFICATION
   PASSWORD_RESET
 }
 
 model Otp {
-  id        String    @id @default(uuid())
-  code      String
-  type      OtpType
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
+  id         String    @id @default(uuid())
+  code       String
+  type       OtpType
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
   verifiedAt DateTime?
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
 
   @@map("otps")
+}
+
+model LessonMaterial {
+  id        String   @id @default(cuid())
+  lessonId  String
+  filePath  String
+  createdAt DateTime @default(now())
+
+  @@map("lesson_materials")
 }
 
 model RefreshToken {
