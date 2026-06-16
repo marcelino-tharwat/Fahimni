@@ -90,7 +90,8 @@ export class ChapterController {
         throw new AppError("Invalid chapter ID", 400);
       }
 
-      await chapterService.delete(id, req.user!.id);
+      const force = req.query.force === "true";
+      await chapterService.delete(id, req.user!.id, force);
 
       res.status(200).json(okResponse("Chapter deleted successfully"));
     },

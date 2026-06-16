@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../../config/supabase.js";
+import { env } from "../../config/env.js";
+import { logger } from "../../config/logger.js";
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
 
@@ -30,6 +32,16 @@ export class FilesService {
     }
 
     return data.signedUrl;
+  }
+
+  async deleteFile(filePath: string): Promise<void> {
+    const { error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET_NAME!)
+      .remove([filePath]);
+
+    if (error) {
+      logger.warn(`Failed to delete file from storage: ${error.message}`);
+    }
   }
 
   async uploadAndSave(

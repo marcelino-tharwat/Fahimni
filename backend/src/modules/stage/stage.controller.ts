@@ -80,7 +80,8 @@ export class StageController {
         return next(new AppError("Invalid stage ID", 400));
       }
 
-      await stageService.delete(id, req.user!.id);
+      const force = req.query.force === "true";
+      await stageService.delete(id, req.user!.id, force);
 
       res.status(200).json(okResponse("Stage deleted successfully"));
     },
