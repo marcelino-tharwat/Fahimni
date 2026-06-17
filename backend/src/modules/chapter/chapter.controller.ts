@@ -4,7 +4,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { ChapterService } from "./chapter.service.js";
 import type { ChapterResponseDTO } from "./chapter.types.js";
-import type { CreateChapterInput, UpdateChapterInput } from "./chapter.validation.js";
+import type { CreateChapterInput, UpdateChapterInput, ReorderInput } from "./chapter.validation.js";
 
 const chapterService = new ChapterService();
 
@@ -79,6 +79,20 @@ export class ChapterController {
         .json(okResponse<ChapterResponseDTO>(
           "Chapter updated successfully",
           chapter,
+        ));
+    },
+  );
+
+  public reorder = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const ids = req.body as ReorderInput;
+      const items = await chapterService.reorder(ids, req.user!.id);
+
+      res
+        .status(200)
+        .json(okResponse<ChapterResponseDTO[]>(
+          "Chapters reordered successfully",
+          items,
         ));
     },
   );

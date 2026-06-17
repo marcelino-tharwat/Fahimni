@@ -193,4 +193,44 @@ export class StageService {
       ),
     );
   }
+
+  public async reorder(
+    ids: string[],
+    teacherId: string,
+  ): Promise<StageResponseDTO[]> {
+    const updated = await prisma.$transaction(async (tx) => {
+      const allStages = await tx.stage.findMany({
+        where: { teacherId, deletedAt: null },
+        select: { id: true },
+        orderBy: { sortOrder: "asc" },
+      });
+
+      const dbIds = allStages.map((s) => s.id).sort();
+      const requestIds = [...ids].sort();
+
+      if (JSON.stringify(dbIds) !== JSON.stringify(requestIds)) {
+        throw new AppError(
+          "Request must include all stages. Missing or extra IDs detected.",
+          400,
+        );
+      }
+
+      for (let i = 0; i < ids.length; i++) {
+        await tx.stage.update({
+          where: { id: ids[i]! },
+          data: { sortOrder: i + 1 },
+        });
+      }
+
+      return tx.stage.findMany({
+        where: { id: { in: ids } },
+        select: stagePublicFields,
+        orderBy: { sortOrder: "asc" },
+      });
+    });
+
+    return Promise.all(
+      updated.map((s) => this.attachChapterCount(s)),
+    ) as unknown as StageResponseDTO[];
+  }
 }

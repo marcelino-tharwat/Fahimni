@@ -3,13 +3,21 @@ import { ChapterController } from "./chapter.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
-import { createChapterSchema, updateChapterSchema } from "./chapter.validation.js";
+import { createChapterSchema, updateChapterSchema, reorderSchema } from "./chapter.validation.js";
 import { lessonNestedRouter } from "../lessons/lessons.routes.js";
 
 const controller = new ChapterController();
 
 // ── Nested routes (mounted at /stages/:stageId/chapters) ──────────────
 export const chapterNestedRouter = Router({ mergeParams: true });
+
+chapterNestedRouter.patch(
+  "/reorder",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(reorderSchema),
+  controller.reorder,
+);
 
 chapterNestedRouter.post(
   "/",
@@ -31,6 +39,14 @@ export const chapterStandaloneRouter = Router();
 
 // Nested lessons (mounted at /chapters/:chapterId/lessons)
 chapterStandaloneRouter.use("/:chapterId/lessons", lessonNestedRouter);
+
+chapterStandaloneRouter.patch(
+  "/reorder",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(reorderSchema),
+  controller.reorder,
+);
 
 chapterStandaloneRouter.get(
   "/:id",

@@ -4,7 +4,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { StageService } from "./stage.service.js";
 import type { StageResponseDTO } from "./stage.types.js";
-import type { CreateStageInput, UpdateStageInput } from "./stage.validation.js";
+import type { CreateStageInput, UpdateStageInput, ReorderInput } from "./stage.validation.js";
 
 const stageService = new StageService();
 
@@ -69,6 +69,20 @@ export class StageController {
         .json(okResponse<StageResponseDTO>(
           "Stage updated successfully",
           stage,
+        ));
+    },
+  );
+
+  public reorder = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const ids = req.body as ReorderInput;
+      const items = await stageService.reorder(ids, req.user!.id);
+
+      res
+        .status(200)
+        .json(okResponse<StageResponseDTO[]>(
+          "Stages reordered successfully",
+          items,
         ));
     },
   );
