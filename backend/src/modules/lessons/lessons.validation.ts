@@ -93,5 +93,13 @@ export const updateLessonSchema = z
     message: "At least one field must be provided for update",
   });
 
+export const reorderSchema = z
+  .array(z.string().uuid("Invalid lesson ID format"))
+  .nonempty("At least one lesson is required")
+  .refine((ids) => new Set(ids).size === ids.length, {
+    message: "Duplicate lesson IDs are not allowed",
+  });
+
 export type CreateLessonInput = z.infer<typeof createLessonSchema>;
 export type UpdateLessonInput = z.infer<typeof updateLessonSchema>;
+export type ReorderInput = z.infer<typeof reorderSchema>;

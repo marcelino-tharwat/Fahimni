@@ -198,4 +198,60 @@ export class LessonsService {
       ),
     );
   }
+
+  public async reorder(
+    ids: string[],
+    teacherId: string,
+  ): Promise<LessonResponseDTO[]> {
+    const updated = await prisma.$transaction(async (tx) => {
+      const requested = await tx.lesson.findMany({
+        where: {
+          id: { in: ids },
+          deletedAt: null,
+          chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+        },
+        include: { chapter: { select: { id: true } } },
+      });
+
+      if (requested.length !== ids.length) {
+        throw new AppError("One or more lessons not found", 404);
+      }
+
+      const chapterIds = new Set(requested.map((l) => l.chapter.id));
+      if (chapterIds.size > 1) {
+        throw new AppError("All lessons must belong to the same chapter", 400);
+      }
+
+      const chapterId = [...chapterIds][0]!;
+
+      const allLessons = await tx.lesson.findMany({
+        where: { chapterId, deletedAt: null },
+        select: { id: true },
+      });
+
+      const dbIds = allLessons.map((l) => l.id).sort();
+      const requestIds = [...ids].sort();
+      if (JSON.stringify(dbIds) !== JSON.stringify(requestIds)) {
+        throw new AppError(
+          "Request must include all lessons in the chapter. Missing or extra IDs detected.",
+          400,
+        );
+      }
+
+      for (let i = 0; i < ids.length; i++) {
+        await tx.lesson.update({
+          where: { id: ids[i]! },
+          data: { sortOrder: i + 1 },
+        });
+      }
+
+      return tx.lesson.findMany({
+        where: { id: { in: ids } },
+        select: lessonPublicFields,
+        orderBy: { sortOrder: "asc" },
+      });
+    });
+
+    return updated.map((l) => toDTO(l as unknown as Record<string, unknown>));
+  }
 }

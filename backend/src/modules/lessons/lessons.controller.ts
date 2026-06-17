@@ -4,7 +4,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { LessonsService } from "./lessons.service.js";
 import type { LessonResponseDTO } from "./lessons.types.js";
-import type { CreateLessonInput, UpdateLessonInput } from "./lessons.validation.js";
+import type { CreateLessonInput, UpdateLessonInput, ReorderInput } from "./lessons.validation.js";
 
 const lessonsService = new LessonsService();
 
@@ -86,6 +86,20 @@ export class LessonsController {
         .json(okResponse<LessonResponseDTO>(
           "Lesson updated successfully",
           lesson,
+        ));
+    },
+  );
+
+  public reorder = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const ids = req.body as ReorderInput;
+      const items = await lessonsService.reorder(ids, req.user!.id);
+
+      res
+        .status(200)
+        .json(okResponse<LessonResponseDTO[]>(
+          "Lessons reordered successfully",
+          items,
         ));
     },
   );
