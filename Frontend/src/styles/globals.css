@@ -1,6 +1,6 @@
 /* Real CSS @import must precede Tailwind's expanded rules, so the font import
    comes first (before @import "tailwindcss"). */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "./tokens.css";
 
@@ -9,8 +9,9 @@
    for utilities like bg-accent, text-text-primary, rounded-card, etc. to exist. */
 @config "../../tailwind.config.ts";
 
+html,
 body {
-  font-family: 'Cairo', sans-serif;
+  @apply font-cairo;
   background-color: var(--color-background);
   color: var(--color-text-primary);
 }
