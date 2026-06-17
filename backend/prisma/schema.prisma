@@ -35,6 +35,8 @@ model User {
   teacherProfile TeacherProfile?
   stages         Stage[]
   auditLogs      AuditLog[]
+  enrollments    Enrollment[]
+  lessonProgress LessonProgress[]
 }
 
 model StudentProfile {
@@ -90,6 +92,7 @@ model Chapter {
   stageId     String
   stage       Stage     @relation(fields: [stageId], references: [id])
   lessons     Lesson[]
+  enrollments Enrollment[]
 
   @@index([stageId])
   @@index([stageId, sortOrder])
@@ -109,6 +112,7 @@ model Lesson {
   deletedAt       DateTime?
   chapterId       String
   chapter         Chapter   @relation(fields: [chapterId], references: [id])
+  lessonProgress  LessonProgress[]
 
   @@index([chapterId])
   @@index([chapterId, sortOrder])
@@ -132,6 +136,33 @@ model Otp {
   createdAt  DateTime  @default(now())
 
   @@map("otps")
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id])
+  chapterId String
+  chapter   Chapter  @relation(fields: [chapterId], references: [id])
+  enrolledAt DateTime @default(now())
+  status    String   @default("ACTIVE")
+
+  @@unique([studentId, chapterId])
+  @@map("enrollments")
+}
+
+model LessonProgress {
+  id        String   @id @default(uuid())
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id])
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, lessonId])
+  @@map("lesson_progress")
 }
 
 model LessonMaterial {

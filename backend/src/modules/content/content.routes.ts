@@ -13,4 +13,18 @@ router.get(
   controller.getTree,
 );
 
+router.get(
+  "/student/tree",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.getStudentTree,
+);
+
+router.get(
+  "/student/my-courses",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.getMyCourses,
+);
+
 export default router;
