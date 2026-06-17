@@ -2,9 +2,13 @@
   "brand": "Fahimni",
   "nav": {
     "home": "Home",
+    "courses": "Courses",
+    "aiAssistant": "AI Assistant",
+    "reviews": "Reviews",
+    "support": "Support",
+    "subscribe": "Start Now",
     "content": "Content",
-    "testimonials": "Reviews",
-    "startNow": "Start Now"
+    "testimonials": "Reviews"
   },
   "hero": {
     "breadcrumb": "Chemistry • Secondary Section",
@@ -12,61 +16,62 @@
     "teacherName": "Mr. Ahmed Mohamed",
     "bio": "Chemistry teacher with 15 years of experience teaching secondary school. Holds a master's degree in Organic Chemistry from Cairo University.",
     "photoAlt": "Mr. Ahmed Mohamed",
+    "headlineLine1": "Mr. Ahmed's Academy for",
+    "headlineLine2": "Teaching Chemistry",
+    "subtext": "Master chemistry for your exams with interactive video lessons, smart quizzes, and an AI assistant to help you anytime",
+    "ratingCount": "(120+ reviews)",
+    "ctaPrimary": "Start Learning Now",
+    "ctaSecondary": "Watch a Free Lesson",
     "stats": {
       "students": "Students",
       "chapters": "Published Chapters",
-      "quizzes": "Quizzes"
+      "quizzes": "Quizzes",
+      "activeStudents": "Active Students",
+      "chaptersCount": "Full Chapters",
+      "contentCount": "Learning Materials",
+      "rating": "Student Rating"
     },
     "cta": "Start Learning Now",
     "ctaSubscribe": "Subscribe to the Course Now",
     "ctaTrial": "Try a Free Lesson"
   },
   "chapters": {
-    "title": "Available Chapters",
-    "subtitle": "Pick a chapter and start your journey to excellence",
-    "lessons": "lessons",
-    "minutes": "minutes",
-    "subscribe": "Subscribe Now",
+    "title": "Explore Chapters",
+    "subtitle": "Pick your stage and start your journey to excellence",
+    "lessons": "Lessons",
+    "quizzes": "Quizzes",
+    "enrollNow": "Enroll Now",
     "comingSoon": "Coming Soon",
-    "priceUnit": "EGP"
+    "enrolled": "Enrolled ✓",
+    "locked": "Locked",
+    "price": "EGP"
   },
   "features": {
-    "title": "What will you get in every chapter?",
-    "video": {
-      "title": "Detailed Video Lessons",
-      "desc": "High-quality video lessons with a simple, step-by-step explanation"
-    },
-    "pdf": {
-      "title": "PDF Summaries",
-      "desc": "Ready-to-download PDF files to study anytime"
-    },
-    "quizzes": {
-      "title": "Smart Quizzes",
-      "desc": "AI-powered quizzes that assess your level and reveal your weak points"
-    },
-    "tutor": {
-      "title": "24/7 Smart Assistant",
-      "desc": "Ask any question about the subject and get an instant answer from the lesson content"
-    }
+    "title": "Everything you need to succeed",
+    "subtitle": "Complete learning tools to help you excel in your studies",
+    "videoTitle": "180+ Video Lessons",
+    "videoDesc": "High quality video lessons covering every topic in the curriculum",
+    "pdfTitle": "PDF Notes",
+    "pdfDesc": "Download PDF notes and summaries for every lesson",
+    "quizTitle": "Smart Quizzes",
+    "quizDesc": "Test yourself with AI-generated quizzes and instant grading",
+    "aiTitle": "AI Tutor 24/7",
+    "aiDesc": "Get instant answers to any curriculum question, anytime"
   },
   "howItWorks": {
-    "title": "How to Subscribe",
-    "step1": { "title": "Create your account", "desc": "Set up a free account in seconds" },
-    "step2": { "title": "Pick a chapter", "desc": "Subscribe to the chapter you want to study" },
-    "step3": { "title": "Start studying", "desc": "Watch the lessons, take the quizzes, and ask the smart assistant" }
+    "title": "How to Get Started",
+    "step1Title": "Create Account",
+    "step1Desc": "Sign up in seconds and get started on your learning journey",
+    "step2Title": "Choose a Chapter",
+    "step2Desc": "Pick the stage and chapter you want to study",
+    "step3Title": "Start Learning",
+    "step3Desc": "Watch video lessons and complete quizzes and practice sheets",
+    "step4Title": "Excel & Achieve",
+    "step4Desc": "Ace your exams and achieve top grades"
   },
   "testimonials": {
-    "title": "Reviews from Our Top Students",
-    "items": [
-      { "name": "Youssef Ahmed", "role": "3rd Year Secondary Student", "initial": "Y", "quote": "Mr. Ahmed's explanations are some of the best I've seen. The smart quizzes helped me identify my weak points and improve." },
-      { "name": "Mohamed Ahmed", "role": "3rd Year Secondary Student", "initial": "M", "quote": "Chemistry was my hardest subject but with Mr. Ahmed everything changed. The explanations are simple and there are tons of quizzes." },
-      { "name": "Mariam Ali", "role": "2nd Year Secondary Student", "initial": "M", "quote": "The platform is super easy and the summaries saved me so much time. I got the highest grade in chapter three!" },
-      { "name": "Fatma Mahmoud", "role": "3rd Year Secondary Student", "initial": "F", "quote": "The AI tutor is genius! I ask any chemistry question and it answers instantly. Like having a teacher 24/7." },
-      { "name": "Omar Hassan", "role": "2nd Year Secondary Student", "initial": "O", "quote": "I used to hate chemistry but after subscribing with Mr. Ahmed I started loving it. The explanations are fun and simplified." },
-      { "name": "Nour Eldin Khaled", "role": "3rd Year Secondary Student", "initial": "N", "quote": "The quizzes after each lesson made sure I really understood. My school grades improved noticeably." },
-      { "name": "Salma Ibrahim", "role": "2nd Year Secondary Student", "initial": "S", "quote": "The PDF summaries are beautiful and organized. I download them and study anytime. Saved me the cost of private tutoring." },
-      { "name": "Ahmed Yasser", "role": "3rd Year Secondary Student", "initial": "A", "quote": "The best thing is that videos are available 24 hours. I watch the lesson multiple times until I fully understand." }
-    ]
+    "title": "What our students say",
+    "gradeLabel": "Student"
   },
   "faq": {
     "title": "Frequently Asked Questions",
