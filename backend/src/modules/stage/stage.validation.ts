@@ -33,5 +33,13 @@ export const updateStageSchema = z
     message: "At least one field must be provided for update",
   });
 
+export const reorderSchema = z
+  .array(z.string().uuid("Invalid stage ID format"))
+  .nonempty("At least one stage is required")
+  .refine((ids) => new Set(ids).size === ids.length, {
+    message: "Duplicate stage IDs are not allowed",
+  });
+
 export type CreateStageInput = z.infer<typeof createStageSchema>;
 export type UpdateStageInput = z.infer<typeof updateStageSchema>;
+export type ReorderInput = z.infer<typeof reorderSchema>;
