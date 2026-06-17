@@ -1,5 +1,4 @@
 import "dotenv/config";
-import { writeFileSync } from "node:fs";
 import bcrypt from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, Role } from "../src/generated/prisma/client.js";
@@ -10,445 +9,399 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
-// Track what the seed reused vs created vs updated (for the local data file).
-const changes: { reused: string[]; created: string[]; updated: string[] } = {
-  reused: [],
-  created: [],
-  updated: [],
-};
-
-async function userExists(email: string): Promise<boolean> {
-  return (
-    (await prisma.user.findUnique({ where: { email }, select: { id: true } })) !==
-    null
-  );
-}
-async function stageExists(id: string): Promise<boolean> {
-  return (
-    (await prisma.stage.findUnique({ where: { id }, select: { id: true } })) !==
-    null
-  );
-}
-async function chapterExists(id: string): Promise<boolean> {
-  return (
-    (await prisma.chapter.findUnique({ where: { id }, select: { id: true } })) !==
-    null
-  );
-}
-async function lessonExists(id: string): Promise<boolean> {
-  return (
-    (await prisma.lesson.findUnique({ where: { id }, select: { id: true } })) !==
-    null
-  );
-}
-
 async function main() {
-  // ─── Admin (existing) ──────────────────────────────────────────────
-  const email = process.env.ADMIN_EMAIL ?? "admin@example.com";
-  const password = process.env.ADMIN_PASSWORD ?? "Admin@123456";
-  const fullName = process.env.ADMIN_FULL_NAME ?? "System Administrator";
-  const mobile = process.env.ADMIN_MOBILE ?? "01000000000";
+  // ─── Clean existing seed data ───────────────────────────────────────
+  await prisma.lesson.deleteMany({ where: { id: { startsWith: "seed-" } } });
+  await prisma.chapter.deleteMany({ where: { id: { startsWith: "seed-" } } });
+  await prisma.stage.deleteMany({ where: { id: { startsWith: "seed-" } } });
+  await prisma.teacherProfile.deleteMany({
+    where: { userId: { startsWith: "seed-" } },
+  });
+  await prisma.user.deleteMany({ where: { id: { startsWith: "seed-" } } });
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // ─── Admin ──────────────────────────────────────────────────────────
+  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@example.com";
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "Admin@123456";
+  const adminFullName = process.env.ADMIN_FULL_NAME ?? "System Administrator";
+  const adminMobile = process.env.ADMIN_MOBILE ?? "01000000000";
 
-  const adminExisted = await userExists(email);
-  const admin = await prisma.user.upsert({
-    where: { email },
-    update: {
-      fullName,
-      mobile,
-      password: hashedPassword,
-      role: Role.ADMIN,
-    },
+  await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {},
     create: {
-      email,
-      fullName,
-      mobile,
-      password: hashedPassword,
+      id: "seed-admin-1",
+      email: adminEmail,
+      fullName: adminFullName,
+      mobile: adminMobile,
+      password: await bcrypt.hash(adminPassword, 10),
       role: Role.ADMIN,
     },
   });
-  (adminExisted ? changes.updated : changes.created).push(
-    `Admin user (${admin.email})`,
-  );
-  console.log(`Admin account ready: ${admin.email} (${admin.role})`);
+  console.log(`Admin: ${adminEmail}`);
 
-  // ─── Teacher A (existing) ──────────────────────────────────────────
-  const teacherEmail = "teacher@example.com";
-  const teacherPassword = "Teacher@123456";
-
-  const teacherAExisted = await userExists(teacherEmail);
-  const teacherUser = await prisma.user.upsert({
-    where: { email: teacherEmail },
-    update: {},
-    create: {
-      fullName: "Ahmed Hassan",
-      email: teacherEmail,
-      mobile: "01100000000",
-      password: await bcrypt.hash(teacherPassword, 10),
+  // ─── Teacher A — أحمد حسان (رياضيات) ──────────────────────────────
+  const teacherAId = "seed-teacher-a";
+  const teacherA = await prisma.user.create({
+    data: {
+      id: teacherAId,
+      fullName: "أحمد حسان",
+      email: "ahmed.hassan@school.edu",
+      mobile: "01110000001",
+      password: await bcrypt.hash("Teacher@123456", 10),
       role: Role.OPERATION,
       teacherProfile: {
         create: {
-          subject: "Mathematics",
-          bio: "Experienced math teacher with 10 years of teaching experience.",
+          id: "seed-profile-a",
+          subject: "الرياضيات",
+          bio: "مدرس رياضيات بخبرة ١٢ سنة في المرحلتين الإعدادية والثانوية",
         },
       },
     },
-    include: { teacherProfile: true },
   });
-  (teacherAExisted ? changes.reused : changes.created).push(
-    `Teacher A user (${teacherUser.email})`,
-  );
-  console.log(`Teacher A account ready: ${teacherUser.email}`);
+  console.log(`Teacher A: ${teacherA.fullName}`);
 
-  // ─── Teacher A Stages (existing) ───────────────────────────────────
-  const stagesData = [
-    { name: "First Preparatory", description: "First year of preparatory school", sortOrder: 1 },
-    { name: "Second Preparatory", description: "Second year of preparatory school", sortOrder: 2 },
-    { name: "Third Preparatory", description: "Third year of preparatory school", sortOrder: 3 },
-    { name: "First Secondary", description: "First year of secondary school", sortOrder: 4 },
-    { name: "Second Secondary", description: "Second year of secondary school", sortOrder: 5 },
-    { name: "Third Secondary", description: "Third year of secondary school", sortOrder: 6 },
+  // Stages — Teacher A
+  const stagesA: { id: string; name: string; description: string; sortOrder: number }[] = [];
+  const stagesAData = [
+    { name: "الصف الأول الإعدادي", description: "المنهج الدراسي للصف الأول الإعدادي - الفصل الدراسي الأول والثاني" },
+    { name: "الصف الثاني الإعدادي", description: "المنهج الدراسي للصف الثاني الإعدادي - الجبر والهندسة" },
+    { name: "الصف الأول الثانوي", description: "المنهج الدراسي للصف الأول الثانوي - الجبر والتفاضل وحساب المثلثات" },
   ];
 
-  const stages = [];
-  for (const s of stagesData) {
-    const id = `seed-stage-${s.sortOrder}`;
-    const existed = await stageExists(id);
-    const stage = await prisma.stage.upsert({
-      where: { id },
-      update: { name: s.name, description: s.description },
-      create: {
-        id,
-        name: s.name,
-        description: s.description,
-        sortOrder: s.sortOrder,
-        teacherId: teacherUser.id,
+  for (let i = 0; i < stagesAData.length; i++) {
+    const stage = await prisma.stage.create({
+      data: {
+        id: `seed-stage-a-${i + 1}`,
+        name: stagesAData[i]!.name,
+        description: stagesAData[i]!.description,
+        sortOrder: i + 1,
+        teacherId: teacherA.id,
       },
     });
-    stages.push(stage);
-    (existed ? changes.reused : changes.created).push(
-      `Teacher A stage "${stage.name}" (${stage.id})`,
-    );
-    console.log(`Stage ready: ${stage.name}`);
+    stagesA.push(stage);
   }
 
-  // ─── Teacher A Chapters (existing) ─────────────────────────────────
-  const chaptersData = [
-    { name: "Algebra", description: "Algebraic concepts and operations", sortOrder: 1, price: null, stageIdx: 0 },
-    { name: "Geometry", description: "Geometric shapes and theorems", sortOrder: 2, price: 49.99, stageIdx: 0 },
-    { name: "Algebra", description: "Algebraic concepts and operations", sortOrder: 1, price: null, stageIdx: 1 },
-    { name: "Geometry", description: "Geometric shapes and theorems", sortOrder: 2, price: 49.99, stageIdx: 1 },
-    { name: "Algebra", description: "Algebraic concepts and operations", sortOrder: 1, price: null, stageIdx: 2 },
-    { name: "Geometry", description: "Geometric shapes and theorems", sortOrder: 2, price: 49.99, stageIdx: 2 },
-    { name: "Algebra", description: "Algebraic concepts and operations", sortOrder: 1, price: null, stageIdx: 3 },
-    { name: "Geometry", description: "Geometric shapes and theorems", sortOrder: 2, price: 49.99, stageIdx: 3 },
-    { name: "Algebra", description: "Algebraic concepts and operations", sortOrder: 1, price: null, stageIdx: 4 },
-    { name: "Geometry", description: "Geometric shapes and theorems", sortOrder: 2, price: 49.99, stageIdx: 4 },
-    { name: "Algebra", description: "Algebraic concepts and operations", sortOrder: 1, price: null, stageIdx: 5 },
-    { name: "Geometry", description: "Geometric shapes and theorems", sortOrder: 2, price: 49.99, stageIdx: 5 },
-  ];
+  // Chapters & Lessons — Teacher A
+  // Stage 1: الصف الأول الإعدادي — 3 chapters
+  // Stage 2: الصف الثاني الإعدادي — 4 chapters
+  // Stage 3: الصف الأول الثانوي — 3 chapters
 
-  for (const ch of chaptersData) {
-    const id = `seed-chapter-${stages[ch.stageIdx]!.id}-${ch.sortOrder}`;
-    const existed = await chapterExists(id);
-    const chapter = await prisma.chapter.upsert({
-      where: { id },
-      update: { name: ch.name, description: ch.description, price: ch.price },
-      create: {
-        id,
-        name: ch.name,
-        description: ch.description,
-        sortOrder: ch.sortOrder,
-        price: ch.price,
-        stageId: stages[ch.stageIdx]!.id,
-      },
-    });
-    (existed ? changes.reused : changes.created).push(
-      `Teacher A chapter "${chapter.name}" (${chapter.id})`,
-    );
-    console.log(`Chapter ready: ${chapter.name}`);
-  }
-
-  // Designated Teacher A chapters (stage 1 = "First Preparatory"):
-  //  - Algebra  (price null  / free) → will hold multiple lessons
-  //  - Geometry (price 49.99 / paid) → kept empty (no lessons)
-  const multiLessonChapterId = `seed-chapter-${stages[0]!.id}-1`; // Algebra (free)
-  const emptyChapterId = `seed-chapter-${stages[0]!.id}-2`; // Geometry (paid)
-
-  // ─── Teacher A Lessons (NEW) ───────────────────────────────────────
-  // Stored sortOrder values are intentionally varied. pdfUrls hold S3
-  // object KEYS only (never full/presigned URLs). Nullable fields are
-  // exercised on lesson 2.
-  const teacherALessons = [
+  const contentA: {
+    stageIdx: number;
+    chapterName: string;
+    chapterDescription: string;
+    price: number | null;
+    lessons: { title: string; description: string; durationMinutes: number; youtubeUrl: string; sortOrder: number }[];
+  }[] = [
+    // Stage 1 — الصف الأول الإعدادي
     {
-      sortOrder: 1,
-      title: "Introduction to Algebra",
-      description: "Variables, expressions and basic operations.",
-      durationMinutes: 25,
-      youtubeUrl: "https://www.youtube.com/watch?v=algebra1",
-      pdfUrls: [
-        `lessons/${multiLessonChapterId}/intro-slides.pdf`,
-        `lessons/${multiLessonChapterId}/intro-exercises.pdf`,
-      ] as string[] | null,
-    },
-    {
-      sortOrder: 2,
-      title: "Linear Equations",
-      description: null, // nullable description
-      durationMinutes: 40,
-      youtubeUrl: "https://youtu.be/linear2", // youtu.be host
-      pdfUrls: null, // nullable pdfUrls
-    },
-    {
-      sortOrder: 3,
-      title: "Quadratic Equations",
-      description: "Solving quadratics by factoring and the formula.",
-      durationMinutes: 55,
-      youtubeUrl: "https://m.youtube.com/watch?v=quad3", // m.youtube.com host
-      pdfUrls: [`lessons/${multiLessonChapterId}/quadratics.pdf`] as
-        | string[]
-        | null,
-    },
-  ];
-
-  for (const l of teacherALessons) {
-    const id = `seed-lesson-${multiLessonChapterId}-${l.sortOrder}`;
-    const existed = await lessonExists(id);
-    const lesson = await prisma.lesson.upsert({
-      where: { id },
-      update: {
-        title: l.title,
-        description: l.description,
-        durationMinutes: l.durationMinutes,
-        youtubeUrl: l.youtubeUrl,
-        sortOrder: l.sortOrder,
-        pdfUrls: l.pdfUrls ?? undefined,
-      },
-      create: {
-        id,
-        title: l.title,
-        description: l.description,
-        durationMinutes: l.durationMinutes,
-        youtubeUrl: l.youtubeUrl,
-        sortOrder: l.sortOrder,
-        pdfUrls: l.pdfUrls ?? undefined,
-        chapterId: multiLessonChapterId,
-      },
-    });
-    (existed ? changes.reused : changes.created).push(
-      `Teacher A lesson "${lesson.title}" (${lesson.id})`,
-    );
-    console.log(`Lesson ready: ${lesson.title}`);
-  }
-
-  // ─── Teacher B (NEW) — for ownership / isolation testing ───────────
-  const teacherBEmail = "teacher-b@example.com";
-  const teacherBPassword = "Teacher@123456";
-
-  const teacherBExisted = await userExists(teacherBEmail);
-  const teacherBUser = await prisma.user.upsert({
-    where: { email: teacherBEmail },
-    update: {},
-    create: {
-      fullName: "Sara Ali",
-      email: teacherBEmail,
-      mobile: "01200000000",
-      password: await bcrypt.hash(teacherBPassword, 10),
-      role: Role.OPERATION,
-      teacherProfile: {
-        create: {
-          subject: "Physics",
-          bio: "Physics teacher for preparatory and secondary stages.",
-        },
-      },
-    },
-    include: { teacherProfile: true },
-  });
-  (teacherBExisted ? changes.reused : changes.created).push(
-    `Teacher B user (${teacherBUser.email})`,
-  );
-  console.log(`Teacher B account ready: ${teacherBUser.email}`);
-
-  // Teacher B stage
-  const stageBId = "seed-stage-b-1";
-  const stageBExisted = await stageExists(stageBId);
-  const stageB = await prisma.stage.upsert({
-    where: { id: stageBId },
-    update: { name: "Physics Track", description: "Teacher B stage" },
-    create: {
-      id: stageBId,
-      name: "Physics Track",
-      description: "Teacher B stage",
-      sortOrder: 1,
-      teacherId: teacherBUser.id,
-    },
-  });
-  (stageBExisted ? changes.reused : changes.created).push(
-    `Teacher B stage "${stageB.name}" (${stageB.id})`,
-  );
-
-  // Teacher B chapter
-  const chapterBId = `seed-chapter-${stageBId}-1`;
-  const chapterBExisted = await chapterExists(chapterBId);
-  const chapterB = await prisma.chapter.upsert({
-    where: { id: chapterBId },
-    update: { name: "Mechanics", description: "Teacher B chapter", price: null },
-    create: {
-      id: chapterBId,
-      name: "Mechanics",
-      description: "Teacher B chapter",
-      sortOrder: 1,
+      stageIdx: 0,
+      chapterName: "الأعداد الطبيعية",
+      chapterDescription: "مجموعة الأعداد الطبيعية وخصائصها والعمليات عليها",
       price: null,
-      stageId: stageBId,
+      lessons: [
+        { title: "مقدمة في الأعداد الطبيعية", description: "تعريف الأعداد الطبيعية وتمثيلها على خط الأعداد", durationMinutes: 20, youtubeUrl: "https://youtube.com/watch?v=math-a1-1", sortOrder: 1 },
+        { title: "جمع وطرح الأعداد الطبيعية", description: "قواعد الجمع والطرح وخصائص الإبدال والتجميع", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=math-a1-2", sortOrder: 2 },
+        { title: "ضرب وقسمة الأعداد الطبيعية", description: "جدول الضرب وقواعد القسمة مع التطبيقات", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=math-a1-3", sortOrder: 3 },
+      ],
     },
-  });
-  (chapterBExisted ? changes.reused : changes.created).push(
-    `Teacher B chapter "${chapterB.name}" (${chapterB.id})`,
-  );
+    {
+      stageIdx: 0,
+      chapterName: "الهندسة الأساسية",
+      chapterDescription: "المفاهيم الهندسية الأولى والزوايا والمضلعات",
+      price: 29.99,
+      lessons: [
+        { title: "النقاط والمستقيمات والقطع المستقيمة", description: "المفاهيم الأساسية في الهندسة المستوية", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=math-a1-4", sortOrder: 1 },
+        { title: "الزوايا وأنواعها", description: "الزاوية الحادة والقائمة والمنفرجة والمستقيمة", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=math-a1-5", sortOrder: 2 },
+        { title: "المثلثات وتصنيفها", description: "تصنيف المثلثات حسب الأضلاع والزوايا", durationMinutes: 40, youtubeUrl: "https://youtube.com/watch?v=math-a1-6", sortOrder: 3 },
+        { title: "محيط ومساحة المربع والمستطيل", description: "قوانين حساب المحيط والمساحة مع الأمثلة", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=math-a1-7", sortOrder: 4 },
+      ],
+    },
+    {
+      stageIdx: 0,
+      chapterName: "الإحصاء والاحتمالات",
+      chapterDescription: "جمع البيانات وتنظيمها وتمثيلها بيانياً",
+      price: null,
+      lessons: [
+        { title: "جمع البيانات وتنظيمها", description: "طرق جمع البيانات وإنشاء جداول التكرار", durationMinutes: 20, youtubeUrl: "https://youtube.com/watch?v=math-a1-8", sortOrder: 1 },
+        { title: "تمثيل البيانات بالأعمدة", description: "قراءة وإنشاء المخططات بالأعمدة", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=math-a1-9", sortOrder: 2 },
+        { title: "المتوسط الحسابي والوسيط", description: "حساب مقاييس النزعة المركزية", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=math-a1-10", sortOrder: 3 },
+      ],
+    },
+    // Stage 2 — الصف الثاني الإعدادي
+    {
+      stageIdx: 1,
+      chapterName: "التحليل الجبري",
+      chapterDescription: "تحليل العبارات الجبرية والعوامل المشتركة",
+      price: null,
+      lessons: [
+        { title: "العامل المشترك الأكبر", description: "إيجاد العامل المشترك الأكبر لمجموعة حدود", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=math-a2-1", sortOrder: 1 },
+        { title: "تحليل الفرق بين مربعين", description: "قانون تحليل المربع الكامل والفرق بين مربعين", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=math-a2-2", sortOrder: 2 },
+        { title: "تحليل المقدار الثلاثي", description: "تحليل المقدار الثلاثي البسيط وغير البسيط", durationMinutes: 45, youtubeUrl: "https://youtube.com/watch?v=math-a2-3", sortOrder: 3 },
+      ],
+    },
+    {
+      stageIdx: 1,
+      chapterName: "الهندسة التحليلية",
+      chapterDescription: "الإحداثيات والمستقيمات في المستوى الديكارتي",
+      price: 39.99,
+      lessons: [
+        { title: "المستوى الإحداثي", description: "تمثيل النقاط في المستوى الإحداثي", durationMinutes: 20, youtubeUrl: "https://youtube.com/watch?v=math-a2-4", sortOrder: 1 },
+        { title: "البعد بين نقطتين", description: "قانون حساب المسافة بين نقطتين", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=math-a2-5", sortOrder: 2 },
+        { title: "معادلة الخط المستقيم", description: "إيجاد معادلة الخط المستقيم بمعلومية نقطتين", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=math-a2-6", sortOrder: 3 },
+        { title: "توازي وتعاود المستقيمات", description: "شروط توازي وتعاود مستقيمين في المستوى", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=math-a2-7", sortOrder: 4 },
+      ],
+    },
+    {
+      stageIdx: 1,
+      chapterName: "النسب المئوية",
+      chapterDescription: "حساب النسبة المئوية وتطبيقاتها في الحياة اليومية",
+      price: null,
+      lessons: [
+        { title: "مفهوم النسبة المئوية", description: "تحويل الكسور إلى نسب مئوية والعكس", durationMinutes: 20, youtubeUrl: "https://youtube.com/watch?v=math-a2-8", sortOrder: 1 },
+        { title: "الربح والخصم", description: "حساب الربح والخسارة والخصم في المعاملات التجارية", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=math-a2-9", sortOrder: 2 },
+        { title: "الفائدة البسيطة", description: "قانون الفائدة البسيطة وتطبيقاتها", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=math-a2-10", sortOrder: 3 },
+      ],
+    },
+    {
+      stageIdx: 1,
+      chapterName: "الكسور والعمليات عليها",
+      chapterDescription: "الكسور الاعتيادية والعشرية والعمليات الحسابية",
+      price: null,
+      lessons: [
+        { title: "تبسيط الكسور", description: "اختزال الكسور إلى أبسط صورة", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=math-a2-11", sortOrder: 1 },
+        { title: "جمع وطرح الكسور", description: "توحيد المقامات وجمع وطرح الكسور", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=math-a2-12", sortOrder: 2 },
+      ],
+    },
+    // Stage 3 — الصف الأول الثانوي
+    {
+      stageIdx: 2,
+      chapterName: "الجبر والعلاقات",
+      chapterDescription: "العلاقات والدوال الجبرية وتمثيلها",
+      price: null,
+      lessons: [
+        { title: "العلاقات والدوال", description: "تعريف العلاقة والدالة والمجال والمجال المقابل", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=math-a3-1", sortOrder: 1 },
+        { title: "تمثيل الدوال بيانياً", description: "رسم منحنى الدالة في المستوى الإحداثي", durationMinutes: 40, youtubeUrl: "https://youtube.com/watch?v=math-a3-2", sortOrder: 2 },
+        { title: "الدالة الخطية", description: "خصائص الدالة الخطية وتمثيلها", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=math-a3-3", sortOrder: 3 },
+        { title: "الدالة التربيعية", description: "تمثيل الدالة التربيعية وإيجاد الرأس والمحور", durationMinutes: 45, youtubeUrl: "https://youtube.com/watch?v=math-a3-4", sortOrder: 4 },
+        { title: "حل المعادلات التربيعية", description: "طرق حل المعادلات من الدرجة الثانية", durationMinutes: 50, youtubeUrl: "https://youtube.com/watch?v=math-a3-5", sortOrder: 5 },
+      ],
+    },
+    {
+      stageIdx: 2,
+      chapterName: "حساب المثلثات",
+      chapterDescription: "النسب المثلثية وقوانين الجيب وجيب التمام",
+      price: 49.99,
+      lessons: [
+        { title: "النسب المثلثية الأساسية", description: "الجيب وجيب التمام والظل في المثلث القائم", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=math-a3-6", sortOrder: 1 },
+        { title: "قانون الجيب", description: "استخدام قانون الجيب في حل المثلثات", durationMinutes: 40, youtubeUrl: "https://youtube.com/watch?v=math-a3-7", sortOrder: 2 },
+        { title: "قانون جيب التمام", description: "استخدام قانون جيب التمام لحساب الأضلاع والزوايا", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=math-a3-8", sortOrder: 3 },
+      ],
+    },
+    {
+      stageIdx: 2,
+      chapterName: "التفاضل والتكامل",
+      chapterDescription: "مبادئ التفاضل والتكامل ونهايات الدوال",
+      price: 59.99,
+      lessons: [
+        { title: "النهايات", description: "مفهوم نهاية الدالة وطرق حسابها", durationMinutes: 40, youtubeUrl: "https://youtube.com/watch?v=math-a3-9", sortOrder: 1 },
+        { title: "قواعد الاشتقاق", description: "مشتقة الدوال الأساسية وقواعد التفاضل", durationMinutes: 50, youtubeUrl: "https://youtube.com/watch?v=math-a3-10", sortOrder: 2 },
+        { title: "تطبيقات على التفاضل", description: "المعدلات الزمنية المرتبطة وخطوط المماس", durationMinutes: 45, youtubeUrl: "https://youtube.com/watch?v=math-a3-11", sortOrder: 3 },
+      ],
+    },
+  ];
 
-  // Teacher B lesson
-  const lessonBId = `seed-lesson-${chapterBId}-1`;
-  const lessonBExisted = await lessonExists(lessonBId);
-  const lessonB = await prisma.lesson.upsert({
-    where: { id: lessonBId },
-    update: {
-      title: "Newton's Laws",
-      description: "The three laws of motion.",
-      durationMinutes: 35,
-      youtubeUrl: "https://www.youtube.com/watch?v=newton",
-      sortOrder: 1,
-      pdfUrls: [`lessons/${chapterBId}/newton.pdf`],
-    },
-    create: {
-      id: lessonBId,
-      title: "Newton's Laws",
-      description: "The three laws of motion.",
-      durationMinutes: 35,
-      youtubeUrl: "https://www.youtube.com/watch?v=newton",
-      sortOrder: 1,
-      pdfUrls: [`lessons/${chapterBId}/newton.pdf`],
-      chapterId: chapterBId,
-    },
-  });
-  (lessonBExisted ? changes.reused : changes.created).push(
-    `Teacher B lesson "${lessonB.title}" (${lessonB.id})`,
-  );
-  console.log(`Teacher B content ready: stage/chapter/lesson`);
-
-  // ─── Generate seed-data.local.json from the ACTUAL DB state ────────
-  const teacherAFull = await prisma.user.findUnique({
-    where: { email: teacherEmail },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      mobile: true,
-      role: true,
-    },
-  });
-  const teacherBFull = await prisma.user.findUnique({
-    where: { email: teacherBEmail },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      mobile: true,
-      role: true,
-    },
-  });
-  const adminFull = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, fullName: true, email: true, mobile: true, role: true },
-  });
-
-  const teacherAStages = await prisma.stage.findMany({
-    where: { teacherId: teacherAFull!.id, deletedAt: null },
-    orderBy: { sortOrder: "asc" },
-    select: { id: true, name: true, sortOrder: true },
-  });
-  const multiLessonChapter = await prisma.chapter.findUnique({
-    where: { id: multiLessonChapterId },
-    select: { id: true, name: true, price: true, stageId: true },
-  });
-  const emptyChapter = await prisma.chapter.findUnique({
-    where: { id: emptyChapterId },
-    select: { id: true, name: true, price: true, stageId: true },
-  });
-  const teacherALessonRows = await prisma.lesson.findMany({
-    where: { chapterId: multiLessonChapterId },
-    orderBy: { sortOrder: "asc" },
-    select: {
-      id: true,
-      title: true,
-      sortOrder: true,
-      durationMinutes: true,
-      youtubeUrl: true,
-      description: true,
-      pdfUrls: true,
-    },
-  });
-  const teacherBStage = await prisma.stage.findUnique({
-    where: { id: stageBId },
-    select: { id: true, name: true },
-  });
-  const teacherBChapter = await prisma.chapter.findUnique({
-    where: { id: chapterBId },
-    select: { id: true, name: true, price: true },
-  });
-  const teacherBLesson = await prisma.lesson.findUnique({
-    where: { id: lessonBId },
-    select: { id: true, title: true, sortOrder: true },
-  });
-
-  const seedData = {
-    generatedAt: new Date().toISOString(),
-    seedSummary: {
-      existingRecordsReused: changes.reused.length > 0,
-      newDataAdded: changes.created.length > 0,
-    },
-    changes,
-    credentials: {
-      note: "Local development only. Plaintext shown for testing convenience.",
-      admin: { email, password, role: "ADMIN" },
-      teacherA: { email: teacherEmail, password: teacherPassword, role: "OPERATION" },
-      teacherB: { email: teacherBEmail, password: teacherBPassword, role: "OPERATION" },
-    },
-    teacherA: {
-      user: teacherAFull,
-      stages: teacherAStages,
-      chapters: {
-        multiLesson: multiLessonChapter, // free (price null) + has lessons
-        empty: emptyChapter, // paid + no lessons
-        free: multiLessonChapter, // price === null
-        paid: emptyChapter, // price > 0
+  for (const item of contentA) {
+    const stage = stagesA[item.stageIdx]!;
+    const chapterSortOrder = contentA.filter(c => c.stageIdx === item.stageIdx).indexOf(item) + 1;
+    const chapter = await prisma.chapter.create({
+      data: {
+        id: `seed-chapter-a-${stage.sortOrder}-${chapterSortOrder}`,
+        name: item.chapterName,
+        description: item.chapterDescription,
+        sortOrder: chapterSortOrder,
+        price: item.price,
+        stageId: stage.id,
       },
-      lessons: teacherALessonRows,
+    });
+
+    for (const lesson of item.lessons) {
+      await prisma.lesson.create({
+        data: {
+          id: `seed-lesson-a-${stage.sortOrder}-${chapterSortOrder}-${lesson.sortOrder}`,
+          title: lesson.title,
+          description: lesson.description,
+          durationMinutes: lesson.durationMinutes,
+          youtubeUrl: lesson.youtubeUrl,
+          sortOrder: lesson.sortOrder,
+          chapterId: chapter.id,
+        },
+      });
+    }
+  }
+  console.log(`Teacher A content: ${stagesA.length} stages, ${contentA.length} chapters, ${contentA.reduce((s, c) => s + c.lessons.length, 0)} lessons`);
+
+  // ─── Teacher B — سارة علي (فيزياء) ────────────────────────────────
+  const teacherB = await prisma.user.create({
+    data: {
+      id: "seed-teacher-b",
+      fullName: "سارة علي",
+      email: "sara.ali@school.edu",
+      mobile: "01110000002",
+      password: await bcrypt.hash("Teacher@123456", 10),
+      role: Role.OPERATION,
+      teacherProfile: {
+        create: {
+          id: "seed-profile-b",
+          subject: "الفيزياء",
+          bio: "مدرسة فيزياء متخصصة في تدريس العلوم الفيزيائية للمرحلتين الإعدادية والثانوية",
+        },
+      },
     },
-    teacherB: {
-      user: teacherBFull,
-      stage: teacherBStage,
-      chapter: teacherBChapter,
-      lesson: teacherBLesson,
+  });
+  console.log(`Teacher B: ${teacherB.fullName}`);
+
+  // Stages — Teacher B
+  const stagesB: { id: string; name: string; description: string; sortOrder: number }[] = [];
+  const stagesBData = [
+    { name: "الصف الثاني الإعدادي - فيزياء", description: "المفاهيم الفيزيائية الأساسية للصف الثاني الإعدادي" },
+    { name: "الصف الأول الثانوي - فيزياء", description: "المنهج الدراسي لمادة الفيزياء للصف الأول الثانوي" },
+  ];
+
+  for (let i = 0; i < stagesBData.length; i++) {
+    const stage = await prisma.stage.create({
+      data: {
+        id: `seed-stage-b-${i + 1}`,
+        name: stagesBData[i]!.name,
+        description: stagesBData[i]!.description,
+        sortOrder: i + 1,
+        teacherId: teacherB.id,
+      },
+    });
+    stagesB.push(stage);
+  }
+
+  // Chapters & Lessons — Teacher B
+  // Stage 1: الصف الثاني الإعدادي — 2 chapters
+  // Stage 2: الصف الأول الثانوي — 3 chapters
+
+  const contentB: {
+    stageIdx: number;
+    chapterName: string;
+    chapterDescription: string;
+    price: number | null;
+    lessons: { title: string; description: string; durationMinutes: number; youtubeUrl: string; sortOrder: number }[];
+  }[] = [
+    // Stage 1 — الصف الثاني الإعدادي - فيزياء
+    {
+      stageIdx: 0,
+      chapterName: "القوى والحركة",
+      chapterDescription: "مفهوم القوة والحركة وقوانين نيوتن",
+      price: null,
+      lessons: [
+        { title: "مفهوم القوة", description: "تعريف القوة ووحدات قياسها وأنواعها", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=phys-b1-1", sortOrder: 1 },
+        { title: "قوانين نيوتن للحركة", description: "قانون نيوتن الأول والثاني والثالث للحركة", durationMinutes: 40, youtubeUrl: "https://youtube.com/watch?v=phys-b1-2", sortOrder: 2 },
+        { title: "الاحتكاك", description: "قوة الاحتكاك السكوني والحركي وتطبيقاتها", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=phys-b1-3", sortOrder: 3 },
+        { title: "الضغط", description: "مفهوم الضغط ووحدته وتطبيقاته في السوائل والغازات", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=phys-b1-4", sortOrder: 4 },
+      ],
     },
-    students: [], // none required by current Chapter/Lesson test scenarios
-    admin: adminFull,
-    manualTestingTargets: {
-      ownershipDeniedFor: "Teacher B accessing any Teacher A resource (expect 404)",
-      chapterDeleteBlocked: multiLessonChapterId, // has lessons -> 409
-      chapterSoftDeletable: emptyChapterId, // no lessons -> soft delete OK
-      lessonForGetUpdateDelete: teacherALessonRows[0]?.id ?? null,
+    {
+      stageIdx: 0,
+      chapterName: "الطاقة والشغل",
+      chapterDescription: "مفهوم الطاقة والشغل والقدرة وبقاء الطاقة",
+      price: 29.99,
+      lessons: [
+        { title: "الشغل", description: "مفهوم الشغل المبذول بواسطة قوة ووحدات قياسه", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=phys-b1-5", sortOrder: 1 },
+        { title: "الطاقة الحركية وطاقة الوضع", description: "الطاقة الحركية وطاقة الوضع الجاذبية والمرونية", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=phys-b1-6", sortOrder: 2 },
+        { title: "بقاء الطاقة الميكانيكية", description: "قانون حفظ الطاقة الميكانيكية وتطبيقاته", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=phys-b1-7", sortOrder: 3 },
+      ],
     },
+    // Stage 2 — الصف الأول الثانوي - فيزياء
+    {
+      stageIdx: 1,
+      chapterName: "الكهرباء الساكنة",
+      chapterDescription: "الشحنات الكهربائية والمجال الكهربائي وقانون كولوم",
+      price: null,
+      lessons: [
+        { title: "الشحنة الكهربائية", description: "مفهوم الشحنة الكهربائية وطرق شحن الأجسام", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=phys-b2-1", sortOrder: 1 },
+        { title: "قانون كولوم", description: "القوة الكهربائية بين شحنتين نقطيتين", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=phys-b2-2", sortOrder: 2 },
+        { title: "المجال الكهربائي", description: "مفهوم المجال الكهربائي وخطوط المجال", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=phys-b2-3", sortOrder: 3 },
+      ],
+    },
+    {
+      stageIdx: 1,
+      chapterName: "التيار الكهربائي",
+      chapterDescription: "التيار الكهربائي والمقاومة وقانون أوم والدوائر الكهربائية",
+      price: 39.99,
+      lessons: [
+        { title: "التيار الكهربائي وفرق الجهد", description: "مفهوم التيار الكهربائي وفرق الجهد ووحدات القياس", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=phys-b2-4", sortOrder: 1 },
+        { title: "قانون أوم", description: "العلاقة بين الجهد والتيار والمقاومة", durationMinutes: 30, youtubeUrl: "https://youtube.com/watch?v=phys-b2-5", sortOrder: 2 },
+        { title: "الدوائر الكهربائية البسيطة", description: "توصيل المقاومات على التوالي والتوازي", durationMinutes: 40, youtubeUrl: "https://youtube.com/watch?v=phys-b2-6", sortOrder: 3 },
+        { title: "القدرة الكهربائية", description: "حساب القدرة الكهربائية المستهلكة في الأجهزة", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=phys-b2-7", sortOrder: 4 },
+        { title: "تطبيقات عملية على الدوائر الكهربائية", description: "تحليل دوائر كهربائية مركبة وحساب التيار والجهد", durationMinutes: 45, youtubeUrl: "https://youtube.com/watch?v=phys-b2-8", sortOrder: 5 },
+      ],
+    },
+    {
+      stageIdx: 1,
+      chapterName: "الضوء والبصريات",
+      chapterDescription: "الضوء وخصائصه والانعكاس والانكسار والعدسات",
+      price: null,
+      lessons: [
+        { title: "طبيعة الضوء", description: "الضوء كموجة كهرومغناطيسية وسرعته", durationMinutes: 25, youtubeUrl: "https://youtube.com/watch?v=phys-b2-9", sortOrder: 1 },
+        { title: "الانعكاس والمرايا", description: "قوانين الانعكاس والصور في المرايا المستوية والكروية", durationMinutes: 35, youtubeUrl: "https://youtube.com/watch?v=phys-b2-10", sortOrder: 2 },
+        { title: "الانكسار والعدسات", description: "قانون سنل وتكوين الصور بالعدسات المحدبة والمقعرة", durationMinutes: 40, youtubeUrl: "https://youtube.com/watch?v=phys-b2-11", sortOrder: 3 },
+      ],
+    },
+  ];
+
+  for (const item of contentB) {
+    const stage = stagesB[item.stageIdx]!;
+    const chapterSortOrder = contentB.filter(c => c.stageIdx === item.stageIdx).indexOf(item) + 1;
+
+    const chapter = await prisma.chapter.create({
+      data: {
+        id: `seed-chapter-b-${stage.sortOrder}-${chapterSortOrder}`,
+        name: item.chapterName,
+        description: item.chapterDescription,
+        sortOrder: chapterSortOrder,
+        price: item.price,
+        stageId: stage.id,
+      },
+    });
+
+    for (const lesson of item.lessons) {
+      await prisma.lesson.create({
+        data: {
+          id: `seed-lesson-b-${stage.sortOrder}-${chapterSortOrder}-${lesson.sortOrder}`,
+          title: lesson.title,
+          description: lesson.description,
+          durationMinutes: lesson.durationMinutes,
+          youtubeUrl: lesson.youtubeUrl,
+          sortOrder: lesson.sortOrder,
+          chapterId: chapter.id,
+        },
+      });
+    }
+  }
+
+  const totalLessonsB = contentB.reduce((s, c) => s + c.lessons.length, 0);
+  console.log(`Teacher B content: ${stagesB.length} stages, ${contentB.length} chapters, ${totalLessonsB} lessons`);
+
+  // ─── Summary ────────────────────────────────────────────────────────
+  const stats = {
+    users: await prisma.user.count(),
+    teachers: await prisma.teacherProfile.count(),
+    stages: await prisma.stage.count(),
+    chapters: await prisma.chapter.count(),
+    lessons: await prisma.lesson.count(),
   };
 
-  writeFileSync(
-    new URL("../seed-data.local.json", import.meta.url),
-    JSON.stringify(seedData, null, 2),
-  );
-  console.log("Wrote seed-data.local.json");
-  console.log(
-    `Seed summary -> reused: ${changes.reused.length}, created: ${changes.created.length}, updated: ${changes.updated.length}`,
-  );
+  console.log("\n── Seed Complete ──");
+  console.table(stats);
+  console.log("\nCredentials:");
+  console.log(`  Admin:    ${adminEmail} / ${adminPassword}`);
+  console.log(`  Teacher A: ahmed.hassan@school.edu / Teacher@123456`);
+  console.log(`  Teacher B: sara.ali@school.edu / Teacher@123456`);
 }
 
 main()
