@@ -2,7 +2,15 @@ import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../../config/database.js";
 import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { AppError } from "../../shared/utils/AppError.js";
-import type { ContentTreeResponse } from "./content.types.js";
+import { okResponse } from "../../shared/utils/apiResponse.js";
+import { logger } from "../../config/logger.js";
+import type {
+  ContentTreeResponse,
+  StudentContentTreeResponse,
+  StudentChapterNode,
+  EnrollmentStatus,
+  MyCourseResponse,
+} from "./content.types.js";
 
 export class ContentController {
   getTree = asyncHandler(
@@ -107,6 +115,146 @@ export class ContentController {
       }));
 
       res.json(result);
+    },
+  );
+
+  getStudentTree = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const studentId = req.user!.id;
+
+      const stages = await prisma.stage.findMany({
+        where: { deletedAt: null },
+        orderBy: { sortOrder: "asc" },
+        include: {
+          chapters: {
+            where: { deletedAt: null },
+            orderBy: { sortOrder: "asc" },
+            include: {
+              lessons: {
+                orderBy: { sortOrder: "asc" },
+              },
+            },
+          },
+        },
+      });
+
+      if (stages.length === 0) {
+        res.json([]);
+        return;
+      }
+
+      const enrolledChapterIds = await prisma.enrollment.findMany({
+        where: { studentId, status: "ACTIVE" },
+        select: { chapterId: true },
+      });
+      const enrolledSet = new Set(enrolledChapterIds.map((e) => e.chapterId));
+
+      const result: StudentContentTreeResponse[] = stages.map((stage) => ({
+        stage: {
+          id: stage.id,
+          name: stage.name,
+          sortOrder: stage.sortOrder,
+          chapterCount: stage.chapters.length,
+        },
+        chapters: stage.chapters.map((chapter) => {
+          let enrollmentStatus: EnrollmentStatus;
+          const price = chapter.price ? Number(chapter.price) : null;
+
+          if (price === null || price === 0) {
+            enrollmentStatus = "free";
+          } else if (enrolledSet.has(chapter.id)) {
+            enrollmentStatus = "purchased";
+          } else {
+            enrollmentStatus = "locked";
+          }
+
+          const studentChapter: StudentChapterNode = {
+            id: chapter.id,
+            name: chapter.name,
+            description: chapter.description,
+            sortOrder: chapter.sortOrder,
+            price,
+            lessonCount: chapter.lessons.length,
+            enrollmentStatus,
+          };
+
+          return {
+            chapter: studentChapter,
+            lessons: chapter.lessons.map((lesson) => ({
+              id: lesson.id,
+              title: lesson.title,
+              sortOrder: lesson.sortOrder,
+            })),
+          };
+        }),
+      }));
+
+      res.json(result);
+    },
+  );
+
+  getMyCourses = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const studentId = req.user!.id;
+
+      const enrollments = await prisma.enrollment.findMany({
+        where: { studentId, status: "ACTIVE" },
+        include: {
+          chapter: {
+            include: {
+              stage: { select: { name: true } },
+              lessons: {
+                where: { deletedAt: null },
+                select: { id: true },
+              },
+            },
+          },
+        },
+      });
+
+      if (enrollments.length === 0) {
+        res.json([]);
+        return;
+      }
+
+      const allLessonIds = enrollments.flatMap((e) =>
+        e.chapter.lessons.map((l) => l.id),
+      );
+
+      const progressRecords = await prisma.lessonProgress.findMany({
+        where: { studentId, lessonId: { in: allLessonIds }, completed: true },
+      });
+
+      const completedByLesson = new Set<string>();
+      for (const rec of progressRecords) {
+        completedByLesson.add(rec.lessonId);
+      }
+
+      const result: MyCourseResponse[] = enrollments.map((enrollment) => {
+        const chapter = enrollment.chapter;
+        const totalLessons = chapter.lessons.length;
+        const completedCount = chapter.lessons.filter((l) =>
+          completedByLesson.has(l.id),
+        ).length;
+        const completionProgress =
+          totalLessons > 0
+            ? Math.round((completedCount / totalLessons) * 100)
+            : 0;
+
+        return {
+          id: chapter.id,
+          name: chapter.name,
+          description: chapter.description,
+          sortOrder: chapter.sortOrder,
+          price: chapter.price ? Number(chapter.price) : null,
+          stageId: chapter.stageId,
+          stageName: chapter.stage.name,
+          lessonCount: totalLessons,
+          completionProgress,
+        };
+      });
+
+      res.json(okResponse("My courses fetched successfully", result));
     },
   );
 }

@@ -25,3 +25,35 @@ export interface ContentTreeResponse {
     lessons: LessonNode[];
   }[];
 }
+
+export type EnrollmentStatus = "free" | "purchased" | "locked";
+
+export interface StudentChapterNode {
+  id: string;
+  name: string;
+  description: string | null;
+  sortOrder: number;
+  price: number | null;
+  lessonCount: number;
+  enrollmentStatus: EnrollmentStatus;
+}
+
+export interface StudentContentTreeResponse {
+  stage: StageNode;
+  chapters: {
+    chapter: StudentChapterNode;
+    lessons: LessonNode[];
+  }[];
+}
+
+export interface MyCourseResponse {
+  id: string;
+  name: string;
+  description: string | null;
+  sortOrder: number;
+  price: number | null;
+  stageId: string;
+  stageName: string;
+  lessonCount: number;
+  completionProgress: number;
+}

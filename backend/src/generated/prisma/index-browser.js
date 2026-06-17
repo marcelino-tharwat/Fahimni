@@ -198,6 +198,23 @@ exports.Prisma.OtpScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.EnrollmentScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  chapterId: 'chapterId',
+  enrolledAt: 'enrolledAt',
+  status: 'status'
+};
+
+exports.Prisma.LessonProgressScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  lessonId: 'lessonId',
+  completed: 'completed',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.LessonMaterialScalarFieldEnum = {
   id: 'id',
   lessonId: 'lessonId',
@@ -273,6 +290,8 @@ exports.Prisma.ModelName = {
   Chapter: 'Chapter',
   Lesson: 'Lesson',
   Otp: 'Otp',
+  Enrollment: 'Enrollment',
+  LessonProgress: 'LessonProgress',
   LessonMaterial: 'LessonMaterial',
   AuditLog: 'AuditLog',
   RefreshToken: 'RefreshToken'
