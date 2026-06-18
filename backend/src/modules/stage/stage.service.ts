@@ -10,13 +10,19 @@ import type { CreateStageInput, UpdateStageInput } from "./stage.validation.js";
 const filesService = new FilesService();
 
 export class StageService {
-  private async attachChapterCount<T extends { id: string }>(
+  private async attachCounts<T extends { id: string }>(
     stage: T,
-  ): Promise<T & { chapterCount: number }> {
-    const count = await prisma.chapter.count({
-      where: { stageId: stage.id, deletedAt: null },
-    });
-    return { ...stage, chapterCount: count };
+  ): Promise<T & { chapterCount: number; lessonCount: number }> {
+    const [chapterCount, lessonCount] = await Promise.all([
+      prisma.chapter.count({ where: { stageId: stage.id, deletedAt: null } }),
+      prisma.lesson.count({
+        where: {
+          chapter: { stageId: stage.id, deletedAt: null },
+          deletedAt: null,
+        },
+      }),
+    ]);
+    return { ...stage, chapterCount, lessonCount };
   }
 
   public async list(teacherId: string): Promise<StageResponseDTO[]> {
@@ -27,7 +33,7 @@ export class StageService {
     });
 
     const withCounts = await Promise.all(
-      stages.map((s) => this.attachChapterCount(s)),
+      stages.map((s) => this.attachCounts(s)),
     );
 
     return withCounts as unknown as StageResponseDTO[];
@@ -46,7 +52,7 @@ export class StageService {
       throw new AppError("Stage not found", 404);
     }
 
-    return this.attachChapterCount(stage) as unknown as StageResponseDTO;
+    return this.attachCounts(stage) as unknown as StageResponseDTO;
   }
 
   public async create(
@@ -70,7 +76,7 @@ export class StageService {
       select: stagePublicFields,
     });
 
-    return { ...stage, chapterCount: 0 } as unknown as StageResponseDTO;
+    return { ...stage, chapterCount: 0, lessonCount: 0 } as unknown as StageResponseDTO;
   }
 
   public async update(
@@ -100,7 +106,7 @@ export class StageService {
       select: stagePublicFields,
     });
 
-    return this.attachChapterCount(stage) as unknown as StageResponseDTO;
+    return this.attachCounts(stage) as unknown as StageResponseDTO;
   }
 
   public async delete(id: string, teacherId: string, force: boolean): Promise<void> {
@@ -230,7 +236,7 @@ export class StageService {
     });
 
     return Promise.all(
-      updated.map((s) => this.attachChapterCount(s)),
+      updated.map((s) => this.attachCounts(s)),
     ) as unknown as StageResponseDTO[];
   }
 }

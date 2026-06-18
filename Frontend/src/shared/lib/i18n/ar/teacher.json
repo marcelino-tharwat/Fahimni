@@ -4,6 +4,19 @@
   "quickActions": { "addLesson": "أضف درس", "generateQuiz": "أنشئ اختبار" },
   "contentManager": { "title": "إدارة المحتوى", "selectLesson": "اختر درس للتعديل", "stages": "المراحل", "chapters": "الأبواب", "lessons": "الدروس" },
   "quizGenerator": { "title": "مُنشئ الاختبارات بالذكاء الاصطناعي", "step1": "إعدادات", "step2": "مراجعة", "step3": "نشر", "topic": "الموضوع", "questionCount": "عدد الأسئلة", "questionTypes": "أنواع الأسئلة", "difficulty": "مستوى الصعوبة", "generateBtn": "ولّد الاختبار" },
+  "stages": {
+    "title": "جميع المراحل",
+    "subtitle": "إدارة هيكل محتوى الأكاديمية",
+    "newStage": "مرحلة جديدة",
+    "searchPlaceholder": "ابحث عن مرحلة...",
+    "empty": "لا توجد مراحل بعد. أنشئ مرحتك الأولى للبدء.",
+    "columns": {
+      "stageName": "اسم المرحلة",
+      "chapters": "الأبواب",
+      "lessons": "الدروس",
+      "actions": "الإجراءات"
+    }
+  },
   "branding": { "title": "الهوية البصرية", "logo": "الشعار", "colors": "الألوان", "teacherPhoto": "صورة المعلم" },
   "settings": {
     "pageTitle": "إعدادات الحساب",
