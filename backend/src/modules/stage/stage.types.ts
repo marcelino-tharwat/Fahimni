@@ -15,6 +15,7 @@ export interface StageResponseDTO {
   sortOrder: number;
   teacherId: string;
   chapterCount: number;
+  lessonCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
