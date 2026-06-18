@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import {
   Menu,
   X,
@@ -21,17 +21,17 @@ import {
   ChevronLeft,
   MessageCircle,
   Mail,
-  Phone
-} from 'lucide-react';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
-import { useDirection } from '@/shared/hooks/useDirection';
-import { cn } from '@/shared/lib/utils/cn';
+  Phone,
+} from "lucide-react";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { useDirection } from "@/shared/hooks/useDirection";
+import { cn } from "@/shared/lib/utils/cn";
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
-const ARABIC_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 
 /** Render numbers with Arabic-Indic digits when the UI is RTL (Arabic). */
 function toLocaleDigits(value: number | string, isRtl: boolean): string {
@@ -41,16 +41,15 @@ function toLocaleDigits(value: number | string, isRtl: boolean): string {
 }
 
 function scrollToSection(id: string): void {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 }
-
 
 /* ------------------------------------------------------------------ */
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
 
 export function LandingPage() {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   return (
     <div className="flex scroll-smooth flex-col bg-background">
@@ -72,11 +71,11 @@ export function LandingPage() {
 /* ------------------------------------------------------------------ */
 
 const navLinks = [
-  { key: 'home', id: 'hero' },
-  { key: 'courses', id: 'chapters' },
-  { key: 'aiAssistant', id: 'features' },
-  { key: 'reviews', id: 'testimonials' },
-  { key: 'support', id: 'faq' },
+  { key: "home", id: "hero" },
+  { key: "courses", id: "chapters" },
+  { key: "aiAssistant", id: "features" },
+  { key: "reviews", id: "testimonials" },
+  { key: "support", id: "faq" },
 ] as const;
 
 /**
@@ -87,14 +86,14 @@ const navLinks = [
  */
 function NavLanguageToggle({ className }: { className?: string }) {
   const { i18n } = useTranslation();
-  const label = i18n.language === 'ar' ? 'English' : 'العربية';
+  const label = i18n.language === "ar" ? "English" : "العربية";
 
   return (
     <button
       type="button"
-      onClick={() => i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar')}
+      onClick={() => i18n.changeLanguage(i18n.language === "ar" ? "en" : "ar")}
       className={cn(
-        'rounded-md px-3 py-1.5 font-cairo text-sm font-medium text-white transition-all duration-200 hover:bg-cyan-500 hover:text-navy-900',
+        "rounded-md px-3 py-1.5 font-cairo text-sm font-medium text-white transition-all duration-200 hover:bg-cyan-500 hover:text-navy-900",
         className,
       )}
     >
@@ -104,10 +103,10 @@ function NavLanguageToggle({ className }: { className?: string }) {
 }
 
 function LandingNavbar() {
-  const { t } = useTranslation('landing');
+  const { t } = useTranslation("landing");
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [active, setActive] = useState('hero');
+  const [active, setActive] = useState("hero");
 
   const handleNav = (id: string) => {
     setActive(id);
@@ -123,7 +122,7 @@ function LandingNavbar() {
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            aria-label={t('nav.home')}
+            aria-label={t("nav.home")}
             aria-expanded={menuOpen}
             className="rounded-btn p-2 text-white transition-colors hover:bg-navy-700 md:hidden"
           >
@@ -133,13 +132,13 @@ function LandingNavbar() {
             href="#hero"
             onClick={(e) => {
               e.preventDefault();
-              setActive('hero');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setActive("hero");
+              window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className="flex cursor-pointer items-center gap-2 font-cairo text-lg font-bold text-white transition-opacity hover:opacity-80 md:text-xl"
           >
             <GraduationCap aria-hidden className="h-6 w-6 text-cyan-500" />
-            {t('brand')}
+            {t("brand")}
           </a>
         </div>
 
@@ -151,8 +150,10 @@ function LandingNavbar() {
               type="button"
               onClick={() => handleNav(link.id)}
               className={cn(
-                'font-cairo text-sm font-medium transition-colors',
-                active === link.id ? 'text-cyan-500' : 'text-white hover:text-cyan-500',
+                "font-cairo text-sm font-medium transition-colors",
+                active === link.id
+                  ? "text-cyan-500"
+                  : "text-white hover:text-cyan-500",
               )}
             >
               {t(`nav.${link.key}`)}
@@ -167,10 +168,10 @@ function LandingNavbar() {
           </div>
           <button
             type="button"
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate("/auth")}
             className="rounded-btn bg-cyan-500 px-6 py-2 font-cairo text-sm font-semibold text-navy-800 transition-colors hover:bg-cyan-400"
           >
-            {t('nav.subscribe')}
+            {t("nav.subscribe")}
           </button>
         </div>
       </nav>
@@ -193,11 +194,11 @@ function LandingNavbar() {
               type="button"
               onClick={() => {
                 setMenuOpen(false);
-                navigate('/auth');
+                navigate("/auth");
               }}
               className="rounded-btn px-2 py-2 text-start font-cairo text-sm font-medium text-white/80 transition-colors hover:bg-navy-700 hover:text-white"
             >
-              {t('nav.login')}
+              {t("nav.login")}
             </button>
             <div className="pt-2">
               <NavLanguageToggle className="self-start" />
@@ -214,20 +215,43 @@ function LandingNavbar() {
 /* ------------------------------------------------------------------ */
 
 function HeroSection() {
-  const { t } = useTranslation('landing');
+  const { t } = useTranslation("landing");
   const navigate = useNavigate();
-  const isRtl = useDirection() === 'rtl';
-  const goRegister = () => navigate('/auth');
+  const isRtl = useDirection() === "rtl";
+  const goRegister = () => navigate("/auth");
 
   const heroStats = [
-    { Icon: Users, color: 'text-cyan-400', value: '147+', label: t('hero.stats.activeStudents') },
-    { Icon: BookOpen, color: 'text-purple-400', value: '6', label: t('hero.stats.chaptersCount') },
-    { Icon: FileText, color: 'text-cyan-400', value: '12', label: t('hero.stats.contentCount') },
-    { Icon: Star, color: 'text-yellow-400', value: '4.9', label: t('hero.stats.rating') },
+    {
+      Icon: Users,
+      color: "text-cyan-400",
+      value: "147+",
+      label: t("hero.stats.activeStudents"),
+    },
+    {
+      Icon: BookOpen,
+      color: "text-purple-400",
+      value: "6",
+      label: t("hero.stats.chaptersCount"),
+    },
+    {
+      Icon: FileText,
+      color: "text-cyan-400",
+      value: "12",
+      label: t("hero.stats.contentCount"),
+    },
+    {
+      Icon: Star,
+      color: "text-yellow-400",
+      value: "4.9",
+      label: t("hero.stats.rating"),
+    },
   ];
 
   return (
-    <section id="hero" className="relative overflow-hidden scroll-mt-16 bg-navy-950">
+    <section
+      id="hero"
+      className="relative min-h-[calc(100dvh-64px)] bg-navy-950 lg:h-[calc(100dvh-64px)] lg:overflow-hidden"
+    >
       {/* Keyframe animations */}
       <style>{`
         @keyframes float {
@@ -260,40 +284,48 @@ function HeroSection() {
       `}</style>
 
       {/* Decorative blurred shapes */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      >
         <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-cyan-500 opacity-5 blur-3xl" />
         <div className="absolute top-1/3 -left-24 h-80 w-80 rounded-full bg-purple-500 opacity-5 blur-3xl" />
         <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-cyan-500 opacity-5 blur-3xl" />
       </div>
 
-      {/* ── Part 1: main hero ── */}
-      <div className="relative z-10 mx-auto max-w-6xl px-6 pt-20 pb-6 lg:pt-28 lg:pb-8">
-        <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-[1fr_1fr] lg:gap-0">
-
+      {/* ── Flex container fills hero height ── */}
+      <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col px-6">
+        {/* Main content — fills available space */}
+        <div className="flex min-h-0 flex-1 flex-col-reverse items-center justify-center gap-6 lg:flex-row lg:gap-8">
           {/* Text column */}
-          <div className="order-2 text-center lg:order-none lg:text-start">
+          <div className="w-full text-center lg:w-1/2 lg:text-start">
             <h1 className="anim-fade-up font-cairo leading-tight">
-              <span className="block text-2xl font-medium text-white lg:text-4xl">
-                {t('hero.headlineLine1')}
+              <span className="block text-xl font-medium text-white lg:text-4xl">
+                {t("hero.headlineLine1")}
               </span>
-              <span className="mb-4 block text-2xl font-extrabold leading-tight text-cyan-500 lg:text-4xl">
-                {t('hero.headlineLine2')}
+              <span className="mb-4 block text-xl font-extrabold leading-tight text-cyan-500 lg:text-4xl">
+                {t("hero.headlineLine2")}
               </span>
             </h1>
 
-            <p className="anim-fade-up anim-d2 mx-auto mb-5 max-w-lg font-cairo text-sm leading-relaxed text-navy-300 lg:mx-0 lg:text-base">
-              {t('hero.subtext')}
+            <p className="anim-fade-up anim-d2 mx-auto mb-3 max-w-lg font-cairo text-sm leading-relaxed text-navy-300 lg:mx-0 lg:text-base">
+              {t("hero.subtext")}
             </p>
 
             {/* Star rating */}
-            <div className="anim-fade-up anim-d3 mb-6 flex items-center justify-center gap-1.5 lg:justify-start">
+            <div className="anim-fade-up anim-d3 mb-4 flex items-center justify-center gap-1.5 lg:justify-start">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <Star
+                  key={i}
+                  className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                />
               ))}
               <span className="font-cairo text-sm font-bold text-white">
-                {toLocaleDigits('4.9', isRtl)}
+                {toLocaleDigits("4.9", isRtl)}
               </span>
-              <span className="font-cairo text-sm text-navy-400">{t('hero.ratingCount')}</span>
+              <span className="font-cairo text-sm text-navy-400">
+                {t("hero.ratingCount")}
+              </span>
             </div>
 
             {/* CTAs */}
@@ -303,7 +335,7 @@ function HeroSection() {
                 onClick={goRegister}
                 className="rounded-btn bg-cyan-500 px-6 py-3 font-cairo text-sm font-semibold text-navy-900 shadow-glow transition-all duration-200 hover:bg-cyan-400 hover:shadow-lg hover:scale-105"
               >
-                {t('hero.ctaPrimary')}
+                {t("hero.ctaPrimary")}
               </button>
               <button
                 type="button"
@@ -311,67 +343,64 @@ function HeroSection() {
                 className="flex items-center justify-center gap-2 rounded-btn border border-white/25 bg-transparent px-6 py-3 font-cairo text-sm text-white transition-all duration-200 hover:border-white/50 hover:scale-105"
               >
                 <Play className="h-4 w-4" />
-                {t('hero.ctaSecondary')}
+                {t("hero.ctaSecondary")}
               </button>
             </div>
           </div>
 
-          {/* Teacher image — BIGGER + floating animation */}
-          <div className="order-1 lg:order-none">
-            <div className="anim-scale-in anim-d2 relative mx-auto h-[400px] w-full sm:h-[480px] lg:h-[620px]">
+          {/* Teacher image — scales with viewport, lighten blend + soft mask */}
+          <div className="flex w-full items-center justify-center lg:w-1/2">
+            <div className="anim-scale-in anim-d2 relative w-full max-w-[280px] mx-auto max-h-[30vh] lg:max-w-none lg:max-h-[55vh]">
               <img
                 src="/images/hero.png"
-                alt={t('hero.photoAlt')}
-                className="anim-float h-full w-full object-cover object-top drop-shadow-[0_0_50px_rgba(0,201,219,0.15)]"
+                alt={t("hero.photoAlt")}
+                className="anim-float h-full w-full object-contain object-center lg:object-bottom"
                 style={{
                   maskImage:
-                    'radial-gradient(ellipse 85% 90% at 50% 45%, black 55%, transparent 85%)',
+                    "radial-gradient(ellipse 95% 90% at 50% 50%, black 45%, transparent 85%)",
                   WebkitMaskImage:
-                    'radial-gradient(ellipse 85% 90% at 50% 45%, black 55%, transparent 85%)',
+                    "radial-gradient(ellipse 95% 90% at 50% 50%, black 45%, transparent 85%)",
+                  mixBlendMode: "lighten",
                 }}
               />
-              {/* Animated cyan glow underneath */}
-              <div
-                aria-hidden
-                className="anim-glow absolute -bottom-2 left-1/2 h-24 w-3/4 -translate-x-1/2 rounded-full bg-cyan-500/15 blur-3xl"
-              />
             </div>
           </div>
-
         </div>
-      </div>
 
-      {/* ── Part 2: stats — horizontal cards ── */}
-      <div className="relative z-10 mx-auto grid max-w-5xl grid-cols-2 gap-3 px-6 pb-10 md:grid-cols-4 md:gap-4">
-        {heroStats.map((stat, index) => (
-          <div
-            key={stat.label}
-            className={cn(
-              'anim-fade-up group flex cursor-default items-center gap-3 rounded-2xl border border-navy-600/25 bg-navy-800/80 px-5 py-4 transition-all duration-300 hover:-translate-y-1 hover:bg-navy-700/60',
-              index === 0 && 'anim-d4',
-              index === 1 && 'anim-d5',
-              index === 2 && 'anim-d6',
-              index === 3 && 'anim-d7',
-            )}
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-navy-700/50 transition-all duration-300 group-hover:bg-navy-600/50">
-              <stat.Icon
+        {/* ── Stats — pushed to bottom ── */}
+        <div className="shrink-0 w-full py-4 lg:pb-6">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+            {heroStats.map((stat, index) => (
+              <div
+                key={stat.label}
                 className={cn(
-                  'h-5 w-5 transition-transform duration-300 group-hover:scale-110',
-                  stat.color,
+                  "anim-fade-up group flex cursor-default items-center gap-3 rounded-2xl border border-navy-600/25 bg-navy-800/80 px-3 py-3 lg:px-5 lg:py-4 transition-all duration-300 hover:-translate-y-1 hover:bg-navy-700/60",
+                  index === 0 && "anim-d4",
+                  index === 1 && "anim-d5",
+                  index === 2 && "anim-d6",
+                  index === 3 && "anim-d7",
                 )}
-              />
-            </div>
-            <div className="text-start">
-              <p className="font-cairo text-xl font-bold leading-tight text-white transition-colors duration-300 group-hover:text-cyan-400">
-                {toLocaleDigits(stat.value, isRtl)}
-              </p>
-              <p className="mt-0.5 font-cairo text-[11px] leading-tight text-navy-400">
-                {stat.label}
-              </p>
-            </div>
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-navy-700/50 transition-all duration-300 group-hover:bg-navy-600/50 lg:h-11 lg:w-11">
+                  <stat.Icon
+                    className={cn(
+                      "h-5 w-5 transition-transform duration-300 group-hover:scale-110",
+                      stat.color,
+                    )}
+                  />
+                </div>
+                <div className="text-start">
+                  <p className="font-cairo text-base font-bold leading-tight text-white transition-colors duration-300 group-hover:text-cyan-400 lg:text-xl">
+                    {toLocaleDigits(stat.value, isRtl)}
+                  </p>
+                  <p className="mt-0.5 font-cairo text-[11px] leading-tight text-navy-400 sm:text-xs">
+                    {stat.label}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );
@@ -389,75 +418,79 @@ interface ExploreChapter {
   lessons: number;
   quizzes: number;
   price: number;
-  status: 'available' | 'enrolled' | 'locked';
+  status: "available" | "enrolled" | "locked";
   badge: { ar: string; en: string };
 }
 
 const exploreChapters: ExploreChapter[] = [
   {
     id: 1,
-    titleAr: 'الكيمياء العضوية',
-    titleEn: 'Organic Chemistry',
-    image: '/images/img1.png',
+    titleAr: "الكيمياء العضوية",
+    titleEn: "Organic Chemistry",
+    image: "/images/img1.png",
     lessons: 8,
     quizzes: 3,
     price: 150,
-    status: 'available',
-    badge: { ar: 'الفصل ١', en: 'Chapter 1' },
+    status: "available",
+    badge: { ar: "الفصل ١", en: "Chapter 1" },
   },
   {
     id: 2,
-    titleAr: 'الروابط الكيميائية',
-    titleEn: 'Chemical Bonding',
-    image: '/images/img2.png',
+    titleAr: "الروابط الكيميائية",
+    titleEn: "Chemical Bonding",
+    image: "/images/img2.png",
     lessons: 10,
     quizzes: 4,
     price: 150,
-    status: 'enrolled',
-    badge: { ar: 'الفصل ٢', en: 'Chapter 2' },
+    status: "enrolled",
+    badge: { ar: "الفصل ٢", en: "Chapter 2" },
   },
   {
     id: 3,
-    titleAr: 'الكيمياء الكهربية',
-    titleEn: 'Electrochemistry',
-    image: '/images/img3.png',
+    titleAr: "الكيمياء الكهربية",
+    titleEn: "Electrochemistry",
+    image: "/images/img3.png",
     lessons: 6,
     quizzes: 2,
     price: 200,
-    status: 'locked',
-    badge: { ar: 'الفصل ٣', en: 'Chapter 3' },
+    status: "locked",
+    badge: { ar: "الفصل ٣", en: "Chapter 3" },
   },
 ];
 
-const cardDelays = ['anim-d1', 'anim-d2', 'anim-d3'];
+const cardDelays = ["anim-d1", "anim-d2", "anim-d3"];
 
 function ChaptersSection() {
-  const { t } = useTranslation('landing');
+  const { t } = useTranslation("landing");
   const navigate = useNavigate();
-  const isRtl = useDirection() === 'rtl';
+  const isRtl = useDirection() === "rtl";
 
   return (
     <section id="chapters" className="scroll-mt-16 bg-navy-50 px-6 py-20">
       <div className="mx-auto max-w-5xl">
         {/* Section title — centered */}
         <div className="mb-12 text-center">
-          <h2 className="font-cairo text-2xl font-bold text-navy-800">{t('chapters.title')}</h2>
-          <p className="mt-2 font-cairo text-base text-gray-600">{t('chapters.subtitle')}</p>
+          <h2 className="font-cairo text-2xl font-bold text-navy-800">
+            {t("chapters.title")}
+          </h2>
+          <p className="mt-2 font-cairo text-base text-gray-600">
+            {t("chapters.subtitle")}
+          </p>
         </div>
 
         {/* Cards */}
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {exploreChapters.map((chapter, index) => {
             const title = isRtl ? chapter.titleAr : chapter.titleEn;
-            const locked = chapter.status === 'locked';
+            const locked = chapter.status === "locked";
 
             return (
               <div
                 key={chapter.id}
                 className={cn(
-                  'anim-fade-up',
+                  "anim-fade-up",
                   cardDelays[index],
-                  'group mx-auto w-full max-w-[300px] overflow-hidden rounded-card bg-white shadow-card transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-elevated',
+                  "group mx-auto w-full max-w-[300px] overflow-hidden rounded-card bg-white shadow-card transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-elevated",
                 )}
               >
                 {/* Thumbnail */}
@@ -482,7 +515,7 @@ function ChaptersSection() {
                 </div>
 
                 {/* Content */}
-                <div className={cn('p-5', locked && 'opacity-60')}>
+                <div className={cn("p-5", locked && "opacity-60")}>
                   <h3 className="mb-3 line-clamp-1 font-cairo text-base font-bold text-navy-800">
                     {title}
                   </h3>
@@ -490,39 +523,42 @@ function ChaptersSection() {
                   <div className="mb-4 flex items-center gap-4 font-cairo text-xs text-gray-500">
                     <span className="flex items-center gap-1">
                       <PlayCircle className="h-3.5 w-3.5" />
-                      {toLocaleDigits(chapter.lessons, isRtl)} {t('chapters.lessons')}
+                      {toLocaleDigits(chapter.lessons, isRtl)}{" "}
+                      {t("chapters.lessons")}
                     </span>
                     <span className="flex items-center gap-1">
                       <FileText className="h-3.5 w-3.5" />
-                      {toLocaleDigits(chapter.quizzes, isRtl)} {t('chapters.quizzes')}
+                      {toLocaleDigits(chapter.quizzes, isRtl)}{" "}
+                      {t("chapters.quizzes")}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="font-cairo text-lg font-bold text-navy-800">
-                      {toLocaleDigits(chapter.price, isRtl)} {t('chapters.price')}
+                      {toLocaleDigits(chapter.price, isRtl)}{" "}
+                      {t("chapters.price")}
                     </span>
 
-                    {chapter.status === 'available' && (
+                    {chapter.status === "available" && (
                       <button
                         type="button"
-                        onClick={() => navigate('/auth')}
+                        onClick={() => navigate("/auth")}
                         className="rounded-btn bg-cyan-500 px-4 py-2 font-cairo text-sm font-semibold text-navy-900 transition-all duration-200 hover:scale-105 hover:bg-cyan-400"
                       >
-                        {t('chapters.enrollNow')}
+                        {t("chapters.enrollNow")}
                       </button>
                     )}
 
-                    {chapter.status === 'enrolled' && (
+                    {chapter.status === "enrolled" && (
                       <span className="rounded-badge bg-green-100 px-3 py-1.5 font-cairo text-xs font-semibold text-green-700">
-                        {t('chapters.enrolled')}
+                        {t("chapters.enrolled")}
                       </span>
                     )}
 
                     {locked && (
                       <span className="flex items-center gap-1.5 rounded-badge bg-navy-100 px-3 py-1.5 font-cairo text-xs font-semibold text-navy-500">
                         <Lock className="h-3 w-3" />
-                        {t('chapters.comingSoon')}
+                        {t("chapters.comingSoon")}
                       </span>
                     )}
                   </div>
@@ -543,46 +579,50 @@ function ChaptersSection() {
 const featureItems = [
   {
     Icon: PlayCircle,
-    titleKey: 'features.videoTitle',
-    descKey: 'features.videoDesc',
-    iconColor: 'text-pink-500',
-    iconBg: 'bg-pink-50',
+    titleKey: "features.videoTitle",
+    descKey: "features.videoDesc",
+    iconColor: "text-pink-500",
+    iconBg: "bg-pink-50",
   },
   {
     Icon: FileDown,
-    titleKey: 'features.pdfTitle',
-    descKey: 'features.pdfDesc',
-    iconColor: 'text-cyan-500',
-    iconBg: 'bg-cyan-50',
+    titleKey: "features.pdfTitle",
+    descKey: "features.pdfDesc",
+    iconColor: "text-cyan-500",
+    iconBg: "bg-cyan-50",
   },
   {
     Icon: ClipboardCheck,
-    titleKey: 'features.quizTitle',
-    descKey: 'features.quizDesc',
-    iconColor: 'text-purple-500',
-    iconBg: 'bg-purple-50',
+    titleKey: "features.quizTitle",
+    descKey: "features.quizDesc",
+    iconColor: "text-purple-500",
+    iconBg: "bg-purple-50",
   },
   {
     Icon: Bot,
-    titleKey: 'features.aiTitle',
-    descKey: 'features.aiDesc',
-    iconColor: 'text-cyan-500',
-    iconBg: 'bg-cyan-50',
+    titleKey: "features.aiTitle",
+    descKey: "features.aiDesc",
+    iconColor: "text-cyan-500",
+    iconBg: "bg-cyan-50",
   },
 ] as const;
 
-const featureDelays = ['anim-d1', 'anim-d2', 'anim-d3', 'anim-d4'];
+const featureDelays = ["anim-d1", "anim-d2", "anim-d3", "anim-d4"];
 
 function FeaturesSection() {
-  const { t } = useTranslation('landing');
+  const { t } = useTranslation("landing");
 
   return (
     <section id="features" className="scroll-mt-16 bg-white px-6 py-20">
       <div className="mx-auto max-w-5xl">
         {/* Section title — centered */}
         <div className="mb-14 text-center">
-          <h2 className="mb-3 font-cairo text-2xl font-bold text-navy-800">{t('features.title')}</h2>
-          <p className="font-cairo text-base text-gray-600">{t('features.subtitle')}</p>
+          <h2 className="mb-3 font-cairo text-2xl font-bold text-navy-800">
+            {t("features.title")}
+          </h2>
+          <p className="font-cairo text-base text-gray-600">
+            {t("features.subtitle")}
+          </p>
         </div>
 
         {/* Cards */}
@@ -591,24 +631,26 @@ function FeaturesSection() {
             <div
               key={feature.titleKey}
               className={cn(
-                'anim-fade-up',
+                "anim-fade-up",
                 featureDelays[index],
-                'group cursor-default rounded-card border border-gray-100 bg-navy-50 p-6 text-center transition-all duration-300',
-                'hover:-translate-y-1 hover:border-cyan-300 hover:shadow-card',
+                "group cursor-default rounded-card border border-gray-100 bg-navy-50 p-6 text-center transition-all duration-300",
+                "hover:-translate-y-1 hover:border-cyan-300 hover:shadow-card",
               )}
             >
               <div
                 className={cn(
-                  'mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110',
+                  "mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110",
                   feature.iconBg,
                 )}
               >
-                <feature.Icon className={cn('h-7 w-7', feature.iconColor)} />
+                <feature.Icon className={cn("h-7 w-7", feature.iconColor)} />
               </div>
               <h3 className="mb-2 font-cairo text-base font-bold text-navy-800">
                 {t(feature.titleKey)}
               </h3>
-              <p className="font-cairo text-sm leading-relaxed text-gray-500">{t(feature.descKey)}</p>
+              <p className="font-cairo text-sm leading-relaxed text-gray-500">
+                {t(feature.descKey)}
+              </p>
             </div>
           ))}
         </div>
@@ -622,24 +664,42 @@ function FeaturesSection() {
 /* ------------------------------------------------------------------ */
 
 const howItWorksSteps = [
-  { num: 1, titleKey: 'howItWorks.step1Title', descKey: 'howItWorks.step1Desc' },
-  { num: 2, titleKey: 'howItWorks.step2Title', descKey: 'howItWorks.step2Desc' },
-  { num: 3, titleKey: 'howItWorks.step3Title', descKey: 'howItWorks.step3Desc' },
-  { num: 4, titleKey: 'howItWorks.step4Title', descKey: 'howItWorks.step4Desc' },
+  {
+    num: 1,
+    titleKey: "howItWorks.step1Title",
+    descKey: "howItWorks.step1Desc",
+  },
+  {
+    num: 2,
+    titleKey: "howItWorks.step2Title",
+    descKey: "howItWorks.step2Desc",
+  },
+  {
+    num: 3,
+    titleKey: "howItWorks.step3Title",
+    descKey: "howItWorks.step3Desc",
+  },
+  {
+    num: 4,
+    titleKey: "howItWorks.step4Title",
+    descKey: "howItWorks.step4Desc",
+  },
 ];
 
-const stepDelays = ['anim-d1', 'anim-d2', 'anim-d3', 'anim-d4'];
+const stepDelays = ["anim-d1", "anim-d2", "anim-d3", "anim-d4"];
 
 function HowItWorksSection() {
-  const { t } = useTranslation('landing');
-  const isRtl = useDirection() === 'rtl';
+  const { t } = useTranslation("landing");
+  const isRtl = useDirection() === "rtl";
 
   return (
     <section className="scroll-mt-16 bg-navy-50 px-6 py-20">
       <div className="mx-auto max-w-4xl">
         {/* Section title — centered */}
         <div className="mb-14 text-center">
-          <h2 className="font-cairo text-2xl font-bold text-navy-800">{t('howItWorks.title')}</h2>
+          <h2 className="font-cairo text-2xl font-bold text-navy-800">
+            {t("howItWorks.title")}
+          </h2>
         </div>
 
         <div className="relative">
@@ -648,11 +708,11 @@ function HowItWorksSection() {
             aria-hidden
             className="absolute top-6 hidden h-0 md:block"
             style={{
-              left: '12.5%',
-              right: '12.5%',
-              width: '75%',
-              borderTop: '2px dashed',
-              borderColor: '#99EFF5',
+              left: "12.5%",
+              right: "12.5%",
+              width: "75%",
+              borderTop: "2px dashed",
+              borderColor: "#99EFF5",
             }}
           />
 
@@ -661,7 +721,10 @@ function HowItWorksSection() {
             {howItWorksSteps.map((step, index) => (
               <div
                 key={step.num}
-                className={cn('anim-fade-up relative text-center', stepDelays[index])}
+                className={cn(
+                  "anim-fade-up relative text-center",
+                  stepDelays[index],
+                )}
               >
                 {/* Numbered circle */}
                 <div className="relative z-10 mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500 font-cairo text-lg font-bold text-navy-900 shadow-[0_0_20px_rgba(0,201,219,0.3)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(0,201,219,0.5)]">
@@ -713,119 +776,139 @@ interface Testimonial {
 const testimonialsData: Testimonial[] = [
   {
     id: 1,
-    nameAr: 'سارة إبراهيم',
-    nameEn: 'Sara Ibrahim',
-    gradeAr: 'طالبة — الصف الثاني الثانوي',
-    gradeEn: 'Grade 11 Student',
-    quoteAr: 'الشرح واضح ومنظم جداً والاختبارات بتساعدني أحدد نقاط ضعفي. الـ AI Tutor بيساعدني في أي وقت محتاجه!',
-    quoteEn: 'The lessons are excellent and easy to understand. I improved from 60% to 92%!',
+    nameAr: "سارة إبراهيم",
+    nameEn: "Sara Ibrahim",
+    gradeAr: "طالبة — الصف الثاني الثانوي",
+    gradeEn: "Grade 11 Student",
+    quoteAr:
+      "الشرح واضح ومنظم جداً والاختبارات بتساعدني أحدد نقاط ضعفي. الـ AI Tutor بيساعدني في أي وقت محتاجه!",
+    quoteEn:
+      "The lessons are excellent and easy to understand. I improved from 60% to 92%!",
     rating: 5,
-    initials: { ar: 'سا', en: 'SI' },
+    initials: { ar: "سا", en: "SI" },
   },
   {
     id: 2,
-    nameAr: 'أحمد ياسر',
-    nameEn: 'Ahmed Yasser',
-    gradeAr: 'طالب — الصف الثالث الثانوي',
-    gradeEn: 'Grade 12 Student',
-    quoteAr: 'أحسن بلاتفورم للكيمياء. الأستاذ أحمد شرحه ممتاز والملخصات وفرت عليا وقت كتير في المراجعة.',
-    quoteEn: 'Mr. Ahmed explains everything in a way that is very simple and amazing. Best chemistry platform!',
+    nameAr: "أحمد ياسر",
+    nameEn: "Ahmed Yasser",
+    gradeAr: "طالب — الصف الثالث الثانوي",
+    gradeEn: "Grade 12 Student",
+    quoteAr:
+      "أحسن بلاتفورم للكيمياء. الأستاذ أحمد شرحه ممتاز والملخصات وفرت عليا وقت كتير في المراجعة.",
+    quoteEn:
+      "Mr. Ahmed explains everything in a way that is very simple and amazing. Best chemistry platform!",
     rating: 5,
-    initials: { ar: 'أح', en: 'AY' },
+    initials: { ar: "أح", en: "AY" },
   },
   {
     id: 3,
-    nameAr: 'نورهان محمد',
-    nameEn: 'Nourhan Mohamed',
-    gradeAr: 'طالبة — الصف الأول الثانوي',
-    gradeEn: 'Grade 10 Student',
-    quoteAr: 'كنت بخاف من الكيمياء بس الشرح المنظم والتدريبات خلوني واثقة في نفسي قبل الامتحان.',
-    quoteEn: 'I used to be scared of Chemistry but the organized lessons gave me confidence before the exam.',
+    nameAr: "نورهان محمد",
+    nameEn: "Nourhan Mohamed",
+    gradeAr: "طالبة — الصف الأول الثانوي",
+    gradeEn: "Grade 10 Student",
+    quoteAr:
+      "كنت بخاف من الكيمياء بس الشرح المنظم والتدريبات خلوني واثقة في نفسي قبل الامتحان.",
+    quoteEn:
+      "I used to be scared of Chemistry but the organized lessons gave me confidence before the exam.",
     rating: 5,
-    initials: { ar: 'نو', en: 'NM' },
+    initials: { ar: "نو", en: "NM" },
   },
   {
     id: 4,
-    nameAr: 'يوسف خالد',
-    nameEn: 'Youssef Khaled',
-    gradeAr: 'طالب — الصف الثالث الثانوي',
-    gradeEn: 'Grade 12 Student',
-    quoteAr: 'الاختبارات الذكية ساعدتني أعرف نقاط ضعفي وأركز عليها. درجاتي اتحسنت بشكل كبير.',
-    quoteEn: 'The smart quizzes helped me identify my weak points and focus on them. My grades improved significantly.',
+    nameAr: "يوسف خالد",
+    nameEn: "Youssef Khaled",
+    gradeAr: "طالب — الصف الثالث الثانوي",
+    gradeEn: "Grade 12 Student",
+    quoteAr:
+      "الاختبارات الذكية ساعدتني أعرف نقاط ضعفي وأركز عليها. درجاتي اتحسنت بشكل كبير.",
+    quoteEn:
+      "The smart quizzes helped me identify my weak points and focus on them. My grades improved significantly.",
     rating: 5,
-    initials: { ar: 'يو', en: 'YK' },
+    initials: { ar: "يو", en: "YK" },
   },
   {
     id: 5,
-    nameAr: 'مريم علي',
-    nameEn: 'Mariam Ali',
-    gradeAr: 'طالبة — الصف الثاني الثانوي',
-    gradeEn: 'Grade 11 Student',
-    quoteAr: 'ملخصات الـ PDF وفرت عليا وقت كتير. بدل ما أكتب ملاحظات، كل حاجة جاهزة ومنظمة.',
-    quoteEn: 'The PDF summaries saved me so much time. Instead of writing notes, everything is ready and organized.',
+    nameAr: "مريم علي",
+    nameEn: "Mariam Ali",
+    gradeAr: "طالبة — الصف الثاني الثانوي",
+    gradeEn: "Grade 11 Student",
+    quoteAr:
+      "ملخصات الـ PDF وفرت عليا وقت كتير. بدل ما أكتب ملاحظات، كل حاجة جاهزة ومنظمة.",
+    quoteEn:
+      "The PDF summaries saved me so much time. Instead of writing notes, everything is ready and organized.",
     rating: 4,
-    initials: { ar: 'مر', en: 'MA' },
+    initials: { ar: "مر", en: "MA" },
   },
   {
     id: 6,
-    nameAr: 'عمر حسن',
-    nameEn: 'Omar Hassan',
-    gradeAr: 'طالب — الصف الأول الثانوي',
-    gradeEn: 'Grade 10 Student',
-    quoteAr: 'أول مرة أحب الكيمياء! الفيديوهات ممتعة والمساعد الذكي بيجاوب على أي سؤال في ثواني.',
-    quoteEn: 'First time I actually enjoy Chemistry! The videos are fun and the AI tutor answers any question in seconds.',
+    nameAr: "عمر حسن",
+    nameEn: "Omar Hassan",
+    gradeAr: "طالب — الصف الأول الثانوي",
+    gradeEn: "Grade 10 Student",
+    quoteAr:
+      "أول مرة أحب الكيمياء! الفيديوهات ممتعة والمساعد الذكي بيجاوب على أي سؤال في ثواني.",
+    quoteEn:
+      "First time I actually enjoy Chemistry! The videos are fun and the AI tutor answers any question in seconds.",
     rating: 5,
-    initials: { ar: 'عم', en: 'OH' },
+    initials: { ar: "عم", en: "OH" },
   },
   {
     id: 7,
-    nameAr: 'فاطمة محمود',
-    nameEn: 'Fatma Mahmoud',
-    gradeAr: 'طالبة — الصف الثالث الثانوي',
-    gradeEn: 'Grade 12 Student',
-    quoteAr: 'التدريبات بعد كل درس خلتني أتأكد إني فاهمة صح، والمساعد الذكي بيشرحلي أي نقطة مش واضحة في ثواني.',
-    quoteEn: 'The quizzes after each lesson made sure I really understood, and the AI tutor explains anything unclear in seconds.',
+    nameAr: "فاطمة محمود",
+    nameEn: "Fatma Mahmoud",
+    gradeAr: "طالبة — الصف الثالث الثانوي",
+    gradeEn: "Grade 12 Student",
+    quoteAr:
+      "التدريبات بعد كل درس خلتني أتأكد إني فاهمة صح، والمساعد الذكي بيشرحلي أي نقطة مش واضحة في ثواني.",
+    quoteEn:
+      "The quizzes after each lesson made sure I really understood, and the AI tutor explains anything unclear in seconds.",
     rating: 5,
-    initials: { ar: 'فا', en: 'FM' },
+    initials: { ar: "فا", en: "FM" },
   },
   {
     id: 8,
-    nameAr: 'كريم سامح',
-    nameEn: 'Karim Sameh',
-    gradeAr: 'طالب — الصف الثاني الثانوي',
-    gradeEn: 'Grade 11 Student',
-    quoteAr: 'ملخصات الـ PDF منظمة جداً وبحملها على الموبايل وبذاكر منها في أي وقت. وفرت عليا فلوس الدروس الخصوصية.',
-    quoteEn: 'The PDF notes are super organized — I download them on my phone and study anytime. Saved me the cost of private tutoring.',
+    nameAr: "كريم سامح",
+    nameEn: "Karim Sameh",
+    gradeAr: "طالب — الصف الثاني الثانوي",
+    gradeEn: "Grade 11 Student",
+    quoteAr:
+      "ملخصات الـ PDF منظمة جداً وبحملها على الموبايل وبذاكر منها في أي وقت. وفرت عليا فلوس الدروس الخصوصية.",
+    quoteEn:
+      "The PDF notes are super organized — I download them on my phone and study anytime. Saved me the cost of private tutoring.",
     rating: 4,
-    initials: { ar: 'كر', en: 'KS' },
+    initials: { ar: "كر", en: "KS" },
   },
   {
     id: 9,
-    nameAr: 'هنا طارق',
-    nameEn: 'Hana Tarek',
-    gradeAr: 'طالبة — الصف الأول الثانوي',
-    gradeEn: 'Grade 10 Student',
-    quoteAr: 'الفيديوهات قصيرة ومركزة ومفيش وقت بيضيع. أقدر أرجع للدرس أكتر من مرة لحد ما الفكرة تثبت في دماغي.',
-    quoteEn: 'The videos are short and focused with no wasted time. I can rewatch a lesson as many times as I need until it clicks.',
+    nameAr: "هنا طارق",
+    nameEn: "Hana Tarek",
+    gradeAr: "طالبة — الصف الأول الثانوي",
+    gradeEn: "Grade 10 Student",
+    quoteAr:
+      "الفيديوهات قصيرة ومركزة ومفيش وقت بيضيع. أقدر أرجع للدرس أكتر من مرة لحد ما الفكرة تثبت في دماغي.",
+    quoteEn:
+      "The videos are short and focused with no wasted time. I can rewatch a lesson as many times as I need until it clicks.",
     rating: 4,
-    initials: { ar: 'هن', en: 'HT' },
+    initials: { ar: "هن", en: "HT" },
   },
   {
     id: 10,
-    nameAr: 'محمود عبد الله',
-    nameEn: 'Mahmoud Abdullah',
-    gradeAr: 'طالب — الصف الثالث الثانوي',
-    gradeEn: 'Grade 12 Student',
-    quoteAr: 'المساعد الذكي غيّر طريقة مذاكرتي بالكامل. بسأله أي سؤال في المنهج وبيجاوبني فوراً زي ما يكون معايا مدرس ٢٤ ساعة.',
-    quoteEn: 'The AI tutor completely changed how I study. I ask it anything in the curriculum and it answers instantly — like having a teacher 24/7.',
+    nameAr: "محمود عبد الله",
+    nameEn: "Mahmoud Abdullah",
+    gradeAr: "طالب — الصف الثالث الثانوي",
+    gradeEn: "Grade 12 Student",
+    quoteAr:
+      "المساعد الذكي غيّر طريقة مذاكرتي بالكامل. بسأله أي سؤال في المنهج وبيجاوبني فوراً زي ما يكون معايا مدرس ٢٤ ساعة.",
+    quoteEn:
+      "The AI tutor completely changed how I study. I ask it anything in the curriculum and it answers instantly — like having a teacher 24/7.",
     rating: 5,
-    initials: { ar: 'مح', en: 'MA' },
+    initials: { ar: "مح", en: "MA" },
   },
 ];
 
 function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
-  const { t } = useTranslation('landing');
-  const isRtl = useDirection() === 'rtl';
+  const { t } = useTranslation("landing");
+  const isRtl = useDirection() === "rtl";
 
   const visibleCards = isDesktop ? 2 : 1;
   const totalPages = Math.ceil(testimonialsData.length / visibleCards);
@@ -838,7 +921,8 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
   const safePage = Math.min(currentPage, totalPages - 1);
 
   const goNext = () => setCurrentPage((prev) => (prev + 1) % totalPages);
-  const goPrev = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+  const goPrev = () =>
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   // Autoplay: advance one page every 4s unless paused (hover). Restarts when
   // totalPages changes (desktop/mobile breakpoint).
@@ -859,7 +943,7 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
       <div className="mx-auto max-w-5xl bg-navy-50 px-4 py-10 md:px-8 md:py-16 lg:px-15 lg:py-15">
         {/* Title */}
         <h2 className="anim-fade-up mb-12 text-center font-cairo text-2xl font-bold text-navy-800">
-          {t('testimonials.title')}
+          {t("testimonials.title")}
         </h2>
 
         {/* Carousel wrapper */}
@@ -876,20 +960,20 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
           <button
             type="button"
             onClick={goPrev}
-            aria-label={t('testimonials.prev', 'Previous')}
+            aria-label={t("testimonials.prev", "Previous")}
             className="absolute -start-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-navy-600 shadow-card transition-all hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 md:-start-12"
           >
-            <ChevronRight className={cn('h-5 w-5', !isRtl && 'rotate-180')} />
+            <ChevronRight className={cn("h-5 w-5", !isRtl && "rotate-180")} />
           </button>
 
           {/* Next arrow (left side in RTL) */}
           <button
             type="button"
             onClick={goNext}
-            aria-label={t('testimonials.next', 'Next')}
+            aria-label={t("testimonials.next", "Next")}
             className="absolute -end-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-navy-600 shadow-card transition-all hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 md:-end-12"
           >
-            <ChevronLeft className={cn('h-5 w-5', !isRtl && 'rotate-180')} />
+            <ChevronLeft className={cn("h-5 w-5", !isRtl && "rotate-180")} />
           </button>
 
           {/* Cards slider */}
@@ -907,7 +991,9 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
                   {/* Testimonial card */}
                   <div className="flex h-full flex-col rounded-card border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-cyan-200 hover:shadow-card">
                     {/* Quote mark */}
-                    <div className="mb-3 font-serif text-4xl leading-none text-cyan-500/20">❝</div>
+                    <div className="mb-3 font-serif text-4xl leading-none text-cyan-500/20">
+                      ❝
+                    </div>
 
                     {/* Quote text */}
                     <p className="mb-6 flex-1 font-cairo text-sm leading-relaxed text-navy-700">
@@ -935,10 +1021,10 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
                               <Star
                                 key={i}
                                 className={cn(
-                                  'h-3 w-3',
+                                  "h-3 w-3",
                                   i < item.rating
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'fill-gray-200 text-gray-200',
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "fill-gray-200 text-gray-200",
                                 )}
                               />
                             ))}
@@ -962,8 +1048,10 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
                 aria-label={`${i + 1}`}
                 aria-current={i === safePage}
                 className={cn(
-                  'h-2 rounded-full transition-all duration-300',
-                  i === safePage ? 'w-6 bg-cyan-500' : 'w-2 bg-navy-200 hover:bg-navy-300',
+                  "h-2 rounded-full transition-all duration-300",
+                  i === safePage
+                    ? "w-6 bg-cyan-500"
+                    : "w-2 bg-navy-200 hover:bg-navy-300",
                 )}
               />
             ))}
@@ -984,8 +1072,8 @@ interface FaqItem {
 }
 
 function FAQSection() {
-  const { t } = useTranslation('landing');
-  const items = t('faq.items', { returnObjects: true }) as FaqItem[];
+  const { t } = useTranslation("landing");
+  const items = t("faq.items", { returnObjects: true }) as FaqItem[];
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
@@ -993,7 +1081,7 @@ function FAQSection() {
       <div className="mx-auto max-w-[800px]">
         {/* Title */}
         <h2 className="mb-12 text-center font-cairo text-2xl font-bold text-navy-800">
-          {t('faq.title')}
+          {t("faq.title")}
         </h2>
 
         <div className="space-y-3">
@@ -1003,10 +1091,10 @@ function FAQSection() {
               <div
                 key={idx}
                 className={cn(
-                  'group rounded-card border bg-white transition-all duration-300',
+                  "group rounded-card border bg-white transition-all duration-300",
                   open
-                    ? 'border-cyan-300 shadow-card'
-                    : 'border-gray-100 hover:scale-[1.02] hover:border-cyan-200 hover:shadow-card'
+                    ? "border-cyan-300 shadow-card"
+                    : "border-gray-100 hover:scale-[1.02] hover:border-cyan-200 hover:shadow-card",
                 )}
               >
                 <button
@@ -1015,16 +1103,24 @@ function FAQSection() {
                   aria-expanded={open}
                   className="flex w-full items-center justify-between gap-4 p-5 text-start"
                 >
-                  <span className={cn(
-                    'font-cairo text-base font-bold transition-colors duration-200',
-                    open ? 'text-cyan-600' : 'text-navy-800 group-hover:text-cyan-600'
-                  )}>
+                  <span
+                    className={cn(
+                      "font-cairo text-base font-bold transition-colors duration-200",
+                      open
+                        ? "text-cyan-600"
+                        : "text-navy-800 group-hover:text-cyan-600",
+                    )}
+                  >
                     {item.q}
                   </span>
-                  <div className={cn(
-                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-300',
-                    open ? 'bg-cyan-500 text-white rotate-180' : 'bg-navy-50 text-navy-400 group-hover:bg-cyan-50 group-hover:text-cyan-500'
-                  )}>
+                  <div
+                    className={cn(
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-300",
+                      open
+                        ? "bg-cyan-500 text-white rotate-180"
+                        : "bg-navy-50 text-navy-400 group-hover:bg-cyan-50 group-hover:text-cyan-500",
+                    )}
+                  >
                     <ChevronDown size={18} />
                   </div>
                 </button>
@@ -1032,8 +1128,10 @@ function FAQSection() {
                 {/* Answer — animated open/close */}
                 <div
                   className={cn(
-                    'grid transition-all duration-300 ease-in-out',
-                    open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                    "grid transition-all duration-300 ease-in-out",
+                    open
+                      ? "grid-rows-[1fr] opacity-100"
+                      : "grid-rows-[0fr] opacity-0",
                   )}
                 >
                   <div className="overflow-hidden">
@@ -1058,7 +1156,7 @@ function FAQSection() {
 /* ------------------------------------------------------------------ */
 
 function CTASection({ isDesktop }: { isDesktop: boolean }) {
-  const { t } = useTranslation('landing');
+  const { t } = useTranslation("landing");
   const navigate = useNavigate();
 
   return (
@@ -1071,20 +1169,20 @@ function CTASection({ isDesktop }: { isDesktop: boolean }) {
 
       <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
         <h2 className="font-cairo text-2xl font-bold text-white md:text-3xl">
-          {t('cta.title')}
+          {t("cta.title")}
         </h2>
         <p className="mt-3 font-cairo text-base text-navy-300">
-          {t('cta.subtitle')}
+          {t("cta.subtitle")}
         </p>
         <button
           type="button"
-          onClick={() => navigate('/auth')}
+          onClick={() => navigate("/auth")}
           className={cn(
-            'mt-8 rounded-btn bg-cyan-500 px-10 py-4 font-cairo text-lg font-bold text-navy-900 shadow-glow transition-all duration-300 hover:bg-cyan-400 hover:scale-105 hover:shadow-[0_0_30px_rgba(0,201,219,0.4)]',
-            !isDesktop && 'w-full'
+            "mt-8 rounded-btn bg-cyan-500 px-10 py-4 font-cairo text-lg font-bold text-navy-900 shadow-glow transition-all duration-300 hover:bg-cyan-400 hover:scale-105 hover:shadow-[0_0_30px_rgba(0,201,219,0.4)]",
+            !isDesktop && "w-full",
           )}
         >
-          {t('cta.btn')}
+          {t("cta.btn")}
         </button>
       </div>
     </section>
@@ -1095,8 +1193,10 @@ function CTASection({ isDesktop }: { isDesktop: boolean }) {
 /* Footer                                                              */
 /* ------------------------------------------------------------------ */
 function LandingFooter() {
-  const { t } = useTranslation('landing');
-  const curriculumLinks = t('footer.curriculumLinks', { returnObjects: true }) as string[];
+  const { t } = useTranslation("landing");
+  const curriculumLinks = t("footer.curriculumLinks", {
+    returnObjects: true,
+  }) as string[];
 
   return (
     <footer className="bg-navy-950 px-4 py-12">
@@ -1104,18 +1204,36 @@ function LandingFooter() {
         <div className="flex flex-col gap-8 text-center md:flex-row md:justify-between md:text-start">
           {/* Brand */}
           <div className="md:max-w-xs">
-            <span className="font-cairo text-xl font-bold text-cyan-500">{t('brand')}</span>
-            <p className="mt-2 font-cairo text-sm text-navy-300">{t('footer.academyName')}</p>
-            <p className="mt-1 font-cairo text-xs text-navy-400">{t('footer.platformDesc')}</p>
+            <span className="font-cairo text-xl font-bold text-cyan-500">
+              {t("brand")}
+            </span>
+            <p className="mt-2 font-cairo text-sm text-navy-300">
+              {t("footer.academyName")}
+            </p>
+            <p className="mt-1 font-cairo text-xs text-navy-400">
+              {t("footer.platformDesc")}
+            </p>
             {/* Social icons */}
             <div className="mt-4 flex justify-center gap-3 md:justify-start">
-              <a href="#" aria-label="Facebook" className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900">
+              <a
+                href="#"
+                aria-label="Facebook"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900"
+              >
                 <FaFacebookF size={14} />
               </a>
-              <a href="#" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900">
+              <a
+                href="#"
+                aria-label="Instagram"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900"
+              >
                 <FaInstagram size={14} />
               </a>
-              <a href="#" aria-label="WhatsApp" className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900">
+              <a
+                href="#"
+                aria-label="WhatsApp"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900"
+              >
                 <FaWhatsapp size={14} />
               </a>
             </div>
@@ -1123,11 +1241,16 @@ function LandingFooter() {
 
           {/* Curriculum */}
           <div>
-            <h4 className="mb-3 font-cairo text-sm font-bold text-white">{t('footer.curriculum')}</h4>
+            <h4 className="mb-3 font-cairo text-sm font-bold text-white">
+              {t("footer.curriculum")}
+            </h4>
             <ul className="flex flex-col gap-2.5">
               {curriculumLinks.map((link) => (
                 <li key={link}>
-                  <a href="#chapters" className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400">
+                  <a
+                    href="#chapters"
+                    className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400"
+                  >
                     {link}
                   </a>
                 </li>
@@ -1137,16 +1260,24 @@ function LandingFooter() {
 
           {/* Important links */}
           <div>
-            <h4 className="mb-3 font-cairo text-sm font-bold text-white">{t('footer.importantLinks')}</h4>
+            <h4 className="mb-3 font-cairo text-sm font-bold text-white">
+              {t("footer.importantLinks")}
+            </h4>
             <ul className="flex flex-col gap-2.5">
               <li>
-                <a href="#faq" className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400">
-                  {t('footer.faqLink')}
+                <a
+                  href="#faq"
+                  className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400"
+                >
+                  {t("footer.faqLink")}
                 </a>
               </li>
               <li>
-                <a href="#" className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400">
-                  {t('footer.contactUs')}
+                <a
+                  href="#"
+                  className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400"
+                >
+                  {t("footer.contactUs")}
                 </a>
               </li>
             </ul>
@@ -1154,20 +1285,29 @@ function LandingFooter() {
 
           {/* Contact */}
           <div>
-            <h4 className="mb-3 font-cairo text-sm font-bold text-white">{t('footer.contactUs')}</h4>
+            <h4 className="mb-3 font-cairo text-sm font-bold text-white">
+              {t("footer.contactUs")}
+            </h4>
             <ul className="flex flex-col gap-2.5">
               <li className="flex items-center justify-center gap-2 md:justify-start">
                 <Mail size={14} className="text-cyan-500" />
-                <span className="font-cairo text-sm text-navy-400">info@fahimni.com</span>
+                <span className="font-cairo text-sm text-navy-400">
+                  info@fahimni.com
+                </span>
               </li>
               <li className="flex items-center justify-center gap-2 md:justify-start">
                 <Phone size={14} className="text-cyan-500" />
-                <span className="font-cairo text-sm text-navy-400">01012345678</span>
+                <span className="font-cairo text-sm text-navy-400">
+                  01012345678
+                </span>
               </li>
               <li className="flex items-center justify-center gap-2 md:justify-start">
                 <MessageCircle size={14} className="text-cyan-500" />
-                <a href="#" className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400">
-                  {t('footer.whatsapp')}
+                <a
+                  href="#"
+                  className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400"
+                >
+                  {t("footer.whatsapp")}
                 </a>
               </li>
             </ul>
@@ -1176,7 +1316,9 @@ function LandingFooter() {
 
         {/* Bottom bar */}
         <div className="mt-10 border-t border-navy-800 pt-6 text-center">
-          <p className="font-cairo text-xs text-navy-500">{t('footer.copyright')}</p>
+          <p className="font-cairo text-xs text-navy-500">
+            {t("footer.copyright")}
+          </p>
         </div>
       </div>
     </footer>
