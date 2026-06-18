@@ -16,12 +16,12 @@ export function StudentLayout() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      {/* Student mobile nav is the bottom tab bar, so no hamburger here. */}
-      <Topbar showMenu={false} />
+    <div className="flex min-h-screen bg-background">
+      <Sidebar items={items} />
 
-      <div className="flex flex-1">
-        <Sidebar items={items} />
+      <div className="flex flex-1 flex-col">
+        {/* Student mobile nav is the bottom tab bar, so no hamburger here. */}
+        <Topbar showMenu={false} />
         <main className="flex-1 px-4 py-6 pb-24 md:pb-6">
           <Outlet />
         </main>

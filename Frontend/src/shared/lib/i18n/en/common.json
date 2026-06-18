@@ -5,7 +5,9 @@
     "dashboard": "Dashboard",
     "courses": "Courses",
     "content": "Content",
+    "contentManagement": "Content Management",
     "quizzes": "Quizzes",
+    "quizGenerator": "Quiz Generator",
     "students": "Students",
     "settings": "Settings",
     "branding": "Branding",
@@ -15,6 +17,12 @@
     "studentLookup": "Student Lookup",
     "tenants": "Academies"
   },
+  "roles": {
+    "teacher": "Teacher",
+    "student": "Student",
+    "admin": "Admin",
+    "operation": "Support"
+  },
   "actions": {
     "save": "Save",
     "cancel": "Cancel",
@@ -22,7 +30,7 @@
     "edit": "Edit",
     "add": "Add",
     "search": "Search",
-    "logout": "Logout",
+    "logout": "Log Out",
     "login": "Sign In",
     "register": "Sign Up",
     "submit": "Submit",
