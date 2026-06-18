@@ -4,6 +4,19 @@
   "quickActions": { "addLesson": "Add Lesson", "generateQuiz": "Generate Quiz" },
   "contentManager": { "title": "Content Management", "selectLesson": "Select a lesson to edit", "stages": "Stages", "chapters": "Chapters", "lessons": "Lessons" },
   "quizGenerator": { "title": "AI Quiz Generator", "step1": "Settings", "step2": "Review", "step3": "Publish", "topic": "Topic", "questionCount": "Question Count", "questionTypes": "Question Types", "difficulty": "Difficulty Level", "generateBtn": "Generate Quiz" },
+  "stages": {
+    "title": "All Stages",
+    "subtitle": "Manage your academy content structure",
+    "newStage": "New Stage",
+    "searchPlaceholder": "Find a stage...",
+    "empty": "No stages yet. Create your first stage to get started.",
+    "columns": {
+      "stageName": "Stage Name",
+      "chapters": "Chapters",
+      "lessons": "Lessons",
+      "actions": "Actions"
+    }
+  },
   "branding": { "title": "Branding", "logo": "Logo", "colors": "Colors", "teacherPhoto": "Teacher Photo" },
   "settings": {
     "pageTitle": "Account Settings",
