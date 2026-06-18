@@ -13407,6 +13407,9 @@ export namespace Prisma {
     resourceType: string | null
     resourceId: string | null
     userId: string | null
+    actorType: string | null
+    actorName: string | null
+    scopeTeacherId: string | null
     createdAt: Date | null
   }
 
@@ -13416,6 +13419,9 @@ export namespace Prisma {
     resourceType: string | null
     resourceId: string | null
     userId: string | null
+    actorType: string | null
+    actorName: string | null
+    scopeTeacherId: string | null
     createdAt: Date | null
   }
 
@@ -13426,6 +13432,9 @@ export namespace Prisma {
     resourceId: number
     details: number
     userId: number
+    actorType: number
+    actorName: number
+    scopeTeacherId: number
     createdAt: number
     _all: number
   }
@@ -13437,6 +13446,9 @@ export namespace Prisma {
     resourceType?: true
     resourceId?: true
     userId?: true
+    actorType?: true
+    actorName?: true
+    scopeTeacherId?: true
     createdAt?: true
   }
 
@@ -13446,6 +13458,9 @@ export namespace Prisma {
     resourceType?: true
     resourceId?: true
     userId?: true
+    actorType?: true
+    actorName?: true
+    scopeTeacherId?: true
     createdAt?: true
   }
 
@@ -13456,6 +13471,9 @@ export namespace Prisma {
     resourceId?: true
     details?: true
     userId?: true
+    actorType?: true
+    actorName?: true
+    scopeTeacherId?: true
     createdAt?: true
     _all?: true
   }
@@ -13539,6 +13557,9 @@ export namespace Prisma {
     resourceId: string
     details: JsonValue | null
     userId: string
+    actorType: string | null
+    actorName: string | null
+    scopeTeacherId: string | null
     createdAt: Date
     _count: AuditLogCountAggregateOutputType | null
     _min: AuditLogMinAggregateOutputType | null
@@ -13566,6 +13587,9 @@ export namespace Prisma {
     resourceId?: boolean
     details?: boolean
     userId?: boolean
+    actorType?: boolean
+    actorName?: boolean
+    scopeTeacherId?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
@@ -13577,6 +13601,9 @@ export namespace Prisma {
     resourceId?: boolean
     details?: boolean
     userId?: boolean
+    actorType?: boolean
+    actorName?: boolean
+    scopeTeacherId?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
@@ -13588,6 +13615,9 @@ export namespace Prisma {
     resourceId?: boolean
     details?: boolean
     userId?: boolean
+    actorType?: boolean
+    actorName?: boolean
+    scopeTeacherId?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
@@ -13599,10 +13629,13 @@ export namespace Prisma {
     resourceId?: boolean
     details?: boolean
     userId?: boolean
+    actorType?: boolean
+    actorName?: boolean
+    scopeTeacherId?: boolean
     createdAt?: boolean
   }
 
-  export type AuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "resourceType" | "resourceId" | "details" | "userId" | "createdAt", ExtArgs["result"]["auditLog"]>
+  export type AuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "resourceType" | "resourceId" | "details" | "userId" | "actorType" | "actorName" | "scopeTeacherId" | "createdAt", ExtArgs["result"]["auditLog"]>
   export type AuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -13625,6 +13658,9 @@ export namespace Prisma {
       resourceId: string
       details: Prisma.JsonValue | null
       userId: string
+      actorType: string | null
+      actorName: string | null
+      scopeTeacherId: string | null
       createdAt: Date
     }, ExtArgs["result"]["auditLog"]>
     composites: {}
@@ -14056,6 +14092,9 @@ export namespace Prisma {
     readonly resourceId: FieldRef<"AuditLog", 'String'>
     readonly details: FieldRef<"AuditLog", 'Json'>
     readonly userId: FieldRef<"AuditLog", 'String'>
+    readonly actorType: FieldRef<"AuditLog", 'String'>
+    readonly actorName: FieldRef<"AuditLog", 'String'>
+    readonly scopeTeacherId: FieldRef<"AuditLog", 'String'>
     readonly createdAt: FieldRef<"AuditLog", 'DateTime'>
   }
     
@@ -15680,6 +15719,9 @@ export namespace Prisma {
     resourceId: 'resourceId',
     details: 'details',
     userId: 'userId',
+    actorType: 'actorType',
+    actorName: 'actorName',
+    scopeTeacherId: 'scopeTeacherId',
     createdAt: 'createdAt'
   };
 
@@ -16597,6 +16639,9 @@ export namespace Prisma {
     resourceId?: StringFilter<"AuditLog"> | string
     details?: JsonNullableFilter<"AuditLog">
     userId?: StringFilter<"AuditLog"> | string
+    actorType?: StringNullableFilter<"AuditLog"> | string | null
+    actorName?: StringNullableFilter<"AuditLog"> | string | null
+    scopeTeacherId?: StringNullableFilter<"AuditLog"> | string | null
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -16608,6 +16653,9 @@ export namespace Prisma {
     resourceId?: SortOrder
     details?: SortOrderInput | SortOrder
     userId?: SortOrder
+    actorType?: SortOrderInput | SortOrder
+    actorName?: SortOrderInput | SortOrder
+    scopeTeacherId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
   }
@@ -16622,6 +16670,9 @@ export namespace Prisma {
     resourceId?: StringFilter<"AuditLog"> | string
     details?: JsonNullableFilter<"AuditLog">
     userId?: StringFilter<"AuditLog"> | string
+    actorType?: StringNullableFilter<"AuditLog"> | string | null
+    actorName?: StringNullableFilter<"AuditLog"> | string | null
+    scopeTeacherId?: StringNullableFilter<"AuditLog"> | string | null
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
@@ -16633,6 +16684,9 @@ export namespace Prisma {
     resourceId?: SortOrder
     details?: SortOrderInput | SortOrder
     userId?: SortOrder
+    actorType?: SortOrderInput | SortOrder
+    actorName?: SortOrderInput | SortOrder
+    scopeTeacherId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: AuditLogCountOrderByAggregateInput
     _max?: AuditLogMaxOrderByAggregateInput
@@ -16649,6 +16703,9 @@ export namespace Prisma {
     resourceId?: StringWithAggregatesFilter<"AuditLog"> | string
     details?: JsonNullableWithAggregatesFilter<"AuditLog">
     userId?: StringWithAggregatesFilter<"AuditLog"> | string
+    actorType?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    actorName?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    scopeTeacherId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
   }
 
@@ -17467,6 +17524,9 @@ export namespace Prisma {
     resourceType: string
     resourceId: string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: string | null
+    actorName?: string | null
+    scopeTeacherId?: string | null
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutAuditLogsInput
   }
@@ -17478,6 +17538,9 @@ export namespace Prisma {
     resourceId: string
     details?: NullableJsonNullValueInput | InputJsonValue
     userId: string
+    actorType?: string | null
+    actorName?: string | null
+    scopeTeacherId?: string | null
     createdAt?: Date | string
   }
 
@@ -17487,6 +17550,9 @@ export namespace Prisma {
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: NullableStringFieldUpdateOperationsInput | string | null
+    scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAuditLogsNestedInput
   }
@@ -17498,6 +17564,9 @@ export namespace Prisma {
     resourceId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     userId?: StringFieldUpdateOperationsInput | string
+    actorType?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: NullableStringFieldUpdateOperationsInput | string | null
+    scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -17508,6 +17577,9 @@ export namespace Prisma {
     resourceId: string
     details?: NullableJsonNullValueInput | InputJsonValue
     userId: string
+    actorType?: string | null
+    actorName?: string | null
+    scopeTeacherId?: string | null
     createdAt?: Date | string
   }
 
@@ -17517,6 +17589,9 @@ export namespace Prisma {
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: NullableStringFieldUpdateOperationsInput | string | null
+    scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -17527,6 +17602,9 @@ export namespace Prisma {
     resourceId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     userId?: StringFieldUpdateOperationsInput | string
+    actorType?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: NullableStringFieldUpdateOperationsInput | string | null
+    scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -18328,6 +18406,9 @@ export namespace Prisma {
     resourceId?: SortOrder
     details?: SortOrder
     userId?: SortOrder
+    actorType?: SortOrder
+    actorName?: SortOrder
+    scopeTeacherId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -18337,6 +18418,9 @@ export namespace Prisma {
     resourceType?: SortOrder
     resourceId?: SortOrder
     userId?: SortOrder
+    actorType?: SortOrder
+    actorName?: SortOrder
+    scopeTeacherId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -18346,6 +18430,9 @@ export namespace Prisma {
     resourceType?: SortOrder
     resourceId?: SortOrder
     userId?: SortOrder
+    actorType?: SortOrder
+    actorName?: SortOrder
+    scopeTeacherId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -19477,6 +19564,9 @@ export namespace Prisma {
     resourceType: string
     resourceId: string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: string | null
+    actorName?: string | null
+    scopeTeacherId?: string | null
     createdAt?: Date | string
   }
 
@@ -19486,6 +19576,9 @@ export namespace Prisma {
     resourceType: string
     resourceId: string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: string | null
+    actorName?: string | null
+    scopeTeacherId?: string | null
     createdAt?: Date | string
   }
 
@@ -19715,6 +19808,9 @@ export namespace Prisma {
     resourceId?: StringFilter<"AuditLog"> | string
     details?: JsonNullableFilter<"AuditLog">
     userId?: StringFilter<"AuditLog"> | string
+    actorType?: StringNullableFilter<"AuditLog"> | string | null
+    actorName?: StringNullableFilter<"AuditLog"> | string | null
+    scopeTeacherId?: StringNullableFilter<"AuditLog"> | string | null
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
   }
 
@@ -21029,6 +21125,9 @@ export namespace Prisma {
     resourceType: string
     resourceId: string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: string | null
+    actorName?: string | null
+    scopeTeacherId?: string | null
     createdAt?: Date | string
   }
 
@@ -21133,6 +21232,9 @@ export namespace Prisma {
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: NullableStringFieldUpdateOperationsInput | string | null
+    scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21142,6 +21244,9 @@ export namespace Prisma {
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: NullableStringFieldUpdateOperationsInput | string | null
+    scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21151,6 +21256,9 @@ export namespace Prisma {
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    actorType?: NullableStringFieldUpdateOperationsInput | string | null
+    actorName?: NullableStringFieldUpdateOperationsInput | string | null
+    scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
