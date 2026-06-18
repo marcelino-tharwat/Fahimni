@@ -1,5 +1,56 @@
 {
   "dashboard": "Teacher Dashboard",
+  "dashboardView": {
+    "title": "Dashboard",
+    "welcome": "Welcome back! Here's what's happening in your academy.",
+    "statsRegion": "Statistics",
+    "stats": {
+      "totalStages": "Total Stages",
+      "totalChapters": "Total Chapters",
+      "totalLessons": "Total Lessons",
+      "totalStudents": "Total Students",
+      "totalQuizzes": "Total Quizzes"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "newStage": "New Stage",
+      "newChapter": "New Chapter",
+      "newLesson": "New Lesson"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "viewAll": "View All",
+      "empty": "No recent activity yet.",
+      "you": "You",
+      "actions": {
+        "STAGE_CREATED": "{{actor}} created a new stage “{{name}}”",
+        "STAGE_UPDATED": "{{actor}} updated the stage “{{name}}”",
+        "STAGE_DELETED": "{{actor}} deleted the stage “{{name}}”",
+        "CHAPTER_CREATED": "{{actor}} created a new chapter “{{name}}”",
+        "CHAPTER_UPDATED": "{{actor}} updated the chapter “{{name}}”",
+        "CHAPTER_DELETED": "{{actor}} deleted the chapter “{{name}}”",
+        "LESSON_CREATED": "{{actor}} added a new lesson “{{name}}”",
+        "LESSON_UPDATED": "{{actor}} updated the lesson “{{name}}”",
+        "LESSON_DELETED": "{{actor}} deleted the lesson “{{name}}”",
+        "QUIZ_CREATED": "{{actor}} created a new quiz “{{name}}”",
+        "QUIZ_UPDATED": "{{actor}} updated the quiz “{{name}}”",
+        "QUIZ_DELETED": "{{actor}} deleted the quiz “{{name}}”",
+        "QUIZ_COMPLETED": "{{actor}} completed quiz “{{name}}”",
+        "STUDENT_ENROLLED": "{{actor}} enrolled in your content",
+        "STUDENT_UNENROLLED": "{{actor}} left your content",
+        "fallback": "{{actor}} made an update"
+      }
+    },
+    "empty": {
+      "title": "Welcome! Start by creating a new stage",
+      "description": "Your academy is empty for now. Create your first stage to start building content."
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "We couldn't load your dashboard. Please try again.",
+      "retry": "Retry"
+    }
+  },
   "stats": { "totalStudents": "Total Students", "activeThisMonth": "Active This Month", "publishedChapters": "Published Chapters", "quizzesCreated": "Quizzes" },
   "quickActions": { "addLesson": "Add Lesson", "generateQuiz": "Generate Quiz" },
   "contentManager": { "title": "Content Management", "selectLesson": "Select a lesson to edit", "stages": "Stages", "chapters": "Chapters", "lessons": "Lessons" },

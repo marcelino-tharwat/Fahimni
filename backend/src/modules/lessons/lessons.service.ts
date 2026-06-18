@@ -62,6 +62,16 @@ export class LessonsService {
       select: lessonPublicFields,
     });
 
+    await auditLogService.record({
+      action: "LESSON_CREATED",
+      resourceType: "LESSON",
+      resourceId: lesson.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { title: lesson.title, chapterId },
+    });
+
     return toDTO(lesson as unknown as Record<string, unknown>);
   }
 
@@ -144,6 +154,16 @@ export class LessonsService {
       select: lessonPublicFields,
     });
 
+    await auditLogService.record({
+      action: "LESSON_UPDATED",
+      resourceType: "LESSON",
+      resourceId: lesson.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { title: lesson.title },
+    });
+
     return toDTO(lesson as unknown as Record<string, unknown>);
   }
 
@@ -179,15 +199,18 @@ export class LessonsService {
         data: { deletedAt: new Date() },
       });
 
-      await tx.auditLog.create({
-        data: {
-          action: "DELETE_LESSON",
+      await auditLogService.record(
+        {
+          action: "LESSON_DELETED",
           resourceType: "LESSON",
           resourceId: id,
+          actorId: teacherId,
+          actorType: "TEACHER",
+          scopeTeacherId: teacherId,
           details: { title: lesson.title, chapterId: lesson.chapter.id },
-          userId: teacherId,
         },
-      });
+        tx,
+      );
     });
 
     await Promise.all(
