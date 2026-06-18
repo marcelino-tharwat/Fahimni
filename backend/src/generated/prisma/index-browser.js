@@ -230,6 +230,9 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   resourceId: 'resourceId',
   details: 'details',
   userId: 'userId',
+  actorType: 'actorType',
+  actorName: 'actorName',
+  scopeTeacherId: 'scopeTeacherId',
   createdAt: 'createdAt'
 };
 

@@ -52,6 +52,16 @@ export class ChapterService {
       },
     });
 
+    await auditLogService.record({
+      action: "CHAPTER_CREATED",
+      resourceType: "CHAPTER",
+      resourceId: chapter.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { name: chapter.name, stageId },
+    });
+
     return toDTO(chapter as unknown as Record<string, unknown>, 0);
   }
 
@@ -145,6 +155,16 @@ export class ChapterService {
       },
     });
 
+    await auditLogService.record({
+      action: "CHAPTER_UPDATED",
+      resourceType: "CHAPTER",
+      resourceId: chapter.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { name: chapter.name },
+    });
+
     return toDTO(
       chapter as unknown as Record<string, unknown>,
       await this.countLessons(id),
@@ -181,6 +201,15 @@ export class ChapterService {
         where: { id },
         data: { deletedAt: new Date() },
       });
+      await auditLogService.record({
+        action: "CHAPTER_DELETED",
+        resourceType: "CHAPTER",
+        resourceId: id,
+        actorId: teacherId,
+        actorType: "TEACHER",
+        scopeTeacherId: teacherId,
+        details: { name: chapter.name, stageName: chapter.stage.name },
+      });
       return;
     }
 
@@ -205,19 +234,22 @@ export class ChapterService {
         data: { deletedAt: new Date() },
       });
 
-      await tx.auditLog.create({
-        data: {
-          action: "DELETE_CHAPTER",
+      await auditLogService.record(
+        {
+          action: "CHAPTER_DELETED",
           resourceType: "CHAPTER",
           resourceId: id,
+          actorId: teacherId,
+          actorType: "TEACHER",
+          scopeTeacherId: teacherId,
           details: {
             name: chapter.name,
             stageName: chapter.stage.name,
             lessonsDeleted: lessons.length,
           },
-          userId: teacherId,
         },
-      });
+        tx,
+      );
     });
 
     await Promise.all(

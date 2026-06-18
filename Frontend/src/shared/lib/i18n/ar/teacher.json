@@ -1,5 +1,56 @@
 {
   "dashboard": "لوحة المعلم",
+  "dashboardView": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحبًا بعودتك! إليك ما يحدث في أكاديميتك.",
+    "statsRegion": "الإحصائيات",
+    "stats": {
+      "totalStages": "إجمالي المراحل",
+      "totalChapters": "إجمالي الأبواب",
+      "totalLessons": "إجمالي الدروس",
+      "totalStudents": "إجمالي الطلاب",
+      "totalQuizzes": "إجمالي الاختبارات"
+    },
+    "quickActions": {
+      "title": "إجراءات سريعة",
+      "newStage": "مرحلة جديدة",
+      "newChapter": "باب جديد",
+      "newLesson": "درس جديد"
+    },
+    "activity": {
+      "title": "النشاط الأخير",
+      "viewAll": "عرض الكل",
+      "empty": "لا يوجد نشاط حديث بعد.",
+      "you": "أنت",
+      "actions": {
+        "STAGE_CREATED": "{{actor}} أنشأت مرحلة جديدة «{{name}}»",
+        "STAGE_UPDATED": "{{actor}} حدّثت المرحلة «{{name}}»",
+        "STAGE_DELETED": "{{actor}} حذفت المرحلة «{{name}}»",
+        "CHAPTER_CREATED": "{{actor}} أنشأت بابًا جديدًا «{{name}}»",
+        "CHAPTER_UPDATED": "{{actor}} حدّثت الباب «{{name}}»",
+        "CHAPTER_DELETED": "{{actor}} حذفت الباب «{{name}}»",
+        "LESSON_CREATED": "{{actor}} أضفت درسًا جديدًا «{{name}}»",
+        "LESSON_UPDATED": "{{actor}} حدّثت الدرس «{{name}}»",
+        "LESSON_DELETED": "{{actor}} حذفت الدرس «{{name}}»",
+        "QUIZ_CREATED": "{{actor}} أنشأت اختبارًا جديدًا «{{name}}»",
+        "QUIZ_UPDATED": "{{actor}} حدّثت الاختبار «{{name}}»",
+        "QUIZ_DELETED": "{{actor}} حذفت الاختبار «{{name}}»",
+        "QUIZ_COMPLETED": "{{actor}} أكمل الاختبار «{{name}}»",
+        "STUDENT_ENROLLED": "{{actor}} اشترك في محتواك",
+        "STUDENT_UNENROLLED": "{{actor}} ألغى الاشتراك في محتواك",
+        "fallback": "{{actor}} أجرى تحديثًا"
+      }
+    },
+    "empty": {
+      "title": "مرحبًا! ابدأ بإنشاء مرحلة جديدة",
+      "description": "أكاديميتك فارغة حاليًا. أنشئ مرحلتك الأولى لتبدأ في بناء المحتوى."
+    },
+    "error": {
+      "title": "حدث خطأ ما",
+      "description": "تعذر تحميل البيانات. يرجى المحاولة مرة أخرى.",
+      "retry": "إعادة المحاولة"
+    }
+  },
   "stats": { "totalStudents": "إجمالي الطلاب", "activeThisMonth": "نشطين هذا الشهر", "publishedChapters": "الأبواب المنشورة", "quizzesCreated": "الاختبارات" },
   "quickActions": { "addLesson": "أضف درس", "generateQuiz": "أنشئ اختبار" },
   "contentManager": { "title": "إدارة المحتوى", "selectLesson": "اختر درس للتعديل", "stages": "المراحل", "chapters": "الأبواب", "lessons": "الدروس" },

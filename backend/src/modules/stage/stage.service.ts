@@ -76,6 +76,16 @@ export class StageService {
       select: stagePublicFields,
     });
 
+    await auditLogService.record({
+      action: "STAGE_CREATED",
+      resourceType: "STAGE",
+      resourceId: stage.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { name: stage.name },
+    });
+
     return { ...stage, chapterCount: 0, lessonCount: 0 } as unknown as StageResponseDTO;
   }
 
@@ -104,6 +114,16 @@ export class StageService {
       where: { id },
       data,
       select: stagePublicFields,
+    });
+
+    await auditLogService.record({
+      action: "STAGE_UPDATED",
+      resourceType: "STAGE",
+      resourceId: stage.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { name: stage.name },
     });
 
     return this.attachCounts(stage) as unknown as StageResponseDTO;
@@ -144,6 +164,15 @@ export class StageService {
         where: { id },
         data: { deletedAt: new Date() },
       });
+      await auditLogService.record({
+        action: "STAGE_DELETED",
+        resourceType: "STAGE",
+        resourceId: id,
+        actorId: teacherId,
+        actorType: "TEACHER",
+        scopeTeacherId: teacherId,
+        details: { name: stage.name },
+      });
       return;
     }
 
@@ -175,20 +204,22 @@ export class StageService {
         data: { deletedAt: new Date() },
       });
 
-      await tx.auditLog.create({
-        data: {
-          action: "DELETE_STAGE",
+      await auditLogService.record(
+        {
+          action: "STAGE_DELETED",
           resourceType: "STAGE",
           resourceId: id,
+          actorId: teacherId,
+          actorType: "TEACHER",
+          scopeTeacherId: teacherId,
           details: {
             name: stage.name,
             chaptersDeleted: chapters.length,
             lessonsDeleted: allLessons.length,
-            chapterNames: chapters.map((c) => c.name),
           },
-          userId: teacherId,
         },
-      });
+        tx,
+      );
     });
 
     await Promise.all(
