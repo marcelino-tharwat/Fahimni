@@ -5,7 +5,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { apiClient, type ApiError } from "@/shared/lib/api/client";
-import { saveToken, removeToken } from "@/features/auth/lib/token";
+import { getToken, saveToken, removeToken, saveUser, getUser, removeUser } from "@/features/auth/lib/token";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -65,6 +65,7 @@ export const login = createAsyncThunk<
       data: { user: User; accessToken: string };
     }>("/v1/auth/login", credentials);
     saveToken(data.data.accessToken);
+    saveUser(data.data.user);
     return { user: data.data.user, token: data.data.accessToken };
   } catch (err) {
     const apiErr = err as ApiError;
@@ -83,6 +84,7 @@ export const register = createAsyncThunk<
       data: { user: User; accessToken: string };
     }>("/v1/auth/register", payload);
     saveToken(data.data.accessToken);
+    saveUser(data.data.user);
     return { user: data.data.user, token: data.data.accessToken };
   } catch (err) {
     const apiErr = err as ApiError;
@@ -94,11 +96,14 @@ export const register = createAsyncThunk<
 /*  Slice                                                               */
 /* ------------------------------------------------------------------ */
 
+const storedUser = getUser<User>();
+const storedToken = getToken();
+
 const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  status: "idle",
+  user: storedUser,
+  token: storedToken,
+  isAuthenticated: !!storedToken && !!storedUser,
+  status: storedToken ? "succeeded" : "idle",
   error: null,
 };
 
@@ -123,6 +128,7 @@ const authSlice = createSlice({
       state.status = "idle";
       state.error = null;
       removeToken();
+      removeUser();
     },
     clearError(state) {
       state.error = null;
