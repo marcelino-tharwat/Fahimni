@@ -1,15 +1,31 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileText } from 'lucide-react';
-import { useAppDispatch } from '@/shared/store/hooks';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, Info } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
 import { createLessonSchema, flattenZodErrors } from '@/features/teacher/validation';
 import { useUpdateLesson } from '@/features/teacher/hooks/useLessons';
+import { usePdfUpload } from '@/features/teacher/hooks/usePdfUpload';
 import type { Lesson } from '@/features/teacher/types/lesson';
 import { EditorHeader } from './EditorHeader';
 import { FormActions, LabeledInput, LabeledTextarea } from './EditorFields';
+import { YoutubePreview } from './YoutubePreview';
+import { PdfDropZone } from './PdfDropZone';
+import { PdfFileList } from './PdfFileList';
 import type { DeleteTarget } from './types';
+
+function isValidYoutubeUrl(url: string): boolean {
+  if (!url.trim()) return false;
+  try {
+    const parsed = new URL(url.trim());
+    const host = parsed.hostname.replace('www.', '');
+    return ['youtube.com', 'm.youtube.com', 'youtu.be'].includes(host);
+  } catch {
+    return false;
+  }
+}
 
 interface LessonEditorFormProps {
   lesson: Lesson;
@@ -20,12 +36,19 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
   const { t } = useTranslation('teacher');
   const dispatch = useAppDispatch();
   const updateLesson = useUpdateLesson();
+  const teacherId = useAppSelector((state) => state.auth.user?.id) ?? '';
 
   const [title, setTitle] = useState(lesson.title);
   const [description, setDescription] = useState(lesson.description ?? '');
   const [duration, setDuration] = useState(String(lesson.durationMinutes));
   const [youtubeUrl, setYoutubeUrl] = useState(lesson.youtubeUrl ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const pdfUpload = usePdfUpload({
+    teacherId,
+    lessonId: lesson.id,
+    existingKeys: lesson.pdfUrls ?? undefined,
+  });
 
   const clearError = (field: string) => setErrors((prev) => ({ ...prev, [field]: '' }));
 
@@ -35,10 +58,13 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
     setDuration(String(lesson.durationMinutes));
     setYoutubeUrl(lesson.youtubeUrl ?? '');
     setErrors({});
+    pdfUpload.clearError();
   };
 
   const handleSave = () => {
     setErrors({});
+    pdfUpload.clearError();
+
     const parsed = createLessonSchema(t).safeParse({
       title: title.trim(),
       description: description.trim(),
@@ -50,15 +76,15 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
       return;
     }
 
-    // sortOrder and pdfUrls are intentionally not sent here.
     updateLesson.mutate(
       {
         id: lesson.id,
         payload: {
           title: parsed.data.title,
-          description: description.trim(),
+          description: description.trim() || null,
           durationMinutes: parsed.data.durationMinutes,
           youtubeUrl: youtubeUrl.trim() === '' ? null : youtubeUrl.trim(),
+          pdfUrls: pdfUpload.completedKeys.length > 0 ? pdfUpload.completedKeys : null,
         },
       },
       {
@@ -78,12 +104,18 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
     );
   };
 
+  const isYoutubeUrlValid = isValidYoutubeUrl(youtubeUrl);
+
   return (
-    <form
+    <motion.form
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
       onSubmit={(e) => {
         e.preventDefault();
         handleSave();
       }}
+      className="flex h-full flex-col"
     >
       <EditorHeader
         type="lesson"
@@ -98,18 +130,39 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
         }
       />
 
-      <div className="space-y-5">
-        <LabeledInput
-          label={t('contentTree.editor.lessonTitle')}
-          required
-          value={title}
-          maxLength={200}
-          onChange={(v) => {
-            setTitle(v);
-            clearError('title');
-          }}
-          error={errors.title}
-        />
+      <div className="flex-1 space-y-5 overflow-y-auto pb-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <LabeledInput
+            label={t('contentTree.editor.lessonTitle')}
+            required
+            value={title}
+            maxLength={200}
+            onChange={(v) => {
+              setTitle(v);
+              clearError('title');
+            }}
+            error={errors.title}
+          />
+          <LabeledInput
+            label={t('contentTree.editor.duration')}
+            required
+            type="number"
+            inputMode="numeric"
+            dir="ltr"
+            value={duration}
+            onChange={(v) => {
+              setDuration(v);
+              clearError('durationMinutes');
+            }}
+            error={errors.durationMinutes}
+            trailing={
+              <span className="font-cairo text-sm text-gray-500">
+                {t('contentTree.editor.durationUnit')}
+              </span>
+            }
+          />
+        </div>
+
         <LabeledTextarea
           label={t('contentTree.editor.description')}
           optional
@@ -120,48 +173,83 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
           }}
           error={errors.description}
         />
-        <LabeledInput
-          label={t('contentTree.editor.duration')}
-          required
-          type="number"
-          inputMode="numeric"
-          dir="ltr"
-          value={duration}
-          onChange={(v) => {
-            setDuration(v);
-            clearError('durationMinutes');
-          }}
-          error={errors.durationMinutes}
-        />
-        <LabeledInput
-          label={t('contentTree.editor.youtubeUrl')}
-          optional
-          type="text"
-          dir="ltr"
-          value={youtubeUrl}
-          onChange={(v) => {
-            setYoutubeUrl(v);
-            clearError('youtubeUrl');
-          }}
-          error={errors.youtubeUrl}
-          placeholder="https://youtube.com/watch?v=..."
-        />
 
-        {/* PDF Files — placeholder (upload implemented in a later step) */}
-        <div>
-          <label className="mb-1.5 block font-cairo text-sm font-medium text-gray-700">
-            {t('contentTree.editor.pdfFiles')}
-          </label>
-          <div className="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50/50 p-4">
-            <FileText size={18} className="text-gray-400" />
-            <span className="font-cairo text-sm text-gray-400">
-              {t('contentTree.editor.pdfComingSoon')}
-            </span>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="space-y-3">
+            <label className="mb-1.5 block font-cairo text-sm font-medium text-gray-700">
+              {t('contentTree.editor.pdfFiles')}
+            </label>
+            <PdfDropZone
+              onFilesSelected={pdfUpload.addFiles}
+              disabled={pdfUpload.isUploading}
+            />
+            {pdfUpload.error && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="font-cairo text-sm text-red-500"
+              >
+                {pdfUpload.error}
+              </motion.p>
+            )}
+            <PdfFileList
+              files={pdfUpload.files}
+              onRemove={pdfUpload.removeFile}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <LabeledInput
+              label={t('contentTree.editor.youtubeUrl')}
+              optional
+              type="text"
+              dir="ltr"
+              value={youtubeUrl}
+              onChange={(v) => {
+                setYoutubeUrl(v);
+                clearError('youtubeUrl');
+              }}
+              error={errors.youtubeUrl}
+              placeholder="https://youtube.com/watch?v=..."
+              trailing={
+                youtubeUrl.trim() && isYoutubeUrlValid ? (
+                  <CheckCircle2 size={18} className="text-green-500" />
+                ) : null
+              }
+            />
+
+            <AnimatePresence>
+              {isYoutubeUrlValid && (
+                <motion.div
+                  key="preview"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <YoutubePreview url={youtubeUrl} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex items-start gap-2 rounded-lg bg-blue-50 p-3"
+            >
+              <Info size={16} className="mt-0.5 shrink-0 text-blue-500" />
+              <p className="font-cairo text-xs leading-relaxed text-blue-700">
+                {t('contentTree.editor.youtubeUrlInfo')}
+              </p>
+            </motion.div>
           </div>
         </div>
       </div>
 
-      <FormActions onCancel={reset} saving={updateLesson.isPending} />
-    </form>
+      <div className="border-t border-gray-100 pt-4">
+        <FormActions onCancel={reset} saving={updateLesson.isPending || pdfUpload.isUploading} />
+      </div>
+    </motion.form>
   );
 }
