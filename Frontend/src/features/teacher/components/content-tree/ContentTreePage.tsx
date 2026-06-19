@@ -85,8 +85,9 @@ export function ContentTreePage() {
     const handlers = {
       onSuccess: () => {
         dispatch(addToast({ type: 'success', message: t(toastKey) }));
-        setSelectedItem(null); // don't leave a stale editor form open
+        setSelectedItem(null);
         setDeleteTarget(null);
+        if (type === 'stage') navigate('/teacher/content');
       },
       onError: (error: unknown) =>
         dispatch(
@@ -103,7 +104,7 @@ export function ContentTreePage() {
     else deleteLesson.mutate(id, handlers);
   };
 
-  const stageName = stage?.name ?? stageId ?? '';
+  const stageName = stage?.name ?? '';
 
   return (
     <div className="mx-auto max-w-6xl">
