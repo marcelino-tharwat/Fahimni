@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, MoreHorizontal, BookOpen, FileText } from 'lucide-react';
-import { Button, Input, Card, Badge, Skeleton } from '@/shared/components/ui';
+import { ArrowLeft, Search, Plus, BookOpen, FileText } from 'lucide-react';
+import { Button, Card, Badge, Skeleton } from '@/shared/components/ui';
 import { useStages } from '@/features/teacher/hooks/useStages';
 import type { StageResponseDTO } from '@/features/teacher/types/stage';
 
@@ -41,14 +41,23 @@ export function AllStagesPage() {
 
       {/* Search + New Stage */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Input
-          icon={<Search size={18} />}
-          placeholder={t('teacher:stages.searchPlaceholder')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-        <Button className="rounded-lg bg-cyan-500 hover:bg-cyan-600 whitespace-nowrap">
+        <div className="relative max-w-sm">
+          <Search
+            size={18}
+            className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            type="text"
+            placeholder={t('teacher:stages.searchPlaceholder')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 bg-white py-3 pe-4 ps-10 font-cairo text-base text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+          />
+        </div>
+        <Button
+          onClick={() => navigate('/teacher/content/new')}
+          className="rounded-lg bg-cyan-500 hover:bg-cyan-600 whitespace-nowrap"
+        >
           <Plus size={18} />
           {t('teacher:stages.newStage')}
         </Button>
@@ -68,7 +77,7 @@ export function AllStagesPage() {
         </Card>
       ) : isError ? (
         <Card padding="lg" className="text-center">
-          <p className="font-cairo text-sm text-danger">
+          <p className="font-cairo text-sm text-danger-500">
             {error instanceof Error ? error.message : t('status.error')}
           </p>
         </Card>
@@ -82,76 +91,95 @@ export function AllStagesPage() {
           </div>
         </Card>
       ) : (
-        <Card padding="none" className="overflow-hidden">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b border-gray-100">
-                <Th className="text-start">{t('teacher:stages.columns.stageName')}</Th>
-                <Th className="w-24 text-center">{t('teacher:stages.columns.chapters')}</Th>
-                <Th className="w-24 text-center">{t('teacher:stages.columns.lessons')}</Th>
-                <Th className="w-16 text-center">{t('teacher:stages.columns.actions')}</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((stage, idx) => (
-                <tr
-                  key={stage.id}
-                  className="border-b border-gray-100 last:border-b-0 transition-colors hover:bg-gray-50/50"
+        <div className="flex flex-col gap-2.5">
+          {/* Column headers */}
+          <div className="flex items-center gap-3 px-5">
+            <ColLabel className="flex-1 text-start">
+              {t('teacher:stages.columns.stageName')}
+            </ColLabel>
+            <ColLabel className="w-24 text-center">
+              {t('teacher:stages.columns.chapters')}
+            </ColLabel>
+            <ColLabel className="w-24 text-center">
+              {t('teacher:stages.columns.lessons')}
+            </ColLabel>
+            <ColLabel className="w-32 text-center">
+              {t('teacher:stages.columns.actions')}
+            </ColLabel>
+          </div>
+
+          {/* Stage rows */}
+          {filtered.map((stage, idx) => (
+            <div
+              key={stage.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate(`/teacher/content/${stage.id}`)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(`/teacher/content/${stage.id}`);
+                }
+              }}
+              className="flex cursor-pointer items-center gap-3 rounded-card border border-gray-100 bg-white px-5 py-4 shadow-card transition-transform duration-200 ease-in-out hover:scale-[1.01] hover:shadow-md"
+            >
+              {/* Stage name */}
+              <div className="flex min-w-0 flex-1 items-center gap-3 text-start">
+                <StageMarker index={idx} />
+                <div className="min-w-0">
+                  <p className="font-cairo text-sm font-semibold text-navy-900">{stage.name}</p>
+                  {stage.description && (
+                    <p className="mt-0.5 font-cairo text-xs text-gray-400 line-clamp-1">
+                      {stage.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Chapters */}
+              <div className="flex w-24 items-center justify-center gap-1.5">
+                <BookOpen size={14} className="text-cyan-500" />
+                <span className="font-cairo text-sm font-medium text-navy-800">
+                  {stage.chapterCount}
+                </span>
+              </div>
+
+              {/* Lessons */}
+              <div className="flex w-24 items-center justify-center gap-1.5">
+                <FileText size={14} className="text-purple-500" />
+                <span className="font-cairo text-sm font-medium text-navy-800">
+                  {stage.lessonCount}
+                </span>
+              </div>
+
+              {/* Actions */}
+              <div className="flex w-32 items-center justify-center">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/teacher/content/${stage.id}`);
+                  }}
+                  className="rounded-lg bg-cyan-600 px-4 py-1.5 font-cairo text-sm font-medium text-white transition-colors hover:bg-cyan-700"
                 >
-                  <td className="px-5 py-4 text-start">
-                    <div className="flex items-center gap-3">
-                      <StageMarker index={idx} />
-                      <div>
-                        <p className="font-cairo text-sm font-semibold text-navy-900">{stage.name}</p>
-                        {stage.description && (
-                          <p className="mt-0.5 font-cairo text-xs text-gray-400 line-clamp-1">
-                            {stage.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <BookOpen size={14} className="text-cyan-500" />
-                      <span className="font-cairo text-sm font-medium text-navy-800">
-                        {stage.chapterCount}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <FileText size={14} className="text-purple-500" />
-                      <span className="font-cairo text-sm font-medium text-navy-800">
-                        {stage.lessonCount}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    <button
-                      type="button"
-                      className="rounded-btn p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-navy-600"
-                    >
-                      <MoreHorizontal size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+                  {t('teacher:stages.actions.details')}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
-function Th({ children, className }: { children: string; className?: string }) {
+function ColLabel({ children, className }: { children: string; className?: string }) {
   return (
-    <th
-      className={`px-5 py-3 font-cairo text-xs font-semibold uppercase tracking-wider text-gray-500 ${className ?? ''}`}
+    <div
+      className={`font-cairo text-xs font-semibold uppercase tracking-wider text-gray-500 ${className ?? ''}`}
     >
       {children}
-    </th>
+    </div>
   );
 }
 
