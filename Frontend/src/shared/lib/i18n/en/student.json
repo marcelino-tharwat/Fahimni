@@ -2,6 +2,39 @@
   "dashboard": "Student Dashboard",
   "myCourses": "My Courses",
   "allContent": "All Content",
+  "content": {
+    "title": "All Content",
+    "subtitle": "Explore all stages, chapters, and lessons",
+    "tabs": { "myCourses": "My Courses", "allContent": "All Content" },
+    "badges": { "free": "Free", "subscribed": "Subscribed", "locked": "Locked", "price": "{{price}} EGP" },
+    "stage": "Stage {{order}}: {{name}}",
+    "chapter": "Chapter {{order}}: {{name}}",
+    "lesson": "Lesson {{order}}: {{title}}",
+    "summary": "Showing {{stages}} stages · {{chapters}} chapters · {{lessons}} lessons",
+    "empty": { "title": "No content added yet", "cta": "Explore Courses" },
+    "error": {
+      "title": "Failed to load content",
+      "description": "Something went wrong while loading the content. Please try again.",
+      "retry": "Retry"
+    },
+    "lockedModal": {
+      "title": "This chapter is locked",
+      "description": "Subscribe now to access this chapter and all its lessons",
+      "subscribe": "Subscribe Now",
+      "cancel": "Cancel"
+    },
+    "myCoursesTab": {
+      "lessons": "{{count}} lessons",
+      "progress": "Progress",
+      "continue": "Continue",
+      "empty": {
+        "title": "You are not enrolled in any course yet",
+        "description": "Browse the available chapters and start learning",
+        "cta": "Browse Content"
+      },
+      "error": "Failed to load your courses"
+    }
+  },
   "progress": "Progress",
   "locked": "Locked",
   "unlocked": "Unlocked",
