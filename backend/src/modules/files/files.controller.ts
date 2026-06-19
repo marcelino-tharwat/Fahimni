@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import { prisma } from "../../config/database.js";
 import { FilesService } from "./files.service.js";
 
 const filesService = new FilesService();
@@ -90,6 +91,31 @@ export class FilesController {
           success: true,
           files: records.map((r) => r.filePath),
         });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const path = req.query.path as string | undefined;
+      if (!path) {
+        res.status(400).json({ success: false, message: "path query parameter is required" });
+        return;
+      }
+
+      await filesService.deleteFile(path);
+
+      await prisma.lessonMaterial.updateMany({
+        where: { filePath: path, deletedAt: null },
+        data: { deletedAt: new Date() },
+      });
+
+      res.status(200).json({ success: true, message: "File deleted successfully" });
     } catch (error) {
       next(error);
     }
