@@ -108,9 +108,30 @@
       "priceHint": "اتركه فارغاً إذا كان الفصل مجاني",
       "egp": "ج.م",
       "duration": "المدة (دقائق)",
+      "durationUnit": "دقيقة",
       "youtubeUrl": "رابط يوتيوب",
+      "youtubeUrlInfo": "مسموح: PDF فقط، 10 ملفات كحد أقصى، 50 ميجابايت كحد أقصى للملف. الحد الإجمالي: 500 ميجابايت.",
+      "youtubeUrlValid": "رابط يوتيوب صحيح",
+      "youtubePreviewTitle": "معاينة الفيديو",
       "pdfFiles": "ملفات PDF",
       "pdfComingSoon": "رفع ملفات PDF قريباً",
+      "pdfDropzone": {
+        "dragDrop": "اسحب وأفلت ملفات PDF هنا",
+        "or": "أو",
+        "chooseFiles": "اختر الملفات",
+        "hint": "10 ملفات كحد أقصى • 50 ميجابايت كحد أقصى للملف • PDF فقط"
+      },
+      "pdfList": {
+        "filesUploaded": "{{count}} / 10 ملفات مرفوعة",
+        "storageUsed": "{{used}} ميجابايت / 500 ميجابايت مستخدم",
+        "deleteConfirm": "حذف هذا الملف؟"
+      },
+      "pdfErrors": {
+        "fileTooLarge": "الملف يتجاوز الحد الأقصى 50 ميجابايت",
+        "maxFiles": "الحد الأقصى 10 ملفات",
+        "uploadFailed": "فشل الرفع",
+        "invalidType": "يُسمح فقط بملفات PDF"
+      },
       "save": "حفظ التغييرات",
       "saving": "جارٍ الحفظ...",
       "toast": {
