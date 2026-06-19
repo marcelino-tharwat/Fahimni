@@ -66,7 +66,80 @@
       "chapters": "Chapters",
       "lessons": "Lessons",
       "actions": "Actions"
+    },
+    "actions": {
+      "details": "Details",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "detail": {
+      "comingSoon": "Content tree page coming soon"
     }
+  },
+  "contentTree": {
+    "title": "Content Tree",
+    "addChapter": "+ Add Chapter",
+    "addLesson": "+ Add Lesson",
+    "empty": "No content added yet",
+    "error": "Failed to load content",
+    "retry": "Retry",
+    "selectItem": "Select an item to edit",
+    "newChapter": "New Chapter",
+    "newLesson": "New Lesson",
+    "delete": {
+      "title": "Confirm Deletion",
+      "stageWithChildren": "This stage has {{count}} chapters. Deleting it will permanently remove all its chapters and lessons.",
+      "chapterWithChildren": "This chapter has {{count}} lessons. Deleting it will permanently remove all its lessons.",
+      "stageEmpty": "Are you sure you want to delete this stage? This action cannot be undone.",
+      "chapterEmpty": "Are you sure you want to delete this chapter? This action cannot be undone.",
+      "lesson": "Are you sure you want to delete this lesson? This action cannot be undone."
+    },
+    "editor": {
+      "editStage": "Edit Stage",
+      "editChapter": "Edit Chapter",
+      "editLesson": "Edit Lesson",
+      "creating": "Creating...",
+      "optional": "optional",
+      "stageName": "Stage Name",
+      "chapterName": "Chapter Name",
+      "lessonTitle": "Lesson Title",
+      "description": "Description",
+      "price": "Price",
+      "priceHint": "Leave empty if the chapter is free",
+      "egp": "EGP",
+      "duration": "Duration (minutes)",
+      "youtubeUrl": "YouTube URL",
+      "pdfFiles": "PDF Files",
+      "pdfComingSoon": "PDF upload coming soon",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "toast": {
+        "stageSaved": "Stage saved successfully",
+        "chapterSaved": "Chapter saved successfully",
+        "lessonSaved": "Lesson saved successfully",
+        "chapterCreated": "Chapter created successfully",
+        "lessonCreated": "Lesson created successfully",
+        "stageCreated": "Stage created successfully",
+        "stageDeleted": "Stage deleted successfully",
+        "chapterDeleted": "Chapter deleted successfully",
+        "lessonDeleted": "Lesson deleted successfully",
+        "saveError": "Failed to save changes",
+        "deleteError": "Failed to delete"
+      }
+    }
+  },
+  "contentValidation": {
+    "nameRequired": "Name is required",
+    "nameMax": "Name must not exceed 200 characters",
+    "titleRequired": "Title is required",
+    "titleMax": "Title must not exceed 200 characters",
+    "descriptionMax": "Description must not exceed 2000 characters",
+    "priceMin": "Price must be 0 or greater",
+    "durationRequired": "Duration is required",
+    "durationInt": "Duration must be a whole number",
+    "durationMin": "Duration must be at least 1 minute",
+    "durationMax": "Duration must not exceed 300 minutes",
+    "youtubeUrlInvalid": "Must be a valid URL"
   },
   "branding": { "title": "Branding", "logo": "Logo", "colors": "Colors", "teacherPhoto": "Teacher Photo" },
   "settings": {

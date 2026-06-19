@@ -66,7 +66,80 @@
       "chapters": "الأبواب",
       "lessons": "الدروس",
       "actions": "الإجراءات"
+    },
+    "actions": {
+      "details": "تفاصيل",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "detail": {
+      "comingSoon": "صفحة شجرة المحتوى قريبًا"
     }
+  },
+  "contentTree": {
+    "title": "المحتوى",
+    "addChapter": "+ إضافة فصل",
+    "addLesson": "+ إضافة درس",
+    "empty": "لم يتم إضافة أي محتوى بعد",
+    "error": "فشل تحميل المحتوى",
+    "retry": "إعادة المحاولة",
+    "selectItem": "اختر عنصراً لتعديله",
+    "newChapter": "فصل جديد",
+    "newLesson": "درس جديد",
+    "delete": {
+      "title": "تأكيد الحذف",
+      "stageWithChildren": "تحتوي هذه المرحلة على {{count}} فصول. حذفها سيؤدي إلى إزالة جميع فصولها ودروسها نهائياً.",
+      "chapterWithChildren": "يحتوي هذا الفصل على {{count}} دروس. حذفه سيؤدي إلى إزالة جميع دروسه نهائياً.",
+      "stageEmpty": "هل أنت متأكد من حذف هذه المرحلة؟ لا يمكن التراجع عن هذا الإجراء.",
+      "chapterEmpty": "هل أنت متأكد من حذف هذا الفصل؟ لا يمكن التراجع عن هذا الإجراء.",
+      "lesson": "هل أنت متأكد من حذف هذا الدرس؟ لا يمكن التراجع عن هذا الإجراء."
+    },
+    "editor": {
+      "editStage": "تعديل المرحلة",
+      "editChapter": "تعديل الفصل",
+      "editLesson": "تعديل الدرس",
+      "creating": "جارٍ الإنشاء...",
+      "optional": "اختياري",
+      "stageName": "اسم المرحلة",
+      "chapterName": "اسم الفصل",
+      "lessonTitle": "عنوان الدرس",
+      "description": "الوصف",
+      "price": "السعر",
+      "priceHint": "اتركه فارغاً إذا كان الفصل مجاني",
+      "egp": "ج.م",
+      "duration": "المدة (دقائق)",
+      "youtubeUrl": "رابط يوتيوب",
+      "pdfFiles": "ملفات PDF",
+      "pdfComingSoon": "رفع ملفات PDF قريباً",
+      "save": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ...",
+      "toast": {
+        "stageSaved": "تم حفظ المرحلة بنجاح",
+        "chapterSaved": "تم حفظ الفصل بنجاح",
+        "lessonSaved": "تم حفظ الدرس بنجاح",
+        "chapterCreated": "تم إنشاء الفصل بنجاح",
+        "lessonCreated": "تم إنشاء الدرس بنجاح",
+        "stageCreated": "تم إنشاء المرحلة بنجاح",
+        "stageDeleted": "تم حذف المرحلة بنجاح",
+        "chapterDeleted": "تم حذف الفصل بنجاح",
+        "lessonDeleted": "تم حذف الدرس بنجاح",
+        "saveError": "فشل حفظ التغييرات",
+        "deleteError": "فشل الحذف"
+      }
+    }
+  },
+  "contentValidation": {
+    "nameRequired": "الاسم مطلوب",
+    "nameMax": "يجب ألا يزيد الاسم عن ٢٠٠ حرف",
+    "titleRequired": "العنوان مطلوب",
+    "titleMax": "يجب ألا يزيد العنوان عن ٢٠٠ حرف",
+    "descriptionMax": "يجب ألا يزيد الوصف عن ٢٠٠٠ حرف",
+    "priceMin": "يجب أن يكون السعر صفرًا أو أكبر",
+    "durationRequired": "المدة مطلوبة",
+    "durationInt": "يجب أن تكون المدة رقمًا صحيحًا",
+    "durationMin": "يجب أن تكون المدة دقيقة واحدة على الأقل",
+    "durationMax": "يجب ألا تزيد المدة عن ٣٠٠ دقيقة",
+    "youtubeUrlInvalid": "يجب أن يكون رابطًا صحيحًا"
   },
   "branding": { "title": "الهوية البصرية", "logo": "الشعار", "colors": "الألوان", "teacherPhoto": "صورة المعلم" },
   "settings": {

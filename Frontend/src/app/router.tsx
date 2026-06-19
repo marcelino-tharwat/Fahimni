@@ -38,6 +38,8 @@ import { StudentEngagementPage } from '@/features/teacher/pages/StudentEngagemen
 import { TeacherBrandingPage } from '@/features/teacher/pages/TeacherBrandingPage';
 import { TeacherSettingsPage } from '@/features/teacher/pages/TeacherSettingsPage';
 import { AllStagesPage } from '@/features/teacher/pages/AllStagesPage';
+import { StageDetailPage } from '@/features/teacher/pages/StageDetailPage';
+import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
 
 // Support pages
 import { PromoCodesPage } from '@/features/support/pages/PromoCodesPage';
@@ -101,6 +103,8 @@ const router = createBrowserRouter([
             element: <TeacherStageLayout />,
             children: [
               { path: '/teacher/content', element: <AllStagesPage /> },
+              { path: '/teacher/content/new', element: <CreateStagePage /> },
+              { path: '/teacher/content/:stageId', element: <StageDetailPage /> },
             ],
           },
         ],
