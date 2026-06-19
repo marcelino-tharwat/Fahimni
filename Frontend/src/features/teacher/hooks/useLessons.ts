@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { lessonsApi } from '@/features/teacher/api/lessons';
 import { CONTENT_TREE_KEY } from '@/features/teacher/hooks/useContentTree';
+import { TEACHER_DASHBOARD_STATS_KEY } from '@/features/teacher/hooks/useTeacherDashboardStats';
 import type {
   CreateLessonPayload,
   UpdateLessonPayload,
 } from '@/features/teacher/types/lesson';
 
+const STAGES_KEY = ['teacher', 'stages'];
 const LESSONS_KEY = ['teacher', 'lessons'];
 const LESSON_KEY = ['teacher', 'lesson'];
 
@@ -38,6 +40,8 @@ export function useCreateLesson() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: LESSONS_KEY });
       queryClient.invalidateQueries({ queryKey: CONTENT_TREE_KEY });
+      queryClient.invalidateQueries({ queryKey: STAGES_KEY });
+      queryClient.invalidateQueries({ queryKey: TEACHER_DASHBOARD_STATS_KEY });
     },
   });
 }
@@ -51,6 +55,8 @@ export function useUpdateLesson() {
       queryClient.invalidateQueries({ queryKey: [...LESSON_KEY, id] });
       queryClient.invalidateQueries({ queryKey: LESSONS_KEY });
       queryClient.invalidateQueries({ queryKey: CONTENT_TREE_KEY });
+      queryClient.invalidateQueries({ queryKey: STAGES_KEY });
+      queryClient.invalidateQueries({ queryKey: TEACHER_DASHBOARD_STATS_KEY });
     },
   });
 }
@@ -62,6 +68,8 @@ export function useDeleteLesson() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: LESSONS_KEY });
       queryClient.invalidateQueries({ queryKey: CONTENT_TREE_KEY });
+      queryClient.invalidateQueries({ queryKey: STAGES_KEY });
+      queryClient.invalidateQueries({ queryKey: TEACHER_DASHBOARD_STATS_KEY });
     },
   });
 }
@@ -74,6 +82,8 @@ export function useReorderLessons() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: LESSONS_KEY });
       queryClient.invalidateQueries({ queryKey: CONTENT_TREE_KEY });
+      queryClient.invalidateQueries({ queryKey: STAGES_KEY });
+      queryClient.invalidateQueries({ queryKey: TEACHER_DASHBOARD_STATS_KEY });
     },
   });
 }
