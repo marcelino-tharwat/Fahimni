@@ -120,6 +120,10 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.status = "succeeded";
       state.error = null;
+      // Persist so the session survives a browser refresh regardless of which
+      // login path (thunk or setCredentials) was used.
+      saveToken(action.payload.token);
+      saveUser(action.payload.user);
     },
     logout(state) {
       state.user = null;
