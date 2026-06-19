@@ -108,9 +108,30 @@
       "priceHint": "Leave empty if the chapter is free",
       "egp": "EGP",
       "duration": "Duration (minutes)",
+      "durationUnit": "min",
       "youtubeUrl": "YouTube URL",
+      "youtubeUrlInfo": "Allowed: PDF only, Max 10 files, Max 50MB per file. Total size limit: 500MB.",
+      "youtubeUrlValid": "Valid YouTube URL",
+      "youtubePreviewTitle": "Video Preview",
       "pdfFiles": "PDF Files",
       "pdfComingSoon": "PDF upload coming soon",
+      "pdfDropzone": {
+        "dragDrop": "Drag & drop PDF files here",
+        "or": "or",
+        "chooseFiles": "Choose Files",
+        "hint": "Max 10 files • Max 50MB per file • PDF only"
+      },
+      "pdfList": {
+        "filesUploaded": "{{count}} / 10 files uploaded",
+        "storageUsed": "{{used}} MB / 500 MB used",
+        "deleteConfirm": "Delete this file?"
+      },
+      "pdfErrors": {
+        "fileTooLarge": "File exceeds 50MB limit",
+        "maxFiles": "Maximum 10 files allowed",
+        "uploadFailed": "Upload failed",
+        "invalidType": "Only PDF files are allowed"
+      },
       "save": "Save Changes",
       "saving": "Saving...",
       "toast": {

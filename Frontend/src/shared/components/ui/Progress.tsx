@@ -18,7 +18,7 @@ export function Progress({ value, size = 'md', showLabel = false, className }: P
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <div className={cn('flex-1 overflow-hidden rounded-full bg-gray-200', heightClasses[size])}>
-        <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${clamped}%` }} />
+        <div className="h-full rounded-full bg-cyan-500 transition-all" style={{ width: `${clamped}%` }} />
       </div>
       {showLabel && (
         <span className="font-cairo text-sm text-text-secondary">{Math.round(clamped)}%</span>
