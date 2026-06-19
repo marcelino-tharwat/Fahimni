@@ -146,7 +146,19 @@ export function createLessonSchema(t: TFunction) {
     youtubeUrl: z
       .string()
       .trim()
-      .url(t("contentValidation.youtubeUrlInvalid"))
+      .refine(
+        (v) => {
+          if (!v) return true;
+          try {
+            const url = new URL(v);
+            const host = url.hostname.replace("www.", "");
+            return ["youtube.com", "m.youtube.com", "youtu.be"].includes(host);
+          } catch {
+            return false;
+          }
+        },
+        { message: t("contentValidation.youtubeUrlInvalid") },
+      )
       .optional()
       .or(z.literal("")),
   });
