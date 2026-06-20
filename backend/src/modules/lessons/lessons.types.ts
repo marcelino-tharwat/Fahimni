@@ -1,9 +1,12 @@
 export interface AttachmentDTO {
   id: string;
+  filePath: string;
   displayName: string;
   fileSize: number;
   mimeType: string;
-  url: string;
+  /** Signed download URL. Only populated on single-lesson (full) fetches;
+   *  omitted from list/reorder responses to avoid per-file storage round-trips. */
+  url?: string;
 }
 
 export interface LessonResponseDTO {

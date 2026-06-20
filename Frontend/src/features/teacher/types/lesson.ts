@@ -1,8 +1,12 @@
+import type { AttachmentDTO } from '@/shared/types';
+
 /**
  * Lesson types — mirror the backend Lesson DTO
  * (backend/src/modules/lessons/lessons.types.ts).
  *
- * Note: the lesson name field is `title` (not `name`).
+ * Note: the lesson name field is `title` (not `name`). PDFs are returned as
+ * `attachments` (LessonMaterial records with a signed `url` and the storage
+ * `filePath`), not as raw `pdfUrls` keys.
  */
 export interface Lesson {
   id: string;
@@ -11,7 +15,7 @@ export interface Lesson {
   durationMinutes: number;
   youtubeUrl: string | null;
   sortOrder: number;
-  pdfUrls: string[] | null;
+  attachments: AttachmentDTO[];
   chapterId: string;
   createdAt: string;
   updatedAt: string;

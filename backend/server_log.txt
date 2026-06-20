@@ -1,6 +1,0 @@
-
-> final_project@1.0.0 dev
-> tsx watch src/server.ts
-
-◇ injected env (23) from .env // tip: ⌁ auth for agents [www.vestauth.com]
-[INFO] Server listening on port 3000 
