@@ -52,12 +52,12 @@ export const mockLessons: Lesson[] = [
     chapterId: 'chapter-1',
     title: 'مقدمة في الأحماض والقواعد',
     description: 'تعريف الأحماض والقواعد وفقًا لنظريات أرهينيوس وبرونستد-لوري ولويس.',
-    duration: 25,
+    durationMinutes: 25,
     youtubeUrl: YOUTUBE_URL,
-    order: 1,
+    sortOrder: 1,
     attachments: [
-      { id: 'att-1', fileName: 'ملخص الدرس.pdf', fileSize: 2_400_000, url: '/files/lesson-1-summary.pdf' },
-      { id: 'att-2', fileName: 'تمارين الباب.pdf', fileSize: 1_800_000, url: '/files/chapter-1-exercises.pdf' },
+      { id: 'att-1', filePath: 'lessons/lesson-1/summary.pdf', displayName: 'ملخص الدرس.pdf', fileSize: 2_400_000, mimeType: 'application/pdf', url: '/files/lesson-1-summary.pdf' },
+      { id: 'att-2', filePath: 'lessons/lesson-1/exercises.pdf', displayName: 'تمارين الباب.pdf', fileSize: 1_800_000, mimeType: 'application/pdf', url: '/files/chapter-1-exercises.pdf' },
     ],
     progress: {
       lessonId: 'lesson-1',
@@ -73,11 +73,11 @@ export const mockLessons: Lesson[] = [
     chapterId: 'chapter-1',
     title: 'مقياس الرقم الهيدروجيني pH',
     description: 'حساب الرقم الهيدروجيني pH للمحاليل الحمضية والقاعدية وأهميته.',
-    duration: 35,
+    durationMinutes: 35,
     youtubeUrl: YOUTUBE_URL,
-    order: 2,
+    sortOrder: 2,
     attachments: [
-      { id: 'att-3', fileName: 'مسائل محلولة على pH.pdf', fileSize: 1_200_000, url: '/files/lesson-2-ph-problems.pdf' },
+      { id: 'att-3', filePath: 'lessons/lesson-2/ph-problems.pdf', displayName: 'مسائل محلولة على pH.pdf', fileSize: 1_200_000, mimeType: 'application/pdf', url: '/files/lesson-2-ph-problems.pdf' },
     ],
     progress: {
       lessonId: 'lesson-2',
@@ -93,11 +93,11 @@ export const mockLessons: Lesson[] = [
     chapterId: 'chapter-1',
     title: 'تفاعلات التعادل',
     description: 'تفاعلات الأحماض مع القواعد لتكوين الأملاح والماء وحسابات المعايرة.',
-    duration: 30,
+    durationMinutes: 30,
     youtubeUrl: YOUTUBE_URL,
-    order: 3,
+    sortOrder: 3,
     attachments: [
-      { id: 'att-4', fileName: 'ورقة عمل التعادل.pdf', fileSize: 950_000, url: '/files/lesson-3-neutralization.pdf' },
+      { id: 'att-4', filePath: 'lessons/lesson-3/neutralization.pdf', displayName: 'ورقة عمل التعادل.pdf', fileSize: 950_000, mimeType: 'application/pdf', url: '/files/lesson-3-neutralization.pdf' },
     ],
     progress: {
       lessonId: 'lesson-3',

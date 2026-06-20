@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { studentContentApi } from '@/features/student/api/studentContent';
 import { contentApi } from '@/features/student/api/content';
 import type { Lesson } from '@/shared/types/content';
+import type { ApiError } from '@/shared/lib/api/client';
 
 export const STUDENT_TREE_KEY = ['student', 'content', 'tree'] as const;
 export const STUDENT_MY_COURSES_KEY = ['student', 'content', 'my-courses'] as const;
@@ -41,5 +42,12 @@ export function useLesson(lessonId: string) {
       return data.data as Lesson | undefined;
     },
     enabled: !!lessonId,
+    // Don't retry 4xx (e.g. 403 NOT_ENROLLED / 404) — those are terminal, so
+    // the enrollment / not-found screen shows immediately. Retry 5xx only.
+    retry: (failureCount, error) => {
+      const status = (error as ApiError)?.statusCode ?? 0;
+      if (status >= 400 && status < 500) return false;
+      return failureCount < 3;
+    },
   });
 }

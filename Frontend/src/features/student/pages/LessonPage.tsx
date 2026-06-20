@@ -193,7 +193,7 @@ export function LessonPage() {
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="flex flex-col gap-1">
             <Badge variant="default" className="w-fit">
-              {t('student:lesson.lessonLabel', { order: lesson.order })}
+              {t('student:lesson.lessonLabel', { order: lesson.sortOrder })}
             </Badge>
             <h1 className="font-cairo text-2xl font-bold text-navy-900">{lesson.title}</h1>
           </div>
@@ -206,7 +206,7 @@ export function LessonPage() {
         <div className="flex flex-wrap items-center gap-4 font-cairo text-sm text-gray-500">
           <span className="inline-flex items-center gap-1.5">
             <Clock size={16} />
-            {lesson.duration} {t('student:lesson.minutes')}
+            {lesson.durationMinutes} {t('student:lesson.minutes')}
           </span>
           {parentInfo && (
             <>
@@ -230,7 +230,7 @@ export function LessonPage() {
       </div>
 
       {/* PDF Materials */}
-      {(lesson.pdfUrls?.length ?? 0) > 0 && (
+      {(lesson.attachments?.length ?? 0) > 0 && (
         <Card padding="md" className="flex flex-col gap-3">
           <div className="flex items-center gap-2 border-b border-border pb-3">
             <FileText size={20} className="text-accent" />
@@ -238,35 +238,32 @@ export function LessonPage() {
               {t('student:lesson.pdfMaterials')}
             </h2>
           </div>
-          {(lesson.pdfUrls ?? []).map((url, index) => {
-            const fileName = url.split('/').pop() ?? url;
-            return (
-              <div
-                key={index}
-                className="flex items-center justify-between gap-3 rounded-input border border-border p-3"
-              >
-                <div className="flex min-w-0 items-center gap-3">
-                  <FileText size={20} className="shrink-0 text-accent" />
-                  <div className="flex min-w-0 flex-col">
-                    <span className="truncate font-cairo text-sm font-medium text-navy-900">
-                      {fileName}
-                    </span>
-                  </div>
+          {(lesson.attachments ?? []).map((attachment) => (
+            <div
+              key={attachment.id}
+              className="flex items-center justify-between gap-3 rounded-input border border-border p-3"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <FileText size={20} className="shrink-0 text-accent" />
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate font-cairo text-sm font-medium text-navy-900">
+                    {attachment.displayName}
+                  </span>
                 </div>
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-button border border-border px-3 font-cairo text-sm font-medium text-text-primary transition-colors hover:bg-gray-100"
-                >
-                  {t('student:lesson.download')}
-                </a>
               </div>
-            );
-          })}
+              <a
+                href={attachment.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-button border border-border px-3 font-cairo text-sm font-medium text-text-primary transition-colors hover:bg-gray-100"
+              >
+                {t('student:lesson.download')}
+              </a>
+            </div>
+          ))}
           <div className="border-t border-border pt-3 font-cairo text-xs text-gray-500">
-            {t('student:lesson.totalFiles', { count: lesson.pdfUrls?.length ?? 0 })}
+            {t('student:lesson.totalFiles', { count: lesson.attachments?.length ?? 0 })}
           </div>
         </Card>
       )}

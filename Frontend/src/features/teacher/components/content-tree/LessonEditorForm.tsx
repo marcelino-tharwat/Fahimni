@@ -47,7 +47,7 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
   const pdfUpload = usePdfUpload({
     teacherId,
     lessonId: lesson.id,
-    existingKeys: lesson.pdfUrls ?? undefined,
+    existingKeys: lesson.attachments?.map((a) => a.filePath),
   });
 
   const clearError = (field: string) => setErrors((prev) => ({ ...prev, [field]: '' }));
