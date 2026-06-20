@@ -4,19 +4,24 @@
     "home": "الرئيسية",
     "dashboard": "لوحة التحكم",
     "courses": "الدورات",
-    "content": "المحتوى",
-    "quizzes": "الاختبارات",
+    "contentManagement": "ادارة المحتوى",
+    "quizGenerator": "مولّد الاختبارات",
     "students": "الطلاب",
     "settings": "الإعدادات",
-    "branding": "الهوية البصرية",
     "aiTutor": "المساعد الذكي",
     "profile": "الملف الشخصي",
     "promoCodes": "أكواد الخصم",
     "studentLookup": "بحث الطلاب",
     "tenants": "الأكاديميات"
   },
+  "roles": {
+    "student": "طالب",
+    "admin": "مدير",
+    "teacher": "مدرس"
+  },
   "actions": {
     "save": "حفظ",
+    "create": "إنشاء",
     "cancel": "إلغاء",
     "delete": "حذف",
     "edit": "تعديل",

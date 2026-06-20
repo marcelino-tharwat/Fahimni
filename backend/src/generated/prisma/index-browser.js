@@ -180,6 +180,7 @@ exports.Prisma.LessonScalarFieldEnum = {
   durationMinutes: 'durationMinutes',
   youtubeUrl: 'youtubeUrl',
   sortOrder: 'sortOrder',
+  viewCount: 'viewCount',
   pdfUrls: 'pdfUrls',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -219,6 +220,9 @@ exports.Prisma.LessonMaterialScalarFieldEnum = {
   id: 'id',
   lessonId: 'lessonId',
   filePath: 'filePath',
+  displayName: 'displayName',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
   createdAt: 'createdAt',
   deletedAt: 'deletedAt'
 };
@@ -230,6 +234,9 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   resourceId: 'resourceId',
   details: 'details',
   userId: 'userId',
+  actorType: 'actorType',
+  actorName: 'actorName',
+  scopeTeacherId: 'scopeTeacherId',
   createdAt: 'createdAt'
 };
 

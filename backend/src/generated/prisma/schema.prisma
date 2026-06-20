@@ -106,6 +106,7 @@ model Lesson {
   durationMinutes Int
   youtubeUrl      String?
   sortOrder       Int
+  viewCount       Int              @default(0)
   pdfUrls         Json? // array of S3 object keys
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -113,6 +114,7 @@ model Lesson {
   chapterId       String
   chapter         Chapter          @relation(fields: [chapterId], references: [id])
   lessonProgress  LessonProgress[]
+  lessonMaterials LessonMaterial[]
 
   @@index([chapterId])
   @@index([chapterId, sortOrder])
@@ -166,25 +168,43 @@ model LessonProgress {
 }
 
 model LessonMaterial {
-  id        String    @id @default(cuid())
-  lessonId  String
-  filePath  String
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
+  id          String    @id @default(cuid())
+  lessonId    String
+  lesson      Lesson    @relation(fields: [lessonId], references: [id])
+  filePath    String
+  displayName String
+  fileSize    Int       @default(0)
+  mimeType    String    @default("application/pdf")
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
 
+  @@index([lessonId])
   @@map("lesson_materials")
 }
 
 model AuditLog {
-  id           String   @id @default(uuid())
-  action       String
-  resourceType String
-  resourceId   String
-  details      Json?
-  userId       String
-  user         User     @relation(fields: [userId], references: [id])
-  createdAt    DateTime @default(now())
+  id             String   @id @default(uuid())
+  action         String
+  resourceType   String
+  resourceId     String
+  details        Json?
+  // userId is the ACTOR who performed the action (teacher or student).
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  // actorType describes the actor independently of role enums (e.g. TEACHER, STUDENT, SYSTEM).
+  actorType      String?
+  // actorName is a denormalized display name, captured at write time so the
+  // activity feed can render student-generated events without an extra join.
+  actorName      String?
+  // scopeTeacherId is the teacher whose dashboard/activity stream should
+  // surface this event. For teacher-authored content actions it equals userId;
+  // for student-generated events (e.g. quiz completed) it is the owning teacher.
+  scopeTeacherId String?
+  createdAt      DateTime @default(now())
 
+  @@index([scopeTeacherId, createdAt])
+  @@index([userId, createdAt])
+  @@index([resourceType, resourceId])
   @@map("audit_logs")
 }
 

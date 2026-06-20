@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, Bot, User } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Bot, User, Library } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Topbar } from './Topbar';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -10,18 +10,19 @@ export function StudentLayout() {
 
   const items: SidebarItem[] = [
     { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/student/dashboard' },
+    { label: t('student:content.tabs.allContent'), icon: Library, path: '/student/content' },
     { label: t('nav.courses'), icon: BookOpen, path: '/student/courses' },
     { label: t('nav.aiTutor'), icon: Bot, path: '/student/ai-tutor' },
     { label: t('nav.profile'), icon: User, path: '/student/profile' },
   ];
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      {/* Student mobile nav is the bottom tab bar, so no hamburger here. */}
-      <Topbar showMenu={false} />
+    <div className="flex min-h-screen bg-background">
+      <Sidebar items={items} />
 
-      <div className="flex flex-1">
-        <Sidebar items={items} />
+      <div className="flex flex-1 flex-col">
+        {/* Student mobile nav is the bottom tab bar, so no hamburger here. */}
+        <Topbar showMenu={false} />
         <main className="flex-1 px-4 py-6 pb-24 md:pb-6">
           <Outlet />
         </main>

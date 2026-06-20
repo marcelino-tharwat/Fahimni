@@ -3,10 +3,11 @@ import { teacherApi } from "@/features/teacher/api/teacher";
 
 const TEACHER_PROFILE_KEY = ["teacher", "profile"];
 
-export function useTeacherProfile() {
+export function useTeacherProfile({ enabled = true }: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: TEACHER_PROFILE_KEY,
     queryFn: () => teacherApi.getProfile().then((res) => res.data),
+    enabled,
   });
 }
 

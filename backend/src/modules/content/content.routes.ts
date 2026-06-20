@@ -27,4 +27,18 @@ router.get(
   controller.getMyCourses,
 );
 
+router.get(
+  "/student/lessons/:id",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.getStudentLesson,
+);
+
+router.post(
+  "/student/lessons/:id/view",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.incrementLessonView,
+);
+
 export default router;

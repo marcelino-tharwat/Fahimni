@@ -17,24 +17,28 @@ export interface Chapter {
   isUnlocked: boolean;
 }
 
+export interface AttachmentDTO {
+  id: string;
+  filePath: string;
+  displayName: string;
+  fileSize: number;
+  mimeType: string;
+  /** Signed download URL — present only on single-lesson fetches,
+   *  omitted from list/reorder responses. */
+  url?: string;
+}
+
 export interface Lesson {
   id: string;
   tenantId: string;
   chapterId: string;
   title: string;
   description: string;
-  duration: number;
+  durationMinutes: number;
   youtubeUrl: string;
-  order: number;
-  attachments: LessonAttachment[];
+  sortOrder: number;
+  attachments: AttachmentDTO[];
   progress?: LessonProgress;
-}
-
-export interface LessonAttachment {
-  id: string;
-  fileName: string;
-  fileSize: number;
-  url: string;
 }
 
 export interface LessonProgress {

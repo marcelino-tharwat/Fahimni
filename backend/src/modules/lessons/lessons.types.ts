@@ -1,3 +1,14 @@
+export interface AttachmentDTO {
+  id: string;
+  filePath: string;
+  displayName: string;
+  fileSize: number;
+  mimeType: string;
+  /** Signed download URL. Only populated on single-lesson (full) fetches;
+   *  omitted from list/reorder responses to avoid per-file storage round-trips. */
+  url?: string;
+}
+
 export interface LessonResponseDTO {
   id: string;
   title: string;
@@ -5,7 +16,7 @@ export interface LessonResponseDTO {
   durationMinutes: number;
   youtubeUrl: string | null;
   sortOrder: number;
-  pdfUrls: string[] | null;
+  attachments: AttachmentDTO[];
   chapterId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -22,7 +33,6 @@ export const lessonPublicFields = {
   durationMinutes: true,
   youtubeUrl: true,
   sortOrder: true,
-  pdfUrls: true,
   chapterId: true,
   createdAt: true,
   updatedAt: true,

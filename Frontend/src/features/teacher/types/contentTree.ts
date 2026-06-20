@@ -1,0 +1,34 @@
+/**
+ * Content tree types — the flattened shape consumed by the tree UI.
+ *
+ * The backend `GET /api/content/tree` returns a *nested* structure
+ * (backend/src/modules/content/content.controller.ts):
+ *   [{ stage: {...}, chapters: [{ chapter: {...}, lessons: [...] }] }]
+ *
+ * `teacherContentApi.getContentTree()` maps that into the flat shape below,
+ * so consumers read `stage.chapters[].lessons[]` directly.
+ *
+ * Note the count fields differ from the Chapter DTO: here it is
+ * `lessonCount` (no 's').
+ */
+export interface ContentTreeLesson {
+  id: string;
+  title: string;
+  sortOrder: number;
+}
+
+export interface ContentTreeChapter {
+  id: string;
+  name: string;
+  sortOrder: number;
+  lessonCount: number;
+  lessons: ContentTreeLesson[];
+}
+
+export interface ContentTreeStage {
+  id: string;
+  name: string;
+  sortOrder: number;
+  chapterCount: number;
+  chapters: ContentTreeChapter[];
+}

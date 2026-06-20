@@ -2,6 +2,39 @@
   "dashboard": "لوحة الطالب",
   "myCourses": "دوراتي",
   "allContent": "كل المحتوى",
+  "content": {
+    "title": "كل المحتوى",
+    "subtitle": "استكشف جميع المراحل والفصول والدروس",
+    "tabs": { "myCourses": "دوراتي", "allContent": "كل المحتوى" },
+    "badges": { "free": "مجاني", "subscribed": "مشترك", "locked": "مقفل", "price": "{{price}} جنيه" },
+    "stage": "المرحلة {{order}}: {{name}}",
+    "chapter": "الفصل {{order}}: {{name}}",
+    "lesson": "الدرس {{order}}: {{title}}",
+    "summary": "عرض {{stages}} مراحل · {{chapters}} فصول · {{lessons}} درس",
+    "empty": { "title": "لم يتم إضافة أي محتوى بعد", "cta": "استكشف الدورات" },
+    "error": {
+      "title": "تعذّر تحميل المحتوى",
+      "description": "حدث خطأ أثناء تحميل المحتوى. يرجى المحاولة مرة أخرى.",
+      "retry": "إعادة المحاولة"
+    },
+    "lockedModal": {
+      "title": "هذا الفصل مقفل",
+      "description": "اشترك الآن للوصول إلى هذا الفصل وجميع الدروس",
+      "subscribe": "اشترك الآن",
+      "cancel": "إلغاء"
+    },
+    "myCoursesTab": {
+      "lessons": "{{count}} درس",
+      "progress": "التقدم",
+      "continue": "متابعة",
+      "empty": {
+        "title": "لم تشترك في أي دورة بعد",
+        "description": "تصفّح الفصول المتاحة وابدأ رحلة التعلم",
+        "cta": "تصفّح المحتوى"
+      },
+      "error": "تعذّر تحميل دوراتك"
+    }
+  },
   "progress": "التقدم",
   "locked": "مقفول",
   "unlocked": "متاح",
@@ -68,6 +101,27 @@
       "passwordMax": "كلمة المرور يجب أن تكون أقل من ١٢٨ حرف",
       "confirmPasswordRequired": "تأكيد كلمة المرور مطلوب",
       "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين"
+    }
+  },
+  "lesson": {
+    "notFound": {
+      "title": "الدرس غير موجود",
+      "description": "لم نتمكن من العثور على هذا الدرس. قد يكون قد تمت إزالته أو الرابط غير صحيح.",
+      "back": "العودة إلى كل المحتوى"
+    },
+    "videoUnavailable": "الفيديو غير متاح حالياً",
+    "lessonLabel": "الدرس {{order}}",
+    "minutes": "دقيقة",
+    "pdfMaterials": "الملفات المرفقة",
+    "download": "تحميل",
+    "totalFiles": "{{count}} ملف",
+    "totalSize": "{{size}} إجمالي",
+    "previousLesson": "الدرس السابق",
+    "nextLesson": "الدرس التالي",
+    "enrollmentRequired": {
+      "title": "الاشتراك مطلوب",
+      "description": "يجب الاشتراك في هذا الفصل للوصول إلى هذا الدرس. اشترك الآن لإلغاء قفل جميع الدروس وابدأ التعلم.",
+      "cta": "تصفّح المحتوى"
     }
   }
 }

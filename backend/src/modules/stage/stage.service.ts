@@ -10,13 +10,19 @@ import type { CreateStageInput, UpdateStageInput } from "./stage.validation.js";
 const filesService = new FilesService();
 
 export class StageService {
-  private async attachChapterCount<T extends { id: string }>(
+  private async attachCounts<T extends { id: string }>(
     stage: T,
-  ): Promise<T & { chapterCount: number }> {
-    const count = await prisma.chapter.count({
-      where: { stageId: stage.id, deletedAt: null },
-    });
-    return { ...stage, chapterCount: count };
+  ): Promise<T & { chapterCount: number; lessonCount: number }> {
+    const [chapterCount, lessonCount] = await Promise.all([
+      prisma.chapter.count({ where: { stageId: stage.id, deletedAt: null } }),
+      prisma.lesson.count({
+        where: {
+          chapter: { stageId: stage.id, deletedAt: null },
+          deletedAt: null,
+        },
+      }),
+    ]);
+    return { ...stage, chapterCount, lessonCount };
   }
 
   public async list(teacherId: string): Promise<StageResponseDTO[]> {
@@ -27,7 +33,7 @@ export class StageService {
     });
 
     const withCounts = await Promise.all(
-      stages.map((s) => this.attachChapterCount(s)),
+      stages.map((s) => this.attachCounts(s)),
     );
 
     return withCounts as unknown as StageResponseDTO[];
@@ -46,7 +52,7 @@ export class StageService {
       throw new AppError("Stage not found", 404);
     }
 
-    return this.attachChapterCount(stage) as unknown as StageResponseDTO;
+    return this.attachCounts(stage) as unknown as StageResponseDTO;
   }
 
   public async create(
@@ -70,7 +76,17 @@ export class StageService {
       select: stagePublicFields,
     });
 
-    return { ...stage, chapterCount: 0 } as unknown as StageResponseDTO;
+    await auditLogService.record({
+      action: "STAGE_CREATED",
+      resourceType: "STAGE",
+      resourceId: stage.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { name: stage.name },
+    });
+
+    return { ...stage, chapterCount: 0, lessonCount: 0 } as unknown as StageResponseDTO;
   }
 
   public async update(
@@ -100,7 +116,17 @@ export class StageService {
       select: stagePublicFields,
     });
 
-    return this.attachChapterCount(stage) as unknown as StageResponseDTO;
+    await auditLogService.record({
+      action: "STAGE_UPDATED",
+      resourceType: "STAGE",
+      resourceId: stage.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { name: stage.name },
+    });
+
+    return this.attachCounts(stage) as unknown as StageResponseDTO;
   }
 
   public async delete(id: string, teacherId: string, force: boolean): Promise<void> {
@@ -112,7 +138,14 @@ export class StageService {
           include: {
             lessons: {
               where: { deletedAt: null },
-              select: { id: true, title: true, pdfUrls: true },
+              select: {
+                id: true,
+                title: true,
+                lessonMaterials: {
+                  where: { deletedAt: null },
+                  select: { filePath: true },
+                },
+              },
             },
           },
         },
@@ -138,14 +171,23 @@ export class StageService {
         where: { id },
         data: { deletedAt: new Date() },
       });
+      await auditLogService.record({
+        action: "STAGE_DELETED",
+        resourceType: "STAGE",
+        resourceId: id,
+        actorId: teacherId,
+        actorType: "TEACHER",
+        scopeTeacherId: teacherId,
+        details: { name: stage.name },
+      });
       return;
     }
 
     const chapterIds = chapters.map((c) => c.id);
     const lessonIds = allLessons.map((l) => l.id);
 
-    const allPdfUrls = allLessons
-      .flatMap((l) => (l.pdfUrls as string[]) ?? [])
+    const allFilePaths = allLessons
+      .flatMap((l) => (l.lessonMaterials as Array<{ filePath: string }> ?? []).map((m) => m.filePath))
       .filter(Boolean);
 
     await prisma.$transaction(async (tx) => {
@@ -169,26 +211,28 @@ export class StageService {
         data: { deletedAt: new Date() },
       });
 
-      await tx.auditLog.create({
-        data: {
-          action: "DELETE_STAGE",
+      await auditLogService.record(
+        {
+          action: "STAGE_DELETED",
           resourceType: "STAGE",
           resourceId: id,
+          actorId: teacherId,
+          actorType: "TEACHER",
+          scopeTeacherId: teacherId,
           details: {
             name: stage.name,
             chaptersDeleted: chapters.length,
             lessonsDeleted: allLessons.length,
-            chapterNames: chapters.map((c) => c.name),
           },
-          userId: teacherId,
         },
-      });
+        tx,
+      );
     });
 
     await Promise.all(
-      allPdfUrls.map((url) =>
-        filesService.deleteFile(url).catch((err) =>
-          logger.warn(`Failed to delete file from storage: ${url}`, err),
+      allFilePaths.map((filePath) =>
+        filesService.deleteFile(filePath).catch((err) =>
+          logger.warn(`Failed to delete file from storage: ${filePath}`, err),
         ),
       ),
     );
@@ -230,7 +274,7 @@ export class StageService {
     });
 
     return Promise.all(
-      updated.map((s) => this.attachChapterCount(s)),
+      updated.map((s) => this.attachCounts(s)),
     ) as unknown as StageResponseDTO[];
   }
 }

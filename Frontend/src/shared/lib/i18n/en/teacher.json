@@ -1,9 +1,167 @@
 {
   "dashboard": "Teacher Dashboard",
+  "dashboardView": {
+    "title": "Dashboard",
+    "welcome": "Welcome back! Here's what's happening in your academy.",
+    "statsRegion": "Statistics",
+    "stats": {
+      "totalStages": "Total Stages",
+      "totalChapters": "Total Chapters",
+      "totalLessons": "Total Lessons",
+      "totalStudents": "Total Students",
+      "totalQuizzes": "Total Quizzes"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "newStage": "New Stage",
+      "newChapter": "New Chapter",
+      "newLesson": "New Lesson"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "viewAll": "View All",
+      "empty": "No recent activity yet.",
+      "you": "You",
+      "actions": {
+        "STAGE_CREATED": "{{actor}} created a new stage “{{name}}”",
+        "STAGE_UPDATED": "{{actor}} updated the stage “{{name}}”",
+        "STAGE_DELETED": "{{actor}} deleted the stage “{{name}}”",
+        "CHAPTER_CREATED": "{{actor}} created a new chapter “{{name}}”",
+        "CHAPTER_UPDATED": "{{actor}} updated the chapter “{{name}}”",
+        "CHAPTER_DELETED": "{{actor}} deleted the chapter “{{name}}”",
+        "LESSON_CREATED": "{{actor}} added a new lesson “{{name}}”",
+        "LESSON_UPDATED": "{{actor}} updated the lesson “{{name}}”",
+        "LESSON_DELETED": "{{actor}} deleted the lesson “{{name}}”",
+        "QUIZ_CREATED": "{{actor}} created a new quiz “{{name}}”",
+        "QUIZ_UPDATED": "{{actor}} updated the quiz “{{name}}”",
+        "QUIZ_DELETED": "{{actor}} deleted the quiz “{{name}}”",
+        "QUIZ_COMPLETED": "{{actor}} completed quiz “{{name}}”",
+        "STUDENT_ENROLLED": "{{actor}} enrolled in your content",
+        "STUDENT_UNENROLLED": "{{actor}} left your content",
+        "fallback": "{{actor}} made an update"
+      }
+    },
+    "empty": {
+      "title": "Welcome! Start by creating a new stage",
+      "description": "Your academy is empty for now. Create your first stage to start building content."
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "We couldn't load your dashboard. Please try again.",
+      "retry": "Retry"
+    }
+  },
   "stats": { "totalStudents": "Total Students", "activeThisMonth": "Active This Month", "publishedChapters": "Published Chapters", "quizzesCreated": "Quizzes" },
   "quickActions": { "addLesson": "Add Lesson", "generateQuiz": "Generate Quiz" },
   "contentManager": { "title": "Content Management", "selectLesson": "Select a lesson to edit", "stages": "Stages", "chapters": "Chapters", "lessons": "Lessons" },
   "quizGenerator": { "title": "AI Quiz Generator", "step1": "Settings", "step2": "Review", "step3": "Publish", "topic": "Topic", "questionCount": "Question Count", "questionTypes": "Question Types", "difficulty": "Difficulty Level", "generateBtn": "Generate Quiz" },
+  "stages": {
+    "title": "All Stages",
+    "subtitle": "Manage your academy content structure",
+    "newStage": "New Stage",
+    "searchPlaceholder": "Find a stage...",
+    "empty": "No stages yet. Create your first stage to get started.",
+    "columns": {
+      "stageName": "Stage Name",
+      "chapters": "Chapters",
+      "lessons": "Lessons",
+      "actions": "Actions"
+    },
+    "actions": {
+      "details": "Details",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "detail": {
+      "comingSoon": "Content tree page coming soon"
+    }
+  },
+  "contentTree": {
+    "title": "Content Tree",
+    "addChapter": "+ Add Chapter",
+    "addLesson": "+ Add Lesson",
+    "empty": "No content added yet",
+    "error": "Failed to load content",
+    "retry": "Retry",
+    "selectItem": "Select an item to edit",
+    "newChapter": "New Chapter",
+    "newLesson": "New Lesson",
+    "delete": {
+      "title": "Confirm Deletion",
+      "stageWithChildren": "This stage has {{count}} chapters. Deleting it will permanently remove all its chapters and lessons.",
+      "chapterWithChildren": "This chapter has {{count}} lessons. Deleting it will permanently remove all its lessons.",
+      "stageEmpty": "Are you sure you want to delete this stage? This action cannot be undone.",
+      "chapterEmpty": "Are you sure you want to delete this chapter? This action cannot be undone.",
+      "lesson": "Are you sure you want to delete this lesson? This action cannot be undone."
+    },
+    "editor": {
+      "editStage": "Edit Stage",
+      "editChapter": "Edit Chapter",
+      "editLesson": "Edit Lesson",
+      "creating": "Creating...",
+      "optional": "optional",
+      "stageName": "Stage Name",
+      "chapterName": "Chapter Name",
+      "lessonTitle": "Lesson Title",
+      "description": "Description",
+      "price": "Price",
+      "priceHint": "Leave empty if the chapter is free",
+      "egp": "EGP",
+      "duration": "Duration (minutes)",
+      "durationUnit": "min",
+      "youtubeUrl": "YouTube URL",
+      "youtubeUrlInfo": "Allowed: PDF only, Max 10 files, Max 50MB per file. Total size limit: 500MB.",
+      "youtubeUrlValid": "Valid YouTube URL",
+      "youtubePreviewTitle": "Video Preview",
+      "pdfFiles": "PDF Files",
+      "pdfComingSoon": "PDF upload coming soon",
+      "pdfDropzone": {
+        "dragDrop": "Drag & drop PDF files here",
+        "or": "or",
+        "chooseFiles": "Choose Files",
+        "hint": "Max 10 files • Max 50MB per file • PDF only"
+      },
+      "pdfList": {
+        "filesUploaded": "{{count}} / 10 files uploaded",
+        "storageUsed": "{{used}} MB / 500 MB used",
+        "deleteConfirm": "Delete this file?"
+      },
+      "pdfErrors": {
+        "fileTooLarge": "File exceeds 50MB limit",
+        "maxFiles": "Maximum 10 files allowed",
+        "uploadFailed": "Upload failed",
+        "invalidType": "Only PDF files are allowed"
+      },
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "toast": {
+        "stageSaved": "Stage saved successfully",
+        "chapterSaved": "Chapter saved successfully",
+        "lessonSaved": "Lesson saved successfully",
+        "chapterCreated": "Chapter created successfully",
+        "lessonCreated": "Lesson created successfully",
+        "stageCreated": "Stage created successfully",
+        "stageDeleted": "Stage deleted successfully",
+        "chapterDeleted": "Chapter deleted successfully",
+        "lessonDeleted": "Lesson deleted successfully",
+        "saveError": "Failed to save changes",
+        "deleteError": "Failed to delete"
+      }
+    }
+  },
+  "contentValidation": {
+    "nameRequired": "Name is required",
+    "nameMax": "Name must not exceed 200 characters",
+    "titleRequired": "Title is required",
+    "titleMax": "Title must not exceed 200 characters",
+    "descriptionMax": "Description must not exceed 2000 characters",
+    "priceMin": "Price must be 0 or greater",
+    "durationRequired": "Duration is required",
+    "durationInt": "Duration must be a whole number",
+    "durationMin": "Duration must be at least 1 minute",
+    "durationMax": "Duration must not exceed 300 minutes",
+    "youtubeUrlInvalid": "Must be a valid URL"
+  },
   "branding": { "title": "Branding", "logo": "Logo", "colors": "Colors", "teacherPhoto": "Teacher Photo" },
   "settings": {
     "pageTitle": "Account Settings",

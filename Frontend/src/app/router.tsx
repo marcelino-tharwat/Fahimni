@@ -5,6 +5,7 @@ import { PublicLayout } from '@/shared/components/layout/PublicLayout';
 import { StudentLayout } from '@/shared/components/layout/StudentLayout';
 import { TeacherLayout } from '@/shared/components/layout/TeacherLayout';
 import { SupportLayout } from '@/shared/components/layout/SupportLayout';
+import { TeacherStageLayout } from '@/shared/components/layout/TeacherStageLayout';
 import { AdminLayout } from '@/shared/components/layout/AdminLayout';
 
 // Guards
@@ -32,11 +33,13 @@ import { StudentProfilePage } from '@/features/student/pages/StudentProfilePage'
 
 // Teacher pages
 import { TeacherDashboardPage } from '@/features/teacher/pages/TeacherDashboardPage';
-import { ContentManagerPage } from '@/features/teacher/pages/ContentManagerPage';
 import { AiQuizGeneratorPage } from '@/features/teacher/pages/AiQuizGeneratorPage';
 import { StudentEngagementPage } from '@/features/teacher/pages/StudentEngagementPage';
 import { TeacherBrandingPage } from '@/features/teacher/pages/TeacherBrandingPage';
 import { TeacherSettingsPage } from '@/features/teacher/pages/TeacherSettingsPage';
+import { AllStagesPage } from '@/features/teacher/pages/AllStagesPage';
+import { StageDetailPage } from '@/features/teacher/pages/StageDetailPage';
+import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
 
 // Support pages
 import { PromoCodesPage } from '@/features/support/pages/PromoCodesPage';
@@ -90,11 +93,18 @@ const router = createBrowserRouter([
             element: <TeacherLayout />,
             children: [
               { path: '/teacher/dashboard', element: <TeacherDashboardPage /> },
-              { path: '/teacher/content', element: <ContentManagerPage /> },
               { path: '/teacher/quizzes/generator', element: <AiQuizGeneratorPage /> },
               { path: '/teacher/students', element: <StudentEngagementPage /> },
               { path: '/teacher/branding', element: <TeacherBrandingPage /> },
               { path: '/teacher/settings', element: <TeacherSettingsPage /> },
+            ],
+          },
+          {
+            element: <TeacherStageLayout />,
+            children: [
+              { path: '/teacher/content', element: <AllStagesPage /> },
+              { path: '/teacher/content/new', element: <CreateStagePage /> },
+              { path: '/teacher/content/:stageId', element: <StageDetailPage /> },
             ],
           },
         ],

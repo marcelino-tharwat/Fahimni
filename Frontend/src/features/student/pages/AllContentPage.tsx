@@ -1,60 +1,32 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Lock, ChevronLeft } from 'lucide-react';
-import { Badge, Button, Card } from '@/shared/components/ui';
-import { mockChapters, mockStages } from '@/shared/mocks/content';
+import { Tabs } from '@/shared/components/ui';
+import { AllContentTree } from '@/features/student/components/AllContentTree';
+import { MyCoursesTab } from '@/features/student/components/MyCoursesTab';
+
+type TabKey = 'all' | 'courses';
 
 export function AllContentPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<TabKey>('all');
+
+  const tabs = [
+    { key: 'courses', label: t('student:content.tabs.myCourses') },
+    { key: 'all', label: t('student:content.tabs.allContent') },
+  ];
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="font-cairo text-2xl font-bold text-text-primary">{t('student:allContent')}</h1>
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
+      <header>
+        <h1 className="font-cairo text-2xl font-bold text-navy-900">
+          {t('student:content.title')}
+        </h1>
+        <p className="mt-1 font-cairo text-sm text-gray-500">{t('student:content.subtitle')}</p>
+      </header>
 
-      {mockStages.map((stage) => (
-        <section key={stage.id} className="flex flex-col gap-4">
-          <h2 className="font-cairo text-lg font-semibold text-text-secondary">{stage.name}</h2>
+      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={(key) => setActiveTab(key as TabKey)} />
 
-          <div className="flex flex-col gap-3">
-            {mockChapters
-              .filter((chapter) => chapter.stageId === stage.id)
-              .map((chapter) => (
-                <Card key={chapter.id} padding="md" className="flex items-center justify-between gap-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-cairo text-base font-semibold text-text-primary">
-                      {chapter.name}
-                    </span>
-                    {chapter.description && (
-                      <span className="font-cairo text-sm text-text-secondary">
-                        {chapter.description}
-                      </span>
-                    )}
-                  </div>
-
-                  {chapter.isUnlocked ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate('/student/lesson')}
-                      aria-label={chapter.name}
-                    >
-                      <ChevronLeft size={18} className="rtl:rotate-180" />
-                    </Button>
-                  ) : (
-                    <div className="flex shrink-0 items-center gap-2">
-                      <Badge variant="info">{t('student:price', { price: chapter.price })}</Badge>
-                      <Button size="sm" onClick={() => navigate('/student/payment')}>
-                        <Lock size={16} />
-                        {t('student:subscribe')}
-                      </Button>
-                    </div>
-                  )}
-                </Card>
-              ))}
-          </div>
-        </section>
-      ))}
+      {activeTab === 'all' ? <AllContentTree /> : <MyCoursesTab active={activeTab === 'courses'} />}
     </div>
   );
 }

@@ -52,6 +52,16 @@ export class ChapterService {
       },
     });
 
+    await auditLogService.record({
+      action: "CHAPTER_CREATED",
+      resourceType: "CHAPTER",
+      resourceId: chapter.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { name: chapter.name, stageId },
+    });
+
     return toDTO(chapter as unknown as Record<string, unknown>, 0);
   }
 
@@ -145,6 +155,16 @@ export class ChapterService {
       },
     });
 
+    await auditLogService.record({
+      action: "CHAPTER_UPDATED",
+      resourceType: "CHAPTER",
+      resourceId: chapter.id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { name: chapter.name },
+    });
+
     return toDTO(
       chapter as unknown as Record<string, unknown>,
       await this.countLessons(id),
@@ -157,7 +177,14 @@ export class ChapterService {
       include: {
         lessons: {
           where: { deletedAt: null },
-          select: { id: true, title: true, pdfUrls: true },
+          select: {
+            id: true,
+            title: true,
+            lessonMaterials: {
+              where: { deletedAt: null },
+              select: { filePath: true },
+            },
+          },
         },
         stage: { select: { name: true } },
       },
@@ -181,12 +208,21 @@ export class ChapterService {
         where: { id },
         data: { deletedAt: new Date() },
       });
+      await auditLogService.record({
+        action: "CHAPTER_DELETED",
+        resourceType: "CHAPTER",
+        resourceId: id,
+        actorId: teacherId,
+        actorType: "TEACHER",
+        scopeTeacherId: teacherId,
+        details: { name: chapter.name, stageName: chapter.stage.name },
+      });
       return;
     }
 
     const lessonIds = lessons.map((l) => l.id);
-    const allPdfUrls = lessons
-      .flatMap((l) => (l.pdfUrls as string[]) ?? [])
+    const allFilePaths = lessons
+      .flatMap((l) => (l.lessonMaterials as Array<{ filePath: string }> ?? []).map((m) => m.filePath))
       .filter(Boolean);
 
     await prisma.$transaction(async (tx) => {
@@ -205,25 +241,28 @@ export class ChapterService {
         data: { deletedAt: new Date() },
       });
 
-      await tx.auditLog.create({
-        data: {
-          action: "DELETE_CHAPTER",
+      await auditLogService.record(
+        {
+          action: "CHAPTER_DELETED",
           resourceType: "CHAPTER",
           resourceId: id,
+          actorId: teacherId,
+          actorType: "TEACHER",
+          scopeTeacherId: teacherId,
           details: {
             name: chapter.name,
             stageName: chapter.stage.name,
             lessonsDeleted: lessons.length,
           },
-          userId: teacherId,
         },
-      });
+        tx,
+      );
     });
 
     await Promise.all(
-      allPdfUrls.map((url) =>
-        filesService.deleteFile(url).catch((err) =>
-          logger.warn(`Failed to delete file from storage: ${url}`, err),
+      allFilePaths.map((filePath) =>
+        filesService.deleteFile(filePath).catch((err) =>
+          logger.warn(`Failed to delete file from storage: ${filePath}`, err),
         ),
       ),
     );

@@ -74,3 +74,116 @@ export function normalizeMobile(raw: string): string {
 
 /** Max upload size accepted by the backend (multer): 5 MB. */
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+/* ────────────────────────────────────────────────────────────────────────
+ * Content management form schemas (Chapter / Lesson / Stage).
+ *
+ * Client-side mirrors of the backend Zod schemas (chapter.validation.ts,
+ * lessons.validation.ts, stage.validation.ts). Built as factories so error
+ * messages resolve through the active i18next language — same pattern as
+ * createTeacherProfileSchema above.
+ *
+ * `sortOrder` is intentionally omitted from the form schemas: the UI computes
+ * it (append-to-end) rather than asking the user for it.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+export function createChapterSchema(t: TFunction) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t("contentValidation.nameRequired"))
+      .max(200, t("contentValidation.nameMax")),
+    description: z
+      .string()
+      .trim()
+      .max(2000, t("contentValidation.descriptionMax"))
+      .optional()
+      .or(z.literal("")),
+    price: z
+      .number()
+      .min(0, t("contentValidation.priceMin"))
+      .optional()
+      .nullable(),
+  });
+}
+
+export type CreateChapterFormInput = z.infer<
+  ReturnType<typeof createChapterSchema>
+>;
+
+export function createLessonSchema(t: TFunction) {
+  return z.object({
+    title: z
+      .string()
+      .trim()
+      .min(1, t("contentValidation.titleRequired"))
+      .max(200, t("contentValidation.titleMax")),
+    description: z
+      .string()
+      .trim()
+      .max(2000, t("contentValidation.descriptionMax"))
+      .optional()
+      .or(z.literal("")),
+    // Forms pass NaN (or "") for an empty duration field. Normalise that to
+    // `undefined` so the user sees a friendly "required" message instead of
+    // the raw Zod "expected number, received NaN".
+    durationMinutes: z.preprocess(
+      (v) => {
+        if (typeof v === "string") {
+          const s = v.trim();
+          return s === "" ? undefined : Number(s);
+        }
+        if (typeof v === "number" && Number.isNaN(v)) return undefined;
+        return v;
+      },
+      z
+        .number({ error: t("contentValidation.durationRequired") })
+        .int(t("contentValidation.durationInt"))
+        .min(1, t("contentValidation.durationMin"))
+        .max(300, t("contentValidation.durationMax")),
+    ),
+    youtubeUrl: z
+      .string()
+      .trim()
+      .refine(
+        (v) => {
+          if (!v) return true;
+          try {
+            const url = new URL(v);
+            const host = url.hostname.replace("www.", "");
+            return ["youtube.com", "m.youtube.com", "youtu.be"].includes(host);
+          } catch {
+            return false;
+          }
+        },
+        { message: t("contentValidation.youtubeUrlInvalid") },
+      )
+      .optional()
+      .or(z.literal("")),
+  });
+}
+
+export type CreateLessonFormInput = z.infer<
+  ReturnType<typeof createLessonSchema>
+>;
+
+export function createStageUpdateSchema(t: TFunction) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t("contentValidation.nameRequired"))
+      .max(200, t("contentValidation.nameMax")),
+    description: z
+      .string()
+      .trim()
+      .max(2000, t("contentValidation.descriptionMax"))
+      .optional()
+      .or(z.literal("")),
+  });
+}
+
+export type UpdateStageFormInput = z.infer<
+  ReturnType<typeof createStageUpdateSchema>
+>;
