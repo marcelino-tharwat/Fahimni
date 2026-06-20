@@ -61,6 +61,9 @@ export class FilesService {
       data: {
         lessonId,
         filePath,
+        displayName: file.originalname,
+        fileSize: file.size,
+        mimeType: file.mimetype,
       },
     });
 

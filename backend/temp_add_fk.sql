@@ -1,0 +1,1 @@
+ALTER TABLE lesson_materials ADD CONSTRAINT "lesson_materials_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES lessons(id) ON DELETE RESTRICT ON UPDATE CASCADE;
