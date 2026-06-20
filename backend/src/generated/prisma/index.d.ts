@@ -2058,10 +2058,12 @@ export namespace Prisma {
 
   export type LessonCountOutputType = {
     lessonProgress: number
+    lessonMaterials: number
   }
 
   export type LessonCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     lessonProgress?: boolean | LessonCountOutputTypeCountLessonProgressArgs
+    lessonMaterials?: boolean | LessonCountOutputTypeCountLessonMaterialsArgs
   }
 
   // Custom InputTypes
@@ -2080,6 +2082,13 @@ export namespace Prisma {
    */
   export type LessonCountOutputTypeCountLessonProgressArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LessonProgressWhereInput
+  }
+
+  /**
+   * LessonCountOutputType without action
+   */
+  export type LessonCountOutputTypeCountLessonMaterialsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonMaterialWhereInput
   }
 
 
@@ -7944,11 +7953,13 @@ export namespace Prisma {
   export type LessonAvgAggregateOutputType = {
     durationMinutes: number | null
     sortOrder: number | null
+    viewCount: number | null
   }
 
   export type LessonSumAggregateOutputType = {
     durationMinutes: number | null
     sortOrder: number | null
+    viewCount: number | null
   }
 
   export type LessonMinAggregateOutputType = {
@@ -7958,6 +7969,7 @@ export namespace Prisma {
     durationMinutes: number | null
     youtubeUrl: string | null
     sortOrder: number | null
+    viewCount: number | null
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
@@ -7971,6 +7983,7 @@ export namespace Prisma {
     durationMinutes: number | null
     youtubeUrl: string | null
     sortOrder: number | null
+    viewCount: number | null
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
@@ -7984,6 +7997,7 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl: number
     sortOrder: number
+    viewCount: number
     pdfUrls: number
     createdAt: number
     updatedAt: number
@@ -7996,11 +8010,13 @@ export namespace Prisma {
   export type LessonAvgAggregateInputType = {
     durationMinutes?: true
     sortOrder?: true
+    viewCount?: true
   }
 
   export type LessonSumAggregateInputType = {
     durationMinutes?: true
     sortOrder?: true
+    viewCount?: true
   }
 
   export type LessonMinAggregateInputType = {
@@ -8010,6 +8026,7 @@ export namespace Prisma {
     durationMinutes?: true
     youtubeUrl?: true
     sortOrder?: true
+    viewCount?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -8023,6 +8040,7 @@ export namespace Prisma {
     durationMinutes?: true
     youtubeUrl?: true
     sortOrder?: true
+    viewCount?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -8036,6 +8054,7 @@ export namespace Prisma {
     durationMinutes?: true
     youtubeUrl?: true
     sortOrder?: true
+    viewCount?: true
     pdfUrls?: true
     createdAt?: true
     updatedAt?: true
@@ -8137,6 +8156,7 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl: string | null
     sortOrder: number
+    viewCount: number
     pdfUrls: JsonValue | null
     createdAt: Date
     updatedAt: Date
@@ -8170,6 +8190,7 @@ export namespace Prisma {
     durationMinutes?: boolean
     youtubeUrl?: boolean
     sortOrder?: boolean
+    viewCount?: boolean
     pdfUrls?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8177,6 +8198,7 @@ export namespace Prisma {
     chapterId?: boolean
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     lessonProgress?: boolean | Lesson$lessonProgressArgs<ExtArgs>
+    lessonMaterials?: boolean | Lesson$lessonMaterialsArgs<ExtArgs>
     _count?: boolean | LessonCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lesson"]>
 
@@ -8187,6 +8209,7 @@ export namespace Prisma {
     durationMinutes?: boolean
     youtubeUrl?: boolean
     sortOrder?: boolean
+    viewCount?: boolean
     pdfUrls?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8202,6 +8225,7 @@ export namespace Prisma {
     durationMinutes?: boolean
     youtubeUrl?: boolean
     sortOrder?: boolean
+    viewCount?: boolean
     pdfUrls?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8217,6 +8241,7 @@ export namespace Prisma {
     durationMinutes?: boolean
     youtubeUrl?: boolean
     sortOrder?: boolean
+    viewCount?: boolean
     pdfUrls?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -8224,10 +8249,11 @@ export namespace Prisma {
     chapterId?: boolean
   }
 
-  export type LessonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "durationMinutes" | "youtubeUrl" | "sortOrder" | "pdfUrls" | "createdAt" | "updatedAt" | "deletedAt" | "chapterId", ExtArgs["result"]["lesson"]>
+  export type LessonOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "durationMinutes" | "youtubeUrl" | "sortOrder" | "viewCount" | "pdfUrls" | "createdAt" | "updatedAt" | "deletedAt" | "chapterId", ExtArgs["result"]["lesson"]>
   export type LessonInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     lessonProgress?: boolean | Lesson$lessonProgressArgs<ExtArgs>
+    lessonMaterials?: boolean | Lesson$lessonMaterialsArgs<ExtArgs>
     _count?: boolean | LessonCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LessonIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8242,6 +8268,7 @@ export namespace Prisma {
     objects: {
       chapter: Prisma.$ChapterPayload<ExtArgs>
       lessonProgress: Prisma.$LessonProgressPayload<ExtArgs>[]
+      lessonMaterials: Prisma.$LessonMaterialPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8250,6 +8277,7 @@ export namespace Prisma {
       durationMinutes: number
       youtubeUrl: string | null
       sortOrder: number
+      viewCount: number
       pdfUrls: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
@@ -8651,6 +8679,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     chapter<T extends ChapterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChapterDefaultArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     lessonProgress<T extends Lesson$lessonProgressArgs<ExtArgs> = {}>(args?: Subset<T, Lesson$lessonProgressArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    lessonMaterials<T extends Lesson$lessonMaterialsArgs<ExtArgs> = {}>(args?: Subset<T, Lesson$lessonMaterialsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonMaterialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8686,6 +8715,7 @@ export namespace Prisma {
     readonly durationMinutes: FieldRef<"Lesson", 'Int'>
     readonly youtubeUrl: FieldRef<"Lesson", 'String'>
     readonly sortOrder: FieldRef<"Lesson", 'Int'>
+    readonly viewCount: FieldRef<"Lesson", 'Int'>
     readonly pdfUrls: FieldRef<"Lesson", 'Json'>
     readonly createdAt: FieldRef<"Lesson", 'DateTime'>
     readonly updatedAt: FieldRef<"Lesson", 'DateTime'>
@@ -9113,6 +9143,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LessonProgressScalarFieldEnum | LessonProgressScalarFieldEnum[]
+  }
+
+  /**
+   * Lesson.lessonMaterials
+   */
+  export type Lesson$lessonMaterialsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterial
+     */
+    select?: LessonMaterialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterial
+     */
+    omit?: LessonMaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
+    where?: LessonMaterialWhereInput
+    orderBy?: LessonMaterialOrderByWithRelationInput | LessonMaterialOrderByWithRelationInput[]
+    cursor?: LessonMaterialWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LessonMaterialScalarFieldEnum | LessonMaterialScalarFieldEnum[]
   }
 
   /**
@@ -12397,14 +12451,27 @@ export namespace Prisma {
 
   export type AggregateLessonMaterial = {
     _count: LessonMaterialCountAggregateOutputType | null
+    _avg: LessonMaterialAvgAggregateOutputType | null
+    _sum: LessonMaterialSumAggregateOutputType | null
     _min: LessonMaterialMinAggregateOutputType | null
     _max: LessonMaterialMaxAggregateOutputType | null
+  }
+
+  export type LessonMaterialAvgAggregateOutputType = {
+    fileSize: number | null
+  }
+
+  export type LessonMaterialSumAggregateOutputType = {
+    fileSize: number | null
   }
 
   export type LessonMaterialMinAggregateOutputType = {
     id: string | null
     lessonId: string | null
     filePath: string | null
+    displayName: string | null
+    fileSize: number | null
+    mimeType: string | null
     createdAt: Date | null
     deletedAt: Date | null
   }
@@ -12413,6 +12480,9 @@ export namespace Prisma {
     id: string | null
     lessonId: string | null
     filePath: string | null
+    displayName: string | null
+    fileSize: number | null
+    mimeType: string | null
     createdAt: Date | null
     deletedAt: Date | null
   }
@@ -12421,16 +12491,30 @@ export namespace Prisma {
     id: number
     lessonId: number
     filePath: number
+    displayName: number
+    fileSize: number
+    mimeType: number
     createdAt: number
     deletedAt: number
     _all: number
   }
 
 
+  export type LessonMaterialAvgAggregateInputType = {
+    fileSize?: true
+  }
+
+  export type LessonMaterialSumAggregateInputType = {
+    fileSize?: true
+  }
+
   export type LessonMaterialMinAggregateInputType = {
     id?: true
     lessonId?: true
     filePath?: true
+    displayName?: true
+    fileSize?: true
+    mimeType?: true
     createdAt?: true
     deletedAt?: true
   }
@@ -12439,6 +12523,9 @@ export namespace Prisma {
     id?: true
     lessonId?: true
     filePath?: true
+    displayName?: true
+    fileSize?: true
+    mimeType?: true
     createdAt?: true
     deletedAt?: true
   }
@@ -12447,6 +12534,9 @@ export namespace Prisma {
     id?: true
     lessonId?: true
     filePath?: true
+    displayName?: true
+    fileSize?: true
+    mimeType?: true
     createdAt?: true
     deletedAt?: true
     _all?: true
@@ -12490,6 +12580,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: LessonMaterialAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LessonMaterialSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: LessonMaterialMinAggregateInputType
@@ -12520,6 +12622,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: LessonMaterialCountAggregateInputType | true
+    _avg?: LessonMaterialAvgAggregateInputType
+    _sum?: LessonMaterialSumAggregateInputType
     _min?: LessonMaterialMinAggregateInputType
     _max?: LessonMaterialMaxAggregateInputType
   }
@@ -12528,9 +12632,14 @@ export namespace Prisma {
     id: string
     lessonId: string
     filePath: string
+    displayName: string
+    fileSize: number
+    mimeType: string
     createdAt: Date
     deletedAt: Date | null
     _count: LessonMaterialCountAggregateOutputType | null
+    _avg: LessonMaterialAvgAggregateOutputType | null
+    _sum: LessonMaterialSumAggregateOutputType | null
     _min: LessonMaterialMinAggregateOutputType | null
     _max: LessonMaterialMaxAggregateOutputType | null
   }
@@ -12553,43 +12662,72 @@ export namespace Prisma {
     id?: boolean
     lessonId?: boolean
     filePath?: boolean
+    displayName?: boolean
+    fileSize?: boolean
+    mimeType?: boolean
     createdAt?: boolean
     deletedAt?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lessonMaterial"]>
 
   export type LessonMaterialSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     lessonId?: boolean
     filePath?: boolean
+    displayName?: boolean
+    fileSize?: boolean
+    mimeType?: boolean
     createdAt?: boolean
     deletedAt?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lessonMaterial"]>
 
   export type LessonMaterialSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     lessonId?: boolean
     filePath?: boolean
+    displayName?: boolean
+    fileSize?: boolean
+    mimeType?: boolean
     createdAt?: boolean
     deletedAt?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lessonMaterial"]>
 
   export type LessonMaterialSelectScalar = {
     id?: boolean
     lessonId?: boolean
     filePath?: boolean
+    displayName?: boolean
+    fileSize?: boolean
+    mimeType?: boolean
     createdAt?: boolean
     deletedAt?: boolean
   }
 
-  export type LessonMaterialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lessonId" | "filePath" | "createdAt" | "deletedAt", ExtArgs["result"]["lessonMaterial"]>
+  export type LessonMaterialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lessonId" | "filePath" | "displayName" | "fileSize" | "mimeType" | "createdAt" | "deletedAt", ExtArgs["result"]["lessonMaterial"]>
+  export type LessonMaterialInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }
+  export type LessonMaterialIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }
+  export type LessonMaterialIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }
 
   export type $LessonMaterialPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "LessonMaterial"
-    objects: {}
+    objects: {
+      lesson: Prisma.$LessonPayload<ExtArgs>
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       lessonId: string
       filePath: string
+      displayName: string
+      fileSize: number
+      mimeType: string
       createdAt: Date
       deletedAt: Date | null
     }, ExtArgs["result"]["lessonMaterial"]>
@@ -12986,6 +13124,7 @@ export namespace Prisma {
    */
   export interface Prisma__LessonMaterialClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    lesson<T extends LessonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LessonDefaultArgs<ExtArgs>>): Prisma__LessonClient<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13018,6 +13157,9 @@ export namespace Prisma {
     readonly id: FieldRef<"LessonMaterial", 'String'>
     readonly lessonId: FieldRef<"LessonMaterial", 'String'>
     readonly filePath: FieldRef<"LessonMaterial", 'String'>
+    readonly displayName: FieldRef<"LessonMaterial", 'String'>
+    readonly fileSize: FieldRef<"LessonMaterial", 'Int'>
+    readonly mimeType: FieldRef<"LessonMaterial", 'String'>
     readonly createdAt: FieldRef<"LessonMaterial", 'DateTime'>
     readonly deletedAt: FieldRef<"LessonMaterial", 'DateTime'>
   }
@@ -13037,6 +13179,10 @@ export namespace Prisma {
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
+    /**
      * Filter, which LessonMaterial to fetch.
      */
     where: LessonMaterialWhereUniqueInput
@@ -13055,6 +13201,10 @@ export namespace Prisma {
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
+    /**
      * Filter, which LessonMaterial to fetch.
      */
     where: LessonMaterialWhereUniqueInput
@@ -13072,6 +13222,10 @@ export namespace Prisma {
      * Omit specific fields from the LessonMaterial
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
     /**
      * Filter, which LessonMaterial to fetch.
      */
@@ -13121,6 +13275,10 @@ export namespace Prisma {
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
+    /**
      * Filter, which LessonMaterial to fetch.
      */
     where?: LessonMaterialWhereInput
@@ -13168,6 +13326,10 @@ export namespace Prisma {
      * Omit specific fields from the LessonMaterial
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
     /**
      * Filter, which LessonMaterials to fetch.
      */
@@ -13217,6 +13379,10 @@ export namespace Prisma {
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
+    /**
      * The data needed to create a LessonMaterial.
      */
     data: XOR<LessonMaterialCreateInput, LessonMaterialUncheckedCreateInput>
@@ -13250,6 +13416,10 @@ export namespace Prisma {
      */
     data: LessonMaterialCreateManyInput | LessonMaterialCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -13264,6 +13434,10 @@ export namespace Prisma {
      * Omit specific fields from the LessonMaterial
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
     /**
      * The data needed to update a LessonMaterial.
      */
@@ -13316,6 +13490,10 @@ export namespace Prisma {
      * Limit how many LessonMaterials to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -13330,6 +13508,10 @@ export namespace Prisma {
      * Omit specific fields from the LessonMaterial
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
     /**
      * The filter to search for the LessonMaterial to update in case it exists.
      */
@@ -13356,6 +13538,10 @@ export namespace Prisma {
      * Omit specific fields from the LessonMaterial
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
     /**
      * Filter which LessonMaterial to delete.
      */
@@ -13388,6 +13574,10 @@ export namespace Prisma {
      * Omit specific fields from the LessonMaterial
      */
     omit?: LessonMaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialInclude<ExtArgs> | null
   }
 
 
@@ -15654,6 +15844,7 @@ export namespace Prisma {
     durationMinutes: 'durationMinutes',
     youtubeUrl: 'youtubeUrl',
     sortOrder: 'sortOrder',
+    viewCount: 'viewCount',
     pdfUrls: 'pdfUrls',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -15705,6 +15896,9 @@ export namespace Prisma {
     id: 'id',
     lessonId: 'lessonId',
     filePath: 'filePath',
+    displayName: 'displayName',
+    fileSize: 'fileSize',
+    mimeType: 'mimeType',
     createdAt: 'createdAt',
     deletedAt: 'deletedAt'
   };
@@ -16304,6 +16498,7 @@ export namespace Prisma {
     durationMinutes?: IntFilter<"Lesson"> | number
     youtubeUrl?: StringNullableFilter<"Lesson"> | string | null
     sortOrder?: IntFilter<"Lesson"> | number
+    viewCount?: IntFilter<"Lesson"> | number
     pdfUrls?: JsonNullableFilter<"Lesson">
     createdAt?: DateTimeFilter<"Lesson"> | Date | string
     updatedAt?: DateTimeFilter<"Lesson"> | Date | string
@@ -16311,6 +16506,7 @@ export namespace Prisma {
     chapterId?: StringFilter<"Lesson"> | string
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
     lessonProgress?: LessonProgressListRelationFilter
+    lessonMaterials?: LessonMaterialListRelationFilter
   }
 
   export type LessonOrderByWithRelationInput = {
@@ -16320,6 +16516,7 @@ export namespace Prisma {
     durationMinutes?: SortOrder
     youtubeUrl?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
+    viewCount?: SortOrder
     pdfUrls?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16327,6 +16524,7 @@ export namespace Prisma {
     chapterId?: SortOrder
     chapter?: ChapterOrderByWithRelationInput
     lessonProgress?: LessonProgressOrderByRelationAggregateInput
+    lessonMaterials?: LessonMaterialOrderByRelationAggregateInput
   }
 
   export type LessonWhereUniqueInput = Prisma.AtLeast<{
@@ -16339,6 +16537,7 @@ export namespace Prisma {
     durationMinutes?: IntFilter<"Lesson"> | number
     youtubeUrl?: StringNullableFilter<"Lesson"> | string | null
     sortOrder?: IntFilter<"Lesson"> | number
+    viewCount?: IntFilter<"Lesson"> | number
     pdfUrls?: JsonNullableFilter<"Lesson">
     createdAt?: DateTimeFilter<"Lesson"> | Date | string
     updatedAt?: DateTimeFilter<"Lesson"> | Date | string
@@ -16346,6 +16545,7 @@ export namespace Prisma {
     chapterId?: StringFilter<"Lesson"> | string
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
     lessonProgress?: LessonProgressListRelationFilter
+    lessonMaterials?: LessonMaterialListRelationFilter
   }, "id">
 
   export type LessonOrderByWithAggregationInput = {
@@ -16355,6 +16555,7 @@ export namespace Prisma {
     durationMinutes?: SortOrder
     youtubeUrl?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
+    viewCount?: SortOrder
     pdfUrls?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16377,6 +16578,7 @@ export namespace Prisma {
     durationMinutes?: IntWithAggregatesFilter<"Lesson"> | number
     youtubeUrl?: StringNullableWithAggregatesFilter<"Lesson"> | string | null
     sortOrder?: IntWithAggregatesFilter<"Lesson"> | number
+    viewCount?: IntWithAggregatesFilter<"Lesson"> | number
     pdfUrls?: JsonNullableWithAggregatesFilter<"Lesson">
     createdAt?: DateTimeWithAggregatesFilter<"Lesson"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Lesson"> | Date | string
@@ -16584,16 +16786,24 @@ export namespace Prisma {
     id?: StringFilter<"LessonMaterial"> | string
     lessonId?: StringFilter<"LessonMaterial"> | string
     filePath?: StringFilter<"LessonMaterial"> | string
+    displayName?: StringFilter<"LessonMaterial"> | string
+    fileSize?: IntFilter<"LessonMaterial"> | number
+    mimeType?: StringFilter<"LessonMaterial"> | string
     createdAt?: DateTimeFilter<"LessonMaterial"> | Date | string
     deletedAt?: DateTimeNullableFilter<"LessonMaterial"> | Date | string | null
+    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
   }
 
   export type LessonMaterialOrderByWithRelationInput = {
     id?: SortOrder
     lessonId?: SortOrder
     filePath?: SortOrder
+    displayName?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
     createdAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    lesson?: LessonOrderByWithRelationInput
   }
 
   export type LessonMaterialWhereUniqueInput = Prisma.AtLeast<{
@@ -16603,19 +16813,28 @@ export namespace Prisma {
     NOT?: LessonMaterialWhereInput | LessonMaterialWhereInput[]
     lessonId?: StringFilter<"LessonMaterial"> | string
     filePath?: StringFilter<"LessonMaterial"> | string
+    displayName?: StringFilter<"LessonMaterial"> | string
+    fileSize?: IntFilter<"LessonMaterial"> | number
+    mimeType?: StringFilter<"LessonMaterial"> | string
     createdAt?: DateTimeFilter<"LessonMaterial"> | Date | string
     deletedAt?: DateTimeNullableFilter<"LessonMaterial"> | Date | string | null
+    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
   }, "id">
 
   export type LessonMaterialOrderByWithAggregationInput = {
     id?: SortOrder
     lessonId?: SortOrder
     filePath?: SortOrder
+    displayName?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
     createdAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
     _count?: LessonMaterialCountOrderByAggregateInput
+    _avg?: LessonMaterialAvgOrderByAggregateInput
     _max?: LessonMaterialMaxOrderByAggregateInput
     _min?: LessonMaterialMinOrderByAggregateInput
+    _sum?: LessonMaterialSumOrderByAggregateInput
   }
 
   export type LessonMaterialScalarWhereWithAggregatesInput = {
@@ -16625,6 +16844,9 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"LessonMaterial"> | string
     lessonId?: StringWithAggregatesFilter<"LessonMaterial"> | string
     filePath?: StringWithAggregatesFilter<"LessonMaterial"> | string
+    displayName?: StringWithAggregatesFilter<"LessonMaterial"> | string
+    fileSize?: IntWithAggregatesFilter<"LessonMaterial"> | number
+    mimeType?: StringWithAggregatesFilter<"LessonMaterial"> | string
     createdAt?: DateTimeWithAggregatesFilter<"LessonMaterial"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"LessonMaterial"> | Date | string | null
   }
@@ -17177,12 +17399,14 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl?: string | null
     sortOrder: number
+    viewCount?: number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapter: ChapterCreateNestedOneWithoutLessonsInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutLessonInput
+    lessonMaterials?: LessonMaterialCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUncheckedCreateInput = {
@@ -17192,12 +17416,14 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl?: string | null
     sortOrder: number
+    viewCount?: number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapterId: string
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+    lessonMaterials?: LessonMaterialUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUpdateInput = {
@@ -17207,12 +17433,14 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapter?: ChapterUpdateOneRequiredWithoutLessonsNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutLessonNestedInput
+    lessonMaterials?: LessonMaterialUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonUncheckedUpdateInput = {
@@ -17222,12 +17450,14 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapterId?: StringFieldUpdateOperationsInput | string
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
+    lessonMaterials?: LessonMaterialUncheckedUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonCreateManyInput = {
@@ -17237,6 +17467,7 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl?: string | null
     sortOrder: number
+    viewCount?: number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17251,6 +17482,7 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17264,6 +17496,7 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17464,32 +17697,44 @@ export namespace Prisma {
 
   export type LessonMaterialCreateInput = {
     id?: string
-    lessonId: string
     filePath: string
+    displayName: string
+    fileSize?: number
+    mimeType?: string
     createdAt?: Date | string
     deletedAt?: Date | string | null
+    lesson: LessonCreateNestedOneWithoutLessonMaterialsInput
   }
 
   export type LessonMaterialUncheckedCreateInput = {
     id?: string
     lessonId: string
     filePath: string
+    displayName: string
+    fileSize?: number
+    mimeType?: string
     createdAt?: Date | string
     deletedAt?: Date | string | null
   }
 
   export type LessonMaterialUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    lessonId?: StringFieldUpdateOperationsInput | string
     filePath?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lesson?: LessonUpdateOneRequiredWithoutLessonMaterialsNestedInput
   }
 
   export type LessonMaterialUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     lessonId?: StringFieldUpdateOperationsInput | string
     filePath?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -17498,14 +17743,19 @@ export namespace Prisma {
     id?: string
     lessonId: string
     filePath: string
+    displayName: string
+    fileSize?: number
+    mimeType?: string
     createdAt?: Date | string
     deletedAt?: Date | string | null
   }
 
   export type LessonMaterialUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    lessonId?: StringFieldUpdateOperationsInput | string
     filePath?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -17514,6 +17764,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     lessonId?: StringFieldUpdateOperationsInput | string
     filePath?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -18170,6 +18423,16 @@ export namespace Prisma {
     isNot?: ChapterWhereInput
   }
 
+  export type LessonMaterialListRelationFilter = {
+    every?: LessonMaterialWhereInput
+    some?: LessonMaterialWhereInput
+    none?: LessonMaterialWhereInput
+  }
+
+  export type LessonMaterialOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type LessonCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -18177,6 +18440,7 @@ export namespace Prisma {
     durationMinutes?: SortOrder
     youtubeUrl?: SortOrder
     sortOrder?: SortOrder
+    viewCount?: SortOrder
     pdfUrls?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18187,6 +18451,7 @@ export namespace Prisma {
   export type LessonAvgOrderByAggregateInput = {
     durationMinutes?: SortOrder
     sortOrder?: SortOrder
+    viewCount?: SortOrder
   }
 
   export type LessonMaxOrderByAggregateInput = {
@@ -18196,6 +18461,7 @@ export namespace Prisma {
     durationMinutes?: SortOrder
     youtubeUrl?: SortOrder
     sortOrder?: SortOrder
+    viewCount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -18209,6 +18475,7 @@ export namespace Prisma {
     durationMinutes?: SortOrder
     youtubeUrl?: SortOrder
     sortOrder?: SortOrder
+    viewCount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -18218,6 +18485,7 @@ export namespace Prisma {
   export type LessonSumOrderByAggregateInput = {
     durationMinutes?: SortOrder
     sortOrder?: SortOrder
+    viewCount?: SortOrder
   }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -18379,14 +18647,24 @@ export namespace Prisma {
     id?: SortOrder
     lessonId?: SortOrder
     filePath?: SortOrder
+    displayName?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
     createdAt?: SortOrder
     deletedAt?: SortOrder
+  }
+
+  export type LessonMaterialAvgOrderByAggregateInput = {
+    fileSize?: SortOrder
   }
 
   export type LessonMaterialMaxOrderByAggregateInput = {
     id?: SortOrder
     lessonId?: SortOrder
     filePath?: SortOrder
+    displayName?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
     createdAt?: SortOrder
     deletedAt?: SortOrder
   }
@@ -18395,8 +18673,15 @@ export namespace Prisma {
     id?: SortOrder
     lessonId?: SortOrder
     filePath?: SortOrder
+    displayName?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
     createdAt?: SortOrder
     deletedAt?: SortOrder
+  }
+
+  export type LessonMaterialSumOrderByAggregateInput = {
+    fileSize?: SortOrder
   }
 
   export type AuditLogCountOrderByAggregateInput = {
@@ -19008,11 +19293,25 @@ export namespace Prisma {
     connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
   }
 
+  export type LessonMaterialCreateNestedManyWithoutLessonInput = {
+    create?: XOR<LessonMaterialCreateWithoutLessonInput, LessonMaterialUncheckedCreateWithoutLessonInput> | LessonMaterialCreateWithoutLessonInput[] | LessonMaterialUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: LessonMaterialCreateOrConnectWithoutLessonInput | LessonMaterialCreateOrConnectWithoutLessonInput[]
+    createMany?: LessonMaterialCreateManyLessonInputEnvelope
+    connect?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+  }
+
   export type LessonProgressUncheckedCreateNestedManyWithoutLessonInput = {
     create?: XOR<LessonProgressCreateWithoutLessonInput, LessonProgressUncheckedCreateWithoutLessonInput> | LessonProgressCreateWithoutLessonInput[] | LessonProgressUncheckedCreateWithoutLessonInput[]
     connectOrCreate?: LessonProgressCreateOrConnectWithoutLessonInput | LessonProgressCreateOrConnectWithoutLessonInput[]
     createMany?: LessonProgressCreateManyLessonInputEnvelope
     connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+  }
+
+  export type LessonMaterialUncheckedCreateNestedManyWithoutLessonInput = {
+    create?: XOR<LessonMaterialCreateWithoutLessonInput, LessonMaterialUncheckedCreateWithoutLessonInput> | LessonMaterialCreateWithoutLessonInput[] | LessonMaterialUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: LessonMaterialCreateOrConnectWithoutLessonInput | LessonMaterialCreateOrConnectWithoutLessonInput[]
+    createMany?: LessonMaterialCreateManyLessonInputEnvelope
+    connect?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
   }
 
   export type ChapterUpdateOneRequiredWithoutLessonsNestedInput = {
@@ -19037,6 +19336,20 @@ export namespace Prisma {
     deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
   }
 
+  export type LessonMaterialUpdateManyWithoutLessonNestedInput = {
+    create?: XOR<LessonMaterialCreateWithoutLessonInput, LessonMaterialUncheckedCreateWithoutLessonInput> | LessonMaterialCreateWithoutLessonInput[] | LessonMaterialUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: LessonMaterialCreateOrConnectWithoutLessonInput | LessonMaterialCreateOrConnectWithoutLessonInput[]
+    upsert?: LessonMaterialUpsertWithWhereUniqueWithoutLessonInput | LessonMaterialUpsertWithWhereUniqueWithoutLessonInput[]
+    createMany?: LessonMaterialCreateManyLessonInputEnvelope
+    set?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+    disconnect?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+    delete?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+    connect?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+    update?: LessonMaterialUpdateWithWhereUniqueWithoutLessonInput | LessonMaterialUpdateWithWhereUniqueWithoutLessonInput[]
+    updateMany?: LessonMaterialUpdateManyWithWhereWithoutLessonInput | LessonMaterialUpdateManyWithWhereWithoutLessonInput[]
+    deleteMany?: LessonMaterialScalarWhereInput | LessonMaterialScalarWhereInput[]
+  }
+
   export type LessonProgressUncheckedUpdateManyWithoutLessonNestedInput = {
     create?: XOR<LessonProgressCreateWithoutLessonInput, LessonProgressUncheckedCreateWithoutLessonInput> | LessonProgressCreateWithoutLessonInput[] | LessonProgressUncheckedCreateWithoutLessonInput[]
     connectOrCreate?: LessonProgressCreateOrConnectWithoutLessonInput | LessonProgressCreateOrConnectWithoutLessonInput[]
@@ -19049,6 +19362,20 @@ export namespace Prisma {
     update?: LessonProgressUpdateWithWhereUniqueWithoutLessonInput | LessonProgressUpdateWithWhereUniqueWithoutLessonInput[]
     updateMany?: LessonProgressUpdateManyWithWhereWithoutLessonInput | LessonProgressUpdateManyWithWhereWithoutLessonInput[]
     deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
+  }
+
+  export type LessonMaterialUncheckedUpdateManyWithoutLessonNestedInput = {
+    create?: XOR<LessonMaterialCreateWithoutLessonInput, LessonMaterialUncheckedCreateWithoutLessonInput> | LessonMaterialCreateWithoutLessonInput[] | LessonMaterialUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: LessonMaterialCreateOrConnectWithoutLessonInput | LessonMaterialCreateOrConnectWithoutLessonInput[]
+    upsert?: LessonMaterialUpsertWithWhereUniqueWithoutLessonInput | LessonMaterialUpsertWithWhereUniqueWithoutLessonInput[]
+    createMany?: LessonMaterialCreateManyLessonInputEnvelope
+    set?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+    disconnect?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+    delete?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+    connect?: LessonMaterialWhereUniqueInput | LessonMaterialWhereUniqueInput[]
+    update?: LessonMaterialUpdateWithWhereUniqueWithoutLessonInput | LessonMaterialUpdateWithWhereUniqueWithoutLessonInput[]
+    updateMany?: LessonMaterialUpdateManyWithWhereWithoutLessonInput | LessonMaterialUpdateManyWithWhereWithoutLessonInput[]
+    deleteMany?: LessonMaterialScalarWhereInput | LessonMaterialScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutOtpsInput = {
@@ -19127,6 +19454,20 @@ export namespace Prisma {
     upsert?: LessonUpsertWithoutLessonProgressInput
     connect?: LessonWhereUniqueInput
     update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutLessonProgressInput, LessonUpdateWithoutLessonProgressInput>, LessonUncheckedUpdateWithoutLessonProgressInput>
+  }
+
+  export type LessonCreateNestedOneWithoutLessonMaterialsInput = {
+    create?: XOR<LessonCreateWithoutLessonMaterialsInput, LessonUncheckedCreateWithoutLessonMaterialsInput>
+    connectOrCreate?: LessonCreateOrConnectWithoutLessonMaterialsInput
+    connect?: LessonWhereUniqueInput
+  }
+
+  export type LessonUpdateOneRequiredWithoutLessonMaterialsNestedInput = {
+    create?: XOR<LessonCreateWithoutLessonMaterialsInput, LessonUncheckedCreateWithoutLessonMaterialsInput>
+    connectOrCreate?: LessonCreateOrConnectWithoutLessonMaterialsInput
+    upsert?: LessonUpsertWithoutLessonMaterialsInput
+    connect?: LessonWhereUniqueInput
+    update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutLessonMaterialsInput, LessonUpdateWithoutLessonMaterialsInput>, LessonUncheckedUpdateWithoutLessonMaterialsInput>
   }
 
   export type UserCreateNestedOneWithoutAuditLogsInput = {
@@ -20246,11 +20587,13 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl?: string | null
     sortOrder: number
+    viewCount?: number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     lessonProgress?: LessonProgressCreateNestedManyWithoutLessonInput
+    lessonMaterials?: LessonMaterialCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUncheckedCreateWithoutChapterInput = {
@@ -20260,11 +20603,13 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl?: string | null
     sortOrder: number
+    viewCount?: number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+    lessonMaterials?: LessonMaterialUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonCreateOrConnectWithoutChapterInput = {
@@ -20360,6 +20705,7 @@ export namespace Prisma {
     durationMinutes?: IntFilter<"Lesson"> | number
     youtubeUrl?: StringNullableFilter<"Lesson"> | string | null
     sortOrder?: IntFilter<"Lesson"> | number
+    viewCount?: IntFilter<"Lesson"> | number
     pdfUrls?: JsonNullableFilter<"Lesson">
     createdAt?: DateTimeFilter<"Lesson"> | Date | string
     updatedAt?: DateTimeFilter<"Lesson"> | Date | string
@@ -20440,6 +20786,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LessonMaterialCreateWithoutLessonInput = {
+    id?: string
+    filePath: string
+    displayName: string
+    fileSize?: number
+    mimeType?: string
+    createdAt?: Date | string
+    deletedAt?: Date | string | null
+  }
+
+  export type LessonMaterialUncheckedCreateWithoutLessonInput = {
+    id?: string
+    filePath: string
+    displayName: string
+    fileSize?: number
+    mimeType?: string
+    createdAt?: Date | string
+    deletedAt?: Date | string | null
+  }
+
+  export type LessonMaterialCreateOrConnectWithoutLessonInput = {
+    where: LessonMaterialWhereUniqueInput
+    create: XOR<LessonMaterialCreateWithoutLessonInput, LessonMaterialUncheckedCreateWithoutLessonInput>
+  }
+
+  export type LessonMaterialCreateManyLessonInputEnvelope = {
+    data: LessonMaterialCreateManyLessonInput | LessonMaterialCreateManyLessonInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ChapterUpsertWithoutLessonsInput = {
     update: XOR<ChapterUpdateWithoutLessonsInput, ChapterUncheckedUpdateWithoutLessonsInput>
     create: XOR<ChapterCreateWithoutLessonsInput, ChapterUncheckedCreateWithoutLessonsInput>
@@ -20491,6 +20867,36 @@ export namespace Prisma {
   export type LessonProgressUpdateManyWithWhereWithoutLessonInput = {
     where: LessonProgressScalarWhereInput
     data: XOR<LessonProgressUpdateManyMutationInput, LessonProgressUncheckedUpdateManyWithoutLessonInput>
+  }
+
+  export type LessonMaterialUpsertWithWhereUniqueWithoutLessonInput = {
+    where: LessonMaterialWhereUniqueInput
+    update: XOR<LessonMaterialUpdateWithoutLessonInput, LessonMaterialUncheckedUpdateWithoutLessonInput>
+    create: XOR<LessonMaterialCreateWithoutLessonInput, LessonMaterialUncheckedCreateWithoutLessonInput>
+  }
+
+  export type LessonMaterialUpdateWithWhereUniqueWithoutLessonInput = {
+    where: LessonMaterialWhereUniqueInput
+    data: XOR<LessonMaterialUpdateWithoutLessonInput, LessonMaterialUncheckedUpdateWithoutLessonInput>
+  }
+
+  export type LessonMaterialUpdateManyWithWhereWithoutLessonInput = {
+    where: LessonMaterialScalarWhereInput
+    data: XOR<LessonMaterialUpdateManyMutationInput, LessonMaterialUncheckedUpdateManyWithoutLessonInput>
+  }
+
+  export type LessonMaterialScalarWhereInput = {
+    AND?: LessonMaterialScalarWhereInput | LessonMaterialScalarWhereInput[]
+    OR?: LessonMaterialScalarWhereInput[]
+    NOT?: LessonMaterialScalarWhereInput | LessonMaterialScalarWhereInput[]
+    id?: StringFilter<"LessonMaterial"> | string
+    lessonId?: StringFilter<"LessonMaterial"> | string
+    filePath?: StringFilter<"LessonMaterial"> | string
+    displayName?: StringFilter<"LessonMaterial"> | string
+    fileSize?: IntFilter<"LessonMaterial"> | number
+    mimeType?: StringFilter<"LessonMaterial"> | string
+    createdAt?: DateTimeFilter<"LessonMaterial"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"LessonMaterial"> | Date | string | null
   }
 
   export type UserCreateWithoutOtpsInput = {
@@ -20795,11 +21201,13 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl?: string | null
     sortOrder: number
+    viewCount?: number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapter: ChapterCreateNestedOneWithoutLessonsInput
+    lessonMaterials?: LessonMaterialCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUncheckedCreateWithoutLessonProgressInput = {
@@ -20809,11 +21217,13 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl?: string | null
     sortOrder: number
+    viewCount?: number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapterId: string
+    lessonMaterials?: LessonMaterialUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonCreateOrConnectWithoutLessonProgressInput = {
@@ -20888,11 +21298,13 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapter?: ChapterUpdateOneRequiredWithoutLessonsNestedInput
+    lessonMaterials?: LessonMaterialUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonUncheckedUpdateWithoutLessonProgressInput = {
@@ -20902,11 +21314,93 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapterId?: StringFieldUpdateOperationsInput | string
+    lessonMaterials?: LessonMaterialUncheckedUpdateManyWithoutLessonNestedInput
+  }
+
+  export type LessonCreateWithoutLessonMaterialsInput = {
+    id?: string
+    title: string
+    description?: string | null
+    durationMinutes: number
+    youtubeUrl?: string | null
+    sortOrder: number
+    viewCount?: number
+    pdfUrls?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    chapter: ChapterCreateNestedOneWithoutLessonsInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutLessonInput
+  }
+
+  export type LessonUncheckedCreateWithoutLessonMaterialsInput = {
+    id?: string
+    title: string
+    description?: string | null
+    durationMinutes: number
+    youtubeUrl?: string | null
+    sortOrder: number
+    viewCount?: number
+    pdfUrls?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    chapterId: string
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+  }
+
+  export type LessonCreateOrConnectWithoutLessonMaterialsInput = {
+    where: LessonWhereUniqueInput
+    create: XOR<LessonCreateWithoutLessonMaterialsInput, LessonUncheckedCreateWithoutLessonMaterialsInput>
+  }
+
+  export type LessonUpsertWithoutLessonMaterialsInput = {
+    update: XOR<LessonUpdateWithoutLessonMaterialsInput, LessonUncheckedUpdateWithoutLessonMaterialsInput>
+    create: XOR<LessonCreateWithoutLessonMaterialsInput, LessonUncheckedCreateWithoutLessonMaterialsInput>
+    where?: LessonWhereInput
+  }
+
+  export type LessonUpdateToOneWithWhereWithoutLessonMaterialsInput = {
+    where?: LessonWhereInput
+    data: XOR<LessonUpdateWithoutLessonMaterialsInput, LessonUncheckedUpdateWithoutLessonMaterialsInput>
+  }
+
+  export type LessonUpdateWithoutLessonMaterialsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMinutes?: IntFieldUpdateOperationsInput | number
+    youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
+    pdfUrls?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapter?: ChapterUpdateOneRequiredWithoutLessonsNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutLessonNestedInput
+  }
+
+  export type LessonUncheckedUpdateWithoutLessonMaterialsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMinutes?: IntFieldUpdateOperationsInput | number
+    youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
+    pdfUrls?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapterId?: StringFieldUpdateOperationsInput | string
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -21362,6 +21856,7 @@ export namespace Prisma {
     durationMinutes: number
     youtubeUrl?: string | null
     sortOrder: number
+    viewCount?: number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21382,11 +21877,13 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lessonProgress?: LessonProgressUpdateManyWithoutLessonNestedInput
+    lessonMaterials?: LessonMaterialUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonUncheckedUpdateWithoutChapterInput = {
@@ -21396,11 +21893,13 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
+    lessonMaterials?: LessonMaterialUncheckedUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonUncheckedUpdateManyWithoutChapterInput = {
@@ -21410,6 +21909,7 @@ export namespace Prisma {
     durationMinutes?: IntFieldUpdateOperationsInput | number
     youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
     pdfUrls?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21445,6 +21945,16 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type LessonMaterialCreateManyLessonInput = {
+    id?: string
+    filePath: string
+    displayName: string
+    fileSize?: number
+    mimeType?: string
+    createdAt?: Date | string
+    deletedAt?: Date | string | null
+  }
+
   export type LessonProgressUpdateWithoutLessonInput = {
     id?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
@@ -21467,6 +21977,36 @@ export namespace Prisma {
     completed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LessonMaterialUpdateWithoutLessonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type LessonMaterialUncheckedUpdateWithoutLessonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type LessonMaterialUncheckedUpdateManyWithoutLessonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 

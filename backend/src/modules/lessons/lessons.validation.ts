@@ -27,15 +27,6 @@ const youtubeUrlSchema = z
   .trim()
   .refine(isValidYoutubeUrl, "Must be a valid YouTube URL");
 
-const pdfUrlsSchema = z
-  .array(
-    z
-      .string()
-      .trim()
-      .min(1, "PDF key must be a non-empty string"),
-  )
-  .max(10, "A lesson can have at most 10 PDF keys");
-
 export const createLessonSchema = z.object({
   title: z
     .string()
@@ -58,7 +49,6 @@ export const createLessonSchema = z.object({
     .number()
     .int("Sort order must be an integer")
     .min(1, "Sort order must be at least 1"),
-  pdfUrls: pdfUrlsSchema.optional().nullable(),
 });
 
 export const updateLessonSchema = z
@@ -87,7 +77,6 @@ export const updateLessonSchema = z
       .int("Sort order must be an integer")
       .min(1, "Sort order must be at least 1")
       .optional(),
-    pdfUrls: pdfUrlsSchema.optional().nullable(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided for update",

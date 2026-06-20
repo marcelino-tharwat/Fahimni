@@ -1,3 +1,11 @@
+export interface AttachmentDTO {
+  id: string;
+  displayName: string;
+  fileSize: number;
+  mimeType: string;
+  url: string;
+}
+
 export interface LessonResponseDTO {
   id: string;
   title: string;
@@ -5,7 +13,7 @@ export interface LessonResponseDTO {
   durationMinutes: number;
   youtubeUrl: string | null;
   sortOrder: number;
-  pdfUrls: string[] | null;
+  attachments: AttachmentDTO[];
   chapterId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -22,7 +30,6 @@ export const lessonPublicFields = {
   durationMinutes: true,
   youtubeUrl: true,
   sortOrder: true,
-  pdfUrls: true,
   chapterId: true,
   createdAt: true,
   updatedAt: true,

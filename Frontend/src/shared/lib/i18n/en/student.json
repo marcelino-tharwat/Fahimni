@@ -102,5 +102,26 @@
       "confirmPasswordRequired": "Confirm password is required",
       "passwordsDoNotMatch": "Passwords do not match"
     }
+  },
+  "lesson": {
+    "notFound": {
+      "title": "Lesson Not Found",
+      "description": "This lesson could not be found. It may have been removed or the link may be incorrect.",
+      "back": "Back to All Content"
+    },
+    "videoUnavailable": "Video currently unavailable",
+    "lessonLabel": "Lesson {{order}}",
+    "minutes": "minutes",
+    "pdfMaterials": "PDF Materials",
+    "download": "Download",
+    "totalFiles": "{{count}} file(s)",
+    "totalSize": "{{size}} total",
+    "previousLesson": "Previous Lesson",
+    "nextLesson": "Next Lesson",
+    "enrollmentRequired": {
+      "title": "Enrollment Required",
+      "description": "You need to enroll in this chapter to access this lesson. Subscribe now to unlock all lessons and start learning.",
+      "cta": "Browse Content"
+    }
   }
 }

@@ -26,7 +26,7 @@ export interface Lesson {
   duration: number;
   youtubeUrl: string;
   order: number;
-  attachments: LessonAttachment[];
+  pdfUrls: string[] | null;
   progress?: LessonProgress;
 }
 

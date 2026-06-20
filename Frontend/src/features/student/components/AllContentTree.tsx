@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   FlaskConical,
   Atom,
@@ -261,12 +261,17 @@ function ChapterRow({
           {lessons.map((lesson, lessonIndex) => (
             <li
               key={lesson.id}
-              className="flex items-center gap-3 border-b border-gray-100 px-3 py-2.5 last:border-b-0"
+              className="border-b border-gray-100 last:border-b-0"
             >
-              <FileText size={15} className="shrink-0 text-gray-400" />
-              <span className="min-w-0 flex-1 truncate font-cairo text-sm text-navy-700">
-                {t('student:content.lesson', { order: lessonIndex + 1, title: lesson.title })}
-              </span>
+              <Link
+                to={`/student/lessons/${lesson.id}`}
+                className="flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-gray-50/60"
+              >
+                <FileText size={15} className="shrink-0 text-gray-400" />
+                <span className="min-w-0 flex-1 truncate font-cairo text-sm text-navy-700">
+                  {t('student:content.lesson', { order: lessonIndex + 1, title: lesson.title })}
+                </span>
+              </Link>
             </li>
           ))}
         </ul>
