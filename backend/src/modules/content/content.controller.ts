@@ -1,13 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../../config/database.js";
+import { Prisma } from "../../generated/prisma/client.js";
 import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { logger } from "../../config/logger.js";
 import { FilesService } from "../files/files.service.js";
 import type { LessonResponseDTO } from "../lessons/lessons.types.js";
-
-const filesService = new FilesService();
 import type {
   ContentTreeResponse,
   StudentContentTreeResponse,
@@ -15,6 +14,8 @@ import type {
   EnrollmentStatus,
   MyCourseResponse,
 } from "./content.types.js";
+
+const filesService = new FilesService();
 
 export class ContentController {
   getTree = asyncHandler(
@@ -302,27 +303,9 @@ export class ContentController {
       }
 
       const { chapter, lessonMaterials, ...lessonFields } = lesson;
-      const price =
-        chapter.price !== null ? Number(chapter.price) : null;
 
-      if (price !== null && price > 0) {
-        const enrollment = await prisma.enrollment.findFirst({
-          where: {
-            studentId,
-            chapterId: chapter.id,
-            status: "ACTIVE",
-          },
-        });
-
-        if (!enrollment) {
-          res.status(403).json({
-            success: false,
-            code: "NOT_ENROLLED",
-            message:
-              "You need to enroll in this chapter to access this lesson.",
-          });
-          return;
-        }
+      if (!(await this.ensureChapterAccess(res, studentId, chapter))) {
+        return;
       }
 
       const materials = (
@@ -338,6 +321,7 @@ export class ContentController {
       const attachments = await Promise.all(
         materials.map(async (m) => ({
           id: m.id,
+          filePath: m.filePath,
           displayName: m.displayName,
           fileSize: m.fileSize,
           mimeType: m.mimeType,
@@ -358,6 +342,7 @@ export class ContentController {
 
   incrementLessonView = asyncHandler(
     async (req: Request, res: Response) => {
+      const studentId = req.user!.id;
       const lessonId = req.params.id as string;
 
       const lesson = await prisma.lesson.findFirst({
@@ -366,11 +351,17 @@ export class ContentController {
           deletedAt: null,
           chapter: { deletedAt: null, stage: { deletedAt: null } },
         },
-        select: { id: true },
+        select: { id: true, chapter: { select: { id: true, price: true } } },
       });
 
       if (!lesson) {
         throw new AppError("Lesson not found", 404);
+      }
+
+      // Only count a view if the student is actually allowed to watch the
+      // lesson — otherwise paid lessons accrue fake views from blocked users.
+      if (!(await this.ensureChapterAccess(res, studentId, lesson.chapter))) {
+        return;
       }
 
       await prisma.lesson.update({
@@ -381,4 +372,38 @@ export class ContentController {
       res.status(200).json(okResponse("View count incremented"));
     },
   );
+
+  /**
+   * Shared access gate for student lesson endpoints. Free chapters
+   * (price null or <= 0) are open to any student; paid chapters require an
+   * ACTIVE enrollment. On denial, writes the 403 NOT_ENROLLED response and
+   * returns false so the caller can bail out.
+   */
+  private async ensureChapterAccess(
+    res: Response,
+    studentId: string,
+    chapter: { id: string; price: Prisma.Decimal | null },
+  ): Promise<boolean> {
+    const price = chapter.price !== null ? Number(chapter.price) : null;
+
+    if (price === null || price <= 0) {
+      return true;
+    }
+
+    const enrollment = await prisma.enrollment.findFirst({
+      where: { studentId, chapterId: chapter.id, status: "ACTIVE" },
+      select: { id: true },
+    });
+
+    if (enrollment) {
+      return true;
+    }
+
+    res.status(403).json({
+      success: false,
+      code: "NOT_ENROLLED",
+      message: "You need to enroll in this chapter to access this lesson.",
+    });
+    return false;
+  }
 }

@@ -25,21 +25,53 @@ const lessonSelectWithMaterials = {
   },
 } as const;
 
-async function toDTO(
+interface MaterialRow {
+  id: string;
+  filePath: string;
+  displayName: string;
+  fileSize: number;
+  mimeType: string;
+}
+
+function extractMaterials(lesson: Record<string, unknown>): MaterialRow[] {
+  return (lesson.lessonMaterials as MaterialRow[] | undefined) ?? [];
+}
+
+function stripMaterials(lesson: Record<string, unknown>): Record<string, unknown> {
+  const { lessonMaterials: _, ...rest } = lesson;
+  return rest;
+}
+
+/**
+ * Sync DTO for list/reorder endpoints. Returns attachment metadata WITHOUT a
+ * signed `url`, so listing N lessons makes zero storage round-trips.
+ */
+function toLightDTO(lesson: Record<string, unknown>): LessonResponseDTO {
+  const attachments = extractMaterials(lesson).map((m) => ({
+    id: m.id,
+    filePath: m.filePath,
+    displayName: m.displayName,
+    fileSize: m.fileSize,
+    mimeType: m.mimeType,
+  }));
+
+  return { ...stripMaterials(lesson), attachments } as unknown as LessonResponseDTO;
+}
+
+/**
+ * Async DTO for single-lesson fetches. Includes a signed download `url` per
+ * attachment (one storage round-trip each), so use only when serving one lesson.
+ */
+async function toFullDTO(
   lesson: Record<string, unknown>,
 ): Promise<LessonResponseDTO> {
-  const materials = lesson.lessonMaterials as Array<{
-    id: string;
-    filePath: string;
-    displayName: string;
-    fileSize: number;
-    mimeType: string;
-  }> | undefined;
+  const materials = extractMaterials(lesson);
 
-  const attachments = materials?.length
+  const attachments = materials.length
     ? await Promise.all(
         materials.map(async (m) => ({
           id: m.id,
+          filePath: m.filePath,
           displayName: m.displayName,
           fileSize: m.fileSize,
           mimeType: m.mimeType,
@@ -48,8 +80,8 @@ async function toDTO(
       )
     : [];
 
-  const { lessonMaterials: _, ...rest } = lesson;
-  return { ...rest, attachments } as unknown as LessonResponseDTO;
+  return { ...stripMaterials(lesson), attachments } as unknown as LessonResponseDTO;
+
 }
 
 export class LessonsService {
@@ -103,7 +135,7 @@ export class LessonsService {
       details: { title: lesson.title, chapterId },
     });
 
-    return toDTO(lesson as unknown as Record<string, unknown>);
+    return toFullDTO(lesson as unknown as Record<string, unknown>);
   }
 
   public async listByChapter(
@@ -118,9 +150,7 @@ export class LessonsService {
       select: lessonSelectWithMaterials,
     });
 
-    return Promise.all(
-      lessons.map((l) => toDTO(l as unknown as Record<string, unknown>)),
-    );
+    return lessons.map((l) => toLightDTO(l as unknown as Record<string, unknown>));
   }
 
   public async getById(
@@ -140,7 +170,7 @@ export class LessonsService {
       throw new AppError("Lesson not found", 404);
     }
 
-    return toDTO(lesson as unknown as Record<string, unknown>);
+    return toFullDTO(lesson as unknown as Record<string, unknown>);
   }
 
   public async update(
@@ -193,7 +223,7 @@ export class LessonsService {
       details: { title: lesson.title },
     });
 
-    return toDTO(lesson as unknown as Record<string, unknown>);
+    return toFullDTO(lesson as unknown as Record<string, unknown>);
   }
 
   public async delete(id: string, teacherId: string): Promise<void> {
@@ -311,8 +341,6 @@ export class LessonsService {
       });
     });
 
-    return Promise.all(
-      updated.map((l) => toDTO(l as unknown as Record<string, unknown>)),
-    );
+    return updated.map((l) => toLightDTO(l as unknown as Record<string, unknown>));
   }
 }
