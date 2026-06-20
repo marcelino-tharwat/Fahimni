@@ -102,5 +102,26 @@
       "confirmPasswordRequired": "تأكيد كلمة المرور مطلوب",
       "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين"
     }
+  },
+  "lesson": {
+    "notFound": {
+      "title": "الدرس غير موجود",
+      "description": "لم نتمكن من العثور على هذا الدرس. قد يكون قد تمت إزالته أو الرابط غير صحيح.",
+      "back": "العودة إلى كل المحتوى"
+    },
+    "videoUnavailable": "الفيديو غير متاح حالياً",
+    "lessonLabel": "الدرس {{order}}",
+    "minutes": "دقيقة",
+    "pdfMaterials": "الملفات المرفقة",
+    "download": "تحميل",
+    "totalFiles": "{{count}} ملف",
+    "totalSize": "{{size}} إجمالي",
+    "previousLesson": "الدرس السابق",
+    "nextLesson": "الدرس التالي",
+    "enrollmentRequired": {
+      "title": "الاشتراك مطلوب",
+      "description": "يجب الاشتراك في هذا الفصل للوصول إلى هذا الدرس. اشترك الآن لإلغاء قفل جميع الدروس وابدأ التعلم.",
+      "cta": "تصفّح المحتوى"
+    }
   }
 }

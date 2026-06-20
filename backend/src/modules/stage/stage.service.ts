@@ -138,7 +138,14 @@ export class StageService {
           include: {
             lessons: {
               where: { deletedAt: null },
-              select: { id: true, title: true, pdfUrls: true },
+              select: {
+                id: true,
+                title: true,
+                lessonMaterials: {
+                  where: { deletedAt: null },
+                  select: { filePath: true },
+                },
+              },
             },
           },
         },
@@ -179,8 +186,8 @@ export class StageService {
     const chapterIds = chapters.map((c) => c.id);
     const lessonIds = allLessons.map((l) => l.id);
 
-    const allPdfUrls = allLessons
-      .flatMap((l) => (l.pdfUrls as string[]) ?? [])
+    const allFilePaths = allLessons
+      .flatMap((l) => (l.lessonMaterials as Array<{ filePath: string }> ?? []).map((m) => m.filePath))
       .filter(Boolean);
 
     await prisma.$transaction(async (tx) => {
@@ -223,9 +230,9 @@ export class StageService {
     });
 
     await Promise.all(
-      allPdfUrls.map((url) =>
-        filesService.deleteFile(url).catch((err) =>
-          logger.warn(`Failed to delete file from storage: ${url}`, err),
+      allFilePaths.map((filePath) =>
+        filesService.deleteFile(filePath).catch((err) =>
+          logger.warn(`Failed to delete file from storage: ${filePath}`, err),
         ),
       ),
     );

@@ -84,7 +84,6 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
           description: description.trim() || null,
           durationMinutes: parsed.data.durationMinutes,
           youtubeUrl: youtubeUrl.trim() === '' ? null : youtubeUrl.trim(),
-          pdfUrls: pdfUpload.completedKeys.length > 0 ? pdfUpload.completedKeys : null,
         },
       },
       {

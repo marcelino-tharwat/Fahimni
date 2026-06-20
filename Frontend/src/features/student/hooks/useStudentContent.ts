@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { studentContentApi } from '@/features/student/api/studentContent';
+import { contentApi } from '@/features/student/api/content';
+import type { Lesson } from '@/shared/types/content';
 
 export const STUDENT_TREE_KEY = ['student', 'content', 'tree'] as const;
 export const STUDENT_MY_COURSES_KEY = ['student', 'content', 'my-courses'] as const;
@@ -21,5 +23,23 @@ export function useMyCourses(enabled = true) {
     queryKey: STUDENT_MY_COURSES_KEY,
     queryFn: () => studentContentApi.getMyCourses(),
     enabled,
+  });
+}
+
+/**
+ * Fetch a single lesson for the student.
+ *
+ * NOTE: unlike getTree() (which returns a bare array), this endpoint
+ * wraps the response in the standard { success, message, data }
+ * envelope, so we must unwrap `data.data` to reach the lesson object.
+ */
+export function useLesson(lessonId: string) {
+  return useQuery({
+    queryKey: ['student', 'lesson', lessonId],
+    queryFn: async () => {
+      const { data } = await contentApi.getLesson(lessonId);
+      return data.data as Lesson | undefined;
+    },
+    enabled: !!lessonId,
   });
 }

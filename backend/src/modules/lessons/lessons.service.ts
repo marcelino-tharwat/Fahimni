@@ -4,20 +4,52 @@ import { AppError } from "../../shared/utils/AppError.js";
 import { logger } from "../../config/logger.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
 import { FilesService } from "../files/files.service.js";
-import { lessonPublicFields } from "./lessons.types.js";
 import type { LessonResponseDTO } from "./lessons.types.js";
 import type { CreateLessonInput, UpdateLessonInput } from "./lessons.validation.js";
 
 const filesService = new FilesService();
 
-function toDTO(lesson: Record<string, unknown>): LessonResponseDTO {
-  return {
-    ...lesson,
-    // pdfUrls are stored as S3 object keys (JSONB array). They are returned
-    // as-is: the project has no S3/presigning abstraction (storage is
-    // Cloudinary), so no presigned URLs are generated on retrieval.
-    pdfUrls: (lesson.pdfUrls as string[] | null) ?? null,
-  } as unknown as LessonResponseDTO;
+const lessonSelectWithMaterials = {
+  id: true,
+  title: true,
+  description: true,
+  durationMinutes: true,
+  youtubeUrl: true,
+  sortOrder: true,
+  chapterId: true,
+  createdAt: true,
+  updatedAt: true,
+  lessonMaterials: {
+    where: { deletedAt: null },
+    select: { id: true, filePath: true, displayName: true, fileSize: true, mimeType: true },
+  },
+} as const;
+
+async function toDTO(
+  lesson: Record<string, unknown>,
+): Promise<LessonResponseDTO> {
+  const materials = lesson.lessonMaterials as Array<{
+    id: string;
+    filePath: string;
+    displayName: string;
+    fileSize: number;
+    mimeType: string;
+  }> | undefined;
+
+  const attachments = materials?.length
+    ? await Promise.all(
+        materials.map(async (m) => ({
+          id: m.id,
+          displayName: m.displayName,
+          fileSize: m.fileSize,
+          mimeType: m.mimeType,
+          url: await filesService.getSignedUrl(m.filePath),
+        })),
+      )
+    : [];
+
+  const { lessonMaterials: _, ...rest } = lesson;
+  return { ...rest, attachments } as unknown as LessonResponseDTO;
 }
 
 export class LessonsService {
@@ -56,10 +88,9 @@ export class LessonsService {
         durationMinutes: input.durationMinutes,
         youtubeUrl: input.youtubeUrl ?? null,
         sortOrder: input.sortOrder,
-        pdfUrls: input.pdfUrls ?? Prisma.DbNull,
         chapterId,
       },
-      select: lessonPublicFields,
+      select: lessonSelectWithMaterials,
     });
 
     await auditLogService.record({
@@ -84,10 +115,12 @@ export class LessonsService {
     const lessons = await prisma.lesson.findMany({
       where: { chapterId, deletedAt: null },
       orderBy: { sortOrder: "asc" },
-      select: lessonPublicFields,
+      select: lessonSelectWithMaterials,
     });
 
-    return lessons.map((l) => toDTO(l as unknown as Record<string, unknown>));
+    return Promise.all(
+      lessons.map((l) => toDTO(l as unknown as Record<string, unknown>)),
+    );
   }
 
   public async getById(
@@ -100,7 +133,7 @@ export class LessonsService {
         deletedAt: null,
         chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
       },
-      select: lessonPublicFields,
+      select: lessonSelectWithMaterials,
     });
 
     if (!lesson) {
@@ -144,14 +177,10 @@ export class LessonsService {
     if (input.sortOrder !== undefined) {
       data.sortOrder = input.sortOrder;
     }
-    if (input.pdfUrls !== undefined) {
-      data.pdfUrls = input.pdfUrls ?? Prisma.DbNull;
-    }
-
     const lesson = await prisma.lesson.update({
       where: { id },
       data,
-      select: lessonPublicFields,
+      select: lessonSelectWithMaterials,
     });
 
     await auditLogService.record({
@@ -177,8 +206,11 @@ export class LessonsService {
       select: {
         id: true,
         title: true,
-        pdfUrls: true,
         chapter: { select: { id: true, name: true, stageId: true } },
+        lessonMaterials: {
+          where: { deletedAt: null },
+          select: { filePath: true },
+        },
       },
     });
 
@@ -186,7 +218,11 @@ export class LessonsService {
       throw new AppError("Lesson not found", 404);
     }
 
-    const pdfUrls = (lesson.pdfUrls as string[]) ?? [];
+    const materialPaths = (
+      (lesson as unknown as {
+        lessonMaterials?: Array<{ filePath: string }>;
+      }).lessonMaterials ?? []
+    ).map((m) => m.filePath);
 
     await prisma.$transaction(async (tx) => {
       await tx.lesson.update({
@@ -214,9 +250,9 @@ export class LessonsService {
     });
 
     await Promise.all(
-      pdfUrls.map((url) =>
-        filesService.deleteFile(url).catch((err) =>
-          logger.warn(`Failed to delete file from storage: ${url}`, err),
+      materialPaths.map((filePath) =>
+        filesService.deleteFile(filePath).catch((err) =>
+          logger.warn(`Failed to delete file from storage: ${filePath}`, err),
         ),
       ),
     );
@@ -270,11 +306,13 @@ export class LessonsService {
 
       return tx.lesson.findMany({
         where: { id: { in: ids } },
-        select: lessonPublicFields,
+        select: lessonSelectWithMaterials,
         orderBy: { sortOrder: "asc" },
       });
     });
 
-    return updated.map((l) => toDTO(l as unknown as Record<string, unknown>));
+    return Promise.all(
+      updated.map((l) => toDTO(l as unknown as Record<string, unknown>)),
+    );
   }
 }

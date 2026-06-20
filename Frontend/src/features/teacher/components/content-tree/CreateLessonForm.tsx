@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
 import { createLessonSchema, flattenZodErrors } from '@/features/teacher/validation';
-import { useCreateLesson, useUpdateLesson } from '@/features/teacher/hooks/useLessons';
+import { useCreateLesson } from '@/features/teacher/hooks/useLessons';
 import { usePdfUpload } from '@/features/teacher/hooks/usePdfUpload';
 import { EditorHeader } from './EditorHeader';
 import { FormActions, LabeledInput, LabeledTextarea } from './EditorFields';
@@ -45,7 +45,6 @@ export function CreateLessonForm({
   const dispatch = useAppDispatch();
   const teacherId = useAppSelector((state) => state.auth.user?.id) ?? '';
   const createLesson = useCreateLesson();
-  const updateLesson = useUpdateLesson();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -99,14 +98,7 @@ export function CreateLessonForm({
         },
       });
 
-      const keys = await pdfUpload.startUpload(created.id);
-
-      if (keys.length > 0) {
-        await updateLesson.mutateAsync({
-          id: created.id,
-          payload: { pdfUrls: keys },
-        });
-      }
+      await pdfUpload.startUpload(created.id);
 
       dispatch(
         addToast({ type: 'success', message: t('contentTree.editor.toast.lessonCreated') }),
@@ -126,7 +118,7 @@ export function CreateLessonForm({
   };
 
   const isYoutubeUrlValid = isValidYoutubeUrl(youtubeUrl);
-  const isSaving = createLesson.isPending || updateLesson.isPending || pdfUpload.isUploading || isCreating;
+  const isSaving = createLesson.isPending || pdfUpload.isUploading || isCreating;
 
   return (
     <motion.form

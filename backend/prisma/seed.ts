@@ -85,11 +85,18 @@ async function main() {
   ];
 
   for (let i = 0; i < stagesAData.length; i++) {
-    const stage = await prisma.stage.create({
-      data: {
+    const stage = await prisma.stage.upsert({
+      where: { id: `seed-stage-a-${i + 1}` },
+      update: {
+        name: stagesAData[i]!.name,
+        description: stagesAData[i]!.description || null,
+        sortOrder: i + 1,
+        teacherId: teacherA.id,
+      },
+      create: {
         id: `seed-stage-a-${i + 1}`,
         name: stagesAData[i]!.name,
-        description: stagesAData[i]!.description,
+        description: stagesAData[i]!.description || null,
         sortOrder: i + 1,
         teacherId: teacherA.id,
       },
@@ -126,21 +133,21 @@ async function main() {
           title: "مقدمة في الأعداد الطبيعية",
           description: "تعريف الأعداد الطبيعية وتمثيلها على خط الأعداد",
           durationMinutes: 20,
-          youtubeUrl: "https://youtube.com/watch?v=math-a1-1",
+          youtubeUrl: "https://www.youtube.com/watch?v=OpaUzT6ha44",
           sortOrder: 1,
         },
         {
           title: "جمع وطرح الأعداد الطبيعية",
           description: "قواعد الجمع والطرح وخصائص الإبدال والتجميع",
           durationMinutes: 30,
-          youtubeUrl: "https://youtube.com/watch?v=math-a1-2",
+          youtubeUrl: "https://www.youtube.com/watch?v=OpaUzT6ha44",
           sortOrder: 2,
         },
         {
           title: "ضرب وقسمة الأعداد الطبيعية",
           description: "جدول الضرب وقواعد القسمة مع التطبيقات",
           durationMinutes: 35,
-          youtubeUrl: "https://youtube.com/watch?v=math-a1-3",
+          youtubeUrl: "https://www.youtube.com/watch?v=OpaUzT6ha44",
           sortOrder: 3,
         },
       ],
@@ -435,8 +442,16 @@ async function main() {
     const stage = stagesA[item.stageIdx]!;
     const chapterSortOrder =
       contentA.filter((c) => c.stageIdx === item.stageIdx).indexOf(item) + 1;
-    const chapter = await prisma.chapter.create({
-      data: {
+    const chapter = await prisma.chapter.upsert({
+      where: { id: `seed-chapter-a-${stage.sortOrder}-${chapterSortOrder}` },
+      update: {
+        name: item.chapterName,
+        description: item.chapterDescription,
+        sortOrder: chapterSortOrder,
+        price: item.price,
+        stageId: stage.id,
+      },
+      create: {
         id: `seed-chapter-a-${stage.sortOrder}-${chapterSortOrder}`,
         name: item.chapterName,
         description: item.chapterDescription,
@@ -447,8 +462,19 @@ async function main() {
     });
 
     for (const lesson of item.lessons) {
-      await prisma.lesson.create({
-        data: {
+      await prisma.lesson.upsert({
+        where: {
+          id: `seed-lesson-a-${stage.sortOrder}-${chapterSortOrder}-${lesson.sortOrder}`,
+        },
+        update: {
+          title: lesson.title,
+          description: lesson.description,
+          durationMinutes: lesson.durationMinutes,
+          youtubeUrl: lesson.youtubeUrl,
+          sortOrder: lesson.sortOrder,
+          chapterId: chapter.id,
+        },
+        create: {
           id: `seed-lesson-a-${stage.sortOrder}-${chapterSortOrder}-${lesson.sortOrder}`,
           title: lesson.title,
           description: lesson.description,
@@ -503,11 +529,18 @@ async function main() {
   ];
 
   for (let i = 0; i < stagesBData.length; i++) {
-    const stage = await prisma.stage.create({
-      data: {
+    const stage = await prisma.stage.upsert({
+      where: { id: `seed-stage-b-${i + 1}` },
+      update: {
+        name: stagesBData[i]!.name,
+        description: stagesBData[i]!.description || null,
+        sortOrder: i + 1,
+        teacherId: teacherB.id,
+      },
+      create: {
         id: `seed-stage-b-${i + 1}`,
         name: stagesBData[i]!.name,
-        description: stagesBData[i]!.description,
+        description: stagesBData[i]!.description || null,
         sortOrder: i + 1,
         teacherId: teacherB.id,
       },
@@ -708,8 +741,16 @@ async function main() {
     const chapterSortOrder =
       contentB.filter((c) => c.stageIdx === item.stageIdx).indexOf(item) + 1;
 
-    const chapter = await prisma.chapter.create({
-      data: {
+    const chapter = await prisma.chapter.upsert({
+      where: { id: `seed-chapter-b-${stage.sortOrder}-${chapterSortOrder}` },
+      update: {
+        name: item.chapterName,
+        description: item.chapterDescription,
+        sortOrder: chapterSortOrder,
+        price: item.price,
+        stageId: stage.id,
+      },
+      create: {
         id: `seed-chapter-b-${stage.sortOrder}-${chapterSortOrder}`,
         name: item.chapterName,
         description: item.chapterDescription,
@@ -720,8 +761,19 @@ async function main() {
     });
 
     for (const lesson of item.lessons) {
-      await prisma.lesson.create({
-        data: {
+      await prisma.lesson.upsert({
+        where: {
+          id: `seed-lesson-b-${stage.sortOrder}-${chapterSortOrder}-${lesson.sortOrder}`,
+        },
+        update: {
+          title: lesson.title,
+          description: lesson.description,
+          durationMinutes: lesson.durationMinutes,
+          youtubeUrl: lesson.youtubeUrl,
+          sortOrder: lesson.sortOrder,
+          chapterId: chapter.id,
+        },
+        create: {
           id: `seed-lesson-b-${stage.sortOrder}-${chapterSortOrder}-${lesson.sortOrder}`,
           title: lesson.title,
           description: lesson.description,
@@ -739,6 +791,45 @@ async function main() {
     `Teacher B content: ${stagesB.length} stages, ${contentB.length} chapters, ${totalLessonsB} lessons`,
   );
 
+  // ─── Student (for testing free/paid access) ─────────────────────────
+  const studentUser = await prisma.user.upsert({
+    where: { email: "student@school.edu" },
+    update: {
+      fullName: "طالب تجريبي",
+      mobile: "01110000003",
+      password: await bcrypt.hash("Student@123456", 10),
+      role: Role.STUDENT,
+    },
+    create: {
+      id: "seed-student-1",
+      fullName: "طالب تجريبي",
+      email: "student@school.edu",
+      mobile: "01110000003",
+      password: await bcrypt.hash("Student@123456", 10),
+      role: Role.STUDENT,
+    },
+  });
+  console.log(`Student: student@school.edu / Student@123456`);
+
+  // Enroll the student in one paid chapter (seed-chapter-a-1-2, price 29.99)
+  // to test the "enrolled + paid = access" path.
+  await prisma.enrollment.upsert({
+    where: {
+      studentId_chapterId: {
+        studentId: studentUser.id,
+        chapterId: "seed-chapter-a-1-2",
+      },
+    },
+    update: { status: "ACTIVE" },
+    create: {
+      id: "seed-enrollment-a-1-2",
+      studentId: studentUser.id,
+      chapterId: "seed-chapter-a-1-2",
+      status: "ACTIVE",
+    },
+  });
+  console.log("  Enrolled in seed-chapter-a-1-2 (paid, 29.99 EGP)");
+
   // ─── Summary ────────────────────────────────────────────────────────
   const stats = {
     users: await prisma.user.count(),
@@ -746,6 +837,7 @@ async function main() {
     stages: await prisma.stage.count(),
     chapters: await prisma.chapter.count(),
     lessons: await prisma.lesson.count(),
+    enrollments: await prisma.enrollment.count(),
   };
 
   console.log("\n── Seed Complete ──");
@@ -754,6 +846,7 @@ async function main() {
   console.log(`  Admin:    ${adminEmail} / ${adminPassword}`);
   console.log(`  Teacher A: ahmed.hassan@school.edu / Teacher@123456`);
   console.log(`  Teacher B: sara.ali@school.edu / Teacher@123456`);
+  console.log(`  Student:   student@school.edu / Student@123456`);
 
   // ═════════════════════════════════════════════════════════════════
   //  STORY-27: Stage, Chapter, Lesson Reorder Test Data
