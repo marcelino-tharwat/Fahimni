@@ -2,6 +2,7 @@ import express, { type Application } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import { env } from "./config/env.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/users/user.routes.js";
 import { rateLimiter } from "./shared/middlewares/rateLimiter.middleware.js";
@@ -19,7 +20,7 @@ import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 export function createApp(): Application {
   const app = express();
   app.use(helmet());
-  app.use(cors());
+  app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());

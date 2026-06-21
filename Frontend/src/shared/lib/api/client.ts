@@ -1,27 +1,18 @@
 // src/lib/api/client.ts
 import axios, { type AxiosError } from "axios";
-import { getToken, removeToken } from "@/features/auth/lib/token";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000/api";
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
-});
-
-apiClient.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  const tenantId = localStorage.getItem("tenant-id");
-  if (tenantId) config.headers["X-Tenant-ID"] = tenantId;
-  return config;
 });
 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      removeToken();
       const { store } = await import("@/shared/store");
       const { logout } = await import("@/features/auth/store/authSlice");
       store.dispatch(logout());

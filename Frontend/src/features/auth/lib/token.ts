@@ -1,27 +1,17 @@
 // src/lib/auth/token.ts
-const TOKEN_KEY = "auth_token";
+//
+// Stores only the non-sensitive user object in localStorage to survive page
+// refreshes. The access token now lives exclusively in an httpOnly cookie
+// set by the server — the frontend never reads or stores it.
+//
 const USER_KEY = "auth_user";
 
-// Guard against environments without localStorage (unit tests in node, SSR, or
-// privacy modes where access throws). Reads/writes become safe no-ops there.
 const hasStorage = (): boolean => {
   try {
     return typeof localStorage !== "undefined";
   } catch {
     return false;
   }
-};
-
-export const saveToken = (token: string): void => {
-  if (hasStorage()) localStorage.setItem(TOKEN_KEY, token);
-};
-
-export const getToken = (): string | null => {
-  return hasStorage() ? localStorage.getItem(TOKEN_KEY) : null;
-};
-
-export const removeToken = (): void => {
-  if (hasStorage()) localStorage.removeItem(TOKEN_KEY);
 };
 
 export const saveUser = (user: unknown): void => {
@@ -37,6 +27,6 @@ export const getUser = <T = unknown>(): T | null => {
   }
 };
 
-export const removeUser = (): void => {
+export const clearUser = (): void => {
   if (hasStorage()) localStorage.removeItem(USER_KEY);
 };
