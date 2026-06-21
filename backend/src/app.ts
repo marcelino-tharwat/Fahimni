@@ -11,6 +11,11 @@ import { notFoundHandler } from "./shared/middlewares/notFound.middleware.js";
 import studentRoutes from "./modules/students/student.routes.js";
 import teacherRoutes from "./modules/teacher/teacher.routes.js";
 import stageRoutes from "./modules/stage/stage.routes.js";
+import { chapterStandaloneRouter } from "./modules/chapter/chapter.routes.js";
+import { lessonStandaloneRouter } from "./modules/lessons/lessons.routes.js";
+import filesRoutes from "./modules/files/index.js";
+import contentRoutes from "./modules/content/content.routes.js";
+import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -30,6 +35,11 @@ export function createApp(): Application {
   app.use("/api/students", studentRoutes);
   app.use("/api/teachers", teacherRoutes);
   app.use("/api/stages", stageRoutes);
+  app.use("/api/chapters", chapterStandaloneRouter);
+  app.use("/api/lessons", lessonStandaloneRouter);
+  app.use("/api/v1", filesRoutes);
+  app.use("/api/content", contentRoutes);
+  app.use("/api/dashboard", dashboardRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

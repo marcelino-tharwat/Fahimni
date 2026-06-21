@@ -5,8 +5,6 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { apiClient, type ApiError } from "@/shared/lib/api/client";
-
-
 import { saveUser, getUser, clearUser } from "@/features/auth/lib/token";
 
 /* ------------------------------------------------------------------ */
@@ -94,7 +92,6 @@ export const register = createAsyncThunk<
 /* ------------------------------------------------------------------ */
 /*  Slice                                                               */
 /* ------------------------------------------------------------------ */
-
 
 const storedUser = getUser<User>();
 

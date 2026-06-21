@@ -27,11 +27,12 @@ apiClient.interceptors.response.use(
 export interface ApiError {
   statusCode: number;
   message: string;
+  code?: string;
 }
 
 function normalizeError(error: AxiosError): ApiError {
-  const data = error.response?.data as { message?: string | string[] } | undefined;
+  const data = error.response?.data as { message?: string | string[]; code?: string } | undefined;
   const raw = data?.message;
   const message = Array.isArray(raw) ? raw[0] : (raw ?? "حصل خطأ، حاول تاني.");
-  return { statusCode: error.response?.status ?? 0, message };
+  return { statusCode: error.response?.status ?? 0, message, code: data?.code };
 }
