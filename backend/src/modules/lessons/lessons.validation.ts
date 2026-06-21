@@ -83,7 +83,7 @@ export const updateLessonSchema = z
   });
 
 export const reorderSchema = z
-  .array(z.string().uuid("Invalid lesson ID format"))
+  .array(z.string())
   .nonempty("At least one lesson is required")
   .refine((ids) => new Set(ids).size === ids.length, {
     message: "Duplicate lesson IDs are not allowed",

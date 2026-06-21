@@ -3,6 +3,7 @@ import {
   ChevronDown,
   ChevronRight,
   FileText,
+  GripVertical,
   Layers,
   type LucideIcon,
 } from 'lucide-react';
@@ -28,6 +29,14 @@ const TEXT_BY_TYPE: Record<NodeType, string> = {
   lesson: 'font-normal text-navy-700',
 };
 
+interface DragHandleRenderProps {
+  attributes: Record<string, unknown>;
+  listeners: Record<string, unknown>;
+  setNodeRef: (el: HTMLElement | null) => void;
+  style?: React.CSSProperties;
+  isDragging: boolean;
+}
+
 interface TreeNodeProps {
   type: NodeType;
   label: string;
@@ -40,6 +49,8 @@ interface TreeNodeProps {
   onToggle: () => void;
   onSelect: () => void;
   onMenuAction: (action: MenuAction) => void;
+  /** Optional drag handle render props from SortableItem. */
+  dragHandle?: DragHandleRenderProps | null;
 }
 
 export function TreeNode({
@@ -53,12 +64,14 @@ export function TreeNode({
   onToggle,
   onSelect,
   onMenuAction,
+  dragHandle,
 }: TreeNodeProps) {
   const Icon = ICON_BY_TYPE[type];
   const ChevronIcon = isExpanded ? ChevronDown : ChevronRight;
 
   return (
     <div
+      ref={dragHandle?.setNodeRef}
       role="treeitem"
       aria-selected={isSelected}
       aria-expanded={hasChildren ? isExpanded : undefined}
@@ -71,12 +84,26 @@ export function TreeNode({
         }
       }}
       // Logical padding so indentation flips correctly in RTL.
-      style={{ paddingInlineStart: 8 + level * 24 }}
+      style={{ ...dragHandle?.style, paddingInlineStart: 8 + level * 24 }}
       className={cn(
         'group flex cursor-pointer items-center gap-2 rounded-lg py-2 pe-2 transition-colors',
         isSelected ? 'bg-cyan-50 ring-1 ring-inset ring-cyan-200' : 'hover:bg-gray-100',
+        dragHandle?.isDragging && 'opacity-50',
       )}
     >
+      {/* Drag handle — only rendered when provided by SortableItem */}
+      {dragHandle ? (
+        <button
+          type="button"
+          className="shrink-0 cursor-grab rounded p-0.5 text-gray-400 opacity-0 transition-all hover:bg-gray-200 hover:text-navy-600 group-hover:opacity-100 active:cursor-grabbing"
+          {...dragHandle.attributes}
+          {...dragHandle.listeners}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <GripVertical size={16} />
+        </button>
+      ) : null}
+
       {/* Expand / collapse arrow, or a spacer for leaf nodes */}
       {hasChildren ? (
         <button
