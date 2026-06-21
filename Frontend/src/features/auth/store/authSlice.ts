@@ -64,7 +64,6 @@ export const login = createAsyncThunk<
       message: string;
       data: { user: User };
     }>("/v1/auth/login", credentials);
-
     saveUser(data.data.user);
     return { user: data.data.user };
   } catch (err) {
@@ -83,7 +82,6 @@ export const register = createAsyncThunk<
       message: string;
       data: { user: User };
     }>("/v1/auth/register", payload);
-
     saveUser(data.data.user);
     return { user: data.data.user };
   } catch (err) {
@@ -118,7 +116,6 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.status = "succeeded";
       state.error = null;
-
       saveUser(action.payload.user);
     },
     logout(state) {
@@ -126,7 +123,6 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.status = "idle";
       state.error = null;
-      // removeToken();
       clearUser();
     },
     clearError(state) {
