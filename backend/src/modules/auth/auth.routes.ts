@@ -19,6 +19,9 @@ router.post('/reset-password', controller.resetPassword);
 // POST /api/v1/auth/verify-otp
 router.post('/verify-otp', controller.verifyOtp);
 
+// GET /api/v1/auth/me (authenticated)
+router.get('/me', authenticateMiddleware, controller.getMe);
+
 // PATCH /api/v1/auth/change-password (authenticated)
 router.patch('/change-password', authenticateMiddleware, controller.changePassword);
 

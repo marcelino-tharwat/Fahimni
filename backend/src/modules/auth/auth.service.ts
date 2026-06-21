@@ -270,6 +270,21 @@ export class AuthService {
     return { message: "Password reset successful" };
   }
 
+  public async getMe(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: userPublicFields,
+    });
+
+    if (!user) {
+      const error = new Error("User not found") as ApiError;
+      error.status = 404;
+      throw error;
+    }
+
+    return user;
+  }
+
   public async changePassword(userId: string, input: ChangePasswordInput) {
     const user = await prisma.user.findUnique({
       where: { id: userId },

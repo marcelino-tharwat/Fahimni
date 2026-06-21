@@ -29,6 +29,7 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -56,7 +57,7 @@ export const dashboardPathByRole: Record<Role, string> = {
 
 export const login = createAsyncThunk<
   { user: User; token: string },
-  { email: string; password: string },
+  { email: string; password: string; remember?: boolean },
   { rejectValue: string }
 >("auth/login", async (credentials, { rejectWithValue }) => {
   try {
@@ -64,12 +65,34 @@ export const login = createAsyncThunk<
       message: string;
       data: { user: User; accessToken: string };
     }>("/v1/auth/login", credentials);
-    saveToken(data.data.accessToken);
-    saveUser(data.data.user);
+    const remember = credentials.remember ?? true;
+    saveToken(data.data.accessToken, remember);
+    saveUser(data.data.user, remember);
     return { user: data.data.user, token: data.data.accessToken };
   } catch (err) {
     const apiErr = err as ApiError;
     return rejectWithValue(apiErr.message ?? "حصل خطأ أثناء تسجيل الدخول.");
+  }
+});
+
+export const validateAuth = createAsyncThunk<
+  { user: User },
+  void,
+  { rejectValue: string }
+>("auth/validateAuth", async (_, { rejectWithValue }) => {
+  const token = getToken();
+  if (!token) {
+    return rejectWithValue("No token found");
+  }
+  try {
+    const { data } = await apiClient.get<{
+      message: string;
+      data: { user: User };
+    }>("/v1/auth/me");
+    return { user: data.data.user };
+  } catch (err) {
+    const apiErr = err as ApiError;
+    return rejectWithValue(apiErr.message ?? "Session expired");
   }
 });
 
@@ -103,6 +126,7 @@ const initialState: AuthState = {
   user: storedUser,
   token: storedToken,
   isAuthenticated: !!storedToken && !!storedUser,
+  isInitialized: !storedToken,
   status: storedToken ? "succeeded" : "idle",
   error: null,
 };
@@ -113,17 +137,15 @@ const authSlice = createSlice({
   reducers: {
     setCredentials(
       state,
-      action: PayloadAction<{ user: User; token: string }>,
+      action: PayloadAction<{ user: User; token: string; remember?: boolean }>,
     ) {
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
       state.status = "succeeded";
       state.error = null;
-      // Persist so the session survives a browser refresh regardless of which
-      // login path (thunk or setCredentials) was used.
-      saveToken(action.payload.token);
-      saveUser(action.payload.user);
+      saveToken(action.payload.token, action.payload.remember);
+      saveUser(action.payload.user, action.payload.remember);
     },
     logout(state) {
       state.user = null;
@@ -133,6 +155,9 @@ const authSlice = createSlice({
       state.error = null;
       removeToken();
       removeUser();
+    },
+    initialized(state) {
+      state.isInitialized = true;
     },
     clearError(state) {
       state.error = null;
@@ -157,6 +182,27 @@ const authSlice = createSlice({
         state.error = action.payload ?? "حصل خطأ غير متوقع.";
       });
 
+    // ---- validateAuth ----
+    builder
+      .addCase(validateAuth.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(validateAuth.fulfilled, (state, action) => {
+        state.isInitialized = true;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.status = "succeeded";
+      })
+      .addCase(validateAuth.rejected, (state) => {
+        state.isInitialized = true;
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.status = "idle";
+        removeToken();
+        removeUser();
+      });
+
     // ---- register ----
     builder
       .addCase(register.pending, (state) => {
@@ -177,5 +223,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout, clearError } = authSlice.actions;
+export const { setCredentials, logout, clearError, initialized } = authSlice.actions;
 export default authSlice.reducer;

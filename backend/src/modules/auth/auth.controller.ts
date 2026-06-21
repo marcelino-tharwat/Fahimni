@@ -149,6 +149,23 @@ export class AuthController {
     }
   };
 
+  public getMe = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const user = await authService.getMe(req.user!.id);
+
+      res.status(200).json({
+        message: "Profile retrieved successfully",
+        data: { user },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public changePassword = async (
     req: Request,
     res: Response,
