@@ -4,14 +4,13 @@ import { setCredentials, logout, type User } from "@/features/auth/store/authSli
 
 export function useAuth() {
   const dispatch = useAppDispatch();
-  const { user, token, isAuthenticated } = useAppSelector((s) => s.auth);
+  const { user, isAuthenticated } = useAppSelector((s) => s.auth);
 
   return {
     user,
-    token,
     isAuthenticated,
     role: user?.role ?? null,
-    login: (u: User, t: string) => dispatch(setCredentials({ user: u, token: t })),
+    login: (u: User) => dispatch(setCredentials({ user: u })),
     logout: () => dispatch(logout()),
   };
 }
