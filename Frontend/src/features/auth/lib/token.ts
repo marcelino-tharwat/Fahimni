@@ -14,6 +14,7 @@ export const removeToken = (): void => {
 };
 
 
+
 //
 // Stores only the non-sensitive user object in localStorage to survive page
 // refreshes. The access token now lives exclusively in an httpOnly cookie
