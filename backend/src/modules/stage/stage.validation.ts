@@ -34,7 +34,7 @@ export const updateStageSchema = z
   });
 
 export const reorderSchema = z
-  .array(z.string().uuid("Invalid stage ID format"))
+  .array(z.string())
   .nonempty("At least one stage is required")
   .refine((ids) => new Set(ids).size === ids.length, {
     message: "Duplicate stage IDs are not allowed",

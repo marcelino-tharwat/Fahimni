@@ -9,9 +9,21 @@
    for utilities like bg-accent, text-text-primary, rounded-card, etc. to exist. */
 @config "../../tailwind.config.ts";
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
   @apply font-cairo;
+  margin: 0;
+  padding: 0;
   background-color: var(--color-background);
   color: var(--color-text-primary);
+}
+
+#root {
+  min-height: 100dvh;
 }

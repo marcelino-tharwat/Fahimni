@@ -21,7 +21,7 @@ import {
   ChevronLeft,
   MessageCircle,
   Mail,
-  Phone
+  Phone,
 } from 'lucide-react';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useDirection } from '@/shared/hooks/useDirection';
@@ -44,7 +44,6 @@ function scrollToSection(id: string): void {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 }
 
-
 /* ------------------------------------------------------------------ */
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
@@ -53,7 +52,7 @@ export function LandingPage() {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   return (
-    <div className="flex scroll-smooth flex-col bg-background">
+    <div className="bg-background flex flex-col scroll-smooth">
       <LandingNavbar />
       <HeroSection />
       <ChaptersSection />
@@ -94,7 +93,7 @@ function NavLanguageToggle({ className }: { className?: string }) {
       type="button"
       onClick={() => i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar')}
       className={cn(
-        'rounded-md px-3 py-1.5 font-cairo text-sm font-medium text-white transition-all duration-200 hover:bg-cyan-500 hover:text-navy-900',
+        'font-cairo hover:text-navy-900 rounded-md px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-cyan-500',
         className,
       )}
     >
@@ -116,7 +115,7 @@ function LandingNavbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-navy-700 bg-navy-900">
+    <header className="bg-navy-900 sticky top-0 z-50 border-b">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4">
         {/* Right (RTL): hamburger + logo */}
         <div className="flex items-center gap-3">
@@ -125,7 +124,7 @@ function LandingNavbar() {
             onClick={() => setMenuOpen((open) => !open)}
             aria-label={t('nav.home')}
             aria-expanded={menuOpen}
-            className="rounded-btn p-2 text-white transition-colors hover:bg-navy-700 md:hidden"
+            className="rounded-btn hover:bg-navy-700 p-2 text-white transition-colors md:hidden"
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -136,7 +135,7 @@ function LandingNavbar() {
               setActive('hero');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex cursor-pointer items-center gap-2 font-cairo text-lg font-bold text-white transition-opacity hover:opacity-80 md:text-xl"
+            className="font-cairo flex cursor-pointer items-center gap-2 text-lg font-bold text-white transition-opacity hover:opacity-80 md:text-xl"
           >
             <GraduationCap aria-hidden className="h-6 w-6 text-cyan-500" />
             {t('brand')}
@@ -152,7 +151,9 @@ function LandingNavbar() {
               onClick={() => handleNav(link.id)}
               className={cn(
                 'font-cairo text-sm font-medium transition-colors',
-                active === link.id ? 'text-cyan-500' : 'text-white hover:text-cyan-500',
+                active === link.id
+                  ? 'text-cyan-500'
+                  : 'text-white hover:text-cyan-500',
               )}
             >
               {t(`nav.${link.key}`)}
@@ -168,7 +169,7 @@ function LandingNavbar() {
           <button
             type="button"
             onClick={() => navigate('/auth')}
-            className="rounded-btn bg-cyan-500 px-6 py-2 font-cairo text-sm font-semibold text-navy-800 transition-colors hover:bg-cyan-400"
+            className="rounded-btn font-cairo text-navy-800 bg-cyan-500 px-6 py-2 text-sm font-semibold transition-colors hover:bg-cyan-400"
           >
             {t('nav.subscribe')}
           </button>
@@ -177,14 +178,14 @@ function LandingNavbar() {
 
       {/* Mobile dropdown menu */}
       {menuOpen && (
-        <div className="border-t border-navy-700 bg-navy-900 px-4 py-3 md:hidden">
+        <div className="border-navy-700 bg-navy-900 border-t px-4 py-3 md:hidden">
           <div className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <button
                 key={link.key}
                 type="button"
                 onClick={() => handleNav(link.id)}
-                className="rounded-btn px-2 py-2 text-start font-cairo text-sm font-medium text-white transition-colors hover:bg-navy-700 hover:text-cyan-500"
+                className="rounded-btn font-cairo hover:bg-navy-700 px-2 py-2 text-start text-sm font-medium text-white transition-colors hover:text-cyan-500"
               >
                 {t(`nav.${link.key}`)}
               </button>
@@ -195,7 +196,7 @@ function LandingNavbar() {
                 setMenuOpen(false);
                 navigate('/auth');
               }}
-              className="rounded-btn px-2 py-2 text-start font-cairo text-sm font-medium text-white/80 transition-colors hover:bg-navy-700 hover:text-white"
+              className="rounded-btn font-cairo hover:bg-navy-700 px-2 py-2 text-start text-sm font-medium text-white/80 transition-colors hover:text-white"
             >
               {t('nav.login')}
             </button>
@@ -220,14 +221,37 @@ function HeroSection() {
   const goRegister = () => navigate('/auth');
 
   const heroStats = [
-    { Icon: Users, color: 'text-cyan-400', value: '147+', label: t('hero.stats.activeStudents') },
-    { Icon: BookOpen, color: 'text-purple-400', value: '6', label: t('hero.stats.chaptersCount') },
-    { Icon: FileText, color: 'text-cyan-400', value: '12', label: t('hero.stats.contentCount') },
-    { Icon: Star, color: 'text-yellow-400', value: '4.9', label: t('hero.stats.rating') },
+    {
+      Icon: Users,
+      color: 'text-cyan-400',
+      value: '147+',
+      label: t('hero.stats.activeStudents'),
+    },
+    {
+      Icon: BookOpen,
+      color: 'text-purple-400',
+      value: '6',
+      label: t('hero.stats.chaptersCount'),
+    },
+    {
+      Icon: FileText,
+      color: 'text-cyan-400',
+      value: '12',
+      label: t('hero.stats.contentCount'),
+    },
+    {
+      Icon: Star,
+      color: 'text-yellow-400',
+      value: '4.9',
+      label: t('hero.stats.rating'),
+    },
   ];
 
   return (
-    <section id="hero" className="relative overflow-hidden scroll-mt-16 bg-navy-950">
+    <section
+      id="hero"
+      className="bg-navy-950 relative min-h-[calc(100dvh-64px)] lg:h-[calc(100dvh-64px)] lg:overflow-hidden"
+    >
       {/* Keyframe animations */}
       <style>{`
         @keyframes float {
@@ -260,40 +284,48 @@ function HeroSection() {
       `}</style>
 
       {/* Decorative blurred shapes */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-cyan-500 opacity-5 blur-3xl" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      >
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-cyan-500 opacity-5 blur-3xl" />
         <div className="absolute top-1/3 -left-24 h-80 w-80 rounded-full bg-purple-500 opacity-5 blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-cyan-500 opacity-5 blur-3xl" />
+        <div className="absolute right-1/4 bottom-0 h-64 w-64 rounded-full bg-cyan-500 opacity-5 blur-3xl" />
       </div>
 
-      {/* ── Part 1: main hero ── */}
-      <div className="relative z-10 mx-auto max-w-6xl px-6 pt-20 pb-6 lg:pt-28 lg:pb-8">
-        <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-[1fr_1fr] lg:gap-0">
-
+      {/* ── Flex container fills hero height ── */}
+      <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col px-6">
+        {/* Main content — fills available space */}
+        <div className="flex min-h-0 flex-1 flex-col-reverse items-center justify-center gap-6 lg:flex-row lg:gap-8">
           {/* Text column */}
-          <div className="order-2 text-center lg:order-none lg:text-start">
+          <div className="w-full text-center lg:w-1/2 lg:text-start">
             <h1 className="anim-fade-up font-cairo leading-tight">
-              <span className="block text-2xl font-medium text-white lg:text-4xl">
+              <span className="block text-xl font-medium text-white lg:text-4xl">
                 {t('hero.headlineLine1')}
               </span>
-              <span className="mb-4 block text-2xl font-extrabold leading-tight text-cyan-500 lg:text-4xl">
+              <span className="mb-4 block text-xl leading-tight font-extrabold text-cyan-500 lg:text-4xl">
                 {t('hero.headlineLine2')}
               </span>
             </h1>
 
-            <p className="anim-fade-up anim-d2 mx-auto mb-5 max-w-lg font-cairo text-sm leading-relaxed text-navy-300 lg:mx-0 lg:text-base">
+            <p className="anim-fade-up anim-d2 font-cairo text-navy-300 mx-auto mb-3 max-w-lg text-sm leading-relaxed lg:mx-0 lg:text-base">
               {t('hero.subtext')}
             </p>
 
             {/* Star rating */}
-            <div className="anim-fade-up anim-d3 mb-6 flex items-center justify-center gap-1.5 lg:justify-start">
+            <div className="anim-fade-up anim-d3 mb-4 flex items-center justify-center gap-1.5 lg:justify-start">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <Star
+                  key={i}
+                  className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                />
               ))}
               <span className="font-cairo text-sm font-bold text-white">
                 {toLocaleDigits('4.9', isRtl)}
               </span>
-              <span className="font-cairo text-sm text-navy-400">{t('hero.ratingCount')}</span>
+              <span className="font-cairo text-navy-400 text-sm">
+                {t('hero.ratingCount')}
+              </span>
             </div>
 
             {/* CTAs */}
@@ -301,14 +333,14 @@ function HeroSection() {
               <button
                 type="button"
                 onClick={goRegister}
-                className="rounded-btn bg-cyan-500 px-6 py-3 font-cairo text-sm font-semibold text-navy-900 shadow-glow transition-all duration-200 hover:bg-cyan-400 hover:shadow-lg hover:scale-105"
+                className="rounded-btn font-cairo text-navy-900 shadow-glow bg-cyan-500 px-6 py-3 text-sm font-semibold transition-all duration-200 hover:scale-105 hover:bg-cyan-400 hover:shadow-lg"
               >
                 {t('hero.ctaPrimary')}
               </button>
               <button
                 type="button"
                 onClick={goRegister}
-                className="flex items-center justify-center gap-2 rounded-btn border border-white/25 bg-transparent px-6 py-3 font-cairo text-sm text-white transition-all duration-200 hover:border-white/50 hover:scale-105"
+                className="rounded-btn font-cairo flex items-center justify-center gap-2 border border-white/25 bg-transparent px-6 py-3 text-sm text-white transition-all duration-200 hover:scale-105 hover:border-white/50"
               >
                 <Play className="h-4 w-4" />
                 {t('hero.ctaSecondary')}
@@ -316,62 +348,80 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* Teacher image — BIGGER + floating animation */}
-          <div className="order-1 lg:order-none">
-            <div className="anim-scale-in anim-d2 relative mx-auto h-[400px] w-full sm:h-[480px] lg:h-[620px]">
+          {/* Teacher image — scales with viewport, lighten blend + soft mask */}
+          <div className="flex w-full items-center justify-center lg:w-1/2">
+            <div className="anim-scale-in anim-d2 relative mx-auto max-h-[30vh] w-full max-w-[280px] lg:max-h-[55vh] lg:max-w-none">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-6 z-0 rounded-full"
+                style={{
+                  background:
+                    'radial-gradient(ellipse at 35% 60%, #7c71ed 0%, transparent 70%)',
+                  filter: 'blur(100px)',
+                }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-6 z-0 rounded-full"
+                style={{
+                  background:
+                    'radial-gradient(ellipse at 60% 35%, rgba(124, 58, 237, 0.22) 0%, transparent 70%)',
+                  filter: 'blur(100px)',
+                }}
+              />
+
               <img
                 src="/images/hero.png"
                 alt={t('hero.photoAlt')}
-                className="anim-float h-full w-full object-cover object-top drop-shadow-[0_0_50px_rgba(0,201,219,0.15)]"
+                className="anim-float relative z-10 h-full w-full object-contain object-center lg:object-bottom"
                 style={{
                   maskImage:
-                    'radial-gradient(ellipse 85% 90% at 50% 45%, black 55%, transparent 85%)',
+                    'radial-gradient(ellipse 95% 90% at 50% 50%, black 45%, transparent 85%), linear-gradient(to bottom, black 70%, transparent 100%)',
                   WebkitMaskImage:
-                    'radial-gradient(ellipse 85% 90% at 50% 45%, black 55%, transparent 85%)',
+                    'radial-gradient(ellipse 95% 90% at 50% 50%, black 45%, transparent 85%), linear-gradient(to bottom, black 70%, transparent 100%)',
+                  maskComposite: 'intersect',
+                  WebkitMaskComposite: 'source-in',
+                  // mixBlendMode: 'lighten',
                 }}
               />
-              {/* Animated cyan glow underneath */}
-              <div
-                aria-hidden
-                className="anim-glow absolute -bottom-2 left-1/2 h-24 w-3/4 -translate-x-1/2 rounded-full bg-cyan-500/15 blur-3xl"
-              />
             </div>
           </div>
-
         </div>
-      </div>
 
-      {/* ── Part 2: stats — horizontal cards ── */}
-      <div className="relative z-10 mx-auto grid max-w-5xl grid-cols-2 gap-3 px-6 pb-10 md:grid-cols-4 md:gap-4">
-        {heroStats.map((stat, index) => (
-          <div
-            key={stat.label}
-            className={cn(
-              'anim-fade-up group flex cursor-default items-center gap-3 rounded-2xl border border-navy-600/25 bg-navy-800/80 px-5 py-4 transition-all duration-300 hover:-translate-y-1 hover:bg-navy-700/60',
-              index === 0 && 'anim-d4',
-              index === 1 && 'anim-d5',
-              index === 2 && 'anim-d6',
-              index === 3 && 'anim-d7',
-            )}
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-navy-700/50 transition-all duration-300 group-hover:bg-navy-600/50">
-              <stat.Icon
+        {/* ── Stats — pushed to bottom ── */}
+        <div className="w-full shrink-0 py-4 lg:pb-6">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+            {heroStats.map((stat, index) => (
+              <div
+                key={stat.label}
                 className={cn(
-                  'h-5 w-5 transition-transform duration-300 group-hover:scale-110',
-                  stat.color,
+                  'anim-fade-up group border-navy-600/25 bg-navy-800/80 hover:bg-navy-700/60 flex cursor-default items-center gap-3 rounded-2xl border px-3 py-3 transition-all duration-300 hover:-translate-y-1 lg:px-5 lg:py-4',
+                  index === 0 && 'anim-d4',
+                  index === 1 && 'anim-d5',
+                  index === 2 && 'anim-d6',
+                  index === 3 && 'anim-d7',
                 )}
-              />
-            </div>
-            <div className="text-start">
-              <p className="font-cairo text-xl font-bold leading-tight text-white transition-colors duration-300 group-hover:text-cyan-400">
-                {toLocaleDigits(stat.value, isRtl)}
-              </p>
-              <p className="mt-0.5 font-cairo text-[11px] leading-tight text-navy-400">
-                {stat.label}
-              </p>
-            </div>
+              >
+                <div className="bg-navy-700/50 group-hover:bg-navy-600/50 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-300 lg:h-11 lg:w-11">
+                  <stat.Icon
+                    className={cn(
+                      'h-5 w-5 transition-transform duration-300 group-hover:scale-110',
+                      stat.color,
+                    )}
+                  />
+                </div>
+                <div className="text-start">
+                  <p className="font-cairo text-base leading-tight font-bold text-white transition-colors duration-300 group-hover:text-cyan-400 lg:text-xl">
+                    {toLocaleDigits(stat.value, isRtl)}
+                  </p>
+                  <p className="font-cairo text-navy-400 mt-0.5 text-[11px] leading-tight sm:text-xs">
+                    {stat.label}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );
@@ -437,12 +487,16 @@ function ChaptersSection() {
   const isRtl = useDirection() === 'rtl';
 
   return (
-    <section id="chapters" className="scroll-mt-16 bg-navy-50 px-6 py-20">
+    <section id="chapters" className="bg-navy-50 scroll-mt-16 px-6 py-20">
       <div className="mx-auto max-w-5xl">
         {/* Section title — centered */}
         <div className="mb-12 text-center">
-          <h2 className="font-cairo text-2xl font-bold text-navy-800">{t('chapters.title')}</h2>
-          <p className="mt-2 font-cairo text-base text-gray-600">{t('chapters.subtitle')}</p>
+          <h2 className="font-cairo text-navy-800 text-2xl font-bold">
+            {t('chapters.title')}
+          </h2>
+          <p className="font-cairo mt-2 text-base text-gray-600">
+            {t('chapters.subtitle')}
+          </p>
         </div>
 
         {/* Cards */}
@@ -457,7 +511,7 @@ function ChaptersSection() {
                 className={cn(
                   'anim-fade-up',
                   cardDelays[index],
-                  'group mx-auto w-full max-w-[300px] overflow-hidden rounded-card bg-white shadow-card transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-elevated',
+                  'group rounded-card shadow-card hover:shadow-elevated mx-auto w-full max-w-[300px] overflow-hidden bg-white transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02]',
                 )}
               >
                 {/* Thumbnail */}
@@ -467,15 +521,15 @@ function ChaptersSection() {
                     alt={title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent" />
+                  <div className="from-navy-900/60 absolute inset-0 bg-gradient-to-t to-transparent" />
 
                   {/* Stage badge — start-aligned (RTL-aware) */}
-                  <span className="absolute start-3 top-3 rounded-badge bg-navy-700/80 px-3 py-1 font-cairo text-xs font-semibold text-white backdrop-blur-sm">
+                  <span className="rounded-badge bg-navy-700/80 font-cairo absolute start-3 top-3 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
                     {isRtl ? chapter.badge.ar : chapter.badge.en}
                   </span>
 
                   {locked && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-navy-900/50 backdrop-blur-[2px]">
+                    <div className="bg-navy-900/50 absolute inset-0 flex items-center justify-center backdrop-blur-[2px]">
                       <Lock className="h-8 w-8 text-white/60" />
                     </div>
                   )}
@@ -483,44 +537,47 @@ function ChaptersSection() {
 
                 {/* Content */}
                 <div className={cn('p-5', locked && 'opacity-60')}>
-                  <h3 className="mb-3 line-clamp-1 font-cairo text-base font-bold text-navy-800">
+                  <h3 className="font-cairo text-navy-800 mb-3 line-clamp-1 text-base font-bold">
                     {title}
                   </h3>
 
-                  <div className="mb-4 flex items-center gap-4 font-cairo text-xs text-gray-500">
+                  <div className="font-cairo mb-4 flex items-center gap-4 text-xs text-gray-500">
                     <span className="flex items-center gap-1">
                       <PlayCircle className="h-3.5 w-3.5" />
-                      {toLocaleDigits(chapter.lessons, isRtl)} {t('chapters.lessons')}
+                      {toLocaleDigits(chapter.lessons, isRtl)}{' '}
+                      {t('chapters.lessons')}
                     </span>
                     <span className="flex items-center gap-1">
                       <FileText className="h-3.5 w-3.5" />
-                      {toLocaleDigits(chapter.quizzes, isRtl)} {t('chapters.quizzes')}
+                      {toLocaleDigits(chapter.quizzes, isRtl)}{' '}
+                      {t('chapters.quizzes')}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="font-cairo text-lg font-bold text-navy-800">
-                      {toLocaleDigits(chapter.price, isRtl)} {t('chapters.price')}
+                    <span className="font-cairo text-navy-800 text-lg font-bold">
+                      {toLocaleDigits(chapter.price, isRtl)}{' '}
+                      {t('chapters.price')}
                     </span>
 
                     {chapter.status === 'available' && (
                       <button
                         type="button"
                         onClick={() => navigate('/auth')}
-                        className="rounded-btn bg-cyan-500 px-4 py-2 font-cairo text-sm font-semibold text-navy-900 transition-all duration-200 hover:scale-105 hover:bg-cyan-400"
+                        className="rounded-btn font-cairo text-navy-900 bg-cyan-500 px-4 py-2 text-sm font-semibold transition-all duration-200 hover:scale-105 hover:bg-cyan-400"
                       >
                         {t('chapters.enrollNow')}
                       </button>
                     )}
 
                     {chapter.status === 'enrolled' && (
-                      <span className="rounded-badge bg-green-100 px-3 py-1.5 font-cairo text-xs font-semibold text-green-700">
+                      <span className="rounded-badge font-cairo bg-green-100 px-3 py-1.5 text-xs font-semibold text-green-700">
                         {t('chapters.enrolled')}
                       </span>
                     )}
 
                     {locked && (
-                      <span className="flex items-center gap-1.5 rounded-badge bg-navy-100 px-3 py-1.5 font-cairo text-xs font-semibold text-navy-500">
+                      <span className="rounded-badge bg-navy-100 font-cairo text-navy-500 flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold">
                         <Lock className="h-3 w-3" />
                         {t('chapters.comingSoon')}
                       </span>
@@ -581,8 +638,12 @@ function FeaturesSection() {
       <div className="mx-auto max-w-5xl">
         {/* Section title — centered */}
         <div className="mb-14 text-center">
-          <h2 className="mb-3 font-cairo text-2xl font-bold text-navy-800">{t('features.title')}</h2>
-          <p className="font-cairo text-base text-gray-600">{t('features.subtitle')}</p>
+          <h2 className="font-cairo text-navy-800 mb-3 text-2xl font-bold">
+            {t('features.title')}
+          </h2>
+          <p className="font-cairo text-base text-gray-600">
+            {t('features.subtitle')}
+          </p>
         </div>
 
         {/* Cards */}
@@ -593,8 +654,8 @@ function FeaturesSection() {
               className={cn(
                 'anim-fade-up',
                 featureDelays[index],
-                'group cursor-default rounded-card border border-gray-100 bg-navy-50 p-6 text-center transition-all duration-300',
-                'hover:-translate-y-1 hover:border-cyan-300 hover:shadow-card',
+                'group rounded-card bg-navy-50 cursor-default border border-gray-100 p-6 text-center transition-all duration-300',
+                'hover:shadow-card hover:-translate-y-1 hover:border-cyan-300',
               )}
             >
               <div
@@ -605,10 +666,12 @@ function FeaturesSection() {
               >
                 <feature.Icon className={cn('h-7 w-7', feature.iconColor)} />
               </div>
-              <h3 className="mb-2 font-cairo text-base font-bold text-navy-800">
+              <h3 className="font-cairo text-navy-800 mb-2 text-base font-bold">
                 {t(feature.titleKey)}
               </h3>
-              <p className="font-cairo text-sm leading-relaxed text-gray-500">{t(feature.descKey)}</p>
+              <p className="font-cairo text-sm leading-relaxed text-gray-500">
+                {t(feature.descKey)}
+              </p>
             </div>
           ))}
         </div>
@@ -622,10 +685,26 @@ function FeaturesSection() {
 /* ------------------------------------------------------------------ */
 
 const howItWorksSteps = [
-  { num: 1, titleKey: 'howItWorks.step1Title', descKey: 'howItWorks.step1Desc' },
-  { num: 2, titleKey: 'howItWorks.step2Title', descKey: 'howItWorks.step2Desc' },
-  { num: 3, titleKey: 'howItWorks.step3Title', descKey: 'howItWorks.step3Desc' },
-  { num: 4, titleKey: 'howItWorks.step4Title', descKey: 'howItWorks.step4Desc' },
+  {
+    num: 1,
+    titleKey: 'howItWorks.step1Title',
+    descKey: 'howItWorks.step1Desc',
+  },
+  {
+    num: 2,
+    titleKey: 'howItWorks.step2Title',
+    descKey: 'howItWorks.step2Desc',
+  },
+  {
+    num: 3,
+    titleKey: 'howItWorks.step3Title',
+    descKey: 'howItWorks.step3Desc',
+  },
+  {
+    num: 4,
+    titleKey: 'howItWorks.step4Title',
+    descKey: 'howItWorks.step4Desc',
+  },
 ];
 
 const stepDelays = ['anim-d1', 'anim-d2', 'anim-d3', 'anim-d4'];
@@ -635,11 +714,13 @@ function HowItWorksSection() {
   const isRtl = useDirection() === 'rtl';
 
   return (
-    <section className="scroll-mt-16 bg-navy-50 px-6 py-20">
+    <section className="bg-navy-50 scroll-mt-16 px-6 py-20">
       <div className="mx-auto max-w-4xl">
         {/* Section title — centered */}
         <div className="mb-14 text-center">
-          <h2 className="font-cairo text-2xl font-bold text-navy-800">{t('howItWorks.title')}</h2>
+          <h2 className="font-cairo text-navy-800 text-2xl font-bold">
+            {t('howItWorks.title')}
+          </h2>
         </div>
 
         <div className="relative">
@@ -661,10 +742,13 @@ function HowItWorksSection() {
             {howItWorksSteps.map((step, index) => (
               <div
                 key={step.num}
-                className={cn('anim-fade-up relative text-center', stepDelays[index])}
+                className={cn(
+                  'anim-fade-up relative text-center',
+                  stepDelays[index],
+                )}
               >
                 {/* Numbered circle */}
-                <div className="relative z-10 mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500 font-cairo text-lg font-bold text-navy-900 shadow-[0_0_20px_rgba(0,201,219,0.3)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(0,201,219,0.5)]">
+                <div className="font-cairo text-navy-900 relative z-10 mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500 text-lg font-bold shadow-[0_0_20px_rgba(0,201,219,0.3)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(0,201,219,0.5)]">
                   {toLocaleDigits(step.num, isRtl)}
                 </div>
 
@@ -677,12 +761,12 @@ function HowItWorksSection() {
                 )}
 
                 {/* Title */}
-                <h3 className="mb-2 font-cairo text-base font-semibold text-navy-800">
+                <h3 className="font-cairo text-navy-800 mb-2 text-base font-semibold">
                   {t(step.titleKey)}
                 </h3>
 
                 {/* Description */}
-                <p className="mx-auto max-w-[180px] font-cairo text-sm leading-relaxed text-gray-500">
+                <p className="font-cairo mx-auto max-w-[180px] text-sm leading-relaxed text-gray-500">
                   {t(step.descKey)}
                 </p>
               </div>
@@ -717,8 +801,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Sara Ibrahim',
     gradeAr: 'طالبة — الصف الثاني الثانوي',
     gradeEn: 'Grade 11 Student',
-    quoteAr: 'الشرح واضح ومنظم جداً والاختبارات بتساعدني أحدد نقاط ضعفي. الـ AI Tutor بيساعدني في أي وقت محتاجه!',
-    quoteEn: 'The lessons are excellent and easy to understand. I improved from 60% to 92%!',
+    quoteAr:
+      'الشرح واضح ومنظم جداً والاختبارات بتساعدني أحدد نقاط ضعفي. الـ AI Tutor بيساعدني في أي وقت محتاجه!',
+    quoteEn:
+      'The lessons are excellent and easy to understand. I improved from 60% to 92%!',
     rating: 5,
     initials: { ar: 'سا', en: 'SI' },
   },
@@ -728,8 +814,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Ahmed Yasser',
     gradeAr: 'طالب — الصف الثالث الثانوي',
     gradeEn: 'Grade 12 Student',
-    quoteAr: 'أحسن بلاتفورم للكيمياء. الأستاذ أحمد شرحه ممتاز والملخصات وفرت عليا وقت كتير في المراجعة.',
-    quoteEn: 'Mr. Ahmed explains everything in a way that is very simple and amazing. Best chemistry platform!',
+    quoteAr:
+      'أحسن بلاتفورم للكيمياء. الأستاذ أحمد شرحه ممتاز والملخصات وفرت عليا وقت كتير في المراجعة.',
+    quoteEn:
+      'Mr. Ahmed explains everything in a way that is very simple and amazing. Best chemistry platform!',
     rating: 5,
     initials: { ar: 'أح', en: 'AY' },
   },
@@ -739,8 +827,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Nourhan Mohamed',
     gradeAr: 'طالبة — الصف الأول الثانوي',
     gradeEn: 'Grade 10 Student',
-    quoteAr: 'كنت بخاف من الكيمياء بس الشرح المنظم والتدريبات خلوني واثقة في نفسي قبل الامتحان.',
-    quoteEn: 'I used to be scared of Chemistry but the organized lessons gave me confidence before the exam.',
+    quoteAr:
+      'كنت بخاف من الكيمياء بس الشرح المنظم والتدريبات خلوني واثقة في نفسي قبل الامتحان.',
+    quoteEn:
+      'I used to be scared of Chemistry but the organized lessons gave me confidence before the exam.',
     rating: 5,
     initials: { ar: 'نو', en: 'NM' },
   },
@@ -750,8 +840,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Youssef Khaled',
     gradeAr: 'طالب — الصف الثالث الثانوي',
     gradeEn: 'Grade 12 Student',
-    quoteAr: 'الاختبارات الذكية ساعدتني أعرف نقاط ضعفي وأركز عليها. درجاتي اتحسنت بشكل كبير.',
-    quoteEn: 'The smart quizzes helped me identify my weak points and focus on them. My grades improved significantly.',
+    quoteAr:
+      'الاختبارات الذكية ساعدتني أعرف نقاط ضعفي وأركز عليها. درجاتي اتحسنت بشكل كبير.',
+    quoteEn:
+      'The smart quizzes helped me identify my weak points and focus on them. My grades improved significantly.',
     rating: 5,
     initials: { ar: 'يو', en: 'YK' },
   },
@@ -761,8 +853,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Mariam Ali',
     gradeAr: 'طالبة — الصف الثاني الثانوي',
     gradeEn: 'Grade 11 Student',
-    quoteAr: 'ملخصات الـ PDF وفرت عليا وقت كتير. بدل ما أكتب ملاحظات، كل حاجة جاهزة ومنظمة.',
-    quoteEn: 'The PDF summaries saved me so much time. Instead of writing notes, everything is ready and organized.',
+    quoteAr:
+      'ملخصات الـ PDF وفرت عليا وقت كتير. بدل ما أكتب ملاحظات، كل حاجة جاهزة ومنظمة.',
+    quoteEn:
+      'The PDF summaries saved me so much time. Instead of writing notes, everything is ready and organized.',
     rating: 4,
     initials: { ar: 'مر', en: 'MA' },
   },
@@ -772,8 +866,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Omar Hassan',
     gradeAr: 'طالب — الصف الأول الثانوي',
     gradeEn: 'Grade 10 Student',
-    quoteAr: 'أول مرة أحب الكيمياء! الفيديوهات ممتعة والمساعد الذكي بيجاوب على أي سؤال في ثواني.',
-    quoteEn: 'First time I actually enjoy Chemistry! The videos are fun and the AI tutor answers any question in seconds.',
+    quoteAr:
+      'أول مرة أحب الكيمياء! الفيديوهات ممتعة والمساعد الذكي بيجاوب على أي سؤال في ثواني.',
+    quoteEn:
+      'First time I actually enjoy Chemistry! The videos are fun and the AI tutor answers any question in seconds.',
     rating: 5,
     initials: { ar: 'عم', en: 'OH' },
   },
@@ -783,8 +879,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Fatma Mahmoud',
     gradeAr: 'طالبة — الصف الثالث الثانوي',
     gradeEn: 'Grade 12 Student',
-    quoteAr: 'التدريبات بعد كل درس خلتني أتأكد إني فاهمة صح، والمساعد الذكي بيشرحلي أي نقطة مش واضحة في ثواني.',
-    quoteEn: 'The quizzes after each lesson made sure I really understood, and the AI tutor explains anything unclear in seconds.',
+    quoteAr:
+      'التدريبات بعد كل درس خلتني أتأكد إني فاهمة صح، والمساعد الذكي بيشرحلي أي نقطة مش واضحة في ثواني.',
+    quoteEn:
+      'The quizzes after each lesson made sure I really understood, and the AI tutor explains anything unclear in seconds.',
     rating: 5,
     initials: { ar: 'فا', en: 'FM' },
   },
@@ -794,8 +892,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Karim Sameh',
     gradeAr: 'طالب — الصف الثاني الثانوي',
     gradeEn: 'Grade 11 Student',
-    quoteAr: 'ملخصات الـ PDF منظمة جداً وبحملها على الموبايل وبذاكر منها في أي وقت. وفرت عليا فلوس الدروس الخصوصية.',
-    quoteEn: 'The PDF notes are super organized — I download them on my phone and study anytime. Saved me the cost of private tutoring.',
+    quoteAr:
+      'ملخصات الـ PDF منظمة جداً وبحملها على الموبايل وبذاكر منها في أي وقت. وفرت عليا فلوس الدروس الخصوصية.',
+    quoteEn:
+      'The PDF notes are super organized — I download them on my phone and study anytime. Saved me the cost of private tutoring.',
     rating: 4,
     initials: { ar: 'كر', en: 'KS' },
   },
@@ -805,8 +905,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Hana Tarek',
     gradeAr: 'طالبة — الصف الأول الثانوي',
     gradeEn: 'Grade 10 Student',
-    quoteAr: 'الفيديوهات قصيرة ومركزة ومفيش وقت بيضيع. أقدر أرجع للدرس أكتر من مرة لحد ما الفكرة تثبت في دماغي.',
-    quoteEn: 'The videos are short and focused with no wasted time. I can rewatch a lesson as many times as I need until it clicks.',
+    quoteAr:
+      'الفيديوهات قصيرة ومركزة ومفيش وقت بيضيع. أقدر أرجع للدرس أكتر من مرة لحد ما الفكرة تثبت في دماغي.',
+    quoteEn:
+      'The videos are short and focused with no wasted time. I can rewatch a lesson as many times as I need until it clicks.',
     rating: 4,
     initials: { ar: 'هن', en: 'HT' },
   },
@@ -816,8 +918,10 @@ const testimonialsData: Testimonial[] = [
     nameEn: 'Mahmoud Abdullah',
     gradeAr: 'طالب — الصف الثالث الثانوي',
     gradeEn: 'Grade 12 Student',
-    quoteAr: 'المساعد الذكي غيّر طريقة مذاكرتي بالكامل. بسأله أي سؤال في المنهج وبيجاوبني فوراً زي ما يكون معايا مدرس ٢٤ ساعة.',
-    quoteEn: 'The AI tutor completely changed how I study. I ask it anything in the curriculum and it answers instantly — like having a teacher 24/7.',
+    quoteAr:
+      'المساعد الذكي غيّر طريقة مذاكرتي بالكامل. بسأله أي سؤال في المنهج وبيجاوبني فوراً زي ما يكون معايا مدرس ٢٤ ساعة.',
+    quoteEn:
+      'The AI tutor completely changed how I study. I ask it anything in the curriculum and it answers instantly — like having a teacher 24/7.',
     rating: 5,
     initials: { ar: 'مح', en: 'MA' },
   },
@@ -838,7 +942,8 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
   const safePage = Math.min(currentPage, totalPages - 1);
 
   const goNext = () => setCurrentPage((prev) => (prev + 1) % totalPages);
-  const goPrev = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+  const goPrev = () =>
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
   // Autoplay: advance one page every 4s unless paused (hover). Restarts when
   // totalPages changes (desktop/mobile breakpoint).
@@ -856,9 +961,9 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
 
   return (
     <section id="testimonials" className="scroll-mt-16 bg-white px-6 py-20">
-      <div className="mx-auto max-w-5xl bg-navy-50 px-4 py-10 md:px-8 md:py-16 lg:px-15 lg:py-15">
+      <div className="bg-navy-50 mx-auto max-w-5xl px-4 py-10 md:px-8 md:py-16 lg:px-15 lg:py-15">
         {/* Title */}
-        <h2 className="anim-fade-up mb-12 text-center font-cairo text-2xl font-bold text-navy-800">
+        <h2 className="anim-fade-up font-cairo text-navy-800 mb-12 text-center text-2xl font-bold">
           {t('testimonials.title')}
         </h2>
 
@@ -877,7 +982,7 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
             type="button"
             onClick={goPrev}
             aria-label={t('testimonials.prev', 'Previous')}
-            className="absolute -start-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-navy-600 shadow-card transition-all hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 md:-start-12"
+            className="text-navy-600 shadow-card absolute -start-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 md:-start-12"
           >
             <ChevronRight className={cn('h-5 w-5', !isRtl && 'rotate-180')} />
           </button>
@@ -887,7 +992,7 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
             type="button"
             onClick={goNext}
             aria-label={t('testimonials.next', 'Next')}
-            className="absolute -end-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-navy-600 shadow-card transition-all hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 md:-end-12"
+            className="text-navy-600 shadow-card absolute -end-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 md:-end-12"
           >
             <ChevronLeft className={cn('h-5 w-5', !isRtl && 'rotate-180')} />
           </button>
@@ -905,12 +1010,14 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
                   style={{ width: `${100 / visibleCards}%` }}
                 >
                   {/* Testimonial card */}
-                  <div className="flex h-full flex-col rounded-card border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-cyan-200 hover:shadow-card">
+                  <div className="rounded-card hover:shadow-card flex h-full flex-col border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-cyan-200">
                     {/* Quote mark */}
-                    <div className="mb-3 font-serif text-4xl leading-none text-cyan-500/20">❝</div>
+                    <div className="mb-3 font-serif text-4xl leading-none text-cyan-500/20">
+                      ❝
+                    </div>
 
                     {/* Quote text */}
-                    <p className="mb-6 flex-1 font-cairo text-sm leading-relaxed text-navy-700">
+                    <p className="font-cairo text-navy-700 mb-6 flex-1 text-sm leading-relaxed">
                       {isRtl ? item.quoteAr : item.quoteEn}
                     </p>
 
@@ -918,13 +1025,13 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
                     <div className="border-t border-gray-100 pt-4">
                       <div className="flex items-center gap-3">
                         {/* Avatar */}
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy-100 font-cairo text-sm font-bold text-navy-600">
+                        <div className="bg-navy-100 font-cairo text-navy-600 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold">
                           {isRtl ? item.initials.ar : item.initials.en}
                         </div>
 
                         {/* Name + grade + stars */}
                         <div className="flex-1">
-                          <p className="font-cairo text-sm font-semibold text-navy-800">
+                          <p className="font-cairo text-navy-800 text-sm font-semibold">
                             {isRtl ? item.nameAr : item.nameEn}
                           </p>
                           <p className="font-cairo text-[11px] text-gray-400">
@@ -963,7 +1070,9 @@ function TestimonialsSection({ isDesktop }: { isDesktop: boolean }) {
                 aria-current={i === safePage}
                 className={cn(
                   'h-2 rounded-full transition-all duration-300',
-                  i === safePage ? 'w-6 bg-cyan-500' : 'w-2 bg-navy-200 hover:bg-navy-300',
+                  i === safePage
+                    ? 'w-6 bg-cyan-500'
+                    : 'bg-navy-200 hover:bg-navy-300 w-2',
                 )}
               />
             ))}
@@ -989,10 +1098,10 @@ function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="scroll-mt-16 bg-navy-50 px-4 py-16 md:py-20">
+    <section id="faq" className="bg-navy-50 scroll-mt-16 px-4 py-16 md:py-20">
       <div className="mx-auto max-w-[800px]">
         {/* Title */}
-        <h2 className="mb-12 text-center font-cairo text-2xl font-bold text-navy-800">
+        <h2 className="font-cairo text-navy-800 mb-12 text-center text-2xl font-bold">
           {t('faq.title')}
         </h2>
 
@@ -1005,8 +1114,8 @@ function FAQSection() {
                 className={cn(
                   'group rounded-card border bg-white transition-all duration-300',
                   open
-                    ? 'border-cyan-300 shadow-card'
-                    : 'border-gray-100 hover:scale-[1.02] hover:border-cyan-200 hover:shadow-card'
+                    ? 'shadow-card border-cyan-300'
+                    : 'hover:shadow-card border-gray-100 hover:scale-[1.02] hover:border-cyan-200',
                 )}
               >
                 <button
@@ -1015,16 +1124,24 @@ function FAQSection() {
                   aria-expanded={open}
                   className="flex w-full items-center justify-between gap-4 p-5 text-start"
                 >
-                  <span className={cn(
-                    'font-cairo text-base font-bold transition-colors duration-200',
-                    open ? 'text-cyan-600' : 'text-navy-800 group-hover:text-cyan-600'
-                  )}>
+                  <span
+                    className={cn(
+                      'font-cairo text-base font-bold transition-colors duration-200',
+                      open
+                        ? 'text-cyan-600'
+                        : 'text-navy-800 group-hover:text-cyan-600',
+                    )}
+                  >
                     {item.q}
                   </span>
-                  <div className={cn(
-                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-300',
-                    open ? 'bg-cyan-500 text-white rotate-180' : 'bg-navy-50 text-navy-400 group-hover:bg-cyan-50 group-hover:text-cyan-500'
-                  )}>
+                  <div
+                    className={cn(
+                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-300',
+                      open
+                        ? 'rotate-180 bg-cyan-500 text-white'
+                        : 'bg-navy-50 text-navy-400 group-hover:bg-cyan-50 group-hover:text-cyan-500',
+                    )}
+                  >
                     <ChevronDown size={18} />
                   </div>
                 </button>
@@ -1033,11 +1150,13 @@ function FAQSection() {
                 <div
                   className={cn(
                     'grid transition-all duration-300 ease-in-out',
-                    open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                    open
+                      ? 'grid-rows-[1fr] opacity-100'
+                      : 'grid-rows-[0fr] opacity-0',
                   )}
                 >
                   <div className="overflow-hidden">
-                    <div className="border-t border-gray-100 px-5 pb-5 pt-3">
+                    <div className="border-t border-gray-100 px-5 pt-3 pb-5">
                       <p className="font-cairo text-sm leading-relaxed text-gray-600">
                         {item.a}
                       </p>
@@ -1062,10 +1181,10 @@ function CTASection({ isDesktop }: { isDesktop: boolean }) {
   const navigate = useNavigate();
 
   return (
-    <section className="relative overflow-hidden bg-cta-gradient px-4 py-16 md:py-20">
+    <section className="bg-cta-gradient relative overflow-hidden px-4 py-16 md:py-20">
       {/* Decorative shapes */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500 opacity-5 blur-3xl" />
+        <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-cyan-500 opacity-5 blur-3xl" />
         <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-purple-500 opacity-5 blur-3xl" />
       </div>
 
@@ -1073,15 +1192,15 @@ function CTASection({ isDesktop }: { isDesktop: boolean }) {
         <h2 className="font-cairo text-2xl font-bold text-white md:text-3xl">
           {t('cta.title')}
         </h2>
-        <p className="mt-3 font-cairo text-base text-navy-300">
+        <p className="font-cairo text-navy-300 mt-3 text-base">
           {t('cta.subtitle')}
         </p>
         <button
           type="button"
           onClick={() => navigate('/auth')}
           className={cn(
-            'mt-8 rounded-btn bg-cyan-500 px-10 py-4 font-cairo text-lg font-bold text-navy-900 shadow-glow transition-all duration-300 hover:bg-cyan-400 hover:scale-105 hover:shadow-[0_0_30px_rgba(0,201,219,0.4)]',
-            !isDesktop && 'w-full'
+            'rounded-btn font-cairo text-navy-900 shadow-glow mt-8 bg-cyan-500 px-10 py-4 text-lg font-bold transition-all duration-300 hover:scale-105 hover:bg-cyan-400 hover:shadow-[0_0_30px_rgba(0,201,219,0.4)]',
+            !isDesktop && 'w-full',
           )}
         >
           {t('cta.btn')}
@@ -1096,7 +1215,9 @@ function CTASection({ isDesktop }: { isDesktop: boolean }) {
 /* ------------------------------------------------------------------ */
 function LandingFooter() {
   const { t } = useTranslation('landing');
-  const curriculumLinks = t('footer.curriculumLinks', { returnObjects: true }) as string[];
+  const curriculumLinks = t('footer.curriculumLinks', {
+    returnObjects: true,
+  }) as string[];
 
   return (
     <footer className="bg-navy-950 px-4 py-12">
@@ -1104,18 +1225,36 @@ function LandingFooter() {
         <div className="flex flex-col gap-8 text-center md:flex-row md:justify-between md:text-start">
           {/* Brand */}
           <div className="md:max-w-xs">
-            <span className="font-cairo text-xl font-bold text-cyan-500">{t('brand')}</span>
-            <p className="mt-2 font-cairo text-sm text-navy-300">{t('footer.academyName')}</p>
-            <p className="mt-1 font-cairo text-xs text-navy-400">{t('footer.platformDesc')}</p>
+            <span className="font-cairo text-xl font-bold text-cyan-500">
+              {t('brand')}
+            </span>
+            <p className="font-cairo text-navy-300 mt-2 text-sm">
+              {t('footer.academyName')}
+            </p>
+            <p className="font-cairo text-navy-400 mt-1 text-xs">
+              {t('footer.platformDesc')}
+            </p>
             {/* Social icons */}
             <div className="mt-4 flex justify-center gap-3 md:justify-start">
-              <a href="#" aria-label="Facebook" className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900">
+              <a
+                href="#"
+                aria-label="Facebook"
+                className="bg-navy-800 text-navy-300 hover:text-navy-900 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 hover:bg-cyan-500"
+              >
                 <FaFacebookF size={14} />
               </a>
-              <a href="#" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900">
+              <a
+                href="#"
+                aria-label="Instagram"
+                className="bg-navy-800 text-navy-300 hover:text-navy-900 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 hover:bg-cyan-500"
+              >
                 <FaInstagram size={14} />
               </a>
-              <a href="#" aria-label="WhatsApp" className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-800 text-navy-300 transition-all duration-300 hover:bg-cyan-500 hover:text-navy-900">
+              <a
+                href="#"
+                aria-label="WhatsApp"
+                className="bg-navy-800 text-navy-300 hover:text-navy-900 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 hover:bg-cyan-500"
+              >
                 <FaWhatsapp size={14} />
               </a>
             </div>
@@ -1123,11 +1262,16 @@ function LandingFooter() {
 
           {/* Curriculum */}
           <div>
-            <h4 className="mb-3 font-cairo text-sm font-bold text-white">{t('footer.curriculum')}</h4>
+            <h4 className="font-cairo mb-3 text-sm font-bold text-white">
+              {t('footer.curriculum')}
+            </h4>
             <ul className="flex flex-col gap-2.5">
               {curriculumLinks.map((link) => (
                 <li key={link}>
-                  <a href="#chapters" className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400">
+                  <a
+                    href="#chapters"
+                    className="font-cairo text-navy-400 text-sm transition-colors duration-200 hover:text-cyan-400"
+                  >
                     {link}
                   </a>
                 </li>
@@ -1137,15 +1281,23 @@ function LandingFooter() {
 
           {/* Important links */}
           <div>
-            <h4 className="mb-3 font-cairo text-sm font-bold text-white">{t('footer.importantLinks')}</h4>
+            <h4 className="font-cairo mb-3 text-sm font-bold text-white">
+              {t('footer.importantLinks')}
+            </h4>
             <ul className="flex flex-col gap-2.5">
               <li>
-                <a href="#faq" className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400">
+                <a
+                  href="#faq"
+                  className="font-cairo text-navy-400 text-sm transition-colors duration-200 hover:text-cyan-400"
+                >
                   {t('footer.faqLink')}
                 </a>
               </li>
               <li>
-                <a href="#" className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400">
+                <a
+                  href="#"
+                  className="font-cairo text-navy-400 text-sm transition-colors duration-200 hover:text-cyan-400"
+                >
                   {t('footer.contactUs')}
                 </a>
               </li>
@@ -1154,19 +1306,28 @@ function LandingFooter() {
 
           {/* Contact */}
           <div>
-            <h4 className="mb-3 font-cairo text-sm font-bold text-white">{t('footer.contactUs')}</h4>
+            <h4 className="font-cairo mb-3 text-sm font-bold text-white">
+              {t('footer.contactUs')}
+            </h4>
             <ul className="flex flex-col gap-2.5">
               <li className="flex items-center justify-center gap-2 md:justify-start">
                 <Mail size={14} className="text-cyan-500" />
-                <span className="font-cairo text-sm text-navy-400">info@fahimni.com</span>
+                <span className="font-cairo text-navy-400 text-sm">
+                  info@fahimni.com
+                </span>
               </li>
               <li className="flex items-center justify-center gap-2 md:justify-start">
                 <Phone size={14} className="text-cyan-500" />
-                <span className="font-cairo text-sm text-navy-400">01012345678</span>
+                <span className="font-cairo text-navy-400 text-sm">
+                  01012345678
+                </span>
               </li>
               <li className="flex items-center justify-center gap-2 md:justify-start">
                 <MessageCircle size={14} className="text-cyan-500" />
-                <a href="#" className="font-cairo text-sm text-navy-400 transition-colors duration-200 hover:text-cyan-400">
+                <a
+                  href="#"
+                  className="font-cairo text-navy-400 text-sm transition-colors duration-200 hover:text-cyan-400"
+                >
                   {t('footer.whatsapp')}
                 </a>
               </li>
@@ -1175,8 +1336,10 @@ function LandingFooter() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 border-t border-navy-800 pt-6 text-center">
-          <p className="font-cairo text-xs text-navy-500">{t('footer.copyright')}</p>
+        <div className="border-navy-800 mt-10 border-t pt-6 text-center">
+          <p className="font-cairo text-navy-500 text-xs">
+            {t('footer.copyright')}
+          </p>
         </div>
       </div>
     </footer>
