@@ -55,6 +55,14 @@ export const teacherContentApi = {
   // NOTE: `/content/tree` returns a *raw* array (no { success, message, data }
   // envelope), and a diagnostics object when there is no content. We guard with
   // Array.isArray and flatten the nested nodes into the ContentTreeStage shape.
+  reorderStages: async (ids: string[]): Promise<StageResponseDTO[]> => {
+    const { data } = await apiClient.patch<ApiResponse<StageResponseDTO[]>>(
+      '/stages/reorder',
+      ids,
+    );
+    return data.data;
+  },
+
   getContentTree: async (): Promise<ContentTreeStage[]> => {
     const { data } = await apiClient.get<RawContentTreeNode[] | unknown>('/content/tree');
 

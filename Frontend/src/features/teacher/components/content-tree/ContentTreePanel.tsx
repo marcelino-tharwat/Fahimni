@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next';
-import { Layers, Plus, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Layers, Plus, RefreshCw } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
-import type { ContentTreeChapter } from '@/features/teacher/types/contentTree';
+import type { ContentTreeChapter, ContentTreeLesson } from '@/features/teacher/types/contentTree';
+import { SortableItem } from '@/features/teacher/components/reorder/SortableItem';
+import { SortableList } from '@/features/teacher/components/reorder/SortableList';
+import { getLessonContainerId } from '@/features/teacher/components/reorder/helpers';
 import { TreeNode } from './TreeNode';
 import { TreeNodeMenu } from './TreeNodeMenu';
 import { ContentTreeEmptyState } from './ContentTreeEmptyState';
@@ -25,6 +28,18 @@ interface ContentTreePanelProps {
   onAddChapter: () => void;
   onMenuAction: (item: NodeRef, action: MenuAction) => void;
   onRequestDelete: (target: DeleteTarget) => void;
+
+  /** Override chapter order from local drag state (null = use prop). */
+  chapterItems: ContentTreeChapter[] | null;
+  /** Override lesson order per chapter from local drag state. */
+  lessonItemsMap: Record<string, ContentTreeLesson[] | null>;
+  /** Called when chapters are reordered via drag. */
+  onChapterReorder: (ids: string[]) => void;
+  /** Called when lessons in a chapter are reordered via drag. */
+  onLessonReorder: (chapterId: string, ids: string[]) => void;
+  canReorder: boolean;
+  isDirty: boolean;
+  isMutating: boolean;
 }
 
 export function ContentTreePanel({
@@ -43,8 +58,17 @@ export function ContentTreePanel({
   onAddChapter,
   onMenuAction,
   onRequestDelete,
+  chapterItems,
+  lessonItemsMap,
+  onChapterReorder,
+  onLessonReorder,
+  canReorder,
+  isDirty,
+  isMutating,
 }: ContentTreePanelProps) {
   const { t } = useTranslation();
+
+  const displayChapters = chapterItems ?? chapters;
 
   return (
     <div className="flex flex-col rounded-card border border-gray-100 bg-surface shadow-sm">
@@ -90,74 +114,143 @@ export function ContentTreePanel({
         </button>
       </div>
 
+      {/* Unsaved changes indicator */}
+      {isDirty && (
+        <div className="px-4 pt-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+            <AlertTriangle size={12} />
+            {t('teacher:contentTree.unsavedChanges', 'Unsaved changes')}
+          </span>
+        </div>
+      )}
+
       {/* Tree body */}
       <div className="max-h-[60vh] overflow-y-auto p-2">
         {isLoading ? (
           <ContentTreeLoadingState />
         ) : isError ? (
           <ContentTreeErrorState onRetry={onRetry} />
-        ) : chapters.length === 0 ? (
+        ) : displayChapters.length === 0 ? (
           <ContentTreeEmptyState onAddChapter={onAddChapter} />
         ) : (
-          <div role="tree" className="flex flex-col gap-0.5">
-            {chapters.map((chapter) => {
-              const chapterExpanded = expandedNodes.has(chapter.id);
-              return (
-                <div key={chapter.id}>
-                  <TreeNode
-                    type="chapter"
-                    label={chapter.name}
-                    sortOrder={chapter.sortOrder}
-                    level={0}
-                    hasChildren={chapter.lessons.length > 0}
-                    isExpanded={chapterExpanded}
-                    isSelected={
-                      selectedItem?.type === 'chapter' && selectedItem.id === chapter.id
-                    }
-                    onToggle={() => onToggle(chapter.id)}
-                    onSelect={() => onSelect({ type: 'chapter', id: chapter.id })}
-                    onMenuAction={(action) =>
-                      action === 'delete'
-                        ? onRequestDelete({
-                            type: 'chapter',
-                            id: chapter.id,
-                            name: chapter.name,
-                            childrenCount: chapter.lessons.length,
-                          })
-                        : onMenuAction({ type: 'chapter', id: chapter.id }, action)
-                    }
-                  />
-                  {chapterExpanded &&
-                    chapter.lessons.map((lesson) => (
-                      <TreeNode
-                        key={lesson.id}
-                        type="lesson"
-                        label={lesson.title}
-                        sortOrder={lesson.sortOrder}
-                        level={1}
-                        hasChildren={false}
-                        isExpanded={false}
-                        isSelected={
-                          selectedItem?.type === 'lesson' && selectedItem.id === lesson.id
-                        }
-                        onToggle={() => {}}
-                        onSelect={() => onSelect({ type: 'lesson', id: lesson.id })}
-                        onMenuAction={(action) =>
-                          action === 'delete'
-                            ? onRequestDelete({
-                                type: 'lesson',
-                                id: lesson.id,
-                                name: lesson.title,
-                                childrenCount: 0,
-                              })
-                            : onMenuAction({ type: 'lesson', id: lesson.id }, action)
-                        }
-                      />
-                    ))}
-                </div>
-              );
-            })}
-          </div>
+          <SortableList
+            id="chapters"
+            items={displayChapters.map((c) => c.id)}
+            disabled={!canReorder || displayChapters.length <= 1 || isMutating}
+          >
+            <div role="tree" className="flex flex-col gap-0.5">
+              {displayChapters.map((chapter, idx) => {
+                const chapterExpanded = expandedNodes.has(chapter.id);
+                const displayLessons =
+                  (lessonItemsMap[chapter.id] ?? null) ?? chapter.lessons;
+
+                return (
+                  <SortableItem
+                    key={chapter.id}
+                    id={chapter.id}
+                    disabled={!canReorder || isMutating}
+                    data={{ type: 'chapter', containerId: 'chapters' }}
+                  >
+                    {(dragProps) => (
+                      <div>
+                        <TreeNode
+                          type="chapter"
+                          label={chapter.name}
+                          sortOrder={idx + 1}
+                          level={0}
+                          hasChildren={chapter.lessons.length > 0}
+                          isExpanded={chapterExpanded}
+                          isSelected={
+                            selectedItem?.type === 'chapter' &&
+                            selectedItem.id === chapter.id
+                          }
+                          onToggle={() => onToggle(chapter.id)}
+                          onSelect={() =>
+                            onSelect({ type: 'chapter', id: chapter.id })
+                          }
+                          onMenuAction={(action) =>
+                            action === 'delete'
+                              ? onRequestDelete({
+                                  type: 'chapter',
+                                  id: chapter.id,
+                                  name: chapter.name,
+                                  childrenCount: chapter.lessons.length,
+                                })
+                              : onMenuAction(
+                                  { type: 'chapter', id: chapter.id },
+                                  action,
+                                )
+                          }
+                          dragHandle={dragProps}
+                        />
+                        {chapterExpanded && (
+                          <SortableList
+                            id={getLessonContainerId(chapter.id)}
+                            items={displayLessons.map((l) => l.id)}
+                            disabled={
+                              !canReorder ||
+                              displayLessons.length <= 1 ||
+                              isMutating
+                            }
+                          >
+                            {displayLessons.map((lesson, lIdx) => (
+                              <SortableItem
+                                key={lesson.id}
+                                id={lesson.id}
+                                disabled={!canReorder || isMutating}
+                                data={{
+                                  type: 'lesson',
+                                  containerId:
+                                    getLessonContainerId(chapter.id),
+                                }}
+                              >
+                                {(lp) => (
+                                  <TreeNode
+                                    key={lesson.id}
+                                    type="lesson"
+                                    label={lesson.title}
+                                    sortOrder={lIdx + 1}
+                                    level={1}
+                                    hasChildren={false}
+                                    isExpanded={false}
+                                    isSelected={
+                                      selectedItem?.type === 'lesson' &&
+                                      selectedItem.id === lesson.id
+                                    }
+                                    onToggle={() => {}}
+                                    onSelect={() =>
+                                      onSelect({
+                                        type: 'lesson',
+                                        id: lesson.id,
+                                      })
+                                    }
+                                    onMenuAction={(action) =>
+                                      action === 'delete'
+                                        ? onRequestDelete({
+                                            type: 'lesson',
+                                            id: lesson.id,
+                                            name: lesson.title,
+                                            childrenCount: 0,
+                                          })
+                                        : onMenuAction(
+                                            { type: 'lesson', id: lesson.id },
+                                            action,
+                                          )
+                                    }
+                                    dragHandle={lp}
+                                  />
+                                )}
+                              </SortableItem>
+                            ))}
+                          </SortableList>
+                        )}
+                      </div>
+                    )}
+                  </SortableItem>
+                );
+              })}
+            </div>
+          </SortableList>
         )}
       </div>
     </div>
