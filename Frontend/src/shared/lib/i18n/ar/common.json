@@ -36,6 +36,7 @@
     "publish": "نشر",
     "generate": "توليد"
   },
+  "andLabel": "و",
   "status": {
     "loading": "جاري التحميل...",
     "error": "حدث خطأ",

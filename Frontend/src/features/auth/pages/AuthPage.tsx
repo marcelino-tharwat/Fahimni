@@ -1,106 +1,71 @@
 // src/features/auth/pages/AuthPage.tsx
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm, type UseFormRegisterReturn } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 import {
-  GraduationCap, User, Mail, Phone, Lock, Eye, EyeOff,
+  GraduationCap, User, Mail, Phone, Lock, Eye, EyeOff, Check, Loader2,
   type LucideIcon,
 } from "lucide-react";
+import { AuthNavbar } from "../components/AuthNavbar";
+import { useAppDispatch } from "@/shared/store/hooks";
+import { login as loginThunk, register as registerThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
 
-import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
-import {
-  login as loginThunk,
-  register as registerThunk,
-  dashboardPathByRole,
-  normalizeRole,
-} from "@/features/auth/store/authSlice";
-
-type Mode = "login" | "register";
-type TFn = (key: string) => string;
-
-/* ------------------------------ schemas ------------------------------ */
-
-// كلمة المرور: نفس قواعد الـ backend (auth.validation.ts) — ٨ أحرف + تعقيد
-const makePasswordSchema = (t: TFn) =>
-  z
-    .string()
-    .min(8, t("auth:errPasswordMin"))
-    .regex(/[A-Z]/, t("auth:errPasswordUppercase"))
-    .regex(/[a-z]/, t("auth:errPasswordLowercase"))
-    .regex(/[0-9]/, t("auth:errPasswordNumber"))
-    .regex(/[^A-Za-z0-9]/, t("auth:errPasswordSpecial"));
-
-const makeLoginSchema = (t: TFn) =>
-  z.object({
-    email: z.string().min(1, t("auth:errEmailRequired")).email(t("auth:errEmailInvalid")),
-    password: z.string().min(8, t("auth:errPasswordMin")),
-    remember: z.boolean().optional(),
-  });
-
-// نفس موديل الـ User: fullName + email + mobile + password
-// (role=STUDENT و status=ACTIVE بيحطّهم الـ backend افتراضيًا)
-const makeRegisterSchema = (t: TFn) =>
-  z.object({
-    fullName: z
-      .string()
-      .trim()
-      .min(2, t("auth:errNameMin"))
-      .max(100, t("auth:errNameMax")),
-    email: z.string().min(1, t("auth:errEmailRequired")).email(t("auth:errEmailInvalid")),
-    mobile: z.string().trim().regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, t("auth:errMobileInvalid")),
-    password: makePasswordSchema(t),
-  });
-
-type LoginValues = { email: string; password: string; remember?: boolean };
-type RegisterValues = { fullName: string; email: string; mobile: string; password: string };
-
-/* ------------------------------- field ------------------------------- */
+/* ------------------------------------------------------------------ */
+/*  Field                                                              */
+/* ------------------------------------------------------------------ */
 
 function Field({
   icon: Icon,
-  label,
   error,
   registration,
-  trailing,
+  isPassword,
   ...props
 }: {
   icon: LucideIcon;
-  label: string;
   error?: string;
   registration: UseFormRegisterReturn;
-  trailing?: React.ReactNode;
+  isPassword?: boolean;
 } & React.InputHTMLAttributes<HTMLInputElement>) {
   const { i18n } = useTranslation();
   const isRtl = i18n.language === "ar";
+  const [show, setShow] = useState(false);
+
+  const padding = isPassword
+    ? (isRtl ? "pr-11 pl-10" : "pl-11 pr-10")
+    : (isRtl ? "pr-11 pl-4" : "pl-11 pr-4");
 
   return (
-    <div className="mb-[18px]">
-      <label className="mb-2 block text-sm font-semibold text-text-primary">{label}</label>
-      {/* Flex row: leading icon → gap → input → optional trailing (eye) toggle.
-          The row inherits the page direction, so the icon lands on the start
-          side (right in RTL, left in LTR) and the eye toggle on the opposite
-          edge — no absolute positioning, no big gap. */}
-      <div className="flex h-[50px] items-center gap-2 rounded-xl border border-border bg-[#F6F6FB] px-4 transition focus-within:border-accent focus-within:bg-white focus-within:ring-4 focus-within:ring-accent/10">
-        <span className="shrink-0 text-[#9AA0AE]">
-          <Icon size={19} strokeWidth={2} />
-        </span>
-        <input
-          {...registration}
-          {...props}
-          dir={isRtl ? "rtl" : "ltr"}
-          className="min-w-0 flex-1 bg-transparent text-start text-sm text-text-primary outline-none placeholder:text-[#9CA3AF]"
-        />
-        {trailing && <span className="flex shrink-0">{trailing}</span>}
-      </div>
-      {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
+    <div className="relative w-full">
+      <input
+        {...registration}
+        {...props}
+        type={isPassword ? (show ? "text" : "password") : props.type}
+        dir={isRtl ? "rtl" : "ltr"}
+        className={`w-full rounded-input border border-gray-300 bg-gray-50 py-3 outline-none placeholder:text-gray-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 ${
+          isRtl ? "text-right" : "text-left"
+        } ${padding}`}
+      />
+      <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
+        <Icon size={18} />
+      </span>
+      {isPassword && (
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "left-3" : "right-3"}`}
+        >
+          {show ? <Eye size={18} /> : <EyeOff size={18} />}
+        </button>
+      )}
+      {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
     </div>
   );
 }
 
-/* ----------------------------- google icon --------------------------- */
+/* ------------------------------------------------------------------ */
+/*  Social Icons                                                       */
+/* ------------------------------------------------------------------ */
 
 function GoogleIcon() {
   return (
@@ -121,19 +86,235 @@ function FacebookIcon() {
   );
 }
 
-/* ------------------------------- page -------------------------------- */
+/* ------------------------------------------------------------------ */
+/*  Tab Button                                                        */
+/* ------------------------------------------------------------------ */
+
+function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`py-3 text-center text-sm font-bold transition ${active
+          ? "border-b-2 border-cyan-500 text-cyan-600"
+          : "text-gray-500"
+        }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Submit Button                                                      */
+/* ------------------------------------------------------------------ */
+
+function SubmitButton({ children, disabled }: { children: React.ReactNode; disabled?: boolean }) {
+  return (
+    <button
+      type="submit"
+      disabled={disabled}
+      className="flex w-full items-center justify-center gap-2 rounded-btn bg-cyan-gradient py-3 text-h3 font-bold text-white transition hover:shadow-glow disabled:opacity-60"
+    >
+      {disabled && <Loader2 className="animate-spin" size={20} />}
+      {children}
+    </button>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Login Form                                                         */
+/* ------------------------------------------------------------------ */
+
+function LoginForm() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ email: string; password: string }>({
+    defaultValues: { email: "", password: "" },
+  });
+
+  const onSubmit = async (v: { email: string; password: string }) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await dispatch(loginThunk({ email: v.email, password: v.password })).unwrap();
+      navigate(dashboardPathByRole[res.user.role]);
+    } catch (err) {
+      setError(err ? String(err) : t("auth:errGeneric"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      {error && (
+        <p className="rounded-md bg-red-50 px-3 py-2 text-small text-red-600">
+          {error}
+        </p>
+      )}
+      <Field
+        icon={Mail}
+        type="email"
+        autoComplete="email"
+        placeholder={t("auth:email")}
+        error={errors.email?.message}
+        registration={register("email", {
+          required: t("auth:errEmailRequired"),
+          pattern: { value: /^\S+@\S+$/i, message: t("auth:errEmailInvalid") },
+        })}
+      />
+      <Field
+        icon={Lock}
+        isPassword
+        autoComplete="current-password"
+        placeholder={t("auth:password")}
+        error={errors.password?.message}
+        registration={register("password", {
+          required: t("auth:errPasswordRequired"),
+        })}
+      />
+      <div className="text-right">
+        <button
+          type="button"
+          onClick={() => navigate("/forgot-password")}
+          className="text-small text-cyan-600"
+        >
+          {t("auth:forgotPassword")}
+        </button>
+      </div>
+      <SubmitButton disabled={loading}>{t("auth:loginButton")}</SubmitButton>
+    </form>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Register Form                                                      */
+/* ------------------------------------------------------------------ */
+
+function RegisterForm() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ fullName: string; email: string; mobile: string; password: string }>({
+    defaultValues: { fullName: "", email: "", mobile: "", password: "" },
+  });
+
+  const onSubmit = async (v: { fullName: string; email: string; mobile: string; password: string }) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await dispatch(registerThunk(v)).unwrap();
+      navigate(dashboardPathByRole[res.user.role]);
+    } catch (err) {
+      setError(err ? String(err) : t("auth:errGeneric"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      {error && (
+        <p className="rounded-md bg-red-50 px-3 py-2 text-small text-red-600">
+          {error}
+        </p>
+      )}
+      <Field
+        icon={User}
+        autoComplete="name"
+        placeholder={t("auth:fullName")}
+        error={errors.fullName?.message}
+        registration={register("fullName", {
+          required: t("auth:validation.required"),
+          minLength: { value: 2, message: t("auth:errNameMin") },
+        })}
+      />
+      <Field
+        icon={Mail}
+        type="email"
+        autoComplete="email"
+        placeholder={t("auth:email")}
+        error={errors.email?.message}
+        registration={register("email", {
+          required: t("auth:errEmailRequired"),
+          pattern: { value: /^\S+@\S+$/i, message: t("auth:errEmailInvalid") },
+        })}
+      />
+      <Field
+        icon={Phone}
+        type="tel"
+        autoComplete="tel"
+        placeholder={t("auth:mobile")}
+        error={errors.mobile?.message}
+        registration={register("mobile", {
+          required: t("auth:validation.required"),
+          pattern: { value: /^(\+20|0)(10|11|12|15)[0-9]{8}$/, message: t("auth:errMobileInvalid") },
+        })}
+      />
+      <Field
+        icon={Lock}
+        isPassword
+        autoComplete="new-password"
+        placeholder={t("auth:password")}
+        error={errors.password?.message}
+        registration={register("password", {
+          required: t("auth:errPasswordRequired"),
+          minLength: { value: 8, message: t("auth:errPasswordMin") },
+        })}
+      />
+      <p className="text-right text-small text-gray-500">
+        {t("auth:termsPrefix")}{" "}
+        <a href="/terms" className="text-cyan-600">{t("auth:termsOfService")}</a>
+        {" "}{t("common:andLabel")}{" "}
+        <a href="/privacy" className="text-cyan-600">{t("auth:privacyPolicy")}</a>
+      </p>
+      <SubmitButton disabled={loading}>{t("auth:registerButton")}</SubmitButton>
+    </form>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Auth Page                                                          */
+/* ------------------------------------------------------------------ */
 
 export function AuthPage() {
-  const { t, i18n } = useTranslation();
-  const [mode, setMode] = useState<Mode>("login");
+  const { t } = useTranslation();
+  const [mode, setMode] = useState<"login" | "register">("login");
   const isLogin = mode === "login";
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* ===== جهة الفورم (يمين في RTL) ===== */}
-      <div className="relative flex flex-1 items-center justify-center px-5 py-10">
-        <div className="w-full max-w-[440px] rounded-3xl bg-surface p-7 shadow-[0_30px_60px_-20px_rgba(26,16,61,.2)] sm:p-8">
-          <div className="mb-6 flex border-b border-border">
+    <>
+      <AuthNavbar />
+      <div className="flex min-h-[calc(100vh-73px)]">
+        {/* Form Panel */}
+        <main className="flex w-3/5 items-center justify-center bg-gray-100 p-8">
+          <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-modal">
+          {/* Logo row */}
+          <div className="mb-6 text-center">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-500 text-lg font-bold text-white">
+              ف
+            </span>
+            <h2 className="mt-2 text-h2 font-bold text-navy-900">{t("auth:brandName")}</h2>
+          </div>
+
+          {/* Tab switcher */}
+          <div className="mb-6 grid grid-cols-2 border-b border-gray-200">
             <TabButton active={isLogin} onClick={() => setMode("login")}>
               {t("auth:loginTab")}
             </TabButton>
@@ -142,239 +323,79 @@ export function AuthPage() {
             </TabButton>
           </div>
 
-          {isLogin ? (
-            <LoginForm key={`login-${i18n.language}`} />
-          ) : (
-            <RegisterForm key={`register-${i18n.language}`} />
-          )}
+          {/* Form */}
+          {isLogin ? <LoginForm /> : <RegisterForm />}
 
-          <div className="my-6 flex items-center gap-3">
-            <span className="h-px flex-1 bg-border" />
-            <span className="text-xs text-text-secondary">{t("auth:orLoginWith")}</span>
-            <span className="h-px flex-1 bg-border" />
+          {/* Divider + Social */}
+          <div className="mt-6 flex items-center gap-3">
+            <span className="h-px flex-1 bg-gray-300" />
+            <span className="text-small text-gray-500">{t("auth:orLoginWith")}</span>
+            <span className="h-px flex-1 bg-gray-300" />
           </div>
-          <div className="flex gap-3">
-            <SocialButton onClick={() => {}}>
-              <FacebookIcon />
-              {t("auth:facebook")}
-            </SocialButton>
-            <SocialButton onClick={() => {}}>
-              <GoogleIcon />
-              {t("auth:google")}
-            </SocialButton>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => {}}
+              className="flex items-center justify-center gap-2 rounded-btn border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+            >
+              <FacebookIcon /> {t("auth:facebook")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {}}
+              className="flex items-center justify-center gap-2 rounded-btn border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+            >
+              <GoogleIcon /> {t("auth:google")}
+            </button>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* ===== جهة الهوية (يسار، مخفية على الموبايل) ===== */}
-      <aside className="relative hidden w-[42%] flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#1d1145] via-[#2a1758] to-[#3d2170] text-white lg:flex">
-        <span className="pointer-events-none absolute -right-16 top-[8%] h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
-        <span className="pointer-events-none absolute -left-20 bottom-[-10%] h-80 w-80 rounded-full bg-info/30 blur-3xl" />
+      {/* Hero Panel */}
+      <aside className="flex w-2/5 flex-col items-center justify-center bg-hero-gradient p-12 text-center">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-xl border border-cyan-500/30 bg-navy-800">
+          <GraduationCap className="text-cyan-500" size={36} />
+        </div>
 
-        <div className="relative z-10 text-center">
-          <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full border border-white/20 bg-white/10">
-            <GraduationCap size={48} strokeWidth={1.6} />
-          </div>
-          <h2 className="mt-6 text-3xl font-extrabold">{t("auth:brandName")}</h2>
-          <p className="mt-2.5 text-[15px] font-medium text-accent/90">{t("auth:tagline")}</p>
-          <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white/85">
-            <span className="h-2 w-2 rounded-full bg-accent" />
-            {t("auth:activeStudents")}
-          </div>
+        <h1 className="mt-6 text-4xl font-extrabold text-white">
+          {t("auth:brandName")}
+          <span className="mr-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500 text-sm font-bold text-white">
+            ف
+          </span>
+        </h1>
+
+        <p className="mt-3 max-w-sm text-body text-gray-300">
+          {t("auth:tagline")}
+        </p>
+
+        {/* Feature bullets */}
+        <div className="mt-8 space-y-4 text-right">
+          {["heroFeature1", "heroFeature2", "heroFeature3"].map((key) => (
+            <div key={key} className="flex items-center gap-3">
+              <Check className="shrink-0 text-cyan-400" size={20} />
+              <span className="text-body text-white">{t(`auth:${key}`)}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Stats */}
+        <div className="mt-10 flex items-center justify-center gap-6">
+          {[
+            { valueKey: "heroStatStudentsValue", labelKey: "heroStatStudentsLabel" },
+            { valueKey: "heroStatLessonsValue", labelKey: "heroStatLessonsLabel" },
+            { valueKey: "heroStatSatisfactionValue", labelKey: "heroStatSatisfactionLabel" },
+          ].map((stat, i) => (
+            <React.Fragment key={stat.labelKey}>
+              {i > 0 && <span className="h-8 w-px bg-gray-600" />}
+              <div className="text-center">
+                <p className="text-xl font-bold text-cyan-400">{t(`auth:${stat.valueKey}`)}</p>
+                <p className="text-small text-gray-400">{t(`auth:${stat.labelKey}`)}</p>
+              </div>
+            </React.Fragment>
+          ))}
         </div>
       </aside>
     </div>
-  );
-}
-
-/* ----------------------------- subparts ------------------------------ */
-
-function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`-mb-px flex-1 border-b-2 py-3 text-[15px] font-bold transition ${
-        active ? "border-accent text-accent" : "border-transparent text-text-secondary hover:text-text-primary"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function SocialButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex h-[50px] flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-surface text-sm font-semibold text-text-primary transition hover:bg-background"
-    >
-      {children}
-    </button>
-  );
-}
-function SubmitButton({ loading, children }: { loading: boolean; children: React.ReactNode }) {
-  return (
-    <button
-      type="submit"
-      disabled={loading}
-      className="h-[50px] w-full rounded-xl bg-gradient-to-l from-accent to-[#26D6E6] text-base font-extrabold text-white shadow-[0_14px_26px_-10px_rgba(0,201,219,.6)] transition hover:brightness-[.97] disabled:opacity-60"
-    >
-      {loading ? "..." : children}
-    </button>
-  );
-}
-
-/* ---------------------------- login form ----------------------------- */
-
-function LoginForm() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const [show, setShow] = useState(false);
-
-  const status = useAppSelector((s) => s.auth.status);
-  const serverError = useAppSelector((s) => s.auth.error);
-  const loading = status === "loading";
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginValues>({
-    resolver: zodResolver(makeLoginSchema(t)),
-    defaultValues: { email: "", password: "", remember: false },
-  });
-
-  const onSubmit = (v: LoginValues) => {
-    dispatch(loginThunk({ email: v.email, password: v.password, remember: v.remember }))
-      .unwrap()
-      .then((data) => navigate(dashboardPathByRole[normalizeRole(data.user.role)]))
-      .catch(() => {}); // الخطأ متخزّن في الـ slice وبيتعرض تحت
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Field
-        icon={Mail}
-        label={t("auth:email")}
-        type="email"
-        autoComplete="email"
-        placeholder="name@example.com"
-        error={errors.email?.message}
-        registration={register("email")}
-      />
-      <Field
-        icon={Lock}
-        label={t("auth:password")}
-        type={show ? "text" : "password"}
-        autoComplete="current-password"
-        placeholder="••••••••"
-        error={errors.password?.message}
-        registration={register("password")}
-        trailing={
-          <button type="button" onClick={() => setShow((s) => !s)} className="flex text-[#9AA0AE]">
-            {show ? <Eye size={18} /> : <EyeOff size={18} />}
-          </button>
-        }
-      />
-
-      <div className="mb-5 mt-1 flex items-center justify-between">
-        <label className="flex items-center gap-2 text-sm text-text-secondary">
-          <input type="checkbox" {...register("remember")} className="h-4 w-4 rounded border-border accent-accent" />
-          {t("auth:rememberMe")}
-        </label>
-        <button
-          type="button"
-          onClick={() => navigate("/forgot-password")}
-          className="text-sm font-semibold text-accent hover:underline"
-        >
-          {t("auth:forgotPassword")}
-        </button>
-      </div>
-
-      {serverError && <p className="mb-3 text-center text-sm text-danger">{serverError}</p>}
-
-      <SubmitButton loading={loading}>{t("auth:loginButton")}</SubmitButton>
-    </form>
-  );
-}
-
-/* --------------------------- register form --------------------------- */
-
-function RegisterForm() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const [show, setShow] = useState(false);
-
-  const status = useAppSelector((s) => s.auth.status);
-  const serverError = useAppSelector((s) => s.auth.error);
-  const loading = status === "loading";
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterValues>({
-    resolver: zodResolver(makeRegisterSchema(t)),
-    defaultValues: { fullName: "", email: "", mobile: "", password: "" },
-  });
-
-  const onSubmit = (v: RegisterValues) => {
-    dispatch(registerThunk(v)) // { fullName, email, mobile, password }
-      .unwrap()
-      .then((data) => navigate(dashboardPathByRole[normalizeRole(data.user.role)]))
-      .catch(() => {});
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Field
-        icon={User}
-        label={t("auth:fullName")}
-        autoComplete="name"
-        placeholder={t("auth:fullNamePlaceholder")}
-        error={errors.fullName?.message}
-        registration={register("fullName")}
-      />
-      <Field
-        icon={Mail}
-        label={t("auth:email")}
-        type="email"
-        autoComplete="email"
-        placeholder="name@example.com"
-        error={errors.email?.message}
-        registration={register("email")}
-      />
-      <Field
-        icon={Phone}
-        label={t("auth:mobile")}
-        type="tel"
-        autoComplete="tel"
-        placeholder="01xxxxxxxxx"
-        error={errors.mobile?.message}
-        registration={register("mobile")}
-      />
-      <Field
-        icon={Lock}
-        label={t("auth:password")}
-        type={show ? "text" : "password"}
-        autoComplete="new-password"
-        placeholder="••••••••"
-        error={errors.password?.message}
-        registration={register("password")}
-        trailing={
-          <button type="button" onClick={() => setShow((s) => !s)} className="flex text-[#9AA0AE]">
-            {show ? <Eye size={18} /> : <EyeOff size={18} />}
-          </button>
-        }
-      />
-
-      {serverError && <p className="mb-3 text-center text-sm text-danger">{serverError}</p>}
-
-      <SubmitButton loading={loading}>{t("auth:registerButton")}</SubmitButton>
-    </form>
+    </>
   );
 }

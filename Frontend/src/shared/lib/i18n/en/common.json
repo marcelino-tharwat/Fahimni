@@ -37,6 +37,7 @@
     "publish": "Publish",
     "generate": "Generate"
   },
+  "andLabel": "and",
   "status": {
     "loading": "Loading...",
     "error": "An error occurred",
