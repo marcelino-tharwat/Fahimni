@@ -5,7 +5,7 @@ import { Spinner } from '@/shared/components/ui';
 export function AuthGuard() {
   const { isAuthenticated, status } = useAppSelector((state) => state.auth);
 
-  if (status === 'idle' || status === 'initializing') {
+  if (status === 'loading') {
     return (
       <div className="flex h-screen items-center justify-center">
         <Spinner size="lg" />

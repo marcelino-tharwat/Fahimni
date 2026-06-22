@@ -46,8 +46,8 @@ apiClient.interceptors.response.use(
 
       if (!refreshToken) {
         const { store } = await import("@/shared/store");
-        const { logout } = await import("@/features/auth/store/authSlice");
-        store.dispatch(logout());
+        const { logoutUser } = await import("@/features/auth/store/authSlice");
+        store.dispatch(logoutUser());
         return Promise.reject(normalizeError(error));
       }
 
@@ -61,8 +61,8 @@ apiClient.interceptors.response.use(
         processQueue(refreshError);
         removeRefreshToken();
         const { store } = await import("@/shared/store");
-        const { logout } = await import("@/features/auth/store/authSlice");
-        store.dispatch(logout());
+        const { logoutUser } = await import("@/features/auth/store/authSlice");
+        store.dispatch(logoutUser());
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

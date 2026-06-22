@@ -212,6 +212,24 @@ export class AuthController {
     }
   };
 
+  public logoutUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      res.clearCookie("access_token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      });
+
+      res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public changePassword = async (
     req: Request,
     res: Response,

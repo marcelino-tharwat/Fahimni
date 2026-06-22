@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Menu, Bell, ChevronDown, Globe, Settings, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { logout } from '@/features/auth/store/authSlice';
+import { logoutUser } from '@/features/auth/store/authSlice';
 import type { UserRole } from '@/shared/types/user';
 import { toggleSidebar } from '@/shared/store/slices/uiSlice';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
@@ -184,7 +184,7 @@ export function Topbar({ showMenu = true }: TopbarProps) {
                   role="menuitem"
                   onClick={() => {
                     setMenuOpen(false);
-                    dispatch(logout());
+                    dispatch(logoutUser());
                   }}
                   className="flex w-full items-center gap-3 px-4 py-2 font-cairo text-sm text-danger-500 transition-colors hover:bg-gray-50"
                 >

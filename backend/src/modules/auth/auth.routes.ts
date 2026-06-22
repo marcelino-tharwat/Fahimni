@@ -28,4 +28,7 @@ router.get('/me', authenticateMiddleware, controller.getMe);
 // PATCH /api/v1/auth/change-password (authenticated)
 router.patch('/change-password', authenticateMiddleware, controller.changePassword);
 
+// POST /api/v1/auth/logout
+router.post('/logout', controller.logoutUser);
+
 export default router;

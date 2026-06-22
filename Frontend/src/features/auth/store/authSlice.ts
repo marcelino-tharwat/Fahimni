@@ -5,6 +5,7 @@ import {
   type PayloadAction,
 } from '@reduxjs/toolkit';
 import { apiClient, type ApiError } from '@/shared/lib/api/client';
+import { authApi } from '@/features/auth/api/auth';
 import {
   saveUser,
   getUser,
@@ -25,14 +26,7 @@ export type { User, UserRole } from '@/shared/types/user';
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  isInitialized: boolean;
-  status:
-    | 'idle'
-    | 'loading'
-    | 'succeeded'
-    | 'failed'
-    | 'initializing'
-    | 'ready';
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
@@ -95,12 +89,15 @@ export const validateAuth = createAsyncThunk<
 });
 
 export const initAuth = createAsyncThunk<
-  { user: User } | null,
+  { user: User },
   void,
   { rejectValue: string }
->('auth/init', async () => {
-  const user = getUser<User>();
-  if (!user) return null;
+>('auth/initAuth', async (_, { rejectWithValue }) => {
+  const storedUser = getUser<User>();
+
+  if (!storedUser) {
+    return rejectWithValue('No stored user');
+  }
 
   try {
     const { data } = await apiClient.get<{
@@ -109,7 +106,9 @@ export const initAuth = createAsyncThunk<
     }>('/v1/auth/me');
     return { user: data.data.user };
   } catch {
-    return null;
+    clearUser();
+    removeRefreshToken();
+    return rejectWithValue('Session invalid');
   }
 });
 
@@ -132,6 +131,20 @@ export const register = createAsyncThunk<
   }
 });
 
+export const logoutUser = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: string }
+>("auth/logout", async (_, { dispatch }) => {
+  try {
+    await authApi.logout();
+  } catch {
+    // Even if the server call fails, clear local state
+  } finally {
+    dispatch(logout());
+  }
+});
+
 /* ------------------------------------------------------------------ */
 /*  Slice                                                               */
 /* ------------------------------------------------------------------ */
@@ -139,7 +152,6 @@ export const register = createAsyncThunk<
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
-  isInitialized: false,
   status: 'idle',
   error: null,
 };
@@ -164,9 +176,6 @@ const authSlice = createSlice({
       state.error = null;
       clearUser();
       removeRefreshToken();
-    },
-    initialized(state) {
-      state.isInitialized = true;
     },
     clearError(state) {
       state.error = null;
@@ -196,33 +205,31 @@ const authSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(validateAuth.fulfilled, (state, action) => {
-        state.isInitialized = true;
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.status = 'succeeded';
       })
       .addCase(validateAuth.rejected, (state) => {
-        state.isInitialized = true;
         state.user = null;
         state.isAuthenticated = false;
-        state.status = 'idle';
+        state.status = 'failed';
       });
 
     // ---- initAuth ----
     builder
       .addCase(initAuth.pending, (state) => {
-        state.status = 'initializing';
+        state.status = 'loading';
         state.error = null;
       })
       .addCase(initAuth.fulfilled, (state, action) => {
-        state.status = 'ready';
-        if (action.payload) {
-          state.user = action.payload.user;
-          state.isAuthenticated = true;
-        }
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.status = 'succeeded';
       })
       .addCase(initAuth.rejected, (state) => {
-        state.status = 'ready';
+        state.user = null;
+        state.isAuthenticated = false;
+        state.status = 'failed';
       });
 
     // ---- register ----
@@ -244,6 +251,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout, clearError, initialized } =
+export const { setCredentials, logout, clearError } =
   authSlice.actions;
 export default authSlice.reducer;
