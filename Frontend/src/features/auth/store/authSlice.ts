@@ -6,15 +6,9 @@ import {
 } from '@reduxjs/toolkit';
 import { apiClient, type ApiError } from '@/shared/lib/api/client';
 import {
-  getToken,
-  saveToken,
-  removeToken,
   saveUser,
   getUser,
-  removeUser,
-  saveSessionToken,
-  saveSessionUser,
-  clearSessionAuth,
+  clearUser,
   saveRefreshToken,
   removeRefreshToken,
 } from '@/features/auth/lib/token';
@@ -30,7 +24,6 @@ export type { User, UserRole } from '@/shared/types/user';
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   isInitialized: boolean;
   status:
@@ -66,25 +59,18 @@ export const dashboardPathByRole: Record<UserRole, string> = {
 /* ------------------------------------------------------------------ */
 
 export const login = createAsyncThunk<
-  { user: User; token: string },
+  { user: User },
   { email: string; password: string; remember?: boolean },
   { rejectValue: string }
 >('auth/login', async (credentials, { rejectWithValue }) => {
   try {
     const { data } = await apiClient.post<{
       message: string;
-      data: { user: User; accessToken: string; refreshToken: string };
+      data: { user: User; refreshToken: string };
     }>('/v1/auth/login', credentials);
-    const remember = credentials.remember ?? true;
-    if (remember) {
-      saveToken(data.data.accessToken);
-      saveUser(data.data.user);
-      saveRefreshToken(data.data.refreshToken);
-    } else {
-      saveSessionToken(data.data.accessToken);
-      saveSessionUser(data.data.user);
-    }
-    return { user: data.data.user, token: data.data.accessToken };
+    saveUser(data.data.user);
+    saveRefreshToken(data.data.refreshToken);
+    return { user: data.data.user };
   } catch (err) {
     const apiErr = err as ApiError;
     return rejectWithValue(apiErr.message ?? 'حصل خطأ أثناء تسجيل الدخول.');
@@ -96,10 +82,6 @@ export const validateAuth = createAsyncThunk<
   void,
   { rejectValue: string }
 >('auth/validateAuth', async (_, { rejectWithValue }) => {
-  const token = getToken();
-  if (!token) {
-    return rejectWithValue('No token found');
-  }
   try {
     const { data } = await apiClient.get<{
       message: string;
@@ -113,52 +95,37 @@ export const validateAuth = createAsyncThunk<
 });
 
 export const initAuth = createAsyncThunk<
-  { token: string; user: User } | null,
+  { user: User } | null,
   void,
   { rejectValue: string }
->('auth/init', async (_, { dispatch }) => {
-  const token = getToken();
+>('auth/init', async () => {
   const user = getUser<User>();
-
-  if (!token || !user) return null;
-
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const isExpired = payload.exp * 1000 < Date.now();
-    if (isExpired) {
-      dispatch(logout());
-      return null;
-    }
-  } catch {
-    dispatch(logout());
-    return null;
-  }
+  if (!user) return null;
 
   try {
     const { data } = await apiClient.get<{
       message: string;
       data: { user: User };
     }>('/v1/auth/me');
-    return { token, user: data.data.user };
+    return { user: data.data.user };
   } catch {
-    dispatch(logout());
     return null;
   }
 });
 
 export const register = createAsyncThunk<
-  { user: User; token: string },
+  { user: User },
   { fullName: string; email: string; mobile: string; password: string },
   { rejectValue: string }
 >('auth/register', async (payload, { rejectWithValue }) => {
   try {
     const { data } = await apiClient.post<{
       message: string;
-      data: { user: User; accessToken: string };
+      data: { user: User; refreshToken: string };
     }>('/v1/auth/register', payload);
-    saveToken(data.data.accessToken);
     saveUser(data.data.user);
-    return { user: data.data.user, token: data.data.accessToken };
+    saveRefreshToken(data.data.refreshToken);
+    return { user: data.data.user };
   } catch (err) {
     const apiErr = err as ApiError;
     return rejectWithValue(apiErr.message ?? 'حصل خطأ أثناء إنشاء الحساب.');
@@ -171,7 +138,6 @@ export const register = createAsyncThunk<
 
 const initialState: AuthState = {
   user: null,
-  token: null,
   isAuthenticated: false,
   isInitialized: false,
   status: 'idle',
@@ -184,23 +150,19 @@ const authSlice = createSlice({
   reducers: {
     setCredentials(
       state,
-      action: PayloadAction<{ user: User; token: string; remember?: boolean }>,
+      action: PayloadAction<{ user: User }>,
     ) {
       state.user = action.payload.user;
-      state.token = action.payload.token;
       state.isAuthenticated = true;
       state.status = 'succeeded';
       state.error = null;
     },
     logout(state) {
       state.user = null;
-      state.token = null;
       state.isAuthenticated = false;
       state.status = 'idle';
       state.error = null;
-      removeToken();
-      removeUser();
-      clearSessionAuth();
+      clearUser();
       removeRefreshToken();
     },
     initialized(state) {
@@ -220,7 +182,6 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload.user;
-        state.token = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
       })
@@ -243,11 +204,8 @@ const authSlice = createSlice({
       .addCase(validateAuth.rejected, (state) => {
         state.isInitialized = true;
         state.user = null;
-        state.token = null;
         state.isAuthenticated = false;
         state.status = 'idle';
-        removeToken();
-        removeUser();
       });
 
     // ---- initAuth ----
@@ -260,7 +218,6 @@ const authSlice = createSlice({
         state.status = 'ready';
         if (action.payload) {
           state.user = action.payload.user;
-          state.token = action.payload.token;
           state.isAuthenticated = true;
         }
       })
@@ -277,7 +234,6 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload.user;
-        state.token = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
       })

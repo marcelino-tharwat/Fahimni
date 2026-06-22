@@ -126,8 +126,17 @@ export class AuthService {
       user.role,
     );
 
+    // Generate and store refresh token
+    const refreshToken = this.tokenService.generateRefreshToken(user.id);
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    await prisma.refreshToken.create({
+      data: { token: refreshToken, userId: user.id, expiresAt },
+    });
+
     // Return user WITHOUT password + accessToken
-    return { user, accessToken };
+    return { user, accessToken, refreshToken };
   }
 
   public async forgotPassword(input: ForgotPasswordInput) {
@@ -275,7 +284,7 @@ export class AuthService {
     return { message: "Password reset successful" };
   }
 
-  public async refreshTokens(incomingRefreshToken: string) {
+  public async refreshAccessToken(incomingRefreshToken: string) {
     const stored = await prisma.refreshToken.findUnique({
       where: { token: incomingRefreshToken },
       include: { user: true },
@@ -299,7 +308,9 @@ export class AuthService {
       data: { token: newRefreshToken, userId: stored.user.id, expiresAt },
     });
 
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+    const { password: _, ...safeUser } = stored.user;
+
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken, user: safeUser };
   }
 
   public async getMe(userId: string) {

@@ -1,29 +1,22 @@
 // src/lib/api/client.ts
 import axios, { type AxiosError } from "axios";
-import { getToken, getSessionToken, getRefreshToken, saveToken, saveRefreshToken, removeToken } from "@/features/auth/lib/token";
+import { getRefreshToken, saveRefreshToken, removeRefreshToken } from "@/features/auth/lib/token";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000/api";
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
-});
-
-apiClient.interceptors.request.use((config) => {
-  const token = getToken() ?? getSessionToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  const tenantId = localStorage.getItem("tenant-id");
-  if (tenantId) config.headers["X-Tenant-ID"] = tenantId;
-  return config;
 });
 
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (value: unknown) => void; reject: (reason?: unknown) => void }> = [];
 
-const processQueue = (error: unknown, token: string | null = null) => {
+const processQueue = (error: unknown) => {
   failedQueue.forEach(({ resolve, reject }) => {
     if (error) reject(error);
-    else resolve(token);
+    else resolve(undefined);
   });
   failedQueue = [];
 };
@@ -41,8 +34,7 @@ apiClient.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then((token) => {
-          originalRequest.headers["Authorization"] = `Bearer ${token}`;
+        }).then(() => {
           return apiClient(originalRequest);
         });
       }
@@ -61,19 +53,13 @@ apiClient.interceptors.response.use(
 
       try {
         const { data } = await apiClient.post("/v1/auth/refresh", { refreshToken });
-        const newAccessToken = data.accessToken;
-        const newRefreshToken = data.refreshToken;
+        saveRefreshToken(data.data.refreshToken);
 
-        saveToken(newAccessToken);
-        saveRefreshToken(newRefreshToken);
-
-        apiClient.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-
-        processQueue(null, newAccessToken);
+        processQueue(null);
         return apiClient(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
+        processQueue(refreshError);
+        removeRefreshToken();
         const { store } = await import("@/shared/store");
         const { logout } = await import("@/features/auth/store/authSlice");
         store.dispatch(logout());

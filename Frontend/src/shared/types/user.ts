@@ -26,6 +26,6 @@ export interface RegisterPayload {
 
 export interface AuthResponse {
   user: User;
-  accessToken: string;
   refreshToken?: string;
+  // accessToken removed — delivered via httpOnly cookie
 }
