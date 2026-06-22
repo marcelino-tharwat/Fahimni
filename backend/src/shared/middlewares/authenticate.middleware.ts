@@ -14,8 +14,8 @@ export const authenticateMiddleware = asyncHandler(
       req.headers.authorization.startsWith("Bearer")
     ) {
       token = req.headers.authorization.split(" ")[1];
-    } else if (req.cookies?.jwt) {
-      token = req.cookies.jwt;
+    } else if (req.cookies?.access_token) {
+      token = req.cookies.access_token;
     }
 
     if (!token) {
@@ -27,7 +27,19 @@ export const authenticateMiddleware = asyncHandler(
       );
     }
 
-    const decoded = jwt.verify(token, env.JWT_SECRET) as jwt.JwtPayload;
+    let decoded: jwt.JwtPayload;
+    try {
+      decoded = jwt.verify(token, env.JWT_SECRET) as jwt.JwtPayload;
+    } catch (error) {
+      const err = error as Error;
+      if (err.name === "TokenExpiredError") {
+        return next(new AppError("Token expired", 401));
+      }
+      if (err.name === "JsonWebTokenError") {
+        return next(new AppError("Invalid token", 401));
+      }
+      throw error;
+    }
 
     const userId = decoded.sub ?? decoded.userId;
 

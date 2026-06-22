@@ -10,7 +10,9 @@ const envSchema = z.object({
     .default("development"),
   DATABASE_URL: z.string().min(1),
   JWT_SECRET: z.string().min(64, "JWT_SECRET must be at least 64 characters"),
-  JWT_REFRESH_SECRET: z.string().min(64, "JWT_REFRESH_SECRET must be at least 64 characters"),
+  JWT_REFRESH_SECRET: z
+    .string()
+    .min(64, "JWT_REFRESH_SECRET must be at least 64 characters"),
   JWT_EXPIRES_IN: z.string().default("15m"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
   ADMIN_EMAIL: z.string().email().default("admin@example.com"),
@@ -20,6 +22,7 @@ const envSchema = z.object({
     .string()
     .regex(/^01[0-9]{9}$/)
     .default("01000000000"),
+  CLIENT_URL: z.string().url().default("http://localhost:5173"),
   CLOUDINARY_CLOUD_NAME: z.string().min(1),
   CLOUDINARY_API_KEY: z.string().min(1),
   CLOUDINARY_API_SECRET: z.string().min(1),
