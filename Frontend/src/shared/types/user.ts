@@ -1,6 +1,9 @@
 // src/types/user.ts
-export type UserRole = "student" | "teacher" | "support_agent" | "super_admin";
-export type ServerRole = "STUDENT" | "OPERATION" | "ADMIN";
+// Single source of truth for roles — matches the backend payload exactly.
+// "OPERATION" is the teacher role on the data layer; the UI displays it as
+// "Teacher"/"مُعلم" via i18n (see `roles.*` in common.json). Never add "TEACHER"
+// here — the backend does not send it.
+export type UserRole = "ADMIN" | "OPERATION" | "STUDENT";
 export type UserStatus = "ACTIVE" | "INACTIVE" | "BANNED";
 
 export interface User {
@@ -11,6 +14,7 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface RegisterPayload {

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Menu, Bell, ChevronDown, Globe, Settings, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { logout, type Role } from '@/features/auth/store/authSlice';
+import { logout } from '@/features/auth/store/authSlice';
+import type { UserRole } from '@/shared/types/user';
 import { toggleSidebar } from '@/shared/store/slices/uiSlice';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { useTeacherProfile } from '@/features/teacher/hooks/useTeacherProfile';
@@ -13,18 +14,10 @@ interface TopbarProps {
   showMenu?: boolean;
 }
 
-/** Settings route per role. Roles without a settings route omit the dropdown item. */
-const settingsPathByRole: Partial<Record<Role, string>> = {
-  TEACHER: '/teacher/settings',
-};
-
-/** Display-only role mapping → i18n key under `roles.*`. The backend stores
- *  operations staff as "OPERATION", but the UI presents them as a teacher. */
-const roleI18nKeyByRole: Record<Role, string> = {
-  STUDENT: 'student',
-  TEACHER: 'teacher',
-  ADMIN: 'admin',
-  OPERATION: 'teacher',
+/** Settings route per role. Roles without a settings route omit the dropdown item.
+ *  "OPERATION" is the teacher role on the backend; the UI calls it a teacher. */
+const settingsPathByRole: Partial<Record<UserRole, string>> = {
+  OPERATION: '/teacher/settings',
 };
 
 /** Route → i18n key for the current-page title. Matched exactly, then by prefix
@@ -57,7 +50,7 @@ export function Topbar({ showMenu = true }: TopbarProps) {
   // Teacher profile photo is the same React Query cache the Settings page writes
   // to, so uploading a new photo there updates this avatar immediately. Gated by
   // role — the /teachers/profile endpoint is teacher-only.
-  const { data: teacherProfile } = useTeacherProfile({ enabled: user?.role === 'TEACHER' });
+  const { data: teacherProfile } = useTeacherProfile({ enabled: user?.role === 'OPERATION' });
   const avatarUrl = teacherProfile?.photoUrl ?? undefined;
 
   const titleKey =
@@ -148,7 +141,7 @@ export function Topbar({ showMenu = true }: TopbarProps) {
               <span className="hidden flex-col text-start leading-tight sm:flex">
                 <span className="font-cairo text-sm font-medium text-navy-900">{user.fullName}</span>
                 <span className="font-cairo text-xs text-gray-500">
-                  {t(`roles.${roleI18nKeyByRole[user.role]}`)}
+                  {t(`roles.${user.role}`)}
                 </span>
               </span>
               <ChevronDown size={16} className="text-gray-500" />

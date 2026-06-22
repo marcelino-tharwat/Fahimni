@@ -15,9 +15,9 @@
     "tenants": "الأكاديميات"
   },
   "roles": {
-    "student": "طالب",
-    "admin": "مدير",
-    "teacher": "مدرس"
+    "ADMIN": "مسؤول",
+    "OPERATION": "مُعلم",
+    "STUDENT": "طالب"
   },
   "actions": {
     "save": "حفظ",

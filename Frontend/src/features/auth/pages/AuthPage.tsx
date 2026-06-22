@@ -23,10 +23,20 @@ type TFn = (key: string) => string;
 
 /* ------------------------------ schemas ------------------------------ */
 
+// كلمة المرور: نفس قواعد الـ backend (auth.validation.ts) — ٨ أحرف + تعقيد
+const makePasswordSchema = (t: TFn) =>
+  z
+    .string()
+    .min(8, t("auth:errPasswordMin"))
+    .regex(/[A-Z]/, t("auth:errPasswordUppercase"))
+    .regex(/[a-z]/, t("auth:errPasswordLowercase"))
+    .regex(/[0-9]/, t("auth:errPasswordNumber"))
+    .regex(/[^A-Za-z0-9]/, t("auth:errPasswordSpecial"));
+
 const makeLoginSchema = (t: TFn) =>
   z.object({
     email: z.string().min(1, t("auth:errEmailRequired")).email(t("auth:errEmailInvalid")),
-    password: z.string().min(1, t("auth:errPasswordRequired")),
+    password: z.string().min(8, t("auth:errPasswordMin")),
     remember: z.boolean().optional(),
   });
 
@@ -34,10 +44,14 @@ const makeLoginSchema = (t: TFn) =>
 // (role=STUDENT و status=ACTIVE بيحطّهم الـ backend افتراضيًا)
 const makeRegisterSchema = (t: TFn) =>
   z.object({
-    fullName: z.string().min(3, t("auth:errNameMin")),
+    fullName: z
+      .string()
+      .trim()
+      .min(2, t("auth:errNameMin"))
+      .max(100, t("auth:errNameMax")),
     email: z.string().min(1, t("auth:errEmailRequired")).email(t("auth:errEmailInvalid")),
-    mobile: z.string().regex(/^01[0125][0-9]{8}$/, t("auth:errMobileInvalid")),
-    password: z.string().min(8, t("auth:errPasswordMin")),
+    mobile: z.string().trim().regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, t("auth:errMobileInvalid")),
+    password: makePasswordSchema(t),
   });
 
 type LoginValues = { email: string; password: string; remember?: boolean };

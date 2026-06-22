@@ -6,24 +6,16 @@ import {
 } from "@reduxjs/toolkit";
 import { apiClient, type ApiError } from "@/shared/lib/api/client";
 import { getToken, saveToken, removeToken, saveUser, getUser, removeUser, saveSessionToken, saveSessionUser, clearSessionAuth, saveRefreshToken, removeRefreshToken } from "@/features/auth/lib/token";
+import { getToken, saveToken, removeToken, saveUser, getUser, removeUser } from "@/features/auth/lib/token";
+import type { User, UserRole } from "@/shared/types/user";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
 /* ------------------------------------------------------------------ */
 
-export type Role = "STUDENT" | "TEACHER" | "ADMIN" | "OPERATION";
-export type Status = "ACTIVE" | "INACTIVE";
-
-export interface User {
-  id: string;
-  fullName: string;
-  email: string;
-  mobile: string;
-  role: Role;
-  status: Status;
-  createdAt: string;
-  updatedAt: string;
-}
+// Re-exported so existing consumers can keep importing from the slice, but the
+// definitions live only in `@/shared/types/user` (the single source of truth).
+export type { User, UserRole } from "@/shared/types/user";
 
 interface AuthState {
   user: User | null;
@@ -38,17 +30,18 @@ interface AuthState {
 /*  Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
-export const normalizeRole = (role: string): Role => {
-  const r = role.toUpperCase() as Role;
-  if (["STUDENT", "TEACHER", "ADMIN", "OPERATION"].includes(r)) return r;
+export const normalizeRole = (role: string): UserRole => {
+  const r = role.toUpperCase();
+  // Legacy/display alias — map any stray "TEACHER" back to the backend role.
+  if (r === "TEACHER") return "OPERATION";
+  if (r === "STUDENT" || r === "OPERATION" || r === "ADMIN") return r;
   return "STUDENT";
 };
 
-export const dashboardPathByRole: Record<Role, string> = {
+export const dashboardPathByRole: Record<UserRole, string> = {
   STUDENT: "/student/dashboard",
-  TEACHER: "/teacher/dashboard",
-  ADMIN: "/admin/dashboard",
   OPERATION: "/teacher/dashboard",
+  ADMIN: "/admin/dashboard",
 };
 
 /* ------------------------------------------------------------------ */
