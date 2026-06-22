@@ -53,6 +53,14 @@ export function ResetPasswordPage() {
     };
   }, [step]);
 
+  // Stop the resend countdown and reset it to its initial value. Used when
+  // leaving the OTP step so a stale timer doesn't carry into a new attempt.
+  const clearCooldown = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    setResendCooldown(0);
+  };
+
   const startCooldown = () => {
     setResendCooldown(RESEND_COOLDOWN);
     if (timerRef.current) clearInterval(timerRef.current);
@@ -74,6 +82,10 @@ export function ResetPasswordPage() {
     try {
       await authApi.sendOtp(emailValue);
       setEmail(emailValue);
+      // Safety net: enter the OTP step with a clean code/error, even if a
+      // previous attempt left stale values behind.
+      setOtp("");
+      setOtpError(null);
       setStep(2);
       startCooldown();
     } catch (e) {
@@ -142,8 +154,16 @@ export function ResetPasswordPage() {
   };
 
   const goBack = () => {
-    if (step === 2) setStep(1);
-    else if (step === 3) setStep(2);
+    if (step === 2) {
+      // Discard the current OTP attempt so changing the email and resubmitting
+      // doesn't return to step 2 with a stale code, error, or running cooldown.
+      setOtp("");
+      setOtpError(null);
+      clearCooldown();
+      setStep(1);
+    } else if (step === 3) {
+      setStep(2);
+    }
   };
 
   const steps = [

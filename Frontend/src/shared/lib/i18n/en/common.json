@@ -16,10 +16,9 @@
     "tenants": "Academies"
   },
   "roles": {
-    "teacher": "Teacher",
-    "student": "Student",
-    "admin": "Admin",
-    "operation": "Support"
+    "ADMIN": "Admin",
+    "OPERATION": "Teacher",
+    "STUDENT": "Student"
   },
   "actions": {
     "save": "Save",
