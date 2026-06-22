@@ -12,6 +12,7 @@ import type {
   ResetPasswordInput,
   ChangePasswordInput,
 } from "./auth.validation.js";
+import { AppError } from "../../shared/utils/AppError.js";
 import type { ApiError } from "../../shared/types/common.types.js";
 
 export class AuthService {
@@ -44,11 +45,15 @@ export class AuthService {
       throw error;
     }
 
+    await prisma.refreshToken.deleteMany({ where: { userId: user.id } });
+
     const accessToken = this.tokenService.generateAccessToken(user.id);
     const refreshToken = this.tokenService.generateRefreshToken(user.id);
 
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
     await prisma.refreshToken.create({
-      data: { token: refreshToken, userId: user.id },
+      data: { token: refreshToken, userId: user.id, expiresAt },
     });
 
     const { password: _, ...safeUser } = user;
@@ -268,6 +273,33 @@ export class AuthService {
     ]);
 
     return { message: "Password reset successful" };
+  }
+
+  public async refreshTokens(incomingRefreshToken: string) {
+    const stored = await prisma.refreshToken.findUnique({
+      where: { token: incomingRefreshToken },
+      include: { user: true },
+    });
+
+    if (!stored) throw new AppError("Invalid refresh token", 401);
+
+    if (stored.expiresAt < new Date()) {
+      await prisma.refreshToken.delete({ where: { id: stored.id } });
+      throw new AppError("Refresh token expired", 401);
+    }
+
+    await prisma.refreshToken.delete({ where: { id: stored.id } });
+
+    const newAccessToken = this.tokenService.generateAccessToken(stored.user.id);
+    const newRefreshToken = this.tokenService.generateRefreshToken(stored.user.id);
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    await prisma.refreshToken.create({
+      data: { token: newRefreshToken, userId: stored.user.id, expiresAt },
+    });
+
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
   }
 
   public async getMe(userId: string) {

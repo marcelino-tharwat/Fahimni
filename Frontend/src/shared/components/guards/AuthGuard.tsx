@@ -1,20 +1,16 @@
-import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
-import { validateAuth } from '@/features/auth/store/authSlice';
+import { useAppSelector } from '@/shared/store/hooks';
+import { Spinner } from '@/shared/components/ui';
 
 export function AuthGuard() {
-  const dispatch = useAppDispatch();
-  const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, status } = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (!isInitialized) {
-      dispatch(validateAuth());
-    }
-  }, [dispatch, isInitialized]);
-
-  if (!isInitialized) {
-    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  if (status === 'idle' || status === 'initializing') {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

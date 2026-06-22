@@ -166,6 +166,24 @@ export class AuthController {
     }
   };
 
+  public refresh = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        res.status(400).json({ success: false, message: "Refresh token required" });
+        return;
+      }
+      const tokens = await authService.refreshTokens(refreshToken);
+      res.status(200).json({ status: "success", ...tokens });
+    } catch (err) {
+      next(err);
+    }
+  };
+
   public changePassword = async (
     req: Request,
     res: Response,

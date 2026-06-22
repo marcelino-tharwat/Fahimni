@@ -19,6 +19,7 @@ import { Card, Button, Input, Badge, Avatar, EmptyState, Skeleton } from '@/shar
 import { useAppSelector, useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import { setStudentProfile } from '@/features/student/store/studentSlice';
+import { logout } from '@/features/auth/store/authSlice';
 import { formatDate } from '@/shared/lib/utils/formatDate';
 import {
   useStudentProfile,
@@ -399,6 +400,7 @@ function SecurityCard() {
       <button
         type="button"
         className="mt-3 flex w-full items-center gap-3 rounded-button bg-surface p-4 shadow-sm transition-colors hover:bg-red-50"
+        onClick={() => dispatch(logout())}
       >
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-danger/10">
           <LogOut size={16} className="text-danger" />

@@ -5,7 +5,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { apiClient, type ApiError } from "@/shared/lib/api/client";
-import { getToken, saveToken, removeToken, saveUser, getUser, removeUser } from "@/features/auth/lib/token";
+import { getToken, saveToken, removeToken, saveUser, getUser, removeUser, saveSessionToken, saveSessionUser, clearSessionAuth, saveRefreshToken, removeRefreshToken } from "@/features/auth/lib/token";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -30,7 +30,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isInitialized: boolean;
-  status: "idle" | "loading" | "succeeded" | "failed";
+  status: "idle" | "loading" | "succeeded" | "failed" | "initializing" | "ready";
   error: string | null;
 }
 
@@ -63,11 +63,17 @@ export const login = createAsyncThunk<
   try {
     const { data } = await apiClient.post<{
       message: string;
-      data: { user: User; accessToken: string };
+      data: { user: User; accessToken: string; refreshToken: string };
     }>("/v1/auth/login", credentials);
     const remember = credentials.remember ?? true;
-    saveToken(data.data.accessToken, remember);
-    saveUser(data.data.user, remember);
+    if (remember) {
+      saveToken(data.data.accessToken);
+      saveUser(data.data.user);
+      saveRefreshToken(data.data.refreshToken);
+    } else {
+      saveSessionToken(data.data.accessToken);
+      saveSessionUser(data.data.user);
+    }
     return { user: data.data.user, token: data.data.accessToken };
   } catch (err) {
     const apiErr = err as ApiError;
@@ -96,6 +102,40 @@ export const validateAuth = createAsyncThunk<
   }
 });
 
+export const initAuth = createAsyncThunk<
+  { token: string; user: User } | null,
+  void,
+  { rejectValue: string }
+>("auth/init", async (_, { dispatch }) => {
+  const token = getToken();
+  const user = getUser<User>();
+
+  if (!token || !user) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const isExpired = payload.exp * 1000 < Date.now();
+    if (isExpired) {
+      dispatch(logout());
+      return null;
+    }
+  } catch {
+    dispatch(logout());
+    return null;
+  }
+
+  try {
+    const { data } = await apiClient.get<{
+      message: string;
+      data: { user: User };
+    }>("/v1/auth/me");
+    return { token, user: data.data.user };
+  } catch {
+    dispatch(logout());
+    return null;
+  }
+});
+
 export const register = createAsyncThunk<
   { user: User; token: string },
   { fullName: string; email: string; mobile: string; password: string },
@@ -119,15 +159,12 @@ export const register = createAsyncThunk<
 /*  Slice                                                               */
 /* ------------------------------------------------------------------ */
 
-const storedUser = getUser<User>();
-const storedToken = getToken();
-
 const initialState: AuthState = {
-  user: storedUser,
-  token: storedToken,
-  isAuthenticated: !!storedToken && !!storedUser,
-  isInitialized: !storedToken,
-  status: storedToken ? "succeeded" : "idle",
+  user: null,
+  token: null,
+  isAuthenticated: false,
+  isInitialized: false,
+  status: "idle",
   error: null,
 };
 
@@ -144,8 +181,6 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.status = "succeeded";
       state.error = null;
-      saveToken(action.payload.token, action.payload.remember);
-      saveUser(action.payload.user, action.payload.remember);
     },
     logout(state) {
       state.user = null;
@@ -155,6 +190,8 @@ const authSlice = createSlice({
       state.error = null;
       removeToken();
       removeUser();
+      clearSessionAuth();
+      removeRefreshToken();
     },
     initialized(state) {
       state.isInitialized = true;
@@ -201,6 +238,24 @@ const authSlice = createSlice({
         state.status = "idle";
         removeToken();
         removeUser();
+      });
+
+    // ---- initAuth ----
+    builder
+      .addCase(initAuth.pending, (state) => {
+        state.status = "initializing";
+        state.error = null;
+      })
+      .addCase(initAuth.fulfilled, (state, action) => {
+        state.status = "ready";
+        if (action.payload) {
+          state.user = action.payload.user;
+          state.token = action.payload.token;
+          state.isAuthenticated = true;
+        }
+      })
+      .addCase(initAuth.rejected, (state) => {
+        state.status = "ready";
       });
 
     // ---- register ----

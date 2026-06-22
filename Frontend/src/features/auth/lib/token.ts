@@ -1,5 +1,21 @@
+import type { User } from "@/features/auth/store/authSlice";
+
 const TOKEN_KEY = "auth_token";
 const USER_KEY = "auth_user";
+
+// In-memory session-only storage (cleared on tab close)
+let sessionToken: string | null = null;
+let sessionUser: User | null = null;
+
+export const saveSessionToken = (token: string) => { sessionToken = token; };
+export const saveSessionUser = (user: User) => { sessionUser = user; };
+export const getSessionToken = () => sessionToken;
+export const getSessionUser = () => sessionUser;
+export const clearSessionAuth = () => { sessionToken = null; sessionUser = null; };
+
+export const saveRefreshToken = (token: string) => guard(() => localStorage.setItem("refreshToken", token));
+export const getRefreshToken = () => guard(() => localStorage.getItem("refreshToken"));
+export const removeRefreshToken = () => guard(() => localStorage.removeItem("refreshToken"));
 
 const guard = <T>(fn: () => T): T | null => {
   try { return fn(); } catch { return null; }
