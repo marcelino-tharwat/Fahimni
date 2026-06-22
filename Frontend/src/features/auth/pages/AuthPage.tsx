@@ -248,7 +248,7 @@ function LoginForm() {
   });
 
   const onSubmit = (v: LoginValues) => {
-    dispatch(loginThunk({ email: v.email, password: v.password }))
+    dispatch(loginThunk({ email: v.email, password: v.password, remember: v.remember }))
       .unwrap()
       .then((data) => navigate(dashboardPathByRole[normalizeRole(data.user.role)]))
       .catch(() => {}); // الخطأ متخزّن في الـ slice وبيتعرض تحت
