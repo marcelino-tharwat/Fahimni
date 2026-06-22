@@ -1,6 +1,6 @@
 // src/lib/api/endpoints/auth.ts
 import { apiClient } from "@/shared/lib/api/client";
-import type { AuthResponse, RegisterPayload } from "@/shared/types/user";
+import type { AuthResponse, RegisterPayload, User } from "@/shared/types/user";
 
 export const authApi = {
   login(email: string, password: string): Promise<AuthResponse> {
@@ -31,5 +31,15 @@ export const authApi = {
     return apiClient
       .post<{ message: string }>("/v1/auth/reset-password", { email, otp, newPassword: password })
       .then((res) => res.data);
+  },
+
+  getMe(): Promise<{ message: string; data: { user: User } }> {
+    return apiClient
+      .get<{ message: string; data: { user: User } }>("/v1/auth/me")
+      .then((res) => res.data);
+  },
+
+  logout(): Promise<{ message: string }> {
+    return apiClient.post("/v1/auth/logout").then((res) => res.data);
   },
 };

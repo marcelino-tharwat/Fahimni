@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAppSelector } from '@/shared/store/hooks';
+import { Spinner } from '@/shared/components/ui';
 import { dashboardPathByRole } from '@/features/auth/store/authSlice';
 
 const serverRoleToRouteGroup: Record<string, string> = {
@@ -13,7 +14,15 @@ interface RoleGuardProps {
 }
 
 export function RoleGuard({ allowedRoles }: RoleGuardProps) {
-  const user = useAppSelector((state) => state.auth.user);
+  const { user, status } = useAppSelector((state) => state.auth);
+
+  if (status === 'idle' || status === 'loading') {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   if (!user) {
     return <Navigate to="/auth" replace />;

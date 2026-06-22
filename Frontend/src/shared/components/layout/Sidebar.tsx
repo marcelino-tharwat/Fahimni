@@ -2,7 +2,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { LogOut, type LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { setSidebarOpen } from '@/shared/store/slices/uiSlice';
-import { logout } from '@/features/auth/store/authSlice';
+import { logoutUser } from '@/features/auth/store/authSlice';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { useDirection } from '@/shared/hooks/useDirection';
 import { cn } from '@/shared/lib/utils/cn';
@@ -26,7 +26,7 @@ function SidebarContent({ items, onNavigate }: { items: SidebarItem[]; onNavigat
 
   const handleLogout = () => {
     onNavigate?.();
-    dispatch(logout());
+    dispatch(logoutUser());
   };
 
   return (
