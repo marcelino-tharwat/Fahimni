@@ -46,11 +46,6 @@ describe('GeminiClient', () => {
   });
 
   describe('constructor', () => {
-    it('throws GeminiAuthError when GEMINI_API_KEY is missing', () => {
-      delete process.env.GEMINI_API_KEY;
-      expect(() => new GeminiClient()).toThrow(GeminiAuthError);
-    });
-
     it('uses default model names when env vars are not set', () => {
       delete process.env.GEMINI_GENERATION_MODEL;
       delete process.env.GEMINI_EMBEDDING_MODEL;

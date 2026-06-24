@@ -180,12 +180,12 @@ exports.Prisma.LessonScalarFieldEnum = {
   durationMinutes: 'durationMinutes',
   youtubeUrl: 'youtubeUrl',
   sortOrder: 'sortOrder',
-  viewCount: 'viewCount',
   pdfUrls: 'pdfUrls',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  chapterId: 'chapterId',
   deletedAt: 'deletedAt',
-  chapterId: 'chapterId'
+  viewCount: 'viewCount'
 };
 
 exports.Prisma.OtpScalarFieldEnum = {
@@ -194,9 +194,9 @@ exports.Prisma.OtpScalarFieldEnum = {
   type: 'type',
   userId: 'userId',
   expiresAt: 'expiresAt',
-  verifiedAt: 'verifiedAt',
   usedAt: 'usedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  verifiedAt: 'verifiedAt'
 };
 
 exports.Prisma.EnrollmentScalarFieldEnum = {
@@ -220,11 +220,20 @@ exports.Prisma.LessonMaterialScalarFieldEnum = {
   id: 'id',
   lessonId: 'lessonId',
   filePath: 'filePath',
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt',
   displayName: 'displayName',
   fileSize: 'fileSize',
-  mimeType: 'mimeType',
+  mimeType: 'mimeType'
+};
+
+exports.Prisma.ContentChunkScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  lessonId: 'lessonId',
+  metadata: 'metadata',
   createdAt: 'createdAt',
-  deletedAt: 'deletedAt'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.AuditLogScalarFieldEnum = {
@@ -234,18 +243,49 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   resourceId: 'resourceId',
   details: 'details',
   userId: 'userId',
+  createdAt: 'createdAt',
   actorType: 'actorType',
   actorName: 'actorName',
-  scopeTeacherId: 'scopeTeacherId',
-  createdAt: 'createdAt'
+  scopeTeacherId: 'scopeTeacherId'
 };
 
 exports.Prisma.RefreshTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
   createdAt: 'createdAt',
-  expiresAt: 'expiresAt',
-  userId: 'userId'
+  userId: 'userId',
+  expiresAt: 'expiresAt'
+};
+
+exports.Prisma.QuizScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  chapterId: 'chapterId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QuestionScalarFieldEnum = {
+  id: 'id',
+  quizId: 'quizId',
+  type: 'type',
+  text: 'text',
+  options: 'options',
+  correctAnswer: 'correctAnswer',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QuizAttemptScalarFieldEnum = {
+  id: 'id',
+  quizId: 'quizId',
+  studentId: 'studentId',
+  answers: 'answers',
+  score: 'score',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -255,6 +295,10 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.NullableJsonNullValueInput = {
   DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -290,6 +334,17 @@ exports.OtpType = exports.$Enums.OtpType = {
   PASSWORD_RESET: 'PASSWORD_RESET'
 };
 
+exports.QuizStatus = exports.$Enums.QuizStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED'
+};
+
+exports.QuestionType = exports.$Enums.QuestionType = {
+  MCQ: 'MCQ',
+  TRUE_FALSE: 'TRUE_FALSE',
+  ESSAY: 'ESSAY'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   StudentProfile: 'StudentProfile',
@@ -301,8 +356,12 @@ exports.Prisma.ModelName = {
   Enrollment: 'Enrollment',
   LessonProgress: 'LessonProgress',
   LessonMaterial: 'LessonMaterial',
+  ContentChunk: 'ContentChunk',
   AuditLog: 'AuditLog',
-  RefreshToken: 'RefreshToken'
+  RefreshToken: 'RefreshToken',
+  Quiz: 'Quiz',
+  Question: 'Question',
+  QuizAttempt: 'QuizAttempt'
 };
 
 /**

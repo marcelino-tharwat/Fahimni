@@ -4,6 +4,8 @@ import { env } from "../../config/env.js";
 import { logger } from "../../config/logger.js";
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
+import { PDFParse } from "pdf-parse";
+import { aiService } from "../ai/ai.service.js";
 
 export class FilesService {
   async uploadFile(
@@ -68,6 +70,26 @@ export class FilesService {
     });
 
     console.warn("AV scan pending for:", filePath);
+
+    ;(async () => {
+      try {
+        const parser = new PDFParse({ data: new Uint8Array(file.buffer) });
+        const textResult = await parser.getText();
+        const text = textResult.text.trim();
+        if (text.length > 0) {
+          await aiService
+            .indexLesson(lessonId, text, {
+              fileName: file.originalname,
+              filePath,
+            })
+            .catch((err: unknown) =>
+              logger.warn(`[FilesService] Auto-indexing failed: ${err}`),
+            );
+        }
+      } catch (err: unknown) {
+        logger.warn(`[FilesService] PDF text extraction failed: ${err}`);
+      }
+    })();
 
     return record;
   }

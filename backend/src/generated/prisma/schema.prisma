@@ -7,18 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  ADMIN
-  STUDENT
-  OPERATION
-}
-
-enum Status {
-  ACTIVE
-  INACTIVE
-  BANNED
-}
-
 model User {
   id             String           @id @default(uuid())
   fullName       String
@@ -29,37 +17,37 @@ model User {
   status         Status           @default(ACTIVE)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  refreshTokens  RefreshToken[]
-  otps           Otp[]
-  studentProfile StudentProfile?
-  teacherProfile TeacherProfile?
-  stages         Stage[]
   auditLogs      AuditLog[]
   enrollments    Enrollment[]
   lessonProgress LessonProgress[]
+  otps           Otp[]
+  quizAttempts   QuizAttempt[]
+  refreshTokens  RefreshToken[]
+  stages         Stage[]
+  studentProfile StudentProfile?
+  teacherProfile TeacherProfile?
 }
 
 model StudentProfile {
   id        String   @id @default(uuid())
   userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("student_profiles")
 }
 
 model TeacherProfile {
-  id       String  @id @default(uuid())
-  userId   String  @unique
-  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subject  String?
-  bio      String?
-  photoUrl String?
-  logoUrl  String?
-
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  subject   String?
+  bio       String?
+  photoUrl  String?
+  logoUrl   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("teacher_profiles")
 }
@@ -70,11 +58,11 @@ model Stage {
   description String?
   sortOrder   Int
   teacherId   String
-  teacher     User      @relation(fields: [teacherId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
   chapters    Chapter[]
+  teacher     User      @relation(fields: [teacherId], references: [id])
 
   @@index([teacherId, sortOrder])
   @@map("stages")
@@ -85,14 +73,15 @@ model Chapter {
   name        String
   description String?
   sortOrder   Int
-  price       Decimal? // null = free chapter 
+  price       Decimal?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   deletedAt   DateTime?
   stageId     String
   stage       Stage        @relation(fields: [stageId], references: [id])
-  lessons     Lesson[]
   enrollments Enrollment[]
+  lessons     Lesson[]
+  quizzes     Quiz[]
 
   @@index([stageId])
   @@index([stageId, sortOrder])
@@ -106,24 +95,20 @@ model Lesson {
   durationMinutes Int
   youtubeUrl      String?
   sortOrder       Int
-  viewCount       Int              @default(0)
-  pdfUrls         Json? // array of S3 object keys
+  pdfUrls         Json?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  deletedAt       DateTime?
   chapterId       String
-  chapter         Chapter          @relation(fields: [chapterId], references: [id])
-  lessonProgress  LessonProgress[]
+  deletedAt       DateTime?
+  viewCount       Int              @default(0)
   lessonMaterials LessonMaterial[]
+  lessonProgress  LessonProgress[]
+  contentChunks   ContentChunk[]
+  chapter         Chapter          @relation(fields: [chapterId], references: [id])
 
   @@index([chapterId])
   @@index([chapterId, sortOrder])
   @@map("lessons")
-}
-
-enum OtpType {
-  EMAIL_VERIFICATION
-  PASSWORD_RESET
 }
 
 model Otp {
@@ -131,11 +116,11 @@ model Otp {
   code       String
   type       OtpType
   userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt  DateTime
-  verifiedAt DateTime?
   usedAt     DateTime?
   createdAt  DateTime  @default(now())
+  verifiedAt DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("otps")
 }
@@ -143,11 +128,11 @@ model Otp {
 model Enrollment {
   id         String   @id @default(uuid())
   studentId  String
-  student    User     @relation(fields: [studentId], references: [id])
   chapterId  String
-  chapter    Chapter  @relation(fields: [chapterId], references: [id])
   enrolledAt DateTime @default(now())
   status     String   @default("ACTIVE")
+  chapter    Chapter  @relation(fields: [chapterId], references: [id])
+  student    User     @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, chapterId])
   @@map("enrollments")
@@ -156,12 +141,12 @@ model Enrollment {
 model LessonProgress {
   id        String   @id @default(uuid())
   studentId String
-  student   User     @relation(fields: [studentId], references: [id])
   lessonId  String
-  lesson    Lesson   @relation(fields: [lessonId], references: [id])
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  student   User     @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, lessonId])
   @@map("lesson_progress")
@@ -170,16 +155,30 @@ model LessonProgress {
 model LessonMaterial {
   id          String    @id @default(cuid())
   lessonId    String
-  lesson      Lesson    @relation(fields: [lessonId], references: [id])
   filePath    String
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
   displayName String
   fileSize    Int       @default(0)
   mimeType    String    @default("application/pdf")
-  createdAt   DateTime  @default(now())
-  deletedAt   DateTime?
+  lesson      Lesson    @relation(fields: [lessonId], references: [id])
 
   @@index([lessonId])
   @@map("lesson_materials")
+}
+
+model ContentChunk {
+  id        String                       @id @default(uuid())
+  content   String
+  embedding Unsupported("vector(3072)")?
+  lessonId  String
+  metadata  Json                         @default("{}")
+  createdAt DateTime                     @default(now())
+  updatedAt DateTime                     @updatedAt
+  lesson    Lesson                       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+  @@map("content_chunks")
 }
 
 model AuditLog {
@@ -188,19 +187,12 @@ model AuditLog {
   resourceType   String
   resourceId     String
   details        Json?
-  // userId is the ACTOR who performed the action (teacher or student).
   userId         String
-  user           User     @relation(fields: [userId], references: [id])
-  // actorType describes the actor independently of role enums (e.g. TEACHER, STUDENT, SYSTEM).
-  actorType      String?
-  // actorName is a denormalized display name, captured at write time so the
-  // activity feed can render student-generated events without an extra join.
-  actorName      String?
-  // scopeTeacherId is the teacher whose dashboard/activity stream should
-  // surface this event. For teacher-authored content actions it equals userId;
-  // for student-generated events (e.g. quiz completed) it is the owning teacher.
-  scopeTeacherId String?
   createdAt      DateTime @default(now())
+  actorType      String?
+  actorName      String?
+  scopeTeacherId String?
+  user           User     @relation(fields: [userId], references: [id])
 
   @@index([scopeTeacherId, createdAt])
   @@index([userId, createdAt])
@@ -212,9 +204,80 @@ model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
   createdAt DateTime @default(now())
-  expiresAt DateTime
   userId    String
+  expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
+}
+
+model Quiz {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  chapterId   String?
+  status      QuizStatus    @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  questions   Question[]
+  attempts    QuizAttempt[]
+  chapter     Chapter?      @relation(fields: [chapterId], references: [id])
+
+  @@map("quizzes")
+}
+
+model Question {
+  id            String       @id @default(uuid())
+  quizId        String
+  type          QuestionType
+  text          String
+  options       Json
+  correctAnswer String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  quiz          Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+model QuizAttempt {
+  id        String   @id @default(uuid())
+  quizId    String
+  studentId String
+  answers   Json
+  score     Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_attempts")
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+  OPERATION
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+enum QuestionType {
+  MCQ
+  TRUE_FALSE
+  ESSAY
+}
+
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum OtpType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
 }
