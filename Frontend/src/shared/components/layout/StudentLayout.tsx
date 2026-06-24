@@ -17,13 +17,15 @@ export function StudentLayout() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar items={items} />
 
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* Student mobile nav is the bottom tab bar, so no hamburger here. */}
-        <Topbar showMenu={false} />
-        <main className="flex-1 px-4 py-6 pb-24 md:pb-6">
+        <header className="shrink-0">
+          <Topbar showMenu={false} />
+        </header>
+        <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>
       </div>

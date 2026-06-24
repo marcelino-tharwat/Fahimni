@@ -20,7 +20,7 @@ router.get(
 router.get(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION", "STUDENT"),
   controller.getById,
 );
 router.post(
@@ -33,7 +33,7 @@ router.post(
 router.patch(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION", "STUDENT"),
   validateRequest(updateStudentSchema),
   controller.update,
 );

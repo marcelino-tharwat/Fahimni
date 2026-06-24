@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { setStudentProfile, setStudentLoading, setStudentSaving } from '@/features/student/store/studentSlice';
+import { setCredentials } from '@/features/auth/store/authSlice';
 import { studentProfileApi } from '@/features/student/api/profile';
 import type { UpdateStudentProfileInput, ChangePasswordInput } from '@/features/student/types/student';
 
@@ -19,7 +20,7 @@ export function useStudentProfile() {
         dispatch(setStudentProfile(profile));
         return profile;
       } catch {
-        dispatch(setStudentLoading(false));
+        dispatch(setStudentProfile(null));
         return null;
       }
     },
@@ -36,6 +37,7 @@ export function useUpdateStudentProfile() {
       studentProfileApi.updateProfile(input),
     onSuccess: (data) => {
       dispatch(setStudentProfile(data));
+      dispatch(setCredentials({ user: data.user }));
       queryClient.setQueryData(STUDENT_PROFILE_KEY, data);
     },
     onSettled: () => {
