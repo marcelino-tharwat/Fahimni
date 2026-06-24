@@ -103,6 +103,7 @@ model Lesson {
   viewCount       Int              @default(0)
   lessonMaterials LessonMaterial[]
   lessonProgress  LessonProgress[]
+  contentChunks   ContentChunk[]
   chapter         Chapter          @relation(fields: [chapterId], references: [id])
 
   @@index([chapterId])
@@ -171,6 +172,20 @@ model LessonMaterial {
 
   @@index([lessonId])
   @@map("lesson_materials")
+}
+
+model ContentChunk {
+  id        String                       @id @default(uuid())
+  content   String
+  embedding Unsupported("vector(3072)")?
+  lessonId  String
+  metadata  Json                         @default("{}")
+  createdAt DateTime                     @default(now())
+  updatedAt DateTime                     @updatedAt
+  lesson    Lesson                       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+  @@map("content_chunks")
 }
 
 model AuditLog {
