@@ -4,56 +4,342 @@ import {
   Mail,
   Phone,
   Calendar,
-  Shield,
-  Briefcase,
-  Lock,
-  LogOut,
-  Globe,
-  Bell,
-  ChevronLeft,
-  User,
+  Edit3,
   BookOpen,
-  CheckCircle,
+  Lock,
+  AlertCircle,
 } from 'lucide-react';
-import { Card, Button, Input, Badge, Avatar, EmptyState, Skeleton } from '@/shared/components/ui';
 import { useAppSelector, useAppDispatch } from '@/shared/store/hooks';
-import { addToast } from '@/shared/store/slices/toastSlice';
-import { setStudentProfile } from '@/features/student/store/studentSlice';
-import { logoutUser } from '@/features/auth/store/authSlice';
-import { formatDate } from '@/shared/lib/utils/formatDate';
 import {
   useStudentProfile,
-  useUpdateStudentProfile,
-  useChangePassword,
   useStudentEnrollments,
+  useUpdateStudentProfile,
 } from '@/features/student/hooks/useStudentProfile';
-import { createStudentProfileSchema, createChangePasswordSchema, zodToFieldErrors } from '@/features/student/validation';
-import type { ApiError } from '@/shared/lib/api/client';
-import { getApiErrorMessage } from '@/shared/lib/api/errors';
+import { Skeleton } from '@/shared/components/ui';
+import { cn } from '@/shared/lib/utils/cn';
+import { addToast } from '@/shared/store/slices/toastSlice';
 
-export function StudentProfilePage() {
-  const { t, i18n } = useTranslation('student');
-  useStudentProfile();
+// TODO: replace with real endpoint when available
+const ACADEMIC_STATS = {
+  avgScore: 78,
+  quizzesDone: 3,
+  lessonsDone: 12,
+  overallProgress: 45,
+  overallDone: 21,
+  overallTotal: 48,
+} as const;
+
+// TODO: replace with real achievements endpoint when available
+const ACHIEVEMENTS = [
+  { nameKey: 'firstLesson', emoji: '📖', color: 'bg-warning-500', locked: false },
+  { nameKey: 'tenLessons', emoji: '📚', color: 'bg-cyan-500', locked: false },
+  { nameKey: 'firstQuiz', emoji: '✍️', color: 'bg-purple-500', locked: false },
+  { nameKey: 'twentyFiveLessons', emoji: '📚', color: 'bg-gray-400', locked: true },
+  { nameKey: 'perfectScore', emoji: '🏆', color: 'bg-gray-400', locked: true },
+] as const;
+
+function CircularProgress({ percent, size = 40 }: { percent: number; size?: number }) {
+  const strokeWidth = 4;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percent / 100) * circumference;
 
   return (
-    <div className="mx-auto w-full max-w-5xl">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="flex flex-col gap-6 lg:col-span-2">
-          <PersonalInfoCard />
-          <EnrollmentHistoryCard />
-          <SecurityCard />
-          <PreferencesCard />
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      className="shrink-0"
+      style={{ direction: 'ltr' }}
+    >
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="#E5E7EB"
+        strokeWidth={strokeWidth}
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="#00C9DB"
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+      />
+      <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="fill-navy-900 text-caption font-bold"
+      >
+        {percent}%
+      </text>
+    </svg>
+  );
+}
+
+function ProgressBar({ percent }: { percent: number }) {
+  return (
+    <div
+      role="progressbar"
+      aria-valuenow={percent}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      className="h-2 w-full overflow-hidden rounded-full bg-gray-300"
+    >
+      <div
+        className="h-full rounded-full bg-cyan-500 transition-all"
+        style={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
+      />
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: 'active' | 'ended' }) {
+  const { t } = useTranslation('student');
+  return status === 'active' ? (
+    <span className="rounded-badge bg-success-50 px-3 py-0.5 text-small text-success-600">
+      {t('profile.active')}
+    </span>
+  ) : (
+    <span className="rounded-badge bg-gray-200 px-3 py-0.5 text-small text-gray-600">
+      {t('profile.ended')}
+    </span>
+  );
+}
+
+function AcademicProgressCard() {
+  const { t } = useTranslation('student');
+
+  return (
+    <div className="rounded-card bg-white p-5 shadow-card">
+      <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
+        {t('profile.academicProgress')}
+      </h2>
+
+      <div className="mb-4 flex gap-4">
+        <div className="flex-1 rounded-md bg-gray-100 p-3 text-center">
+          <p className="font-cairo text-h2 font-bold text-cyan-600">%{ACADEMIC_STATS.avgScore}</p>
+          <p className="font-cairo text-caption text-gray-600">{t('profile.avgScore')}</p>
         </div>
-        <div className="flex flex-col gap-6">
-          <ProfileSummaryCard />
-          <AccountInfoCard />
+        <div className="flex-1 rounded-md bg-gray-100 p-3 text-center">
+          <p className="font-cairo text-h2 font-bold text-cyan-600">{ACADEMIC_STATS.quizzesDone}</p>
+          <p className="font-cairo text-caption text-gray-600">{t('profile.quizzesDone')}</p>
         </div>
+        <div className="flex-1 rounded-md bg-gray-100 p-3 text-center">
+          <p className="font-cairo text-h2 font-bold text-cyan-600">{ACADEMIC_STATS.lessonsDone}</p>
+          <p className="font-cairo text-caption text-gray-600">{t('profile.lessonsDone')}</p>
+        </div>
+      </div>
+
+      <h3 className="mb-2 font-cairo text-body font-semibold text-navy-900">
+        {t('profile.overallProgress')}
+      </h3>
+      <p className="mb-1 font-cairo text-h3 font-bold text-cyan-600">
+        %{ACADEMIC_STATS.overallProgress}
+      </p>
+      <ProgressBar percent={ACADEMIC_STATS.overallProgress} />
+      <p className="mt-1 font-cairo text-caption text-gray-600">
+        {t('profile.lessonsOf', { done: ACADEMIC_STATS.overallDone, total: ACADEMIC_STATS.overallTotal })}
+      </p>
+    </div>
+  );
+}
+
+function MyCoursesCard() {
+  const { t, i18n } = useTranslation('student');
+  const { data: enrollments, isLoading, isError } = useStudentEnrollments();
+
+  if (isLoading) {
+    return (
+      <div className="rounded-card bg-white p-5 shadow-card">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+          <div className="h-5 w-24 animate-pulse rounded bg-gray-200" />
+        </div>
+        <div className="flex flex-col gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex gap-3 rounded-md p-3">
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-gray-200" />
+              <div className="flex flex-1 flex-col gap-2">
+                <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+                <div className="h-3 w-2/3 animate-pulse rounded bg-gray-200" />
+                <div className="h-2 w-full animate-pulse rounded-full bg-gray-200" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="rounded-card bg-white p-5 shadow-card">
+        <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
+          {t('profile.myCourses')}
+        </h2>
+        <div className="flex items-center gap-2 font-cairo text-body text-danger-500">
+          <AlertCircle size={16} />
+          <span>{t('profile.enrollmentLoadError')}</span>
+        </div>
+      </div>
+    );
+  }
+
+  const items = (enrollments ?? []).map((enr) => {
+    const e = enr as Record<string, unknown>;
+    return {
+      name: enr.chapterName,
+      percent: Number(e.progress ?? 0),
+      completed: Number(e.lessonsCompleted ?? 0),
+      total: Number(e.totalLessons ?? 0),
+    };
+  });
+
+  if (items.length === 0) {
+    return (
+      <div className="rounded-card bg-white p-5 shadow-card">
+        <div className="mb-4 flex items-center justify-between">
+          <div />
+          <h2 className="font-cairo text-h3 font-bold text-navy-900">
+            {t('profile.myCourses')}
+          </h2>
+        </div>
+        <div className="flex flex-col items-center gap-2 py-6 text-center">
+          <BookOpen size={32} className="text-gray-400" />
+          <p className="font-cairo text-body text-gray-600">{t('profile.noEnrollments')}</p>
+          <p className="font-cairo text-caption text-gray-500">{t('profile.noEnrollmentsDesc')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-card bg-white p-5 shadow-card">
+      <div className="mb-4 flex items-center justify-between">
+        <button type="button" className="text-small text-cyan-600 underline underline-offset-2">
+          {t('profile.viewAll')}
+        </button>
+        <h2 className="font-cairo text-h3 font-bold text-navy-900">
+          {t('profile.myCourses')}
+        </h2>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        {items.map((course) => (
+          <div key={course.name} className="flex gap-3 rounded-md border-r-4 border-cyan-500 p-3">
+            <div className="flex shrink-0 items-start pt-1">
+              <CircularProgress percent={course.percent} />
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <p className="truncate font-cairo text-body font-semibold text-navy-900">
+                {course.name}
+              </p>
+              <p className="font-cairo text-caption text-gray-600">
+                {t('profile.chaptersCompleted', { done: course.completed, total: course.total })}
+              </p>
+              <div className="mt-1.5">
+                <ProgressBar percent={course.percent} />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-function PersonalInfoCard() {
+function SubscriptionHistoryCard() {
+  const { t, i18n } = useTranslation('student');
+  const { data: enrollments, isLoading, isError } = useStudentEnrollments();
+
+  if (isLoading) {
+    return (
+      <div className="rounded-card bg-white p-5 shadow-card">
+        <Skeleton className="mb-4 h-6 w-40" />
+        <div className="flex flex-col gap-3">
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="rounded-card bg-white p-5 shadow-card">
+        <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
+          {t('profile.subscriptionHistory')}
+        </h2>
+        <div className="flex items-center gap-2 font-cairo text-body text-danger-500">
+          <AlertCircle size={16} />
+          <span>{t('profile.enrollmentLoadError')}</span>
+        </div>
+      </div>
+    );
+  }
+
+  const items = (enrollments ?? []).length > 0
+    ? (enrollments ?? []).map((enr) => {
+        const monthNames = i18n.language === 'ar'
+          ? ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+          : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        return {
+          courseName: enr.chapterName,
+          date: `${monthNames[parseInt(enr.month) - 1] || enr.month} ${enr.year}`,
+          status: enr.status === 'Active' ? 'active' as const : 'ended' as const,
+        };
+      })
+    : [];
+
+  return (
+    <div className="rounded-card bg-white p-5 shadow-card">
+      <div className="mb-4 flex items-center justify-between">
+        <button type="button" className="text-small text-cyan-600 underline underline-offset-2">
+          {t('profile.viewAll')}
+        </button>
+        <h2 className="font-cairo text-h3 font-bold text-navy-900">
+          {t('profile.subscriptionHistory')}
+        </h2>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="flex flex-col items-center gap-2 py-6 text-center">
+          <BookOpen size={32} className="text-gray-400" />
+          <p className="font-cairo text-body text-gray-600">{t('profile.noEnrollments')}</p>
+          <p className="font-cairo text-caption text-gray-500">{t('profile.noEnrollmentsDesc')}</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {items.map((sub) => (
+            <div key={`${sub.courseName}-${sub.date}`} className="flex items-center justify-between gap-2">
+              <StatusBadge status={sub.status} />
+              <div className="text-end">
+                <p className="font-cairo text-body text-navy-900">{sub.courseName}</p>
+                <div className="flex items-center justify-end gap-1 font-cairo text-caption text-gray-600">
+                  <Calendar size={12} />
+                  <span>{sub.date}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
   const { t, i18n } = useTranslation('student');
   const dispatch = useAppDispatch();
   const updateProfile = useUpdateStudentProfile();
@@ -62,519 +348,246 @@ function PersonalInfoCard() {
   const profileUser = studentUser ?? authUser;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const displayName = profileUser?.fullName ?? '';
-  const displayEmail = profileUser?.email ?? '';
-  const displayPhone = profileUser?.mobile ?? '';
-  const ltrAlign = i18n.language === 'ar' ? 'text-end' : 'text-start';
+  const [form, setForm] = useState({ name: '', email: '', phone: '' });
 
   useEffect(() => {
-    setName(displayName);
-    setEmail(displayEmail);
-  }, [displayName, displayEmail]);
-
-  const handleSave = () => {
-    setErrors({});
-    const payload = { fullName: name.trim(), email: email.trim().toLowerCase() };
-    const parsed = createStudentProfileSchema(t).safeParse(payload);
-    if (!parsed.success) {
-      setErrors(zodToFieldErrors(parsed.error));
-      return;
+    if (!isEditing) {
+      setForm({
+        name: profileUser?.fullName ?? '',
+        email: profileUser?.email ?? '',
+        phone: profileUser?.mobile ?? '',
+      });
     }
-    updateProfile.mutate(parsed.data, {
-      onSuccess: () => {
-        setIsEditing(false);
-        dispatch(addToast({ type: 'success', message: t('profile.saved') }));
-      },
-      onError: (error) => {
-        const apiError = error as ApiError;
-        if (apiError.statusCode === 409) {
-          if (apiError.message.toLowerCase().includes('email')) {
-            setErrors({ email: t('profile.validation.emailInvalid') });
-          }
-          return;
-        }
-        dispatch(addToast({ type: 'error', message: getApiErrorMessage(error, t('profile.saveError')) }));
-      },
-    });
-  };
-
-  const handleCancel = () => {
-    setName(displayName);
-    setEmail(displayEmail);
-    setErrors({});
-    setIsEditing(false);
-  };
-
-  return (
-    <Card padding="lg">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="font-cairo text-lg font-bold text-text-primary">
-          {t('profile.personalInfo')}
-        </h2>
-        {!isEditing ? (
-          <button
-            type="button"
-            onClick={() => setIsEditing(true)}
-            className="font-cairo text-sm font-medium text-accent transition-colors hover:text-accent/80"
-          >
-            {t('profile.edit')}
-          </button>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleCancel}
-              disabled={updateProfile.isPending}
-            >
-              {t('profile.cancel')}
-            </Button>
-            <Button
-              size="sm"
-              loading={updateProfile.isPending}
-              onClick={handleSave}
-            >
-              {t('profile.save')}
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <div>
-          <label className="mb-1 block font-cairo text-xs font-medium uppercase tracking-wide text-text-secondary">
-            {t('profile.fullName')}
-          </label>
-          {isEditing ? (
-            <Input
-              value={name}
-              onChange={(e) => { setName(e.target.value); setErrors((prev) => ({ ...prev, fullName: '' })); }}
-              error={errors.fullName}
-              icon={<User size={16} />}
-            />
-          ) : (
-            <p className="font-cairo text-base font-semibold text-text-primary">{displayName}</p>
-          )}
-        </div>
-        <div>
-          <label className="mb-1 block font-cairo text-xs font-medium uppercase tracking-wide text-text-secondary">
-            {t('profile.email')}
-          </label>
-          {isEditing ? (
-            <Input
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: '' })); }}
-              error={errors.email}
-              icon={<Mail size={16} />}
-              dir="ltr"
-            />
-          ) : (
-            <p className={`font-cairo text-base font-semibold text-text-primary ${ltrAlign}`} dir="ltr">{displayEmail}</p>
-          )}
-        </div>
-        <div>
-          <label className="mb-1 block font-cairo text-xs font-medium uppercase tracking-wide text-text-secondary">
-            {t('profile.phone')}
-          </label>
-          <p className={`font-cairo text-base font-semibold text-text-primary ${ltrAlign}`} dir="ltr">{displayPhone}</p>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-function ProfileSummaryCard() {
-  const { t, i18n } = useTranslation('student');
-  const studentUser = useAppSelector((state) => state.student.profile?.user);
-  const authUser = useAppSelector((state) => state.auth.user);
-  const profileUser = studentUser ?? authUser;
-
-  const displayName = profileUser?.fullName ?? '';
-  const displayEmail = profileUser?.email ?? '';
-  const displayPhone = profileUser?.mobile ?? '';
-  const createdAt = profileUser?.createdAt ?? '';
-  const initial =
-    displayName
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((w) => w.charAt(0))
-      .join('') || '?';
-
-  return (
-    <Card padding="lg" className="flex flex-col items-center">
-      <div className="relative mb-3">
-        <Avatar name={displayName} size="lg" className="h-20 w-20 text-xl" />
-        <span className="absolute bottom-0 end-0 h-3.5 w-3.5 rounded-full border-2 border-surface bg-success" />
-      </div>
-      <h3 className="font-cairo text-lg font-bold text-text-primary">{displayName}</h3>
-      <Badge variant="success" className="mt-2">
-        {t('profile.active')}
-      </Badge>
-
-      <div className="my-4 w-full border-t border-border" />
-
-      <div className="flex w-full flex-col gap-3">
-        <InfoRow icon={Mail} label={t('profile.email')} value={displayEmail} ltr />
-        <InfoRow icon={Phone} label={t('profile.phone')} value={displayPhone} ltr />
-        {createdAt && (
-          <InfoRow
-            icon={Calendar}
-            label={t('profile.joinedAt')}
-            value={formatDate(createdAt, i18n.language === 'ar' ? 'ar-EG' : 'en')}
-          />
-        )}
-      </div>
-    </Card>
-  );
-}
-
-function InfoRow({ icon: Icon, label, value, ltr }: { icon: typeof Mail; label: string; value: string; ltr?: boolean }) {
-  const { i18n } = useTranslation('student');
-  const align = ltr ? (i18n.language === 'ar' ? 'text-end' : 'text-start') : '';
-  return (
-    <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-2 text-text-secondary">
-        <Icon size={16} />
-        <span className="font-cairo text-xs">{label}</span>
-      </div>
-      <span className={`font-cairo text-sm font-medium text-text-primary ${align}`} dir={ltr ? 'ltr' : undefined}>
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function AccountInfoCard() {
-  const { t, i18n } = useTranslation('student');
-  const studentUser = useAppSelector((state) => state.student.profile?.user);
-  const authUser = useAppSelector((state) => state.auth.user);
-  const profileUser = studentUser ?? authUser;
-
-  const createdAt = profileUser?.createdAt ?? '';
-  const joinedDate = createdAt
-    ? formatDate(createdAt, i18n.language === 'ar' ? 'ar-EG' : 'en')
-    : '—';
-
-  return (
-    <Card padding="lg">
-      <h2 className="mb-5 font-cairo text-lg font-bold text-text-primary">
-        {t('profile.accountInfo')}
-      </h2>
-      <div className="flex flex-col gap-4">
-        <AccountRow icon={Calendar} label={t('profile.joinedAt')} value={joinedDate} />
-        <AccountRow icon={Briefcase} label={t('profile.accountType')} value={t('profile.topStudent')} />
-        <AccountRow
-          icon={Shield}
-          label={t('profile.accountStatus')}
-          value={t('profile.verified')}
-          valueBadge
-        />
-      </div>
-    </Card>
-  );
-}
-
-function AccountRow({ icon: Icon, label, value, valueBadge }: { icon: typeof Calendar; label: string; value: string; valueBadge?: boolean }) {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10">
-        <Icon size={16} className="text-accent" />
-      </span>
-      <div className="flex flex-1 items-center justify-between">
-        <span className="font-cairo text-sm text-text-secondary">{label}</span>
-        {valueBadge ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 font-cairo text-xs font-medium text-success">
-            <CheckCircle size={12} />
-            {value}
-          </span>
-        ) : (
-          <span className="font-cairo text-sm font-medium text-text-primary">{value}</span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SecurityCard() {
-  const { t } = useTranslation('student');
-  const dispatch = useAppDispatch();
-  const changePassword = useChangePassword();
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const clearErrors = () => setErrors({});
-
-  const handleChangePassword = () => {
-    clearErrors();
-    const payload = { currentPassword, newPassword, confirmPassword };
-    const parsed = createChangePasswordSchema(t).safeParse(payload);
-    if (!parsed.success) {
-      setErrors(zodToFieldErrors(parsed.error));
-      return;
-    }
-    changePassword.mutate(parsed.data, {
-      onSuccess: () => {
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setIsOpen(false);
-        dispatch(addToast({ type: 'success', message: t('profile.passwordChanged') }));
-      },
-      onError: (error) => {
-        const apiError = error as ApiError;
-        if (apiError.statusCode === 401) {
-          setErrors({ currentPassword: t('profile.validation.passwordRequired') });
-          return;
-        }
-        dispatch(addToast({ type: 'error', message: getApiErrorMessage(error, t('profile.passwordError')) }));
-      },
-    });
-  };
-
-  return (
-    <Card padding="lg">
-      <h2 className="mb-4 font-cairo text-lg font-bold text-text-primary">
-        {t('profile.security')}
-      </h2>
-
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center gap-3 rounded-button bg-surface p-4 shadow-sm transition-colors hover:bg-gray-50"
-      >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10">
-          <Lock size={16} className="text-accent" />
-        </span>
-        <span className="flex-1 text-start font-cairo text-sm font-medium text-text-primary">
-          {t('profile.changePassword')}
-        </span>
-        <ChevronLeft
-          size={18}
-          className={`text-text-secondary transition-transform ${isOpen ? 'rotate-90' : ''}`}
-        />
-      </button>
-
-      {isOpen && (
-        <div className="mt-4 flex flex-col gap-4">
-          <Input
-            type="password"
-            label={t('profile.currentPassword')}
-            value={currentPassword}
-            onChange={(e) => { setCurrentPassword(e.target.value); setErrors((prev) => ({ ...prev, currentPassword: '' })); }}
-            error={errors.currentPassword}
-          />
-          <Input
-            type="password"
-            label={t('profile.newPassword')}
-            value={newPassword}
-            onChange={(e) => { setNewPassword(e.target.value); setErrors((prev) => ({ ...prev, newPassword: '' })); }}
-            error={errors.newPassword}
-          />
-          <Input
-            type="password"
-            label={t('profile.confirmPassword')}
-            value={confirmPassword}
-            onChange={(e) => { setConfirmPassword(e.target.value); setErrors((prev) => ({ ...prev, confirmPassword: '' })); }}
-            error={errors.confirmPassword}
-          />
-          <Button
-            className="self-start"
-            size="sm"
-            loading={changePassword.isPending}
-            onClick={handleChangePassword}
-          >
-            {t('profile.save')}
-          </Button>
-        </div>
-      )}
-
-      <button
-        type="button"
-        className="mt-3 flex w-full items-center gap-3 rounded-button bg-surface p-4 shadow-sm transition-colors hover:bg-red-50"
-        onClick={() => dispatch(logoutUser())}
-      >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-danger/10">
-          <LogOut size={16} className="text-danger" />
-        </span>
-        <span className="flex-1 text-start font-cairo text-sm font-medium text-danger">
-          {t('profile.logout')}
-        </span>
-        <ChevronLeft size={18} className="text-danger" />
-      </button>
-    </Card>
-  );
-}
-
-function PreferencesCard() {
-  const { t, i18n } = useTranslation('student');
-  const [notificationsOn, setNotificationsOn] = useState(true);
-
-  const toggleLanguage = () => {
-    const next = i18n.language === 'ar' ? 'en' : 'ar';
-    i18n.changeLanguage(next);
-  };
-
-  return (
-    <Card padding="lg">
-      <h2 className="mb-5 font-cairo text-lg font-bold text-text-primary">
-        {t('profile.preferences')}
-      </h2>
-
-      <div className="flex flex-col gap-5">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10">
-              <Globe size={16} className="text-accent" />
-            </span>
-            <div>
-              <p className="font-cairo text-sm font-medium text-text-primary">
-                {t('profile.language')}
-              </p>
-              <p className="font-cairo text-xs text-text-secondary">
-                {t('profile.languageSubtitle')}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={toggleLanguage}
-            className="flex items-center gap-2 rounded-button border border-border bg-surface px-3 py-2 font-cairo text-sm text-text-primary transition-colors hover:bg-gray-50"
-          >
-            <Globe size={14} className="text-text-secondary" />
-            <span>{i18n.language === 'ar' ? 'العربية' : 'English'}</span>
-            <ChevronLeft size={14} className="text-text-secondary" />
-          </button>
-        </div>
-
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10">
-              <Bell size={16} className="text-accent" />
-            </span>
-            <div>
-              <p className="font-cairo text-sm font-medium text-text-primary">
-                {t('profile.notifications')}
-              </p>
-              <p className="font-cairo text-xs text-text-secondary">
-                {t('profile.notificationsSubtitle')}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={notificationsOn}
-            onClick={() => setNotificationsOn(!notificationsOn)}
-            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${notificationsOn ? 'bg-teal-400' : 'bg-gray-300'}`}
-          >
-            <span
-              className={`absolute start-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${notificationsOn ? 'ltr:translate-x-5 rtl:-translate-x-5' : 'translate-x-0'}`}
-            />
-          </button>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-function EnrollmentHistoryCard() {
-  const { t, i18n } = useTranslation('student');
-  const { data: enrollments, isLoading, isError } = useStudentEnrollments();
+  }, [profileUser, isEditing]);
 
   if (isLoading) {
     return (
-      <Card padding="lg">
-        <Skeleton className="mb-4 h-6 w-48" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="mt-2 h-10 w-full" />
-        <Skeleton className="mt-2 h-10 w-full" />
-      </Card>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Card padding="lg">
-        <p className="font-cairo text-sm text-danger">{t('profile.enrollmentLoadError')}</p>
-      </Card>
-    );
-  }
-
-  if (!enrollments || enrollments.length === 0) {
-    return (
-      <Card padding="lg">
-        <h2 className="mb-4 font-cairo text-lg font-bold text-text-primary">
-          {t('profile.enrollmentHistory')}
-        </h2>
-        <EmptyState
-          icon={BookOpen}
-          title={t('profile.noEnrollments')}
-          description={t('profile.noEnrollmentsDesc')}
-        />
-      </Card>
-    );
-  }
-
-  const monthNames = i18n.language === 'ar'
-    ? ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
-    : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-  return (
-    <Card padding="lg">
-      <h2 className="mb-4 font-cairo text-lg font-bold text-text-primary">
-        {t('profile.enrollmentHistory')}
-      </h2>
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b border-border">
-              <Th>{t('profile.chapterName')}</Th>
-              <Th>{t('profile.month')}</Th>
-              <Th>{t('profile.year')}</Th>
-              <Th>{t('profile.status')}</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {enrollments.map((enr) => (
-              <tr key={enr.id} className="border-b border-border last:border-b-0">
-                <Td>{enr.chapterName}</Td>
-                <Td>{monthNames[parseInt(enr.month) - 1] || enr.month}</Td>
-                <Td>{enr.year}</Td>
-                <Td>
-                  <Badge variant={enr.status === 'Active' ? 'success' : 'default'}>
-                    {enr.status === 'Active' ? t('profile.activeStatus') : t('profile.inactiveStatus')}
-                  </Badge>
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="rounded-card bg-white p-6 shadow-card">
+        <div className="flex flex-col items-center">
+          <div className="mb-3 h-20 w-20 animate-pulse rounded-full bg-gray-200" />
+          <div className="mb-3 h-5 w-32 animate-pulse rounded bg-gray-200" />
+          <div className="flex gap-2">
+            <div className="h-6 w-16 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-6 w-16 animate-pulse rounded-full bg-gray-200" />
+          </div>
+        </div>
+        <div className="my-4 border-t border-gray-300" />
+        <div className="flex flex-col gap-3">
+          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+        </div>
       </div>
-    </Card>
+    );
+  }
+
+  const displayName = profileUser?.fullName ?? '';
+  const displayEmail = profileUser?.email ?? '';
+  const displayPhone = profileUser?.mobile ?? '';
+  const createdAt = profileUser?.createdAt ?? '';
+  const initial = displayName.trim().charAt(0) || '?';
+
+  const handleSave = () => {
+    updateProfile.mutate(
+      {
+        fullName: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+      },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+          dispatch(addToast({ type: 'success', message: t('profile.saved') }));
+        },
+        onError: (error) => {
+          const err = error as { message?: string };
+          dispatch(addToast({ type: 'error', message: err.message || t('profile.saveError') }));
+        },
+      },
+    );
+  };
+
+  const handleCancel = () => {
+    setForm({
+      name: profileUser?.fullName ?? '',
+      email: profileUser?.email ?? '',
+      phone: profileUser?.mobile ?? '',
+    });
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <div className="rounded-card bg-white p-6 shadow-card">
+        <div className="flex flex-col items-center">
+          <div className="relative mb-3">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-navy-700">
+              <span className="font-cairo text-h2 text-white">{initial}</span>
+            </div>
+            <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-success-500" />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <input
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+            placeholder={t('profile.fullName')}
+            className="w-full rounded-input border border-gray-300 px-3 py-2 font-cairo text-body outline-none focus:border-cyan-500"
+          />
+          <input
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+            placeholder={t('profile.email')}
+            className="w-full rounded-input border border-gray-300 px-3 py-2 font-cairo text-body outline-none focus:border-cyan-500"
+            dir="ltr"
+          />
+          <input
+            type="tel"
+            value={form.phone}
+            onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
+            placeholder={t('profile.phone')}
+            className="w-full rounded-input border border-gray-300 px-3 py-2 font-cairo text-body outline-none focus:border-cyan-500"
+            dir="ltr"
+          />
+        </div>
+
+        <div className="mt-4 flex gap-3">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={updateProfile.isPending}
+            className="flex-1 rounded-btn bg-cyan-500 px-4 py-2 font-cairo font-bold text-navy-900 transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            {t('common:actions.save')}
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="flex-1 rounded-btn border border-gray-300 px-4 py-2 font-cairo text-gray-600 transition-colors hover:bg-gray-50"
+          >
+            {t('common:actions.cancel')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-card bg-white p-6 shadow-card">
+      <div className="flex flex-col items-center">
+        <div className="relative mb-3">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-navy-700">
+            <span className="font-cairo text-h2 text-white">{initial}</span>
+          </div>
+          <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-success-500" />
+        </div>
+
+        <h3 className="font-cairo text-h3 font-bold text-navy-900">{displayName}</h3>
+
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+          <span className="rounded-badge bg-navy-100 px-3 py-0.5 text-small text-navy-700">
+            {t('profile.student')}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-badge bg-success-50 px-3 py-0.5 text-small text-success-600">
+            <span className="h-1.5 w-1.5 rounded-full bg-success-500" />
+            {t('profile.active')}
+          </span>
+        </div>
+      </div>
+
+      <div className="my-4 border-t border-gray-300" />
+
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-2 text-end">
+          <span className="font-cairo text-body text-gray-700" dir="ltr">{displayEmail}</span>
+          <Mail size={16} className="shrink-0 text-gray-500" />
+        </div>
+        <div className="flex items-center justify-between gap-2 text-end">
+          <span className="font-cairo text-body text-gray-700" dir="ltr">{displayPhone}</span>
+          <Phone size={16} className="shrink-0 text-gray-500" />
+        </div>
+        <div className="flex items-center justify-between gap-2 text-end">
+          <span className="font-cairo text-body text-gray-700">
+            {createdAt
+              ? t('profile.joinedAt', {
+                  date: new Date(createdAt).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en', {
+                    year: 'numeric',
+                    month: 'long',
+                  }),
+                })
+              : '—'}
+          </span>
+          <Calendar size={16} className="shrink-0 text-gray-500" />
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setIsEditing(true)}
+        className="mt-5 flex w-full items-center justify-center gap-2 rounded-btn border border-gray-300 py-2 font-cairo text-body text-gray-700 transition-colors hover:bg-gray-50"
+      >
+        <Edit3 size={16} />
+        <span>{t('profile.editProfile')}</span>
+      </button>
+    </div>
   );
 }
 
-function Th({ children }: { children: string }) {
+function AchievementsCard() {
+  const { t } = useTranslation('student');
+
   return (
-    <th className="px-4 py-3 text-start font-cairo text-sm font-medium text-text-secondary">
-      {children}
-    </th>
+    <div className="rounded-card bg-white p-5 shadow-card">
+      <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
+        {t('profile.achievements')}
+      </h2>
+
+      <div className="flex items-center justify-center gap-6">
+        {ACHIEVEMENTS.map((badge) => (
+          <div key={badge.nameKey} className="flex flex-col items-center gap-1.5">
+            <div
+              className={cn(
+                'relative flex h-[52px] w-[52px] items-center justify-center rounded-full',
+                badge.color,
+              )}
+            >
+              <span className="text-lg">{badge.emoji}</span>
+              {badge.locked && (
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
+                  <Lock size={16} className="text-white" />
+                </div>
+              )}
+            </div>
+            <span className="font-cairo text-caption text-gray-600">
+              {t(`profile.${badge.nameKey}`)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
-function Td({ children }: { children: React.ReactNode }) {
+export function StudentProfilePage() {
+  const { isLoading } = useStudentProfile();
+
   return (
-    <td className="px-4 py-3 font-cairo text-sm text-text-primary">
-      {children}
-    </td>
+    <div className="mx-auto w-full">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <ProfileInfoCard isLoading={isLoading} />
+
+        <div className="flex flex-col gap-6">
+          <AcademicProgressCard />
+          <MyCoursesCard />
+          <SubscriptionHistoryCard />
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <AchievementsCard />
+      </div>
+    </div>
   );
 }
