@@ -15,6 +15,7 @@ import { lessonStandaloneRouter } from "./modules/lessons/lessons.routes.js";
 import filesRoutes from "./modules/files/index.js";
 import contentRoutes from "./modules/content/content.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
+import enrollmentRoutes from "./modules/enrollment/enrollment.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -44,6 +45,7 @@ export function createApp(): Application {
   app.use("/api/v1", filesRoutes);
   app.use("/api/content", contentRoutes);
   app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api/enrollments", enrollmentRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
