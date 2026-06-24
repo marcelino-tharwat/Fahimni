@@ -126,15 +126,26 @@ model Otp {
 }
 
 model Enrollment {
-  id         String   @id @default(uuid())
-  studentId  String
-  chapterId  String
-  enrolledAt DateTime @default(now())
-  status     String   @default("ACTIVE")
-  chapter    Chapter  @relation(fields: [chapterId], references: [id])
-  student    User     @relation(fields: [studentId], references: [id])
+  id            String           @id @default(uuid())
+  studentId     String
+  chapterId     String
+  enrolledAt    DateTime         @default(now())
+  status        EnrollmentStatus @default(ACTIVE)
+  enrolledMonth Int
+  enrolledYear  Int
+  price         Float
+  paymentMethod PaymentMethod
+  promoCodeId   String?
+  startedAt     DateTime         @default(now())
+  expiresAt     DateTime
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  chapter       Chapter          @relation(fields: [chapterId], references: [id])
+  student       User             @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, chapterId])
+  @@index([studentId])
+  @@index([chapterId])
   @@map("enrollments")
 }
 
@@ -280,4 +291,16 @@ enum QuizStatus {
 enum OtpType {
   EMAIL_VERIFICATION
   PASSWORD_RESET
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  EXPIRED
+  DEACTIVATED
+}
+
+enum PaymentMethod {
+  CASH
+  VISA
+  PROMO
 }

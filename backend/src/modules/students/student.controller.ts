@@ -23,6 +23,13 @@ export class StudentController {
       if (typeof id !== "string") {
         return next(new AppError("Invalid student ID", 400));
       }
+
+      if (req.user?.role === "STUDENT" && req.user?.id !== id) {
+        return next(
+          new AppError("You can only view your own profile", 403),
+        );
+      }
+
       const profile = await Student.findUnique({
         where: { userId: id },
         select: { ...studentPublicFields, user: { select: userPublicFields } },
@@ -46,6 +53,12 @@ export class StudentController {
       const profile = await Student.findUnique({ where: { userId: id } });
       if (!profile) {
         return next(new AppError("Student not found", 404));
+      }
+
+      if (req.user?.role === "STUDENT" && req.user?.id !== id) {
+        return next(
+          new AppError("You can only update your own profile", 403),
+        );
       }
 
       const input = req.body as UpdateStudentInput;

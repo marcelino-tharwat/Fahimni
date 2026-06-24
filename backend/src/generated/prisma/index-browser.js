@@ -204,7 +204,16 @@ exports.Prisma.EnrollmentScalarFieldEnum = {
   studentId: 'studentId',
   chapterId: 'chapterId',
   enrolledAt: 'enrolledAt',
-  status: 'status'
+  status: 'status',
+  enrolledMonth: 'enrolledMonth',
+  enrolledYear: 'enrolledYear',
+  price: 'price',
+  paymentMethod: 'paymentMethod',
+  promoCodeId: 'promoCodeId',
+  startedAt: 'startedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.LessonProgressScalarFieldEnum = {
@@ -332,6 +341,18 @@ exports.Status = exports.$Enums.Status = {
 exports.OtpType = exports.$Enums.OtpType = {
   EMAIL_VERIFICATION: 'EMAIL_VERIFICATION',
   PASSWORD_RESET: 'PASSWORD_RESET'
+};
+
+exports.EnrollmentStatus = exports.$Enums.EnrollmentStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  DEACTIVATED: 'DEACTIVATED'
+};
+
+exports.PaymentMethod = exports.$Enums.PaymentMethod = {
+  CASH: 'CASH',
+  VISA: 'VISA',
+  PROMO: 'PROMO'
 };
 
 exports.QuizStatus = exports.$Enums.QuizStatus = {

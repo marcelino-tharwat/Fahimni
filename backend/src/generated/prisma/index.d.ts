@@ -140,6 +140,24 @@ export const OtpType: {
 
 export type OtpType = (typeof OtpType)[keyof typeof OtpType]
 
+
+export const EnrollmentStatus: {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  DEACTIVATED: 'DEACTIVATED'
+};
+
+export type EnrollmentStatus = (typeof EnrollmentStatus)[keyof typeof EnrollmentStatus]
+
+
+export const PaymentMethod: {
+  CASH: 'CASH',
+  VISA: 'VISA',
+  PROMO: 'PROMO'
+};
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
 }
 
 export type Role = $Enums.Role
@@ -161,6 +179,14 @@ export const QuizStatus: typeof $Enums.QuizStatus
 export type OtpType = $Enums.OtpType
 
 export const OtpType: typeof $Enums.OtpType
+
+export type EnrollmentStatus = $Enums.EnrollmentStatus
+
+export const EnrollmentStatus: typeof $Enums.EnrollmentStatus
+
+export type PaymentMethod = $Enums.PaymentMethod
+
+export const PaymentMethod: typeof $Enums.PaymentMethod
 
 /**
  * ##  Prisma Client ʲˢ
@@ -10836,8 +10862,22 @@ export namespace Prisma {
 
   export type AggregateEnrollment = {
     _count: EnrollmentCountAggregateOutputType | null
+    _avg: EnrollmentAvgAggregateOutputType | null
+    _sum: EnrollmentSumAggregateOutputType | null
     _min: EnrollmentMinAggregateOutputType | null
     _max: EnrollmentMaxAggregateOutputType | null
+  }
+
+  export type EnrollmentAvgAggregateOutputType = {
+    enrolledMonth: number | null
+    enrolledYear: number | null
+    price: number | null
+  }
+
+  export type EnrollmentSumAggregateOutputType = {
+    enrolledMonth: number | null
+    enrolledYear: number | null
+    price: number | null
   }
 
   export type EnrollmentMinAggregateOutputType = {
@@ -10845,7 +10885,16 @@ export namespace Prisma {
     studentId: string | null
     chapterId: string | null
     enrolledAt: Date | null
-    status: string | null
+    status: $Enums.EnrollmentStatus | null
+    enrolledMonth: number | null
+    enrolledYear: number | null
+    price: number | null
+    paymentMethod: $Enums.PaymentMethod | null
+    promoCodeId: string | null
+    startedAt: Date | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type EnrollmentMaxAggregateOutputType = {
@@ -10853,7 +10902,16 @@ export namespace Prisma {
     studentId: string | null
     chapterId: string | null
     enrolledAt: Date | null
-    status: string | null
+    status: $Enums.EnrollmentStatus | null
+    enrolledMonth: number | null
+    enrolledYear: number | null
+    price: number | null
+    paymentMethod: $Enums.PaymentMethod | null
+    promoCodeId: string | null
+    startedAt: Date | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type EnrollmentCountAggregateOutputType = {
@@ -10862,9 +10920,30 @@ export namespace Prisma {
     chapterId: number
     enrolledAt: number
     status: number
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: number
+    promoCodeId: number
+    startedAt: number
+    expiresAt: number
+    createdAt: number
+    updatedAt: number
     _all: number
   }
 
+
+  export type EnrollmentAvgAggregateInputType = {
+    enrolledMonth?: true
+    enrolledYear?: true
+    price?: true
+  }
+
+  export type EnrollmentSumAggregateInputType = {
+    enrolledMonth?: true
+    enrolledYear?: true
+    price?: true
+  }
 
   export type EnrollmentMinAggregateInputType = {
     id?: true
@@ -10872,6 +10951,15 @@ export namespace Prisma {
     chapterId?: true
     enrolledAt?: true
     status?: true
+    enrolledMonth?: true
+    enrolledYear?: true
+    price?: true
+    paymentMethod?: true
+    promoCodeId?: true
+    startedAt?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type EnrollmentMaxAggregateInputType = {
@@ -10880,6 +10968,15 @@ export namespace Prisma {
     chapterId?: true
     enrolledAt?: true
     status?: true
+    enrolledMonth?: true
+    enrolledYear?: true
+    price?: true
+    paymentMethod?: true
+    promoCodeId?: true
+    startedAt?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type EnrollmentCountAggregateInputType = {
@@ -10888,6 +10985,15 @@ export namespace Prisma {
     chapterId?: true
     enrolledAt?: true
     status?: true
+    enrolledMonth?: true
+    enrolledYear?: true
+    price?: true
+    paymentMethod?: true
+    promoCodeId?: true
+    startedAt?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -10929,6 +11035,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: EnrollmentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EnrollmentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: EnrollmentMinAggregateInputType
@@ -10959,6 +11077,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: EnrollmentCountAggregateInputType | true
+    _avg?: EnrollmentAvgAggregateInputType
+    _sum?: EnrollmentSumAggregateInputType
     _min?: EnrollmentMinAggregateInputType
     _max?: EnrollmentMaxAggregateInputType
   }
@@ -10968,8 +11088,19 @@ export namespace Prisma {
     studentId: string
     chapterId: string
     enrolledAt: Date
-    status: string
+    status: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId: string | null
+    startedAt: Date
+    expiresAt: Date
+    createdAt: Date
+    updatedAt: Date
     _count: EnrollmentCountAggregateOutputType | null
+    _avg: EnrollmentAvgAggregateOutputType | null
+    _sum: EnrollmentSumAggregateOutputType | null
     _min: EnrollmentMinAggregateOutputType | null
     _max: EnrollmentMaxAggregateOutputType | null
   }
@@ -10994,6 +11125,15 @@ export namespace Prisma {
     chapterId?: boolean
     enrolledAt?: boolean
     status?: boolean
+    enrolledMonth?: boolean
+    enrolledYear?: boolean
+    price?: boolean
+    paymentMethod?: boolean
+    promoCodeId?: boolean
+    startedAt?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     student?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["enrollment"]>
@@ -11004,6 +11144,15 @@ export namespace Prisma {
     chapterId?: boolean
     enrolledAt?: boolean
     status?: boolean
+    enrolledMonth?: boolean
+    enrolledYear?: boolean
+    price?: boolean
+    paymentMethod?: boolean
+    promoCodeId?: boolean
+    startedAt?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     student?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["enrollment"]>
@@ -11014,6 +11163,15 @@ export namespace Prisma {
     chapterId?: boolean
     enrolledAt?: boolean
     status?: boolean
+    enrolledMonth?: boolean
+    enrolledYear?: boolean
+    price?: boolean
+    paymentMethod?: boolean
+    promoCodeId?: boolean
+    startedAt?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     student?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["enrollment"]>
@@ -11024,9 +11182,18 @@ export namespace Prisma {
     chapterId?: boolean
     enrolledAt?: boolean
     status?: boolean
+    enrolledMonth?: boolean
+    enrolledYear?: boolean
+    price?: boolean
+    paymentMethod?: boolean
+    promoCodeId?: boolean
+    startedAt?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type EnrollmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "chapterId" | "enrolledAt" | "status", ExtArgs["result"]["enrollment"]>
+  export type EnrollmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "chapterId" | "enrolledAt" | "status" | "enrolledMonth" | "enrolledYear" | "price" | "paymentMethod" | "promoCodeId" | "startedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["enrollment"]>
   export type EnrollmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     student?: boolean | UserDefaultArgs<ExtArgs>
@@ -11051,7 +11218,16 @@ export namespace Prisma {
       studentId: string
       chapterId: string
       enrolledAt: Date
-      status: string
+      status: $Enums.EnrollmentStatus
+      enrolledMonth: number
+      enrolledYear: number
+      price: number
+      paymentMethod: $Enums.PaymentMethod
+      promoCodeId: string | null
+      startedAt: Date
+      expiresAt: Date
+      createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["enrollment"]>
     composites: {}
   }
@@ -11481,7 +11657,16 @@ export namespace Prisma {
     readonly studentId: FieldRef<"Enrollment", 'String'>
     readonly chapterId: FieldRef<"Enrollment", 'String'>
     readonly enrolledAt: FieldRef<"Enrollment", 'DateTime'>
-    readonly status: FieldRef<"Enrollment", 'String'>
+    readonly status: FieldRef<"Enrollment", 'EnrollmentStatus'>
+    readonly enrolledMonth: FieldRef<"Enrollment", 'Int'>
+    readonly enrolledYear: FieldRef<"Enrollment", 'Int'>
+    readonly price: FieldRef<"Enrollment", 'Float'>
+    readonly paymentMethod: FieldRef<"Enrollment", 'PaymentMethod'>
+    readonly promoCodeId: FieldRef<"Enrollment", 'String'>
+    readonly startedAt: FieldRef<"Enrollment", 'DateTime'>
+    readonly expiresAt: FieldRef<"Enrollment", 'DateTime'>
+    readonly createdAt: FieldRef<"Enrollment", 'DateTime'>
+    readonly updatedAt: FieldRef<"Enrollment", 'DateTime'>
   }
     
 
@@ -20890,7 +21075,16 @@ export namespace Prisma {
     studentId: 'studentId',
     chapterId: 'chapterId',
     enrolledAt: 'enrolledAt',
-    status: 'status'
+    status: 'status',
+    enrolledMonth: 'enrolledMonth',
+    enrolledYear: 'enrolledYear',
+    price: 'price',
+    paymentMethod: 'paymentMethod',
+    promoCodeId: 'promoCodeId',
+    startedAt: 'startedAt',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type EnrollmentScalarFieldEnum = (typeof EnrollmentScalarFieldEnum)[keyof typeof EnrollmentScalarFieldEnum]
@@ -21167,6 +21361,48 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'EnrollmentStatus'
+   */
+  export type EnumEnrollmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EnrollmentStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'EnrollmentStatus[]'
+   */
+  export type ListEnumEnrollmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EnrollmentStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PaymentMethod'
+   */
+  export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
+    
+
+
+  /**
+   * Reference to a field of type 'PaymentMethod[]'
+   */
+  export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -21198,20 +21434,6 @@ export namespace Prisma {
    * Reference to a field of type 'QuestionType[]'
    */
   export type ListEnumQuestionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuestionType[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -21777,7 +21999,16 @@ export namespace Prisma {
     studentId?: StringFilter<"Enrollment"> | string
     chapterId?: StringFilter<"Enrollment"> | string
     enrolledAt?: DateTimeFilter<"Enrollment"> | Date | string
-    status?: StringFilter<"Enrollment"> | string
+    status?: EnumEnrollmentStatusFilter<"Enrollment"> | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFilter<"Enrollment"> | number
+    enrolledYear?: IntFilter<"Enrollment"> | number
+    price?: FloatFilter<"Enrollment"> | number
+    paymentMethod?: EnumPaymentMethodFilter<"Enrollment"> | $Enums.PaymentMethod
+    promoCodeId?: StringNullableFilter<"Enrollment"> | string | null
+    startedAt?: DateTimeFilter<"Enrollment"> | Date | string
+    expiresAt?: DateTimeFilter<"Enrollment"> | Date | string
+    createdAt?: DateTimeFilter<"Enrollment"> | Date | string
+    updatedAt?: DateTimeFilter<"Enrollment"> | Date | string
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
     student?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -21788,6 +22019,15 @@ export namespace Prisma {
     chapterId?: SortOrder
     enrolledAt?: SortOrder
     status?: SortOrder
+    enrolledMonth?: SortOrder
+    enrolledYear?: SortOrder
+    price?: SortOrder
+    paymentMethod?: SortOrder
+    promoCodeId?: SortOrderInput | SortOrder
+    startedAt?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     chapter?: ChapterOrderByWithRelationInput
     student?: UserOrderByWithRelationInput
   }
@@ -21801,7 +22041,16 @@ export namespace Prisma {
     studentId?: StringFilter<"Enrollment"> | string
     chapterId?: StringFilter<"Enrollment"> | string
     enrolledAt?: DateTimeFilter<"Enrollment"> | Date | string
-    status?: StringFilter<"Enrollment"> | string
+    status?: EnumEnrollmentStatusFilter<"Enrollment"> | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFilter<"Enrollment"> | number
+    enrolledYear?: IntFilter<"Enrollment"> | number
+    price?: FloatFilter<"Enrollment"> | number
+    paymentMethod?: EnumPaymentMethodFilter<"Enrollment"> | $Enums.PaymentMethod
+    promoCodeId?: StringNullableFilter<"Enrollment"> | string | null
+    startedAt?: DateTimeFilter<"Enrollment"> | Date | string
+    expiresAt?: DateTimeFilter<"Enrollment"> | Date | string
+    createdAt?: DateTimeFilter<"Enrollment"> | Date | string
+    updatedAt?: DateTimeFilter<"Enrollment"> | Date | string
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
     student?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "studentId_chapterId">
@@ -21812,9 +22061,20 @@ export namespace Prisma {
     chapterId?: SortOrder
     enrolledAt?: SortOrder
     status?: SortOrder
+    enrolledMonth?: SortOrder
+    enrolledYear?: SortOrder
+    price?: SortOrder
+    paymentMethod?: SortOrder
+    promoCodeId?: SortOrderInput | SortOrder
+    startedAt?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: EnrollmentCountOrderByAggregateInput
+    _avg?: EnrollmentAvgOrderByAggregateInput
     _max?: EnrollmentMaxOrderByAggregateInput
     _min?: EnrollmentMinOrderByAggregateInput
+    _sum?: EnrollmentSumOrderByAggregateInput
   }
 
   export type EnrollmentScalarWhereWithAggregatesInput = {
@@ -21825,7 +22085,16 @@ export namespace Prisma {
     studentId?: StringWithAggregatesFilter<"Enrollment"> | string
     chapterId?: StringWithAggregatesFilter<"Enrollment"> | string
     enrolledAt?: DateTimeWithAggregatesFilter<"Enrollment"> | Date | string
-    status?: StringWithAggregatesFilter<"Enrollment"> | string
+    status?: EnumEnrollmentStatusWithAggregatesFilter<"Enrollment"> | $Enums.EnrollmentStatus
+    enrolledMonth?: IntWithAggregatesFilter<"Enrollment"> | number
+    enrolledYear?: IntWithAggregatesFilter<"Enrollment"> | number
+    price?: FloatWithAggregatesFilter<"Enrollment"> | number
+    paymentMethod?: EnumPaymentMethodWithAggregatesFilter<"Enrollment"> | $Enums.PaymentMethod
+    promoCodeId?: StringNullableWithAggregatesFilter<"Enrollment"> | string | null
+    startedAt?: DateTimeWithAggregatesFilter<"Enrollment"> | Date | string
+    expiresAt?: DateTimeWithAggregatesFilter<"Enrollment"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"Enrollment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Enrollment"> | Date | string
   }
 
   export type LessonProgressWhereInput = {
@@ -22984,7 +23253,16 @@ export namespace Prisma {
   export type EnrollmentCreateInput = {
     id?: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     chapter: ChapterCreateNestedOneWithoutEnrollmentsInput
     student: UserCreateNestedOneWithoutEnrollmentsInput
   }
@@ -22994,13 +23272,31 @@ export namespace Prisma {
     studentId: string
     chapterId: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EnrollmentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chapter?: ChapterUpdateOneRequiredWithoutEnrollmentsNestedInput
     student?: UserUpdateOneRequiredWithoutEnrollmentsNestedInput
   }
@@ -23010,7 +23306,16 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EnrollmentCreateManyInput = {
@@ -23018,13 +23323,31 @@ export namespace Prisma {
     studentId: string
     chapterId: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EnrollmentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EnrollmentUncheckedUpdateManyInput = {
@@ -23032,7 +23355,16 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LessonProgressCreateInput = {
@@ -24285,6 +24617,31 @@ export namespace Prisma {
     _max?: NestedEnumOtpTypeFilter<$PrismaModel>
   }
 
+  export type EnumEnrollmentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.EnrollmentStatus | EnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.EnrollmentStatus[] | ListEnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EnrollmentStatus[] | ListEnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumEnrollmentStatusFilter<$PrismaModel> | $Enums.EnrollmentStatus
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type EnumPaymentMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentMethodFilter<$PrismaModel> | $Enums.PaymentMethod
+  }
+
   export type EnrollmentStudentIdChapterIdCompoundUniqueInput = {
     studentId: string
     chapterId: string
@@ -24296,6 +24653,21 @@ export namespace Prisma {
     chapterId?: SortOrder
     enrolledAt?: SortOrder
     status?: SortOrder
+    enrolledMonth?: SortOrder
+    enrolledYear?: SortOrder
+    price?: SortOrder
+    paymentMethod?: SortOrder
+    promoCodeId?: SortOrder
+    startedAt?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnrollmentAvgOrderByAggregateInput = {
+    enrolledMonth?: SortOrder
+    enrolledYear?: SortOrder
+    price?: SortOrder
   }
 
   export type EnrollmentMaxOrderByAggregateInput = {
@@ -24304,6 +24676,15 @@ export namespace Prisma {
     chapterId?: SortOrder
     enrolledAt?: SortOrder
     status?: SortOrder
+    enrolledMonth?: SortOrder
+    enrolledYear?: SortOrder
+    price?: SortOrder
+    paymentMethod?: SortOrder
+    promoCodeId?: SortOrder
+    startedAt?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type EnrollmentMinOrderByAggregateInput = {
@@ -24312,6 +24693,57 @@ export namespace Prisma {
     chapterId?: SortOrder
     enrolledAt?: SortOrder
     status?: SortOrder
+    enrolledMonth?: SortOrder
+    enrolledYear?: SortOrder
+    price?: SortOrder
+    paymentMethod?: SortOrder
+    promoCodeId?: SortOrder
+    startedAt?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnrollmentSumOrderByAggregateInput = {
+    enrolledMonth?: SortOrder
+    enrolledYear?: SortOrder
+    price?: SortOrder
+  }
+
+  export type EnumEnrollmentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EnrollmentStatus | EnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.EnrollmentStatus[] | ListEnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EnrollmentStatus[] | ListEnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumEnrollmentStatusWithAggregatesFilter<$PrismaModel> | $Enums.EnrollmentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEnrollmentStatusFilter<$PrismaModel>
+    _max?: NestedEnumEnrollmentStatusFilter<$PrismaModel>
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type EnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel> | $Enums.PaymentMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentMethodFilter<$PrismaModel>
+    _max?: NestedEnumPaymentMethodFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -25510,6 +25942,22 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type EnumEnrollmentStatusFieldUpdateOperationsInput = {
+    set?: $Enums.EnrollmentStatus
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type EnumPaymentMethodFieldUpdateOperationsInput = {
+    set?: $Enums.PaymentMethod
+  }
+
   export type ChapterUpdateOneRequiredWithoutEnrollmentsNestedInput = {
     create?: XOR<ChapterCreateWithoutEnrollmentsInput, ChapterUncheckedCreateWithoutEnrollmentsInput>
     connectOrCreate?: ChapterCreateOrConnectWithoutEnrollmentsInput
@@ -26034,6 +26482,56 @@ export namespace Prisma {
     _max?: NestedEnumOtpTypeFilter<$PrismaModel>
   }
 
+  export type NestedEnumEnrollmentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.EnrollmentStatus | EnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.EnrollmentStatus[] | ListEnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EnrollmentStatus[] | ListEnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumEnrollmentStatusFilter<$PrismaModel> | $Enums.EnrollmentStatus
+  }
+
+  export type NestedEnumPaymentMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentMethodFilter<$PrismaModel> | $Enums.PaymentMethod
+  }
+
+  export type NestedEnumEnrollmentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EnrollmentStatus | EnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.EnrollmentStatus[] | ListEnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EnrollmentStatus[] | ListEnumEnrollmentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumEnrollmentStatusWithAggregatesFilter<$PrismaModel> | $Enums.EnrollmentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEnrollmentStatusFilter<$PrismaModel>
+    _max?: NestedEnumEnrollmentStatusFilter<$PrismaModel>
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel> | $Enums.PaymentMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentMethodFilter<$PrismaModel>
+    _max?: NestedEnumPaymentMethodFilter<$PrismaModel>
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -26168,7 +26666,16 @@ export namespace Prisma {
   export type EnrollmentCreateWithoutStudentInput = {
     id?: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     chapter: ChapterCreateNestedOneWithoutEnrollmentsInput
   }
 
@@ -26176,7 +26683,16 @@ export namespace Prisma {
     id?: string
     chapterId: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EnrollmentCreateOrConnectWithoutStudentInput = {
@@ -26427,7 +26943,16 @@ export namespace Prisma {
     studentId?: StringFilter<"Enrollment"> | string
     chapterId?: StringFilter<"Enrollment"> | string
     enrolledAt?: DateTimeFilter<"Enrollment"> | Date | string
-    status?: StringFilter<"Enrollment"> | string
+    status?: EnumEnrollmentStatusFilter<"Enrollment"> | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFilter<"Enrollment"> | number
+    enrolledYear?: IntFilter<"Enrollment"> | number
+    price?: FloatFilter<"Enrollment"> | number
+    paymentMethod?: EnumPaymentMethodFilter<"Enrollment"> | $Enums.PaymentMethod
+    promoCodeId?: StringNullableFilter<"Enrollment"> | string | null
+    startedAt?: DateTimeFilter<"Enrollment"> | Date | string
+    expiresAt?: DateTimeFilter<"Enrollment"> | Date | string
+    createdAt?: DateTimeFilter<"Enrollment"> | Date | string
+    updatedAt?: DateTimeFilter<"Enrollment"> | Date | string
   }
 
   export type LessonProgressUpsertWithWhereUniqueWithoutStudentInput = {
@@ -27015,7 +27540,16 @@ export namespace Prisma {
   export type EnrollmentCreateWithoutChapterInput = {
     id?: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     student: UserCreateNestedOneWithoutEnrollmentsInput
   }
 
@@ -27023,7 +27557,16 @@ export namespace Prisma {
     id?: string
     studentId: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EnrollmentCreateOrConnectWithoutChapterInput = {
@@ -28664,7 +29207,16 @@ export namespace Prisma {
     id?: string
     chapterId: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type LessonProgressCreateManyStudentInput = {
@@ -28750,7 +29302,16 @@ export namespace Prisma {
   export type EnrollmentUpdateWithoutStudentInput = {
     id?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chapter?: ChapterUpdateOneRequiredWithoutEnrollmentsNestedInput
   }
 
@@ -28758,14 +29319,32 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EnrollmentUncheckedUpdateManyWithoutStudentInput = {
     id?: StringFieldUpdateOperationsInput | string
     chapterId?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LessonProgressUpdateWithoutStudentInput = {
@@ -28956,7 +29535,16 @@ export namespace Prisma {
     id?: string
     studentId: string
     enrolledAt?: Date | string
-    status?: string
+    status?: $Enums.EnrollmentStatus
+    enrolledMonth: number
+    enrolledYear: number
+    price: number
+    paymentMethod: $Enums.PaymentMethod
+    promoCodeId?: string | null
+    startedAt?: Date | string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type LessonCreateManyChapterInput = {
@@ -28985,7 +29573,16 @@ export namespace Prisma {
   export type EnrollmentUpdateWithoutChapterInput = {
     id?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: UserUpdateOneRequiredWithoutEnrollmentsNestedInput
   }
 
@@ -28993,14 +29590,32 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EnrollmentUncheckedUpdateManyWithoutChapterInput = {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     enrolledAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumEnrollmentStatusFieldUpdateOperationsInput | $Enums.EnrollmentStatus
+    enrolledMonth?: IntFieldUpdateOperationsInput | number
+    enrolledYear?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LessonUpdateWithoutChapterInput = {
