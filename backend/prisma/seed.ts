@@ -813,6 +813,9 @@ async function main() {
 
   // Enroll the student in one paid chapter (seed-chapter-a-1-2, price 29.99)
   // to test the "enrolled + paid = access" path.
+  const enrollmentStartedAt = new Date();
+  const enrollmentExpiresAt = new Date(enrollmentStartedAt);
+  enrollmentExpiresAt.setFullYear(enrollmentExpiresAt.getFullYear() + 1);
   await prisma.enrollment.upsert({
     where: {
       studentId_chapterId: {
@@ -826,6 +829,12 @@ async function main() {
       studentId: studentUser.id,
       chapterId: "seed-chapter-a-1-2",
       status: "ACTIVE",
+      enrolledMonth: enrollmentStartedAt.getMonth() + 1,
+      enrolledYear: enrollmentStartedAt.getFullYear(),
+      price: 29.99,
+      paymentMethod: "CASH",
+      startedAt: enrollmentStartedAt,
+      expiresAt: enrollmentExpiresAt,
     },
   });
   console.log("  Enrolled in seed-chapter-a-1-2 (paid, 29.99 EGP)");

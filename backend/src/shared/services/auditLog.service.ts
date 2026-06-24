@@ -33,7 +33,7 @@ export type AuditLogAction =
   | "DELETE_CHAPTER"
   | "DELETE_LESSON";
 
-export type ActorType = "TEACHER" | "STUDENT" | "SYSTEM";
+export type ActorType = "TEACHER" | "STUDENT" | "ADMIN" | "SYSTEM";
 
 export interface ActivityParams {
   action: AuditLogAction;
