@@ -1,11 +1,11 @@
-import { logger } from '../../config/logger.js';
+import { logger } from "../../config/logger.js";
 import {
   GeminiAuthError,
   GeminiRateLimitError,
   GeminiContentBlockedError,
   GeminiTimeoutError,
   GeminiNetworkError,
-} from '../errors/geminiErrors.js';
+} from "../errors/geminiErrors.js";
 import type {
   GenerationConfig,
   SystemInstruction,
@@ -13,7 +13,7 @@ import type {
   GenerateContentResponse,
   EmbedContentResponse,
   GeminiErrorBody,
-} from '../types/gemini.types.js';
+} from "../types/gemini.types.js";
 
 const GENERATION_TIMEOUT_MS = 30_000;
 const EMBED_TIMEOUT_MS = 10_000;
@@ -23,9 +23,9 @@ const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 30;
 
 const GENERATION_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}';
+  "https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}";
 const EMBED_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${apiKey}';
+  "https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${apiKey}";
 
 export class GeminiClient {
   private readonly apiKey: string;
@@ -37,14 +37,14 @@ export class GeminiClient {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new GeminiAuthError(
-        'GEMINI_API_KEY is not set in environment variables',
+        "GEMINI_API_KEY is not set in environment variables",
       );
     }
     this.apiKey = apiKey;
     this.generationModel =
-      process.env.GEMINI_GENERATION_MODEL ?? 'gemini-2.0-flash';
+      process.env.GEMINI_GENERATION_MODEL ?? "gemini-2.0-flash";
     this.embeddingModel =
-      process.env.GEMINI_EMBEDDING_MODEL ?? 'text-embedding-004';
+      process.env.GEMINI_EMBEDDING_MODEL ?? "text-embedding-004";
   }
 
   /**
@@ -69,13 +69,13 @@ export class GeminiClient {
 
     const response = await this._withRetry(() =>
       this._fetchWithTimeout(
-        GENERATION_URL.replace('${model}', this.generationModel).replace(
-          '${apiKey}',
+        GENERATION_URL.replace("${model}", this.generationModel).replace(
+          "${apiKey}",
           this.apiKey,
         ),
         body,
         GENERATION_TIMEOUT_MS,
-        'generateContent',
+        "generateContent",
       ),
     );
 
@@ -102,13 +102,13 @@ export class GeminiClient {
 
     const response = await this._withRetry(() =>
       this._fetchWithTimeout(
-        EMBED_URL.replace('${model}', this.embeddingModel).replace(
-          '${apiKey}',
+        EMBED_URL.replace("${model}", this.embeddingModel).replace(
+          "${apiKey}",
           this.apiKey,
         ),
         body,
         EMBED_TIMEOUT_MS,
-        'embedContent',
+        "embedContent",
       ),
     );
 
@@ -131,7 +131,7 @@ export class GeminiClient {
   ): unknown {
     const systemInstruction: SystemInstruction = {
       parts: [
-        { text: 'You are a helpful assistant. Always respond in Arabic.' },
+        { text: "You are a helpful assistant. Always respond in Arabic." },
       ],
     };
 
@@ -152,12 +152,12 @@ export class GeminiClient {
     const geminiResponse = response as GenerateContentResponse;
 
     if (!geminiResponse.candidates || geminiResponse.candidates.length === 0) {
-      throw new GeminiNetworkError('Gemini response has no candidates');
+      throw new GeminiNetworkError("Gemini response has no candidates");
     }
 
     const candidate = geminiResponse.candidates[0]!;
 
-    if (candidate.finishReason === 'SAFETY') {
+    if (candidate.finishReason === "SAFETY") {
       throw new GeminiContentBlockedError();
     }
 
@@ -165,7 +165,7 @@ export class GeminiClient {
 
     if (!text) {
       throw new GeminiNetworkError(
-        'Gemini response contains no text in the first candidate part',
+        "Gemini response contains no text in the first candidate part",
       );
     }
 
@@ -177,7 +177,7 @@ export class GeminiClient {
 
     if (!embeddingResponse.embedding?.values) {
       throw new GeminiNetworkError(
-        'Gemini embedding response is missing embedding values',
+        "Gemini embedding response is missing embedding values",
       );
     }
 
@@ -241,7 +241,7 @@ export class GeminiClient {
           const delay = RETRY_DELAYS_MS[attempt]!;
           logger.warn(
             `[GeminiClient] Retry attempt ${attempt + 1}/${MAX_RETRIES} after ${delay}ms`,
-            error instanceof Error ? error.message : 'Unknown error',
+            error instanceof Error ? error.message : "Unknown error",
           );
           await this._sleep(delay);
           continue;
@@ -267,8 +267,8 @@ export class GeminiClient {
       this._recordRequest();
 
       const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
         signal: controller.signal,
       });
@@ -287,7 +287,7 @@ export class GeminiClient {
           .json()
           .catch(() => ({}))) as GeminiErrorBody;
         throw new GeminiRateLimitError(
-          errorBody.error?.message ?? 'Rate limit exceeded',
+          errorBody.error?.message ?? "Rate limit exceeded",
         );
       }
 
@@ -319,12 +319,12 @@ export class GeminiClient {
         throw error;
       }
 
-      if (error instanceof DOMException && error.name === 'AbortError') {
+      if (error instanceof DOMException && error.name === "AbortError") {
         throw new GeminiTimeoutError(operation);
       }
 
       throw new GeminiNetworkError(
-        error instanceof Error ? error.message : 'Unknown network error',
+        error instanceof Error ? error.message : "Unknown network error",
       );
     } finally {
       clearTimeout(timeoutId);

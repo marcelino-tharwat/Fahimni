@@ -64,6 +64,11 @@ export type LessonProgress = $Result.DefaultSelection<Prisma.$LessonProgressPayl
  */
 export type LessonMaterial = $Result.DefaultSelection<Prisma.$LessonMaterialPayload>
 /**
+ * Model ContentChunk
+ * 
+ */
+export type ContentChunk = $Result.DefaultSelection<Prisma.$ContentChunkPayload>
+/**
  * Model AuditLog
  * 
  */
@@ -403,6 +408,16 @@ export class PrismaClient<
     * ```
     */
   get lessonMaterial(): Prisma.LessonMaterialDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.contentChunk`: Exposes CRUD operations for the **ContentChunk** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ContentChunks
+    * const contentChunks = await prisma.contentChunk.findMany()
+    * ```
+    */
+  get contentChunk(): Prisma.ContentChunkDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
@@ -897,6 +912,7 @@ export namespace Prisma {
     Enrollment: 'Enrollment',
     LessonProgress: 'LessonProgress',
     LessonMaterial: 'LessonMaterial',
+    ContentChunk: 'ContentChunk',
     AuditLog: 'AuditLog',
     RefreshToken: 'RefreshToken',
     Quiz: 'Quiz',
@@ -917,7 +933,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "lessonProgress" | "lessonMaterial" | "auditLog" | "refreshToken" | "quiz" | "question" | "quizAttempt"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "lessonProgress" | "lessonMaterial" | "contentChunk" | "auditLog" | "refreshToken" | "quiz" | "question" | "quizAttempt"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1661,6 +1677,80 @@ export namespace Prisma {
           }
         }
       }
+      ContentChunk: {
+        payload: Prisma.$ContentChunkPayload<ExtArgs>
+        fields: Prisma.ContentChunkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ContentChunkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ContentChunkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>
+          }
+          findFirst: {
+            args: Prisma.ContentChunkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ContentChunkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>
+          }
+          findMany: {
+            args: Prisma.ContentChunkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>[]
+          }
+          create: {
+            args: Prisma.ContentChunkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>
+          }
+          createMany: {
+            args: Prisma.ContentChunkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ContentChunkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>[]
+          }
+          delete: {
+            args: Prisma.ContentChunkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>
+          }
+          update: {
+            args: Prisma.ContentChunkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>
+          }
+          deleteMany: {
+            args: Prisma.ContentChunkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ContentChunkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ContentChunkUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>[]
+          }
+          upsert: {
+            args: Prisma.ContentChunkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ContentChunkPayload>
+          }
+          aggregate: {
+            args: Prisma.ContentChunkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateContentChunk>
+          }
+          groupBy: {
+            args: Prisma.ContentChunkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ContentChunkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ContentChunkCountArgs<ExtArgs>
+            result: $Utils.Optional<ContentChunkCountAggregateOutputType> | number
+          }
+        }
+      }
       AuditLog: {
         payload: Prisma.$AuditLogPayload<ExtArgs>
         fields: Prisma.AuditLogFieldRefs
@@ -2149,6 +2239,7 @@ export namespace Prisma {
     enrollment?: EnrollmentOmit
     lessonProgress?: LessonProgressOmit
     lessonMaterial?: LessonMaterialOmit
+    contentChunk?: ContentChunkOmit
     auditLog?: AuditLogOmit
     refreshToken?: RefreshTokenOmit
     quiz?: QuizOmit
@@ -2401,11 +2492,13 @@ export namespace Prisma {
   export type LessonCountOutputType = {
     lessonMaterials: number
     lessonProgress: number
+    contentChunks: number
   }
 
   export type LessonCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     lessonMaterials?: boolean | LessonCountOutputTypeCountLessonMaterialsArgs
     lessonProgress?: boolean | LessonCountOutputTypeCountLessonProgressArgs
+    contentChunks?: boolean | LessonCountOutputTypeCountContentChunksArgs
   }
 
   // Custom InputTypes
@@ -2431,6 +2524,13 @@ export namespace Prisma {
    */
   export type LessonCountOutputTypeCountLessonProgressArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LessonProgressWhereInput
+  }
+
+  /**
+   * LessonCountOutputType without action
+   */
+  export type LessonCountOutputTypeCountContentChunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ContentChunkWhereInput
   }
 
 
@@ -8636,6 +8736,7 @@ export namespace Prisma {
     viewCount?: boolean
     lessonMaterials?: boolean | Lesson$lessonMaterialsArgs<ExtArgs>
     lessonProgress?: boolean | Lesson$lessonProgressArgs<ExtArgs>
+    contentChunks?: boolean | Lesson$contentChunksArgs<ExtArgs>
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     _count?: boolean | LessonCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lesson"]>
@@ -8691,6 +8792,7 @@ export namespace Prisma {
   export type LessonInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     lessonMaterials?: boolean | Lesson$lessonMaterialsArgs<ExtArgs>
     lessonProgress?: boolean | Lesson$lessonProgressArgs<ExtArgs>
+    contentChunks?: boolean | Lesson$contentChunksArgs<ExtArgs>
     chapter?: boolean | ChapterDefaultArgs<ExtArgs>
     _count?: boolean | LessonCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -8706,6 +8808,7 @@ export namespace Prisma {
     objects: {
       lessonMaterials: Prisma.$LessonMaterialPayload<ExtArgs>[]
       lessonProgress: Prisma.$LessonProgressPayload<ExtArgs>[]
+      contentChunks: Prisma.$ContentChunkPayload<ExtArgs>[]
       chapter: Prisma.$ChapterPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -9117,6 +9220,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     lessonMaterials<T extends Lesson$lessonMaterialsArgs<ExtArgs> = {}>(args?: Subset<T, Lesson$lessonMaterialsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonMaterialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     lessonProgress<T extends Lesson$lessonProgressArgs<ExtArgs> = {}>(args?: Subset<T, Lesson$lessonProgressArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contentChunks<T extends Lesson$contentChunksArgs<ExtArgs> = {}>(args?: Subset<T, Lesson$contentChunksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     chapter<T extends ChapterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChapterDefaultArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -9605,6 +9709,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LessonProgressScalarFieldEnum | LessonProgressScalarFieldEnum[]
+  }
+
+  /**
+   * Lesson.contentChunks
+   */
+  export type Lesson$contentChunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    where?: ContentChunkWhereInput
+    orderBy?: ContentChunkOrderByWithRelationInput | ContentChunkOrderByWithRelationInput[]
+    cursor?: ContentChunkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ContentChunkScalarFieldEnum | ContentChunkScalarFieldEnum[]
   }
 
   /**
@@ -14175,6 +14303,1078 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: LessonMaterialInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ContentChunk
+   */
+
+  export type AggregateContentChunk = {
+    _count: ContentChunkCountAggregateOutputType | null
+    _min: ContentChunkMinAggregateOutputType | null
+    _max: ContentChunkMaxAggregateOutputType | null
+  }
+
+  export type ContentChunkMinAggregateOutputType = {
+    id: string | null
+    content: string | null
+    lessonId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ContentChunkMaxAggregateOutputType = {
+    id: string | null
+    content: string | null
+    lessonId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ContentChunkCountAggregateOutputType = {
+    id: number
+    content: number
+    lessonId: number
+    metadata: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ContentChunkMinAggregateInputType = {
+    id?: true
+    content?: true
+    lessonId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ContentChunkMaxAggregateInputType = {
+    id?: true
+    content?: true
+    lessonId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ContentChunkCountAggregateInputType = {
+    id?: true
+    content?: true
+    lessonId?: true
+    metadata?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ContentChunkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ContentChunk to aggregate.
+     */
+    where?: ContentChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentChunks to fetch.
+     */
+    orderBy?: ContentChunkOrderByWithRelationInput | ContentChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ContentChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ContentChunks
+    **/
+    _count?: true | ContentChunkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ContentChunkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ContentChunkMaxAggregateInputType
+  }
+
+  export type GetContentChunkAggregateType<T extends ContentChunkAggregateArgs> = {
+        [P in keyof T & keyof AggregateContentChunk]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateContentChunk[P]>
+      : GetScalarType<T[P], AggregateContentChunk[P]>
+  }
+
+
+
+
+  export type ContentChunkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ContentChunkWhereInput
+    orderBy?: ContentChunkOrderByWithAggregationInput | ContentChunkOrderByWithAggregationInput[]
+    by: ContentChunkScalarFieldEnum[] | ContentChunkScalarFieldEnum
+    having?: ContentChunkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ContentChunkCountAggregateInputType | true
+    _min?: ContentChunkMinAggregateInputType
+    _max?: ContentChunkMaxAggregateInputType
+  }
+
+  export type ContentChunkGroupByOutputType = {
+    id: string
+    content: string
+    lessonId: string
+    metadata: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    _count: ContentChunkCountAggregateOutputType | null
+    _min: ContentChunkMinAggregateOutputType | null
+    _max: ContentChunkMaxAggregateOutputType | null
+  }
+
+  type GetContentChunkGroupByPayload<T extends ContentChunkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ContentChunkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ContentChunkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ContentChunkGroupByOutputType[P]>
+            : GetScalarType<T[P], ContentChunkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ContentChunkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    lessonId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["contentChunk"]>
+
+  export type ContentChunkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    lessonId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["contentChunk"]>
+
+  export type ContentChunkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    lessonId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["contentChunk"]>
+
+  export type ContentChunkSelectScalar = {
+    id?: boolean
+    content?: boolean
+    lessonId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ContentChunkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "lessonId" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["contentChunk"]>
+  export type ContentChunkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }
+  export type ContentChunkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }
+  export type ContentChunkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lesson?: boolean | LessonDefaultArgs<ExtArgs>
+  }
+
+  export type $ContentChunkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ContentChunk"
+    objects: {
+      lesson: Prisma.$LessonPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      content: string
+      lessonId: string
+      metadata: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["contentChunk"]>
+    composites: {}
+  }
+
+  type ContentChunkGetPayload<S extends boolean | null | undefined | ContentChunkDefaultArgs> = $Result.GetResult<Prisma.$ContentChunkPayload, S>
+
+  type ContentChunkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ContentChunkFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ContentChunkCountAggregateInputType | true
+    }
+
+  export interface ContentChunkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ContentChunk'], meta: { name: 'ContentChunk' } }
+    /**
+     * Find zero or one ContentChunk that matches the filter.
+     * @param {ContentChunkFindUniqueArgs} args - Arguments to find a ContentChunk
+     * @example
+     * // Get one ContentChunk
+     * const contentChunk = await prisma.contentChunk.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ContentChunkFindUniqueArgs>(args: SelectSubset<T, ContentChunkFindUniqueArgs<ExtArgs>>): Prisma__ContentChunkClient<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ContentChunk that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ContentChunkFindUniqueOrThrowArgs} args - Arguments to find a ContentChunk
+     * @example
+     * // Get one ContentChunk
+     * const contentChunk = await prisma.contentChunk.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ContentChunkFindUniqueOrThrowArgs>(args: SelectSubset<T, ContentChunkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ContentChunkClient<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ContentChunk that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentChunkFindFirstArgs} args - Arguments to find a ContentChunk
+     * @example
+     * // Get one ContentChunk
+     * const contentChunk = await prisma.contentChunk.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ContentChunkFindFirstArgs>(args?: SelectSubset<T, ContentChunkFindFirstArgs<ExtArgs>>): Prisma__ContentChunkClient<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ContentChunk that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentChunkFindFirstOrThrowArgs} args - Arguments to find a ContentChunk
+     * @example
+     * // Get one ContentChunk
+     * const contentChunk = await prisma.contentChunk.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ContentChunkFindFirstOrThrowArgs>(args?: SelectSubset<T, ContentChunkFindFirstOrThrowArgs<ExtArgs>>): Prisma__ContentChunkClient<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ContentChunks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentChunkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ContentChunks
+     * const contentChunks = await prisma.contentChunk.findMany()
+     * 
+     * // Get first 10 ContentChunks
+     * const contentChunks = await prisma.contentChunk.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const contentChunkWithIdOnly = await prisma.contentChunk.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ContentChunkFindManyArgs>(args?: SelectSubset<T, ContentChunkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ContentChunk.
+     * @param {ContentChunkCreateArgs} args - Arguments to create a ContentChunk.
+     * @example
+     * // Create one ContentChunk
+     * const ContentChunk = await prisma.contentChunk.create({
+     *   data: {
+     *     // ... data to create a ContentChunk
+     *   }
+     * })
+     * 
+     */
+    create<T extends ContentChunkCreateArgs>(args: SelectSubset<T, ContentChunkCreateArgs<ExtArgs>>): Prisma__ContentChunkClient<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ContentChunks.
+     * @param {ContentChunkCreateManyArgs} args - Arguments to create many ContentChunks.
+     * @example
+     * // Create many ContentChunks
+     * const contentChunk = await prisma.contentChunk.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ContentChunkCreateManyArgs>(args?: SelectSubset<T, ContentChunkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ContentChunks and returns the data saved in the database.
+     * @param {ContentChunkCreateManyAndReturnArgs} args - Arguments to create many ContentChunks.
+     * @example
+     * // Create many ContentChunks
+     * const contentChunk = await prisma.contentChunk.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ContentChunks and only return the `id`
+     * const contentChunkWithIdOnly = await prisma.contentChunk.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ContentChunkCreateManyAndReturnArgs>(args?: SelectSubset<T, ContentChunkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ContentChunk.
+     * @param {ContentChunkDeleteArgs} args - Arguments to delete one ContentChunk.
+     * @example
+     * // Delete one ContentChunk
+     * const ContentChunk = await prisma.contentChunk.delete({
+     *   where: {
+     *     // ... filter to delete one ContentChunk
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ContentChunkDeleteArgs>(args: SelectSubset<T, ContentChunkDeleteArgs<ExtArgs>>): Prisma__ContentChunkClient<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ContentChunk.
+     * @param {ContentChunkUpdateArgs} args - Arguments to update one ContentChunk.
+     * @example
+     * // Update one ContentChunk
+     * const contentChunk = await prisma.contentChunk.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ContentChunkUpdateArgs>(args: SelectSubset<T, ContentChunkUpdateArgs<ExtArgs>>): Prisma__ContentChunkClient<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ContentChunks.
+     * @param {ContentChunkDeleteManyArgs} args - Arguments to filter ContentChunks to delete.
+     * @example
+     * // Delete a few ContentChunks
+     * const { count } = await prisma.contentChunk.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ContentChunkDeleteManyArgs>(args?: SelectSubset<T, ContentChunkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ContentChunks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentChunkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ContentChunks
+     * const contentChunk = await prisma.contentChunk.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ContentChunkUpdateManyArgs>(args: SelectSubset<T, ContentChunkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ContentChunks and returns the data updated in the database.
+     * @param {ContentChunkUpdateManyAndReturnArgs} args - Arguments to update many ContentChunks.
+     * @example
+     * // Update many ContentChunks
+     * const contentChunk = await prisma.contentChunk.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ContentChunks and only return the `id`
+     * const contentChunkWithIdOnly = await prisma.contentChunk.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ContentChunkUpdateManyAndReturnArgs>(args: SelectSubset<T, ContentChunkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ContentChunk.
+     * @param {ContentChunkUpsertArgs} args - Arguments to update or create a ContentChunk.
+     * @example
+     * // Update or create a ContentChunk
+     * const contentChunk = await prisma.contentChunk.upsert({
+     *   create: {
+     *     // ... data to create a ContentChunk
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ContentChunk we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ContentChunkUpsertArgs>(args: SelectSubset<T, ContentChunkUpsertArgs<ExtArgs>>): Prisma__ContentChunkClient<$Result.GetResult<Prisma.$ContentChunkPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ContentChunks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentChunkCountArgs} args - Arguments to filter ContentChunks to count.
+     * @example
+     * // Count the number of ContentChunks
+     * const count = await prisma.contentChunk.count({
+     *   where: {
+     *     // ... the filter for the ContentChunks we want to count
+     *   }
+     * })
+    **/
+    count<T extends ContentChunkCountArgs>(
+      args?: Subset<T, ContentChunkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ContentChunkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ContentChunk.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentChunkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ContentChunkAggregateArgs>(args: Subset<T, ContentChunkAggregateArgs>): Prisma.PrismaPromise<GetContentChunkAggregateType<T>>
+
+    /**
+     * Group by ContentChunk.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentChunkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ContentChunkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ContentChunkGroupByArgs['orderBy'] }
+        : { orderBy?: ContentChunkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ContentChunkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetContentChunkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ContentChunk model
+   */
+  readonly fields: ContentChunkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ContentChunk.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ContentChunkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    lesson<T extends LessonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LessonDefaultArgs<ExtArgs>>): Prisma__LessonClient<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ContentChunk model
+   */
+  interface ContentChunkFieldRefs {
+    readonly id: FieldRef<"ContentChunk", 'String'>
+    readonly content: FieldRef<"ContentChunk", 'String'>
+    readonly lessonId: FieldRef<"ContentChunk", 'String'>
+    readonly metadata: FieldRef<"ContentChunk", 'Json'>
+    readonly createdAt: FieldRef<"ContentChunk", 'DateTime'>
+    readonly updatedAt: FieldRef<"ContentChunk", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ContentChunk findUnique
+   */
+  export type ContentChunkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentChunk to fetch.
+     */
+    where: ContentChunkWhereUniqueInput
+  }
+
+  /**
+   * ContentChunk findUniqueOrThrow
+   */
+  export type ContentChunkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentChunk to fetch.
+     */
+    where: ContentChunkWhereUniqueInput
+  }
+
+  /**
+   * ContentChunk findFirst
+   */
+  export type ContentChunkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentChunk to fetch.
+     */
+    where?: ContentChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentChunks to fetch.
+     */
+    orderBy?: ContentChunkOrderByWithRelationInput | ContentChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ContentChunks.
+     */
+    cursor?: ContentChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ContentChunks.
+     */
+    distinct?: ContentChunkScalarFieldEnum | ContentChunkScalarFieldEnum[]
+  }
+
+  /**
+   * ContentChunk findFirstOrThrow
+   */
+  export type ContentChunkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentChunk to fetch.
+     */
+    where?: ContentChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentChunks to fetch.
+     */
+    orderBy?: ContentChunkOrderByWithRelationInput | ContentChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ContentChunks.
+     */
+    cursor?: ContentChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ContentChunks.
+     */
+    distinct?: ContentChunkScalarFieldEnum | ContentChunkScalarFieldEnum[]
+  }
+
+  /**
+   * ContentChunk findMany
+   */
+  export type ContentChunkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which ContentChunks to fetch.
+     */
+    where?: ContentChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ContentChunks to fetch.
+     */
+    orderBy?: ContentChunkOrderByWithRelationInput | ContentChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ContentChunks.
+     */
+    cursor?: ContentChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ContentChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ContentChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ContentChunks.
+     */
+    distinct?: ContentChunkScalarFieldEnum | ContentChunkScalarFieldEnum[]
+  }
+
+  /**
+   * ContentChunk create
+   */
+  export type ContentChunkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ContentChunk.
+     */
+    data: XOR<ContentChunkCreateInput, ContentChunkUncheckedCreateInput>
+  }
+
+  /**
+   * ContentChunk createMany
+   */
+  export type ContentChunkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ContentChunks.
+     */
+    data: ContentChunkCreateManyInput | ContentChunkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ContentChunk createManyAndReturn
+   */
+  export type ContentChunkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * The data used to create many ContentChunks.
+     */
+    data: ContentChunkCreateManyInput | ContentChunkCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ContentChunk update
+   */
+  export type ContentChunkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ContentChunk.
+     */
+    data: XOR<ContentChunkUpdateInput, ContentChunkUncheckedUpdateInput>
+    /**
+     * Choose, which ContentChunk to update.
+     */
+    where: ContentChunkWhereUniqueInput
+  }
+
+  /**
+   * ContentChunk updateMany
+   */
+  export type ContentChunkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ContentChunks.
+     */
+    data: XOR<ContentChunkUpdateManyMutationInput, ContentChunkUncheckedUpdateManyInput>
+    /**
+     * Filter which ContentChunks to update
+     */
+    where?: ContentChunkWhereInput
+    /**
+     * Limit how many ContentChunks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ContentChunk updateManyAndReturn
+   */
+  export type ContentChunkUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * The data used to update ContentChunks.
+     */
+    data: XOR<ContentChunkUpdateManyMutationInput, ContentChunkUncheckedUpdateManyInput>
+    /**
+     * Filter which ContentChunks to update
+     */
+    where?: ContentChunkWhereInput
+    /**
+     * Limit how many ContentChunks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ContentChunk upsert
+   */
+  export type ContentChunkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ContentChunk to update in case it exists.
+     */
+    where: ContentChunkWhereUniqueInput
+    /**
+     * In case the ContentChunk found by the `where` argument doesn't exist, create a new ContentChunk with this data.
+     */
+    create: XOR<ContentChunkCreateInput, ContentChunkUncheckedCreateInput>
+    /**
+     * In case the ContentChunk was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ContentChunkUpdateInput, ContentChunkUncheckedUpdateInput>
+  }
+
+  /**
+   * ContentChunk delete
+   */
+  export type ContentChunkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
+    /**
+     * Filter which ContentChunk to delete.
+     */
+    where: ContentChunkWhereUniqueInput
+  }
+
+  /**
+   * ContentChunk deleteMany
+   */
+  export type ContentChunkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ContentChunks to delete
+     */
+    where?: ContentChunkWhereInput
+    /**
+     * Limit how many ContentChunks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ContentChunk without action
+   */
+  export type ContentChunkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ContentChunk
+     */
+    select?: ContentChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ContentChunk
+     */
+    omit?: ContentChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContentChunkInclude<ExtArgs> | null
   }
 
 
@@ -19916,6 +21116,18 @@ export namespace Prisma {
   export type LessonMaterialScalarFieldEnum = (typeof LessonMaterialScalarFieldEnum)[keyof typeof LessonMaterialScalarFieldEnum]
 
 
+  export const ContentChunkScalarFieldEnum: {
+    id: 'id',
+    content: 'content',
+    lessonId: 'lessonId',
+    metadata: 'metadata',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ContentChunkScalarFieldEnum = (typeof ContentChunkScalarFieldEnum)[keyof typeof ContentChunkScalarFieldEnum]
+
+
   export const AuditLogScalarFieldEnum: {
     id: 'id',
     action: 'action',
@@ -20626,6 +21838,7 @@ export namespace Prisma {
     viewCount?: IntFilter<"Lesson"> | number
     lessonMaterials?: LessonMaterialListRelationFilter
     lessonProgress?: LessonProgressListRelationFilter
+    contentChunks?: ContentChunkListRelationFilter
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
   }
 
@@ -20644,6 +21857,7 @@ export namespace Prisma {
     viewCount?: SortOrder
     lessonMaterials?: LessonMaterialOrderByRelationAggregateInput
     lessonProgress?: LessonProgressOrderByRelationAggregateInput
+    contentChunks?: ContentChunkOrderByRelationAggregateInput
     chapter?: ChapterOrderByWithRelationInput
   }
 
@@ -20665,6 +21879,7 @@ export namespace Prisma {
     viewCount?: IntFilter<"Lesson"> | number
     lessonMaterials?: LessonMaterialListRelationFilter
     lessonProgress?: LessonProgressListRelationFilter
+    contentChunks?: ContentChunkListRelationFilter
     chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
   }, "id">
 
@@ -21016,6 +22231,66 @@ export namespace Prisma {
     displayName?: StringWithAggregatesFilter<"LessonMaterial"> | string
     fileSize?: IntWithAggregatesFilter<"LessonMaterial"> | number
     mimeType?: StringWithAggregatesFilter<"LessonMaterial"> | string
+  }
+
+  export type ContentChunkWhereInput = {
+    AND?: ContentChunkWhereInput | ContentChunkWhereInput[]
+    OR?: ContentChunkWhereInput[]
+    NOT?: ContentChunkWhereInput | ContentChunkWhereInput[]
+    id?: StringFilter<"ContentChunk"> | string
+    content?: StringFilter<"ContentChunk"> | string
+    lessonId?: StringFilter<"ContentChunk"> | string
+    metadata?: JsonFilter<"ContentChunk">
+    createdAt?: DateTimeFilter<"ContentChunk"> | Date | string
+    updatedAt?: DateTimeFilter<"ContentChunk"> | Date | string
+    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
+  }
+
+  export type ContentChunkOrderByWithRelationInput = {
+    id?: SortOrder
+    content?: SortOrder
+    lessonId?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lesson?: LessonOrderByWithRelationInput
+  }
+
+  export type ContentChunkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ContentChunkWhereInput | ContentChunkWhereInput[]
+    OR?: ContentChunkWhereInput[]
+    NOT?: ContentChunkWhereInput | ContentChunkWhereInput[]
+    content?: StringFilter<"ContentChunk"> | string
+    lessonId?: StringFilter<"ContentChunk"> | string
+    metadata?: JsonFilter<"ContentChunk">
+    createdAt?: DateTimeFilter<"ContentChunk"> | Date | string
+    updatedAt?: DateTimeFilter<"ContentChunk"> | Date | string
+    lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
+  }, "id">
+
+  export type ContentChunkOrderByWithAggregationInput = {
+    id?: SortOrder
+    content?: SortOrder
+    lessonId?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ContentChunkCountOrderByAggregateInput
+    _max?: ContentChunkMaxOrderByAggregateInput
+    _min?: ContentChunkMinOrderByAggregateInput
+  }
+
+  export type ContentChunkScalarWhereWithAggregatesInput = {
+    AND?: ContentChunkScalarWhereWithAggregatesInput | ContentChunkScalarWhereWithAggregatesInput[]
+    OR?: ContentChunkScalarWhereWithAggregatesInput[]
+    NOT?: ContentChunkScalarWhereWithAggregatesInput | ContentChunkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ContentChunk"> | string
+    content?: StringWithAggregatesFilter<"ContentChunk"> | string
+    lessonId?: StringWithAggregatesFilter<"ContentChunk"> | string
+    metadata?: JsonWithAggregatesFilter<"ContentChunk">
+    createdAt?: DateTimeWithAggregatesFilter<"ContentChunk"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ContentChunk"> | Date | string
   }
 
   export type AuditLogWhereInput = {
@@ -21797,6 +23072,7 @@ export namespace Prisma {
     viewCount?: number
     lessonMaterials?: LessonMaterialCreateNestedManyWithoutLessonInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutLessonInput
+    contentChunks?: ContentChunkCreateNestedManyWithoutLessonInput
     chapter: ChapterCreateNestedOneWithoutLessonsInput
   }
 
@@ -21815,6 +23091,7 @@ export namespace Prisma {
     viewCount?: number
     lessonMaterials?: LessonMaterialUncheckedCreateNestedManyWithoutLessonInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+    contentChunks?: ContentChunkUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUpdateInput = {
@@ -21831,6 +23108,7 @@ export namespace Prisma {
     viewCount?: IntFieldUpdateOperationsInput | number
     lessonMaterials?: LessonMaterialUpdateManyWithoutLessonNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutLessonNestedInput
+    contentChunks?: ContentChunkUpdateManyWithoutLessonNestedInput
     chapter?: ChapterUpdateOneRequiredWithoutLessonsNestedInput
   }
 
@@ -21849,6 +23127,7 @@ export namespace Prisma {
     viewCount?: IntFieldUpdateOperationsInput | number
     lessonMaterials?: LessonMaterialUncheckedUpdateManyWithoutLessonNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
+    contentChunks?: ContentChunkUncheckedUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonCreateManyInput = {
@@ -22223,6 +23502,68 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     fileSize?: IntFieldUpdateOperationsInput | number
     mimeType?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ContentChunkCreateInput = {
+    id?: string
+    content: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lesson: LessonCreateNestedOneWithoutContentChunksInput
+  }
+
+  export type ContentChunkUncheckedCreateInput = {
+    id?: string
+    content: string
+    lessonId: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ContentChunkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lesson?: LessonUpdateOneRequiredWithoutContentChunksNestedInput
+  }
+
+  export type ContentChunkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    lessonId?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentChunkCreateManyInput = {
+    id?: string
+    content: string
+    lessonId: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ContentChunkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentChunkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    lessonId?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AuditLogCreateInput = {
@@ -23126,12 +24467,22 @@ export namespace Prisma {
     none?: LessonMaterialWhereInput
   }
 
+  export type ContentChunkListRelationFilter = {
+    every?: ContentChunkWhereInput
+    some?: ContentChunkWhereInput
+    none?: ContentChunkWhereInput
+  }
+
   export type ChapterScalarRelationFilter = {
     is?: ChapterWhereInput
     isNot?: ChapterWhereInput
   }
 
   export type LessonMaterialOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ContentChunkOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -23485,6 +24836,80 @@ export namespace Prisma {
   export type LessonMaterialSumOrderByAggregateInput = {
     fileSize?: SortOrder
   }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type ContentChunkCountOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    lessonId?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ContentChunkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    lessonId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ContentChunkMinOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    lessonId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
 
   export type AuditLogCountOrderByAggregateInput = {
     id?: SortOrder
@@ -23615,29 +25040,6 @@ export namespace Prisma {
     notIn?: $Enums.QuestionType[] | ListEnumQuestionTypeFieldRefInput<$PrismaModel>
     not?: NestedEnumQuestionTypeFilter<$PrismaModel> | $Enums.QuestionType
   }
-  export type JsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type QuizScalarRelationFilter = {
     is?: QuizWhereInput
@@ -23683,32 +25085,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumQuestionTypeFilter<$PrismaModel>
     _max?: NestedEnumQuestionTypeFilter<$PrismaModel>
-  }
-  export type JsonWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedJsonFilter<$PrismaModel>
-    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type FloatNullableFilter<$PrismaModel = never> = {
@@ -24410,6 +25786,13 @@ export namespace Prisma {
     connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
   }
 
+  export type ContentChunkCreateNestedManyWithoutLessonInput = {
+    create?: XOR<ContentChunkCreateWithoutLessonInput, ContentChunkUncheckedCreateWithoutLessonInput> | ContentChunkCreateWithoutLessonInput[] | ContentChunkUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: ContentChunkCreateOrConnectWithoutLessonInput | ContentChunkCreateOrConnectWithoutLessonInput[]
+    createMany?: ContentChunkCreateManyLessonInputEnvelope
+    connect?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+  }
+
   export type ChapterCreateNestedOneWithoutLessonsInput = {
     create?: XOR<ChapterCreateWithoutLessonsInput, ChapterUncheckedCreateWithoutLessonsInput>
     connectOrCreate?: ChapterCreateOrConnectWithoutLessonsInput
@@ -24428,6 +25811,13 @@ export namespace Prisma {
     connectOrCreate?: LessonProgressCreateOrConnectWithoutLessonInput | LessonProgressCreateOrConnectWithoutLessonInput[]
     createMany?: LessonProgressCreateManyLessonInputEnvelope
     connect?: LessonProgressWhereUniqueInput | LessonProgressWhereUniqueInput[]
+  }
+
+  export type ContentChunkUncheckedCreateNestedManyWithoutLessonInput = {
+    create?: XOR<ContentChunkCreateWithoutLessonInput, ContentChunkUncheckedCreateWithoutLessonInput> | ContentChunkCreateWithoutLessonInput[] | ContentChunkUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: ContentChunkCreateOrConnectWithoutLessonInput | ContentChunkCreateOrConnectWithoutLessonInput[]
+    createMany?: ContentChunkCreateManyLessonInputEnvelope
+    connect?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
   }
 
   export type LessonMaterialUpdateManyWithoutLessonNestedInput = {
@@ -24456,6 +25846,20 @@ export namespace Prisma {
     update?: LessonProgressUpdateWithWhereUniqueWithoutLessonInput | LessonProgressUpdateWithWhereUniqueWithoutLessonInput[]
     updateMany?: LessonProgressUpdateManyWithWhereWithoutLessonInput | LessonProgressUpdateManyWithWhereWithoutLessonInput[]
     deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
+  }
+
+  export type ContentChunkUpdateManyWithoutLessonNestedInput = {
+    create?: XOR<ContentChunkCreateWithoutLessonInput, ContentChunkUncheckedCreateWithoutLessonInput> | ContentChunkCreateWithoutLessonInput[] | ContentChunkUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: ContentChunkCreateOrConnectWithoutLessonInput | ContentChunkCreateOrConnectWithoutLessonInput[]
+    upsert?: ContentChunkUpsertWithWhereUniqueWithoutLessonInput | ContentChunkUpsertWithWhereUniqueWithoutLessonInput[]
+    createMany?: ContentChunkCreateManyLessonInputEnvelope
+    set?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+    disconnect?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+    delete?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+    connect?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+    update?: ContentChunkUpdateWithWhereUniqueWithoutLessonInput | ContentChunkUpdateWithWhereUniqueWithoutLessonInput[]
+    updateMany?: ContentChunkUpdateManyWithWhereWithoutLessonInput | ContentChunkUpdateManyWithWhereWithoutLessonInput[]
+    deleteMany?: ContentChunkScalarWhereInput | ContentChunkScalarWhereInput[]
   }
 
   export type ChapterUpdateOneRequiredWithoutLessonsNestedInput = {
@@ -24492,6 +25896,20 @@ export namespace Prisma {
     update?: LessonProgressUpdateWithWhereUniqueWithoutLessonInput | LessonProgressUpdateWithWhereUniqueWithoutLessonInput[]
     updateMany?: LessonProgressUpdateManyWithWhereWithoutLessonInput | LessonProgressUpdateManyWithWhereWithoutLessonInput[]
     deleteMany?: LessonProgressScalarWhereInput | LessonProgressScalarWhereInput[]
+  }
+
+  export type ContentChunkUncheckedUpdateManyWithoutLessonNestedInput = {
+    create?: XOR<ContentChunkCreateWithoutLessonInput, ContentChunkUncheckedCreateWithoutLessonInput> | ContentChunkCreateWithoutLessonInput[] | ContentChunkUncheckedCreateWithoutLessonInput[]
+    connectOrCreate?: ContentChunkCreateOrConnectWithoutLessonInput | ContentChunkCreateOrConnectWithoutLessonInput[]
+    upsert?: ContentChunkUpsertWithWhereUniqueWithoutLessonInput | ContentChunkUpsertWithWhereUniqueWithoutLessonInput[]
+    createMany?: ContentChunkCreateManyLessonInputEnvelope
+    set?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+    disconnect?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+    delete?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+    connect?: ContentChunkWhereUniqueInput | ContentChunkWhereUniqueInput[]
+    update?: ContentChunkUpdateWithWhereUniqueWithoutLessonInput | ContentChunkUpdateWithWhereUniqueWithoutLessonInput[]
+    updateMany?: ContentChunkUpdateManyWithWhereWithoutLessonInput | ContentChunkUpdateManyWithWhereWithoutLessonInput[]
+    deleteMany?: ContentChunkScalarWhereInput | ContentChunkScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutOtpsInput = {
@@ -24600,6 +26018,20 @@ export namespace Prisma {
     upsert?: LessonUpsertWithoutLessonMaterialsInput
     connect?: LessonWhereUniqueInput
     update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutLessonMaterialsInput, LessonUpdateWithoutLessonMaterialsInput>, LessonUncheckedUpdateWithoutLessonMaterialsInput>
+  }
+
+  export type LessonCreateNestedOneWithoutContentChunksInput = {
+    create?: XOR<LessonCreateWithoutContentChunksInput, LessonUncheckedCreateWithoutContentChunksInput>
+    connectOrCreate?: LessonCreateOrConnectWithoutContentChunksInput
+    connect?: LessonWhereUniqueInput
+  }
+
+  export type LessonUpdateOneRequiredWithoutContentChunksNestedInput = {
+    create?: XOR<LessonCreateWithoutContentChunksInput, LessonUncheckedCreateWithoutContentChunksInput>
+    connectOrCreate?: LessonCreateOrConnectWithoutContentChunksInput
+    upsert?: LessonUpsertWithoutContentChunksInput
+    connect?: LessonWhereUniqueInput
+    update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutContentChunksInput, LessonUpdateWithoutContentChunksInput>, LessonUncheckedUpdateWithoutContentChunksInput>
   }
 
   export type UserCreateNestedOneWithoutAuditLogsInput = {
@@ -25112,6 +26544,29 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedEnumQuizStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.QuizStatus | EnumQuizStatusFieldRefInput<$PrismaModel>
@@ -25145,29 +26600,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumQuestionTypeFilter<$PrismaModel>
     _max?: NestedEnumQuestionTypeFilter<$PrismaModel>
-  }
-  export type NestedJsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedFloatNullableFilter<$PrismaModel = never> = {
@@ -26161,6 +27593,7 @@ export namespace Prisma {
     viewCount?: number
     lessonMaterials?: LessonMaterialCreateNestedManyWithoutLessonInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutLessonInput
+    contentChunks?: ContentChunkCreateNestedManyWithoutLessonInput
   }
 
   export type LessonUncheckedCreateWithoutChapterInput = {
@@ -26177,6 +27610,7 @@ export namespace Prisma {
     viewCount?: number
     lessonMaterials?: LessonMaterialUncheckedCreateNestedManyWithoutLessonInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+    contentChunks?: ContentChunkUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonCreateOrConnectWithoutChapterInput = {
@@ -26389,6 +27823,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ContentChunkCreateWithoutLessonInput = {
+    id?: string
+    content: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ContentChunkUncheckedCreateWithoutLessonInput = {
+    id?: string
+    content: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ContentChunkCreateOrConnectWithoutLessonInput = {
+    where: ContentChunkWhereUniqueInput
+    create: XOR<ContentChunkCreateWithoutLessonInput, ContentChunkUncheckedCreateWithoutLessonInput>
+  }
+
+  export type ContentChunkCreateManyLessonInputEnvelope = {
+    data: ContentChunkCreateManyLessonInput | ContentChunkCreateManyLessonInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ChapterCreateWithoutLessonsInput = {
     id?: string
     name: string
@@ -26466,6 +27926,34 @@ export namespace Prisma {
   export type LessonProgressUpdateManyWithWhereWithoutLessonInput = {
     where: LessonProgressScalarWhereInput
     data: XOR<LessonProgressUpdateManyMutationInput, LessonProgressUncheckedUpdateManyWithoutLessonInput>
+  }
+
+  export type ContentChunkUpsertWithWhereUniqueWithoutLessonInput = {
+    where: ContentChunkWhereUniqueInput
+    update: XOR<ContentChunkUpdateWithoutLessonInput, ContentChunkUncheckedUpdateWithoutLessonInput>
+    create: XOR<ContentChunkCreateWithoutLessonInput, ContentChunkUncheckedCreateWithoutLessonInput>
+  }
+
+  export type ContentChunkUpdateWithWhereUniqueWithoutLessonInput = {
+    where: ContentChunkWhereUniqueInput
+    data: XOR<ContentChunkUpdateWithoutLessonInput, ContentChunkUncheckedUpdateWithoutLessonInput>
+  }
+
+  export type ContentChunkUpdateManyWithWhereWithoutLessonInput = {
+    where: ContentChunkScalarWhereInput
+    data: XOR<ContentChunkUpdateManyMutationInput, ContentChunkUncheckedUpdateManyWithoutLessonInput>
+  }
+
+  export type ContentChunkScalarWhereInput = {
+    AND?: ContentChunkScalarWhereInput | ContentChunkScalarWhereInput[]
+    OR?: ContentChunkScalarWhereInput[]
+    NOT?: ContentChunkScalarWhereInput | ContentChunkScalarWhereInput[]
+    id?: StringFilter<"ContentChunk"> | string
+    content?: StringFilter<"ContentChunk"> | string
+    lessonId?: StringFilter<"ContentChunk"> | string
+    metadata?: JsonFilter<"ContentChunk">
+    createdAt?: DateTimeFilter<"ContentChunk"> | Date | string
+    updatedAt?: DateTimeFilter<"ContentChunk"> | Date | string
   }
 
   export type ChapterUpsertWithoutLessonsInput = {
@@ -26784,6 +28272,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     viewCount?: number
     lessonMaterials?: LessonMaterialCreateNestedManyWithoutLessonInput
+    contentChunks?: ContentChunkCreateNestedManyWithoutLessonInput
     chapter: ChapterCreateNestedOneWithoutLessonsInput
   }
 
@@ -26801,6 +28290,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     viewCount?: number
     lessonMaterials?: LessonMaterialUncheckedCreateNestedManyWithoutLessonInput
+    contentChunks?: ContentChunkUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonCreateOrConnectWithoutLessonProgressInput = {
@@ -26877,6 +28367,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     viewCount?: IntFieldUpdateOperationsInput | number
     lessonMaterials?: LessonMaterialUpdateManyWithoutLessonNestedInput
+    contentChunks?: ContentChunkUpdateManyWithoutLessonNestedInput
     chapter?: ChapterUpdateOneRequiredWithoutLessonsNestedInput
   }
 
@@ -26894,6 +28385,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     viewCount?: IntFieldUpdateOperationsInput | number
     lessonMaterials?: LessonMaterialUncheckedUpdateManyWithoutLessonNestedInput
+    contentChunks?: ContentChunkUncheckedUpdateManyWithoutLessonNestedInput
   }
 
   export type UserUpsertWithoutLessonProgressInput = {
@@ -26960,6 +28452,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     viewCount?: number
     lessonProgress?: LessonProgressCreateNestedManyWithoutLessonInput
+    contentChunks?: ContentChunkCreateNestedManyWithoutLessonInput
     chapter: ChapterCreateNestedOneWithoutLessonsInput
   }
 
@@ -26977,6 +28470,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     viewCount?: number
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+    contentChunks?: ContentChunkUncheckedCreateNestedManyWithoutLessonInput
   }
 
   export type LessonCreateOrConnectWithoutLessonMaterialsInput = {
@@ -27008,6 +28502,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     viewCount?: IntFieldUpdateOperationsInput | number
     lessonProgress?: LessonProgressUpdateManyWithoutLessonNestedInput
+    contentChunks?: ContentChunkUpdateManyWithoutLessonNestedInput
     chapter?: ChapterUpdateOneRequiredWithoutLessonsNestedInput
   }
 
@@ -27024,6 +28519,91 @@ export namespace Prisma {
     chapterId?: StringFieldUpdateOperationsInput | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     viewCount?: IntFieldUpdateOperationsInput | number
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
+    contentChunks?: ContentChunkUncheckedUpdateManyWithoutLessonNestedInput
+  }
+
+  export type LessonCreateWithoutContentChunksInput = {
+    id?: string
+    title: string
+    description?: string | null
+    durationMinutes: number
+    youtubeUrl?: string | null
+    sortOrder: number
+    pdfUrls?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    viewCount?: number
+    lessonMaterials?: LessonMaterialCreateNestedManyWithoutLessonInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutLessonInput
+    chapter: ChapterCreateNestedOneWithoutLessonsInput
+  }
+
+  export type LessonUncheckedCreateWithoutContentChunksInput = {
+    id?: string
+    title: string
+    description?: string | null
+    durationMinutes: number
+    youtubeUrl?: string | null
+    sortOrder: number
+    pdfUrls?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    chapterId: string
+    deletedAt?: Date | string | null
+    viewCount?: number
+    lessonMaterials?: LessonMaterialUncheckedCreateNestedManyWithoutLessonInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutLessonInput
+  }
+
+  export type LessonCreateOrConnectWithoutContentChunksInput = {
+    where: LessonWhereUniqueInput
+    create: XOR<LessonCreateWithoutContentChunksInput, LessonUncheckedCreateWithoutContentChunksInput>
+  }
+
+  export type LessonUpsertWithoutContentChunksInput = {
+    update: XOR<LessonUpdateWithoutContentChunksInput, LessonUncheckedUpdateWithoutContentChunksInput>
+    create: XOR<LessonCreateWithoutContentChunksInput, LessonUncheckedCreateWithoutContentChunksInput>
+    where?: LessonWhereInput
+  }
+
+  export type LessonUpdateToOneWithWhereWithoutContentChunksInput = {
+    where?: LessonWhereInput
+    data: XOR<LessonUpdateWithoutContentChunksInput, LessonUncheckedUpdateWithoutContentChunksInput>
+  }
+
+  export type LessonUpdateWithoutContentChunksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMinutes?: IntFieldUpdateOperationsInput | number
+    youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    pdfUrls?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    viewCount?: IntFieldUpdateOperationsInput | number
+    lessonMaterials?: LessonMaterialUpdateManyWithoutLessonNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutLessonNestedInput
+    chapter?: ChapterUpdateOneRequiredWithoutLessonsNestedInput
+  }
+
+  export type LessonUncheckedUpdateWithoutContentChunksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMinutes?: IntFieldUpdateOperationsInput | number
+    youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    pdfUrls?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chapterId?: StringFieldUpdateOperationsInput | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    viewCount?: IntFieldUpdateOperationsInput | number
+    lessonMaterials?: LessonMaterialUncheckedUpdateManyWithoutLessonNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
   }
 
@@ -28052,6 +29632,7 @@ export namespace Prisma {
     viewCount?: IntFieldUpdateOperationsInput | number
     lessonMaterials?: LessonMaterialUpdateManyWithoutLessonNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutLessonNestedInput
+    contentChunks?: ContentChunkUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonUncheckedUpdateWithoutChapterInput = {
@@ -28068,6 +29649,7 @@ export namespace Prisma {
     viewCount?: IntFieldUpdateOperationsInput | number
     lessonMaterials?: LessonMaterialUncheckedUpdateManyWithoutLessonNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
+    contentChunks?: ContentChunkUncheckedUpdateManyWithoutLessonNestedInput
   }
 
   export type LessonUncheckedUpdateManyWithoutChapterInput = {
@@ -28133,6 +29715,14 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ContentChunkCreateManyLessonInput = {
+    id?: string
+    content: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type LessonMaterialUpdateWithoutLessonInput = {
     id?: StringFieldUpdateOperationsInput | string
     filePath?: StringFieldUpdateOperationsInput | string
@@ -28183,6 +29773,30 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     studentId?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentChunkUpdateWithoutLessonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentChunkUncheckedUpdateWithoutLessonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ContentChunkUncheckedUpdateManyWithoutLessonInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

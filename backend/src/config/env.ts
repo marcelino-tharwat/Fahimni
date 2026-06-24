@@ -29,6 +29,9 @@ const envSchema = z.object({
   SUPABASE_URL: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   SUPABASE_BUCKET_NAME: z.string().min(1),
+  GEMINI_API_KEY: z.string().min(1),
+  GEMINI_GENERATION_MODEL: z.string().default("gemini-2.0-flash"),
+  GEMINI_EMBEDDING_MODEL: z.string().default("text-embedding-004"),
 });
 
 export const env = envSchema.parse(process.env);

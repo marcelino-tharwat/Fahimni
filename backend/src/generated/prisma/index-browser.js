@@ -236,6 +236,15 @@ exports.Prisma.LessonMaterialScalarFieldEnum = {
   mimeType: 'mimeType'
 };
 
+exports.Prisma.ContentChunkScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  lessonId: 'lessonId',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.AuditLogScalarFieldEnum = {
   id: 'id',
   action: 'action',
@@ -368,6 +377,7 @@ exports.Prisma.ModelName = {
   Enrollment: 'Enrollment',
   LessonProgress: 'LessonProgress',
   LessonMaterial: 'LessonMaterial',
+  ContentChunk: 'ContentChunk',
   AuditLog: 'AuditLog',
   RefreshToken: 'RefreshToken',
   Quiz: 'Quiz',
