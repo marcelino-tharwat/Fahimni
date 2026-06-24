@@ -3,13 +3,9 @@ export const enrollmentPublicFields = {
   studentId: true,
   chapterId: true,
   status: true,
-  enrolledMonth: true,
-  enrolledYear: true,
   price: true,
   paymentMethod: true,
   promoCodeId: true,
-  startedAt: true,
-  expiresAt: true,
   enrolledAt: true,
   createdAt: true,
   updatedAt: true,
@@ -24,7 +20,7 @@ export const enrollmentPublicFields = {
   },
 } as const;
 
-export type EnrollmentStatus = "ACTIVE" | "EXPIRED" | "DEACTIVATED";
+export type EnrollmentStatus = "ACTIVE" | "DEACTIVATED";
 export type PaymentMethod = "CASH" | "VISA" | "PROMO";
 
 export interface EnrollmentChapterDTO {
@@ -40,13 +36,9 @@ export interface EnrollmentResponseDTO {
   studentId: string;
   chapterId: string;
   status: EnrollmentStatus;
-  enrolledMonth: number;
-  enrolledYear: number;
   price: number;
   paymentMethod: PaymentMethod;
   promoCodeId: string | null;
-  startedAt: Date;
-  expiresAt: Date;
   enrolledAt: Date;
   createdAt: Date;
   updatedAt: Date;

@@ -205,13 +205,9 @@ exports.Prisma.EnrollmentScalarFieldEnum = {
   chapterId: 'chapterId',
   enrolledAt: 'enrolledAt',
   status: 'status',
-  enrolledMonth: 'enrolledMonth',
-  enrolledYear: 'enrolledYear',
   price: 'price',
   paymentMethod: 'paymentMethod',
   promoCodeId: 'promoCodeId',
-  startedAt: 'startedAt',
-  expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -345,7 +341,6 @@ exports.OtpType = exports.$Enums.OtpType = {
 
 exports.EnrollmentStatus = exports.$Enums.EnrollmentStatus = {
   ACTIVE: 'ACTIVE',
-  EXPIRED: 'EXPIRED',
   DEACTIVATED: 'DEACTIVATED'
 };
 

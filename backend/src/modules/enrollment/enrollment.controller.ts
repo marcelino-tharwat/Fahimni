@@ -70,12 +70,10 @@ export class EnrollmentController {
     async (req: Request, res: Response, _next: NextFunction) => {
       const id = req.params.id as string;
       const actorId = req.user!.id;
-      const actorRole = req.user!.role!;
 
       const enrollment = await enrollmentService.deactivateEnrollment(
         id,
         actorId,
-        actorRole,
       );
 
       res
