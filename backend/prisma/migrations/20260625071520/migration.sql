@@ -1,33 +1,55 @@
 /*
-  Warnings:
+  Recovery note (idempotent):
+  This database may already have `content_chunks` in the new shape (renamed
+  columns + FK) from a divergent migration history, while still missing the
+  `quizzes.createdBy` foreign key. Every statement below is guarded so the
+  migration applies ONLY the pieces that are actually missing and is safe to
+  re-run. No data is dropped from `content_chunks`.
 
-  - You are about to drop the column `created_at` on the `content_chunks` table. All the data in the column will be lost.
-  - You are about to drop the column `lesson_id` on the `content_chunks` table. All the data in the column will be lost.
-  - You are about to drop the column `updated_at` on the `content_chunks` table. All the data in the column will be lost.
-  - Added the required column `lessonId` to the `content_chunks` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updatedAt` to the `content_chunks` table without a default value. This is not possible if the table is not empty.
-
+  Original intent:
+   - rename content_chunks created_at/lesson_id/updated_at -> createdAt/lessonId/updatedAt
+   - re-create content_chunks index + FK on the new column name
+   - add quizzes.createdBy -> User.id foreign key
 */
--- DropForeignKey
-ALTER TABLE "content_chunks" DROP CONSTRAINT "content_chunks_lesson_id_fkey";
 
--- DropIndex
-DROP INDEX "content_chunks_lesson_id_idx";
+-- DropForeignKey (old column name)
+ALTER TABLE "content_chunks" DROP CONSTRAINT IF EXISTS "content_chunks_lesson_id_fkey";
 
--- AlterTable
-ALTER TABLE "content_chunks" DROP COLUMN "created_at",
-DROP COLUMN "lesson_id",
-DROP COLUMN "updated_at",
-ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "lessonId" TEXT NOT NULL,
-ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL,
-ALTER COLUMN "id" DROP DEFAULT;
+-- DropIndex (old column name)
+DROP INDEX IF EXISTS "content_chunks_lesson_id_idx";
 
--- CreateIndex
-CREATE INDEX "content_chunks_lessonId_idx" ON "content_chunks"("lessonId");
+-- AlterTable (column rename via drop/add) — guarded
+ALTER TABLE "content_chunks" DROP COLUMN IF EXISTS "created_at";
+ALTER TABLE "content_chunks" DROP COLUMN IF EXISTS "lesson_id";
+ALTER TABLE "content_chunks" DROP COLUMN IF EXISTS "updated_at";
+ALTER TABLE "content_chunks" ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE "content_chunks" ADD COLUMN IF NOT EXISTS "lessonId" TEXT NOT NULL;
+ALTER TABLE "content_chunks" ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE "content_chunks" ALTER COLUMN "id" DROP DEFAULT;
 
--- AddForeignKey
-ALTER TABLE "content_chunks" ADD CONSTRAINT "content_chunks_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "lessons"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- CreateIndex (new column name)
+CREATE INDEX IF NOT EXISTS "content_chunks_lessonId_idx" ON "content_chunks"("lessonId");
 
--- AddForeignKey
-ALTER TABLE "quizzes" ADD CONSTRAINT "quizzes_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- AddForeignKey content_chunks.lessonId -> lessons.id (guarded)
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'content_chunks_lessonId_fkey'
+  ) THEN
+    ALTER TABLE "content_chunks"
+      ADD CONSTRAINT "content_chunks_lessonId_fkey"
+      FOREIGN KEY ("lessonId") REFERENCES "lessons"("id")
+      ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
+
+-- AddForeignKey quizzes.createdBy -> User.id (guarded)
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'quizzes_createdBy_fkey'
+  ) THEN
+    ALTER TABLE "quizzes"
+      ADD CONSTRAINT "quizzes_createdBy_fkey"
+      FOREIGN KEY ("createdBy") REFERENCES "User"("id")
+      ON DELETE RESTRICT ON UPDATE CASCADE;
+  END IF;
+END $$;

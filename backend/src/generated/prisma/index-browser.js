@@ -296,6 +296,17 @@ exports.Prisma.QuizAttemptScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PromoCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  isUsed: 'isUsed',
+  usedByStudentId: 'usedByStudentId',
+  usedAt: 'usedAt',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -380,7 +391,8 @@ exports.Prisma.ModelName = {
   RefreshToken: 'RefreshToken',
   Quiz: 'Quiz',
   Question: 'Question',
-  QuizAttempt: 'QuizAttempt'
+  QuizAttempt: 'QuizAttempt',
+  PromoCode: 'PromoCode'
 };
 
 /**

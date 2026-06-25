@@ -22,6 +22,7 @@ export type AuditLogAction =
   | "LESSON_UPDATED"
   | "LESSON_DELETED"
   | "QUIZ_CREATED"
+  | "QUIZ_GENERATED"
   | "QUIZ_UPDATED"
   | "QUIZ_DELETED"
   | "QUIZ_PUBLISHED"

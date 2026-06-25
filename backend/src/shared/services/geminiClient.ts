@@ -8,6 +8,7 @@ import {
 } from "../errors/geminiErrors.js";
 import type {
   GenerationConfig,
+  GenerateContentOptions,
   SystemInstruction,
   Content,
   GenerateContentResponse,
@@ -52,20 +53,23 @@ export class GeminiClient {
    *
    * @param prompt - The user prompt to send to the model
    * @param config - Optional generation configuration (temperature, topP, maxOutputTokens, etc.)
+   * @param options - Optional per-call options (e.g. a tighter timeout than the 30s default)
    * @returns The generated text response
    * @throws {GeminiAuthError} If the API key is invalid or unauthorized
    * @throws {GeminiRateLimitError} If the rate limit is exceeded
    * @throws {GeminiContentBlockedError} If the response was blocked by safety filters
-   * @throws {GeminiTimeoutError} If the request exceeds the 30-second timeout
+   * @throws {GeminiTimeoutError} If the request exceeds the configured timeout
    * @throws {GeminiNetworkError} If a network or parsing error occurs
    */
   public async generateContent(
     prompt: string,
     config?: GenerationConfig,
+    options?: GenerateContentOptions,
   ): Promise<string> {
     await this._enqueueIfNeeded();
 
     const body = this._buildGenerateRequestBody(prompt, config);
+    const timeoutMs = options?.timeoutMs ?? GENERATION_TIMEOUT_MS;
 
     const response = await this._withRetry(() =>
       this._fetchWithTimeout(
@@ -74,7 +78,7 @@ export class GeminiClient {
           this.apiKey,
         ),
         body,
-        GENERATION_TIMEOUT_MS,
+        timeoutMs,
         "generateContent",
       ),
     );
