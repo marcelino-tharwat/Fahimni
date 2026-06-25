@@ -17,6 +17,7 @@ import contentRoutes from "./modules/content/content.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import aiRouter from "./modules/ai/ai.routes.js";
 import enrollmentRoutes from "./modules/enrollment/enrollment.routes.js";
+import quizRoutes from "./modules/quizzes/quizzes.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -49,6 +50,8 @@ export function createApp(): Application {
   app.use("/api/ai", aiRouter);
 
   app.use("/api/enrollments", enrollmentRoutes);
+
+  app.use("/api/quizzes", quizRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

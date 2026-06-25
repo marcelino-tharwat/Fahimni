@@ -1,0 +1,96 @@
+import { Router } from "express";
+import { QuizzesController } from "./quizzes.controller.js";
+import { QuestionsController } from "./questions.controller.js";
+import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
+import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
+import {
+  createQuizSchema,
+  updateQuizSchema,
+  addQuestionSchema,
+  updateQuestionSchema,
+  reorderSchema,
+} from "./quizzes.validation.js";
+
+const quizController = new QuizzesController();
+const questionsController = new QuestionsController();
+
+// ── Standalone routes (mounted at /api/quizzes) ────────────────────────
+export const quizStandaloneRouter = Router();
+
+quizStandaloneRouter.get(
+  "/",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  quizController.list,
+);
+
+quizStandaloneRouter.post(
+  "/",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(createQuizSchema),
+  quizController.create,
+);
+
+// ── Nested question routes (mounted at /:quizId/questions) ─────────────
+const questionNestedRouter = Router({ mergeParams: true });
+
+questionNestedRouter.patch(
+  "/reorder",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(reorderSchema),
+  questionsController.reorderQuestions,
+);
+
+questionNestedRouter.post(
+  "/",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(addQuestionSchema),
+  questionsController.addQuestion,
+);
+
+questionNestedRouter.put(
+  "/:qId",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(updateQuestionSchema),
+  questionsController.updateQuestion,
+);
+
+questionNestedRouter.delete(
+  "/:qId",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  questionsController.deleteQuestion,
+);
+
+// Mount nested question routes BEFORE parameterized /:id routes
+quizStandaloneRouter.use("/:quizId/questions", questionNestedRouter);
+
+// ── Parameterized quiz routes ──────────────────────────────────────────
+quizStandaloneRouter.get(
+  "/:id",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  quizController.getById,
+);
+
+quizStandaloneRouter.put(
+  "/:id",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(updateQuizSchema),
+  quizController.update,
+);
+
+quizStandaloneRouter.delete(
+  "/:id",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  quizController.delete,
+);
+
+export default quizStandaloneRouter;

@@ -272,6 +272,7 @@ exports.Prisma.QuizScalarFieldEnum = {
   description: 'description',
   chapterId: 'chapterId',
   status: 'status',
+  createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -283,6 +284,7 @@ exports.Prisma.QuestionScalarFieldEnum = {
   text: 'text',
   options: 'options',
   correctAnswer: 'correctAnswer',
+  sortOrder: 'sortOrder',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
