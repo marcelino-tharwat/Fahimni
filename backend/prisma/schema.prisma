@@ -132,13 +132,9 @@ model Enrollment {
   chapterId     String
   enrolledAt    DateTime         @default(now())
   status        EnrollmentStatus @default(ACTIVE)
-  enrolledMonth Int
-  enrolledYear  Int
   price         Float
   paymentMethod PaymentMethod
   promoCodeId   String?
-  startedAt     DateTime         @default(now())
-  expiresAt     DateTime
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   chapter       Chapter          @relation(fields: [chapterId], references: [id])
@@ -300,7 +296,6 @@ enum OtpType {
 
 enum EnrollmentStatus {
   ACTIVE
-  EXPIRED
   DEACTIVATED
 }
 

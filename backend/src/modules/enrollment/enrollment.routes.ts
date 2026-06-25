@@ -15,7 +15,7 @@ import {
  * POST   /                    → STUDENT only (self-enrollment)
  * GET    /my                  → STUDENT only (own enrollments)
  * GET    /student/:studentId  → OPERATION (own chapters only), ADMIN (all)
- * PATCH  /:id/deactivate      → OPERATION (own chapters only), ADMIN (all)
+ * PATCH  /:id/deactivate      → ADMIN only
  *
  * Every route runs authenticateMiddleware first, then authorizeMiddleware.
  * Student-scoped routes derive the studentId from req.user.id (never the body
@@ -47,7 +47,7 @@ router.get(
 router.patch(
   "/:id/deactivate",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION", "ADMIN"),
+  authorizeMiddleware("ADMIN"),
   validateRequest(enrollmentIdParamSchema, "params"),
   controller.deactivate,
 );

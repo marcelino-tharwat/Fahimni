@@ -11,36 +11,7 @@ import type {
 } from "./enrollment.types.js";
 import type { CreateEnrollmentInput } from "./enrollment.validation.js";
 
-/** Default access window granted on enrollment when the chapter has no explicit validity setting. */
-const DEFAULT_ENROLLMENT_DAYS = 30;
-
 export class EnrollmentService {
-  /**
-   * Ensures the given teacher owns the chapter (via chapter → stage → teacherId).
-   * Used to scope OPERATION (teacher) access to their own content. ADMIN callers
-   * should skip this check entirely.
-   */
-  private async verifyTeacherOwnership(
-    chapterId: string,
-    teacherId: string,
-  ): Promise<void> {
-    const chapter = await prisma.chapter.findUnique({
-      where: { id: chapterId },
-      select: { stage: { select: { teacherId: true } } },
-    });
-
-    if (!chapter) {
-      throw new AppError("Chapter not found", 404);
-    }
-
-    if (chapter.stage.teacherId !== teacherId) {
-      throw new AppError(
-        "You do not have access to this chapter's enrollments",
-        403,
-      );
-    }
-  }
-
   public async createEnrollment(
     studentId: string,
     data: CreateEnrollmentInput,
@@ -70,12 +41,6 @@ export class EnrollmentService {
       throw new AppError("You are already enrolled in this chapter", 409);
     }
 
-    const startedAt = new Date();
-    // No per-chapter validity setting exists on the Chapter model, so fall back
-    // to a fixed access window from the moment of enrollment.
-    const expiresAt = new Date(startedAt);
-    expiresAt.setDate(expiresAt.getDate() + DEFAULT_ENROLLMENT_DAYS);
-
     const enrollment = await prisma.enrollment.create({
       data: {
         studentId,
@@ -83,10 +48,6 @@ export class EnrollmentService {
         price: data.price,
         paymentMethod: data.paymentMethod,
         promoCodeId: data.promoCodeId ?? null,
-        enrolledMonth: startedAt.getMonth() + 1,
-        enrolledYear: startedAt.getFullYear(),
-        startedAt,
-        expiresAt,
       },
       select: enrollmentPublicFields,
     });
@@ -119,19 +80,16 @@ export class EnrollmentService {
     return this.toResponseDTO(enrollment);
   }
 
-  /** SCRUM-506: deactivate an active enrollment (operations/admin action). */
+  /** SCRUM-506: deactivate an active enrollment (ADMIN-only action). */
   public async deactivateEnrollment(
     enrollmentId: string,
     actorId: string,
-    actorRole: string,
   ): Promise<EnrollmentResponseDTO> {
     const existing = await prisma.enrollment.findUnique({
       where: { id: enrollmentId },
       select: {
         id: true,
         status: true,
-        studentId: true,
-        chapterId: true,
         chapter: { select: { stage: { select: { teacherId: true } } } },
       },
     });
@@ -140,15 +98,8 @@ export class EnrollmentService {
       throw new AppError("Enrollment not found", 404);
     }
 
-    // OPERATION (teacher) may only act on enrollments for chapters they own;
-    // ADMIN has unrestricted access. Checked before the status check so a
-    // teacher cannot probe the state of an enrollment they don't own.
-    if (actorRole === "OPERATION") {
-      await this.verifyTeacherOwnership(existing.chapterId, actorId);
-    }
-
     if (existing.status !== "ACTIVE") {
-      throw new AppError("Enrollment is already deactivated or expired", 400);
+      throw new AppError("Enrollment is already deactivated", 400);
     }
 
     const enrollment = await prisma.enrollment.update({
@@ -162,7 +113,7 @@ export class EnrollmentService {
       resourceType: "ENROLLMENT",
       resourceId: enrollmentId,
       actorId,
-      actorType: actorRole === "OPERATION" ? "TEACHER" : "ADMIN",
+      actorType: "ADMIN",
       scopeTeacherId: existing.chapter.stage.teacherId,
       details: {
         field: "status",
