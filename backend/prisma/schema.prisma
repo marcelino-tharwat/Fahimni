@@ -22,6 +22,7 @@ model User {
   lessonProgress LessonProgress[]
   otps           Otp[]
   quizAttempts   QuizAttempt[]
+  quizzes        Quiz[]
   refreshTokens  RefreshToken[]
   stages         Stage[]
   studentProfile StudentProfile?
@@ -224,11 +225,13 @@ model Quiz {
   description String?
   chapterId   String?
   status      QuizStatus    @default(DRAFT)
+  createdBy   String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   questions   Question[]
   attempts    QuizAttempt[]
   chapter     Chapter?      @relation(fields: [chapterId], references: [id])
+  creator     User         @relation(fields: [createdBy], references: [id])
 
   @@map("quizzes")
 }
@@ -240,10 +243,12 @@ model Question {
   text          String
   options       Json
   correctAnswer String?
+  sortOrder     Int          @default(0)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   quiz          Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
 
+  @@unique([quizId, sortOrder])
   @@map("questions")
 }
 
