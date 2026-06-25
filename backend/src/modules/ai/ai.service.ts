@@ -178,6 +178,72 @@ export class AiService {
       metadata: row.metadata,
     }));
   }
+
+  /**
+   * Cosine top-K similarity search scoped to a set of lessons. Reuses the same
+   * pgvector index and embedding pipeline as {@link similaritySearch}; the only
+   * difference is that results are constrained to the supplied lesson IDs so a
+   * teacher can never retrieve another teacher's chunks. Returns an empty array
+   * when no lesson IDs are supplied.
+   */
+  async similaritySearchInLessons(
+    query: string,
+    lessonIds: string[],
+    k = 8,
+  ): Promise<SimilarChunk[]> {
+    if (lessonIds.length === 0) {
+      return [];
+    }
+
+    const vector = await geminiClient.embedContent(query);
+    const vectorStr = `[${vector.join(",")}]`;
+
+    const rawQuery = `
+      SELECT id, content, "lessonId", metadata,
+             1 - (embedding <=> $1::vector) as score
+      FROM content_chunks
+      WHERE "lessonId" = ANY($2::text[])
+      ORDER BY embedding <=> $1::vector
+      LIMIT $3
+    `;
+
+    const rows = await prisma.$queryRawUnsafe<
+      Array<{
+        id: string;
+        content: string;
+        lessonId: string;
+        metadata: Record<string, unknown>;
+        score: number;
+      }>
+    >(rawQuery, vectorStr, lessonIds, k);
+
+    return rows.map((row) => ({
+      id: row.id,
+      content: row.content,
+      lessonId: row.lessonId,
+      score: row.score,
+      metadata: row.metadata,
+    }));
+  }
+
+  /**
+   * Counts indexed content chunks belonging to the supplied lessons. Used as a
+   * RAG precondition check before AI generation so callers can fail fast when
+   * the selected content has not been indexed yet.
+   */
+  async countChunksInLessons(lessonIds: string[]): Promise<number> {
+    if (lessonIds.length === 0) {
+      return 0;
+    }
+
+    const result = await prisma.$queryRaw<Array<{ count: bigint }>>`
+      SELECT COUNT(*)::bigint as count
+      FROM content_chunks
+      WHERE "lessonId" = ANY(${lessonIds}::text[])
+    `;
+
+    return Number(result[0]!.count);
+  }
 }
 
 export const aiService = new AiService();

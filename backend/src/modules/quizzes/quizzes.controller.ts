@@ -3,12 +3,34 @@ import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { QuizService } from "./quizzes.service.js";
+import { QuizGenerationService } from "./quiz-generation.service.js";
+import type {
+  GeneratedQuizDTO,
+} from "./quiz-generation.service.js";
 import type { QuizResponseDTO, QuizDetailResponseDTO } from "./quizzes.types.js";
 import type { CreateQuizInput, UpdateQuizInput, AssignQuizInput } from "./quizzes.validation.js";
+import type { GenerateQuizInput } from "./dto/generate-quiz.dto.js";
 
 const quizService = new QuizService();
+const quizGenerationService = new QuizGenerationService();
 
 export class QuizzesController {
+  public generate = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const input = req.body as GenerateQuizInput;
+      const quiz = await quizGenerationService.generate(input, req.user!.id);
+
+      res
+        .status(201)
+        .json(
+          okResponse<GeneratedQuizDTO>(
+            "تم إنشاء مسودة الاختبار بنجاح.",
+            quiz,
+          ),
+        );
+    },
+  );
+
   public create = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const input = req.body as CreateQuizInput;

@@ -12,6 +12,7 @@ import {
   reorderSchema,
   assignQuizSchema,
 } from "./quizzes.validation.js";
+import { generateQuizSchema } from "./dto/generate-quiz.dto.js";
 
 const quizController = new QuizzesController();
 const questionsController = new QuestionsController();
@@ -32,6 +33,16 @@ quizStandaloneRouter.post(
   authorizeMiddleware("OPERATION"),
   validateRequest(createQuizSchema),
   quizController.create,
+);
+
+// ── AI quiz generation (STORY-45) ──────────────────────────────────────
+// Final route: POST /api/quizzes/generate
+quizStandaloneRouter.post(
+  "/generate",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(generateQuizSchema),
+  quizController.generate,
 );
 
 // ── Nested question routes (mounted at /:quizId/questions) ─────────────
