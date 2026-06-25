@@ -17560,6 +17560,7 @@ export namespace Prisma {
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    publishedAt: Date | null
   }
 
   export type QuizMaxAggregateOutputType = {
@@ -17571,6 +17572,7 @@ export namespace Prisma {
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    publishedAt: Date | null
   }
 
   export type QuizCountAggregateOutputType = {
@@ -17582,6 +17584,7 @@ export namespace Prisma {
     createdBy: number
     createdAt: number
     updatedAt: number
+    publishedAt: number
     _all: number
   }
 
@@ -17595,6 +17598,7 @@ export namespace Prisma {
     createdBy?: true
     createdAt?: true
     updatedAt?: true
+    publishedAt?: true
   }
 
   export type QuizMaxAggregateInputType = {
@@ -17606,6 +17610,7 @@ export namespace Prisma {
     createdBy?: true
     createdAt?: true
     updatedAt?: true
+    publishedAt?: true
   }
 
   export type QuizCountAggregateInputType = {
@@ -17617,6 +17622,7 @@ export namespace Prisma {
     createdBy?: true
     createdAt?: true
     updatedAt?: true
+    publishedAt?: true
     _all?: true
   }
 
@@ -17701,6 +17707,7 @@ export namespace Prisma {
     createdBy: string
     createdAt: Date
     updatedAt: Date
+    publishedAt: Date | null
     _count: QuizCountAggregateOutputType | null
     _min: QuizMinAggregateOutputType | null
     _max: QuizMaxAggregateOutputType | null
@@ -17729,6 +17736,7 @@ export namespace Prisma {
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    publishedAt?: boolean
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
     chapter?: boolean | Quiz$chapterArgs<ExtArgs>
@@ -17745,6 +17753,7 @@ export namespace Prisma {
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    publishedAt?: boolean
     chapter?: boolean | Quiz$chapterArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["quiz"]>
@@ -17758,6 +17767,7 @@ export namespace Prisma {
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    publishedAt?: boolean
     chapter?: boolean | Quiz$chapterArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["quiz"]>
@@ -17771,9 +17781,10 @@ export namespace Prisma {
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    publishedAt?: boolean
   }
 
-  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "status" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["quiz"]>
+  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "status" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt", ExtArgs["result"]["quiz"]>
   export type QuizInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
@@ -17807,6 +17818,7 @@ export namespace Prisma {
       createdBy: string
       createdAt: Date
       updatedAt: Date
+      publishedAt: Date | null
     }, ExtArgs["result"]["quiz"]>
     composites: {}
   }
@@ -18242,6 +18254,7 @@ export namespace Prisma {
     readonly createdBy: FieldRef<"Quiz", 'String'>
     readonly createdAt: FieldRef<"Quiz", 'DateTime'>
     readonly updatedAt: FieldRef<"Quiz", 'DateTime'>
+    readonly publishedAt: FieldRef<"Quiz", 'DateTime'>
   }
     
 
@@ -21203,7 +21216,8 @@ export namespace Prisma {
     status: 'status',
     createdBy: 'createdBy',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    publishedAt: 'publishedAt'
   };
 
   export type QuizScalarFieldEnum = (typeof QuizScalarFieldEnum)[keyof typeof QuizScalarFieldEnum]
@@ -22465,6 +22479,7 @@ export namespace Prisma {
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
+    publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
     questions?: QuestionListRelationFilter
     attempts?: QuizAttemptListRelationFilter
     chapter?: XOR<ChapterNullableScalarRelationFilter, ChapterWhereInput> | null
@@ -22480,6 +22495,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
     questions?: QuestionOrderByRelationAggregateInput
     attempts?: QuizAttemptOrderByRelationAggregateInput
     chapter?: ChapterOrderByWithRelationInput
@@ -22498,6 +22514,7 @@ export namespace Prisma {
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
+    publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
     questions?: QuestionListRelationFilter
     attempts?: QuizAttemptListRelationFilter
     chapter?: XOR<ChapterNullableScalarRelationFilter, ChapterWhereInput> | null
@@ -22513,6 +22530,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
     _count?: QuizCountOrderByAggregateInput
     _max?: QuizMaxOrderByAggregateInput
     _min?: QuizMinOrderByAggregateInput
@@ -22530,6 +22548,7 @@ export namespace Prisma {
     createdBy?: StringWithAggregatesFilter<"Quiz"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"Quiz"> | Date | string | null
   }
 
   export type QuestionWhereInput = {
@@ -23735,6 +23754,7 @@ export namespace Prisma {
     status?: $Enums.QuizStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     chapter?: ChapterCreateNestedOneWithoutQuizzesInput
@@ -23750,6 +23770,7 @@ export namespace Prisma {
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
   }
@@ -23761,6 +23782,7 @@ export namespace Prisma {
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     chapter?: ChapterUpdateOneWithoutQuizzesNestedInput
@@ -23776,6 +23798,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
   }
@@ -23789,6 +23812,7 @@ export namespace Prisma {
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
   }
 
   export type QuizUpdateManyMutationInput = {
@@ -23798,6 +23822,7 @@ export namespace Prisma {
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type QuizUncheckedUpdateManyInput = {
@@ -23809,6 +23834,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type QuestionCreateInput = {
@@ -25017,6 +25043,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrder
   }
 
   export type QuizMaxOrderByAggregateInput = {
@@ -25028,6 +25055,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrder
   }
 
   export type QuizMinOrderByAggregateInput = {
@@ -25039,6 +25067,7 @@ export namespace Prisma {
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrder
   }
 
   export type EnumQuizStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -26877,6 +26906,7 @@ export namespace Prisma {
     status?: $Enums.QuizStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     chapter?: ChapterCreateNestedOneWithoutQuizzesInput
@@ -26890,6 +26920,7 @@ export namespace Prisma {
     status?: $Enums.QuizStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
   }
@@ -27181,6 +27212,7 @@ export namespace Prisma {
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
+    publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
   }
 
   export type RefreshTokenUpsertWithWhereUniqueWithoutUserInput = {
@@ -27775,6 +27807,7 @@ export namespace Prisma {
     status?: $Enums.QuizStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     creator: UserCreateNestedOneWithoutQuizzesInput
@@ -27788,6 +27821,7 @@ export namespace Prisma {
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
   }
@@ -29239,6 +29273,7 @@ export namespace Prisma {
     status?: $Enums.QuizStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     chapter?: ChapterCreateNestedOneWithoutQuizzesInput
     creator: UserCreateNestedOneWithoutQuizzesInput
@@ -29253,6 +29288,7 @@ export namespace Prisma {
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
   }
 
@@ -29279,6 +29315,7 @@ export namespace Prisma {
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     chapter?: ChapterUpdateOneWithoutQuizzesNestedInput
     creator?: UserUpdateOneRequiredWithoutQuizzesNestedInput
@@ -29293,6 +29330,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
   }
 
@@ -29303,6 +29341,7 @@ export namespace Prisma {
     status?: $Enums.QuizStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     chapter?: ChapterCreateNestedOneWithoutQuizzesInput
     creator: UserCreateNestedOneWithoutQuizzesInput
@@ -29317,6 +29356,7 @@ export namespace Prisma {
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
   }
 
@@ -29390,6 +29430,7 @@ export namespace Prisma {
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     chapter?: ChapterUpdateOneWithoutQuizzesNestedInput
     creator?: UserUpdateOneRequiredWithoutQuizzesNestedInput
@@ -29404,6 +29445,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
   }
 
@@ -29519,6 +29561,7 @@ export namespace Prisma {
     status?: $Enums.QuizStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
   }
 
   export type RefreshTokenCreateManyUserInput = {
@@ -29698,6 +29741,7 @@ export namespace Prisma {
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     chapter?: ChapterUpdateOneWithoutQuizzesNestedInput
@@ -29711,6 +29755,7 @@ export namespace Prisma {
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
   }
@@ -29723,6 +29768,7 @@ export namespace Prisma {
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type RefreshTokenUpdateWithoutUserInput = {
@@ -29862,6 +29908,7 @@ export namespace Prisma {
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
   }
 
   export type EnrollmentUpdateWithoutChapterInput = {
@@ -29955,6 +30002,7 @@ export namespace Prisma {
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     creator?: UserUpdateOneRequiredWithoutQuizzesNestedInput
@@ -29968,6 +30016,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
   }
@@ -29980,6 +30029,7 @@ export namespace Prisma {
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type LessonMaterialCreateManyLessonInput = {

@@ -40,6 +40,14 @@ export const chapterStandaloneRouter = Router();
 // Nested lessons (mounted at /chapters/:chapterId/lessons)
 chapterStandaloneRouter.use("/:chapterId/lessons", lessonNestedRouter);
 
+// Chapter quizzes (mounted at /chapters/:chapterId/quizzes)
+chapterStandaloneRouter.get(
+  "/:chapterId/quizzes",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT", "OPERATION"),
+  controller.getChapterQuizzes,
+);
+
 chapterStandaloneRouter.patch(
   "/reorder",
   authenticateMiddleware,

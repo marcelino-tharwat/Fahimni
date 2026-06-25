@@ -4,7 +4,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { QuizService } from "./quizzes.service.js";
 import type { QuizResponseDTO, QuizDetailResponseDTO } from "./quizzes.types.js";
-import type { CreateQuizInput, UpdateQuizInput } from "./quizzes.validation.js";
+import type { CreateQuizInput, UpdateQuizInput, AssignQuizInput } from "./quizzes.validation.js";
 
 const quizService = new QuizService();
 
@@ -84,6 +84,39 @@ export class QuizzesController {
       await quizService.delete(id, req.user!.id);
 
       res.status(200).json(okResponse("Quiz deleted successfully"));
+    },
+  );
+
+  public publishQuiz = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const id = req.params.id;
+      if (typeof id !== "string") {
+        throw new AppError("Invalid quiz ID", 400);
+      }
+
+      const quiz = await quizService.publishQuiz(id, req.user!.id);
+
+      res.status(200).json(okResponse<QuizResponseDTO>(
+        "Quiz published successfully",
+        quiz,
+      ));
+    },
+  );
+
+  public assignQuiz = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const id = req.params.id;
+      if (typeof id !== "string") {
+        throw new AppError("Invalid quiz ID", 400);
+      }
+
+      const { chapterId } = req.body as AssignQuizInput;
+      const quiz = await quizService.assignQuiz(id, req.user!.id, chapterId);
+
+      res.status(200).json(okResponse<QuizResponseDTO>(
+        "Quiz assigned successfully",
+        quiz,
+      ));
     },
   );
 }

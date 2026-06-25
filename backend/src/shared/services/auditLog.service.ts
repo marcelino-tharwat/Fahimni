@@ -9,8 +9,7 @@ import { logger } from "../../config/logger.js";
  * Activities are state-changing events worth surfacing on a teacher dashboard.
  * The frontend renders localized text from `action` + `resourceType` +
  * `actorName` + sanitized `details`, so we store structured data rather than
- * pre-baked sentences. QUIZ_* actions are reserved for forward compatibility:
- * the project has no Quiz model yet, so they are not emitted today.
+ * pre-baked sentences.
  */
 export type AuditLogAction =
   | "STAGE_CREATED"
@@ -25,6 +24,8 @@ export type AuditLogAction =
   | "QUIZ_CREATED"
   | "QUIZ_UPDATED"
   | "QUIZ_DELETED"
+  | "QUIZ_PUBLISHED"
+  | "QUIZ_ASSIGNED"
   | "QUIZ_COMPLETED"
   | "STUDENT_ENROLLED"
   | "STUDENT_UNENROLLED"

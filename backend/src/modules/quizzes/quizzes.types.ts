@@ -9,6 +9,7 @@ export const quizPublicFields = {
   createdBy: true,
   createdAt: true,
   updatedAt: true,
+  publishedAt: true,
 } as const;
 
 export const questionPublicFields = {
@@ -23,6 +24,17 @@ export const questionPublicFields = {
   updatedAt: true,
 } as const;
 
+export const studentQuestionPublicFields = {
+  id: true,
+  quizId: true,
+  type: true,
+  text: true,
+  options: true,
+  sortOrder: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
+
 export interface QuizResponseDTO {
   id: string;
   title: string;
@@ -32,6 +44,7 @@ export interface QuizResponseDTO {
   questionCount: number;
   createdAt: Date;
   updatedAt: Date;
+  publishedAt: Date | null;
 }
 
 export interface QuizDetailResponseDTO extends QuizResponseDTO {
