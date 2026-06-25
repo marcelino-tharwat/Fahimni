@@ -10,6 +10,7 @@ import {
   addQuestionSchema,
   updateQuestionSchema,
   reorderSchema,
+  assignQuizSchema,
 } from "./quizzes.validation.js";
 
 const quizController = new QuizzesController();
@@ -69,6 +70,22 @@ questionNestedRouter.delete(
 
 // Mount nested question routes BEFORE parameterized /:id routes
 quizStandaloneRouter.use("/:quizId/questions", questionNestedRouter);
+
+// ── Publish & Assign ────────────────────────────────────────────────────
+quizStandaloneRouter.patch(
+  "/:id/publish",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  quizController.publishQuiz,
+);
+
+quizStandaloneRouter.post(
+  "/:id/assign",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(assignQuizSchema),
+  quizController.assignQuiz,
+);
 
 // ── Parameterized quiz routes ──────────────────────────────────────────
 quizStandaloneRouter.get(

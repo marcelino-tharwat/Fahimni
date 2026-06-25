@@ -86,8 +86,13 @@ export const reorderSchema = z
     "Duplicate question IDs are not allowed",
   );
 
+export const assignQuizSchema = z.object({
+  chapterId: z.string().min(1, "chapterId is required"),
+});
+
 export type CreateQuizInput = z.infer<typeof createQuizSchema>;
 export type UpdateQuizInput = z.infer<typeof updateQuizSchema>;
 export type AddQuestionInput = z.infer<typeof addQuestionSchema>;
 export type UpdateQuestionInput = z.infer<typeof updateQuestionSchema>;
 export type ReorderInput = z.infer<typeof reorderSchema>;
+export type AssignQuizInput = z.infer<typeof assignQuizSchema>;

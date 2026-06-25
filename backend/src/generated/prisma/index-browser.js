@@ -270,7 +270,8 @@ exports.Prisma.QuizScalarFieldEnum = {
   status: 'status',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  publishedAt: 'publishedAt'
 };
 
 exports.Prisma.QuestionScalarFieldEnum = {
