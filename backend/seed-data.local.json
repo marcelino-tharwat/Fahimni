@@ -120,6 +120,42 @@
         "name": "Geometry",
         "price": "49.99",
         "stageId": "seed-stage-1"
+      },
+      "stage2Algebra": {
+        "id": "seed-chapter-seed-stage-2-1",
+        "name": "Algebra",
+        "price": null,
+        "stageId": "seed-stage-2"
+      },
+      "stage2Geometry": {
+        "id": "seed-chapter-seed-stage-2-2",
+        "name": "Geometry",
+        "price": "59.99",
+        "stageId": "seed-stage-2"
+      },
+      "stage3Paid": {
+        "id": "seed-chapter-seed-stage-3-1",
+        "name": "Calculus Prep",
+        "price": "34.99",
+        "stageId": "seed-stage-3"
+      },
+      "stage4Paid": {
+        "id": "seed-chapter-seed-stage-4-1",
+        "name": "Statistics",
+        "price": "44.99",
+        "stageId": "seed-stage-4"
+      },
+      "stage5Expensive": {
+        "id": "seed-chapter-seed-stage-5-1",
+        "name": "Advanced Mathematics",
+        "price": "79.99",
+        "stageId": "seed-stage-5"
+      },
+      "stage6Expensive": {
+        "id": "seed-chapter-seed-stage-6-1",
+        "name": "Final Review",
+        "price": "99.99",
+        "stageId": "seed-stage-6"
       }
     },
     "lessons": [
@@ -165,20 +201,55 @@
       "mobile": "01200000000",
       "role": "OPERATION"
     },
-    "stage": {
-      "id": "seed-stage-b-1",
-      "name": "Physics Track"
-    },
-    "chapter": {
-      "id": "seed-chapter-seed-stage-b-1-1",
-      "name": "Mechanics",
-      "price": null
-    },
-    "lesson": {
-      "id": "seed-lesson-seed-chapter-seed-stage-b-1-1-1",
-      "title": "Newton's Laws",
-      "sortOrder": 1
-    }
+    "stages": [
+      {
+        "id": "seed-stage-b-1",
+        "name": "Physics Track",
+        "sortOrder": 1
+      },
+      {
+        "id": "seed-stage-b-2",
+        "name": "Chemistry Track",
+        "sortOrder": 2
+      }
+    ],
+    "chapters": [
+      {
+        "id": "seed-chapter-seed-stage-b-1-1",
+        "name": "Mechanics",
+        "price": null,
+        "stageId": "seed-stage-b-1"
+      },
+      {
+        "id": "seed-chapter-seed-stage-b-2-1",
+        "name": "Organic Chemistry",
+        "price": "39.99",
+        "stageId": "seed-stage-b-2"
+      },
+      {
+        "id": "seed-chapter-seed-stage-b-2-2",
+        "name": "Physical Chemistry",
+        "price": "49.99",
+        "stageId": "seed-stage-b-2"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "seed-lesson-seed-chapter-seed-stage-b-1-1-1",
+        "title": "Newton's Laws",
+        "sortOrder": 1
+      },
+      {
+        "id": "seed-lesson-seed-chapter-seed-stage-b-2-1-1",
+        "title": "Hydrocarbons",
+        "sortOrder": 1
+      },
+      {
+        "id": "seed-lesson-seed-chapter-seed-stage-b-2-2-1",
+        "title": "Thermodynamics",
+        "sortOrder": 1
+      }
+    ]
   },
   "students": [],
   "admin": {

@@ -32,6 +32,12 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().min(1),
   GEMINI_GENERATION_MODEL: z.string().default("gemini-2.0-flash"),
   GEMINI_EMBEDDING_MODEL: z.string().default("text-embedding-004"),
+  PAYMOB_API_KEY: z.string().min(1),
+  PAYMOB_INTEGRATION_ID: z.coerce.number().positive(),
+  PAYMOB_IFRAME_ID: z.string().min(1),
+  PAYMOB_HMAC_SECRET: z.string().min(1),
+  PAYMOB_CURRENCY: z.string().min(1).default("EGP"),
+  PAYMOB_BASE_URL: z.string().url().default("https://accept.paymob.com"),
 });
 
 export const env = envSchema.parse(process.env);

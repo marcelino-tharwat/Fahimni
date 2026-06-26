@@ -54,6 +54,11 @@ export type Otp = $Result.DefaultSelection<Prisma.$OtpPayload>
  */
 export type Enrollment = $Result.DefaultSelection<Prisma.$EnrollmentPayload>
 /**
+ * Model PaymentTransaction
+ * 
+ */
+export type PaymentTransaction = $Result.DefaultSelection<Prisma.$PaymentTransactionPayload>
+/**
  * Model LessonProgress
  * 
  */
@@ -157,7 +162,8 @@ export type OtpType = (typeof OtpType)[keyof typeof OtpType]
 
 export const EnrollmentStatus: {
   ACTIVE: 'ACTIVE',
-  DEACTIVATED: 'DEACTIVATED'
+  DEACTIVATED: 'DEACTIVATED',
+  PAYMENT_PENDING: 'PAYMENT_PENDING'
 };
 
 export type EnrollmentStatus = (typeof EnrollmentStatus)[keyof typeof EnrollmentStatus]
@@ -166,10 +172,20 @@ export type EnrollmentStatus = (typeof EnrollmentStatus)[keyof typeof Enrollment
 export const PaymentMethod: {
   CASH: 'CASH',
   VISA: 'VISA',
-  PROMO: 'PROMO'
+  PROMO: 'PROMO',
+  PAYMOB: 'PAYMOB'
 };
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const PaymentStatus: {
+  PENDING: 'PENDING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED'
+};
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 }
 
@@ -204,6 +220,10 @@ export const EnrollmentStatus: typeof $Enums.EnrollmentStatus
 export type PaymentMethod = $Enums.PaymentMethod
 
 export const PaymentMethod: typeof $Enums.PaymentMethod
+
+export type PaymentStatus = $Enums.PaymentStatus
+
+export const PaymentStatus: typeof $Enums.PaymentStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -405,6 +425,16 @@ export class PrismaClient<
     * ```
     */
   get enrollment(): Prisma.EnrollmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.paymentTransaction`: Exposes CRUD operations for the **PaymentTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PaymentTransactions
+    * const paymentTransactions = await prisma.paymentTransaction.findMany()
+    * ```
+    */
+  get paymentTransaction(): Prisma.PaymentTransactionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.lessonProgress`: Exposes CRUD operations for the **LessonProgress** model.
@@ -937,6 +967,7 @@ export namespace Prisma {
     Lesson: 'Lesson',
     Otp: 'Otp',
     Enrollment: 'Enrollment',
+    PaymentTransaction: 'PaymentTransaction',
     LessonProgress: 'LessonProgress',
     LessonMaterial: 'LessonMaterial',
     ContentChunk: 'ContentChunk',
@@ -961,7 +992,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "lessonProgress" | "lessonMaterial" | "contentChunk" | "auditLog" | "refreshToken" | "quiz" | "question" | "quizAttempt" | "promoCode"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "contentChunk" | "auditLog" | "refreshToken" | "quiz" | "question" | "quizAttempt" | "promoCode"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1554,6 +1585,80 @@ export namespace Prisma {
           count: {
             args: Prisma.EnrollmentCountArgs<ExtArgs>
             result: $Utils.Optional<EnrollmentCountAggregateOutputType> | number
+          }
+        }
+      }
+      PaymentTransaction: {
+        payload: Prisma.$PaymentTransactionPayload<ExtArgs>
+        fields: Prisma.PaymentTransactionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PaymentTransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PaymentTransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          findFirst: {
+            args: Prisma.PaymentTransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PaymentTransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          findMany: {
+            args: Prisma.PaymentTransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>[]
+          }
+          create: {
+            args: Prisma.PaymentTransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          createMany: {
+            args: Prisma.PaymentTransactionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PaymentTransactionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>[]
+          }
+          delete: {
+            args: Prisma.PaymentTransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          update: {
+            args: Prisma.PaymentTransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          deleteMany: {
+            args: Prisma.PaymentTransactionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PaymentTransactionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PaymentTransactionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>[]
+          }
+          upsert: {
+            args: Prisma.PaymentTransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          aggregate: {
+            args: Prisma.PaymentTransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePaymentTransaction>
+          }
+          groupBy: {
+            args: Prisma.PaymentTransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PaymentTransactionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PaymentTransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<PaymentTransactionCountAggregateOutputType> | number
           }
         }
       }
@@ -2339,6 +2444,7 @@ export namespace Prisma {
     lesson?: LessonOmit
     otp?: OtpOmit
     enrollment?: EnrollmentOmit
+    paymentTransaction?: PaymentTransactionOmit
     lessonProgress?: LessonProgressOmit
     lessonMaterial?: LessonMaterialOmit
     contentChunk?: ContentChunkOmit
@@ -2438,6 +2544,7 @@ export namespace Prisma {
     quizzes: number
     refreshTokens: number
     stages: number
+    paymentTransactions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2451,6 +2558,7 @@ export namespace Prisma {
     quizzes?: boolean | UserCountOutputTypeCountQuizzesArgs
     refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
     stages?: boolean | UserCountOutputTypeCountStagesArgs
+    paymentTransactions?: boolean | UserCountOutputTypeCountPaymentTransactionsArgs
   }
 
   // Custom InputTypes
@@ -2534,6 +2642,13 @@ export namespace Prisma {
     where?: StageWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPaymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentTransactionWhereInput
+  }
+
 
   /**
    * Count Type StageCountOutputType
@@ -2574,12 +2689,14 @@ export namespace Prisma {
     enrollments: number
     lessons: number
     quizzes: number
+    paymentTransactions: number
   }
 
   export type ChapterCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     enrollments?: boolean | ChapterCountOutputTypeCountEnrollmentsArgs
     lessons?: boolean | ChapterCountOutputTypeCountLessonsArgs
     quizzes?: boolean | ChapterCountOutputTypeCountQuizzesArgs
+    paymentTransactions?: boolean | ChapterCountOutputTypeCountPaymentTransactionsArgs
   }
 
   // Custom InputTypes
@@ -2612,6 +2729,13 @@ export namespace Prisma {
    */
   export type ChapterCountOutputTypeCountQuizzesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: QuizWhereInput
+  }
+
+  /**
+   * ChapterCountOutputType without action
+   */
+  export type ChapterCountOutputTypeCountPaymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentTransactionWhereInput
   }
 
 
@@ -2916,6 +3040,7 @@ export namespace Prisma {
     stages?: boolean | User$stagesArgs<ExtArgs>
     studentProfile?: boolean | User$studentProfileArgs<ExtArgs>
     teacherProfile?: boolean | User$teacherProfileArgs<ExtArgs>
+    paymentTransactions?: boolean | User$paymentTransactionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2969,6 +3094,7 @@ export namespace Prisma {
     stages?: boolean | User$stagesArgs<ExtArgs>
     studentProfile?: boolean | User$studentProfileArgs<ExtArgs>
     teacherProfile?: boolean | User$teacherProfileArgs<ExtArgs>
+    paymentTransactions?: boolean | User$paymentTransactionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2989,6 +3115,7 @@ export namespace Prisma {
       stages: Prisma.$StagePayload<ExtArgs>[]
       studentProfile: Prisma.$StudentProfilePayload<ExtArgs> | null
       teacherProfile: Prisma.$TeacherProfilePayload<ExtArgs> | null
+      paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3406,6 +3533,7 @@ export namespace Prisma {
     stages<T extends User$stagesArgs<ExtArgs> = {}>(args?: Subset<T, User$stagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     studentProfile<T extends User$studentProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$studentProfileArgs<ExtArgs>>): Prisma__StudentProfileClient<$Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     teacherProfile<T extends User$teacherProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherProfileArgs<ExtArgs>>): Prisma__TeacherProfileClient<$Result.GetResult<Prisma.$TeacherProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    paymentTransactions<T extends User$paymentTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4112,6 +4240,30 @@ export namespace Prisma {
      */
     include?: TeacherProfileInclude<ExtArgs> | null
     where?: TeacherProfileWhereInput
+  }
+
+  /**
+   * User.paymentTransactions
+   */
+  export type User$paymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    where?: PaymentTransactionWhereInput
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    cursor?: PaymentTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
   }
 
   /**
@@ -7689,6 +7841,7 @@ export namespace Prisma {
     enrollments?: boolean | Chapter$enrollmentsArgs<ExtArgs>
     lessons?: boolean | Chapter$lessonsArgs<ExtArgs>
     quizzes?: boolean | Chapter$quizzesArgs<ExtArgs>
+    paymentTransactions?: boolean | Chapter$paymentTransactionsArgs<ExtArgs>
     _count?: boolean | ChapterCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["chapter"]>
 
@@ -7736,6 +7889,7 @@ export namespace Prisma {
     enrollments?: boolean | Chapter$enrollmentsArgs<ExtArgs>
     lessons?: boolean | Chapter$lessonsArgs<ExtArgs>
     quizzes?: boolean | Chapter$quizzesArgs<ExtArgs>
+    paymentTransactions?: boolean | Chapter$paymentTransactionsArgs<ExtArgs>
     _count?: boolean | ChapterCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ChapterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7752,6 +7906,7 @@ export namespace Prisma {
       enrollments: Prisma.$EnrollmentPayload<ExtArgs>[]
       lessons: Prisma.$LessonPayload<ExtArgs>[]
       quizzes: Prisma.$QuizPayload<ExtArgs>[]
+      paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8161,6 +8316,7 @@ export namespace Prisma {
     enrollments<T extends Chapter$enrollmentsArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     lessons<T extends Chapter$lessonsArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$lessonsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     quizzes<T extends Chapter$quizzesArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$quizzesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuizPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    paymentTransactions<T extends Chapter$paymentTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8669,6 +8825,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: QuizScalarFieldEnum | QuizScalarFieldEnum[]
+  }
+
+  /**
+   * Chapter.paymentTransactions
+   */
+  export type Chapter$paymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    where?: PaymentTransactionWhereInput
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    cursor?: PaymentTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
   }
 
   /**
@@ -12237,6 +12417,1198 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: EnrollmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PaymentTransaction
+   */
+
+  export type AggregatePaymentTransaction = {
+    _count: PaymentTransactionCountAggregateOutputType | null
+    _avg: PaymentTransactionAvgAggregateOutputType | null
+    _sum: PaymentTransactionSumAggregateOutputType | null
+    _min: PaymentTransactionMinAggregateOutputType | null
+    _max: PaymentTransactionMaxAggregateOutputType | null
+  }
+
+  export type PaymentTransactionAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type PaymentTransactionSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type PaymentTransactionMinAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    chapterId: string | null
+    paymobOrderId: string | null
+    paymobTransactionId: string | null
+    amount: number | null
+    currency: string | null
+    status: $Enums.PaymentStatus | null
+    errorMessage: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PaymentTransactionMaxAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    chapterId: string | null
+    paymobOrderId: string | null
+    paymobTransactionId: string | null
+    amount: number | null
+    currency: string | null
+    status: $Enums.PaymentStatus | null
+    errorMessage: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PaymentTransactionCountAggregateOutputType = {
+    id: number
+    studentId: number
+    chapterId: number
+    paymobOrderId: number
+    paymobTransactionId: number
+    amount: number
+    currency: number
+    status: number
+    errorMessage: number
+    rawCallback: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PaymentTransactionAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type PaymentTransactionSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type PaymentTransactionMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    chapterId?: true
+    paymobOrderId?: true
+    paymobTransactionId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    errorMessage?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PaymentTransactionMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    chapterId?: true
+    paymobOrderId?: true
+    paymobTransactionId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    errorMessage?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PaymentTransactionCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    chapterId?: true
+    paymobOrderId?: true
+    paymobTransactionId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    errorMessage?: true
+    rawCallback?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PaymentTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaymentTransaction to aggregate.
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentTransactions to fetch.
+     */
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PaymentTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PaymentTransactions
+    **/
+    _count?: true | PaymentTransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PaymentTransactionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PaymentTransactionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PaymentTransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PaymentTransactionMaxAggregateInputType
+  }
+
+  export type GetPaymentTransactionAggregateType<T extends PaymentTransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregatePaymentTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePaymentTransaction[P]>
+      : GetScalarType<T[P], AggregatePaymentTransaction[P]>
+  }
+
+
+
+
+  export type PaymentTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentTransactionWhereInput
+    orderBy?: PaymentTransactionOrderByWithAggregationInput | PaymentTransactionOrderByWithAggregationInput[]
+    by: PaymentTransactionScalarFieldEnum[] | PaymentTransactionScalarFieldEnum
+    having?: PaymentTransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PaymentTransactionCountAggregateInputType | true
+    _avg?: PaymentTransactionAvgAggregateInputType
+    _sum?: PaymentTransactionSumAggregateInputType
+    _min?: PaymentTransactionMinAggregateInputType
+    _max?: PaymentTransactionMaxAggregateInputType
+  }
+
+  export type PaymentTransactionGroupByOutputType = {
+    id: string
+    studentId: string
+    chapterId: string
+    paymobOrderId: string | null
+    paymobTransactionId: string | null
+    amount: number
+    currency: string
+    status: $Enums.PaymentStatus
+    errorMessage: string | null
+    rawCallback: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PaymentTransactionCountAggregateOutputType | null
+    _avg: PaymentTransactionAvgAggregateOutputType | null
+    _sum: PaymentTransactionSumAggregateOutputType | null
+    _min: PaymentTransactionMinAggregateOutputType | null
+    _max: PaymentTransactionMaxAggregateOutputType | null
+  }
+
+  type GetPaymentTransactionGroupByPayload<T extends PaymentTransactionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PaymentTransactionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PaymentTransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PaymentTransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], PaymentTransactionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PaymentTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    chapterId?: boolean
+    paymobOrderId?: boolean
+    paymobTransactionId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    errorMessage?: boolean
+    rawCallback?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentTransaction"]>
+
+  export type PaymentTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    chapterId?: boolean
+    paymobOrderId?: boolean
+    paymobTransactionId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    errorMessage?: boolean
+    rawCallback?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentTransaction"]>
+
+  export type PaymentTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    chapterId?: boolean
+    paymobOrderId?: boolean
+    paymobTransactionId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    errorMessage?: boolean
+    rawCallback?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentTransaction"]>
+
+  export type PaymentTransactionSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    chapterId?: boolean
+    paymobOrderId?: boolean
+    paymobTransactionId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    errorMessage?: boolean
+    rawCallback?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PaymentTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "chapterId" | "paymobOrderId" | "paymobTransactionId" | "amount" | "currency" | "status" | "errorMessage" | "rawCallback" | "createdAt" | "updatedAt", ExtArgs["result"]["paymentTransaction"]>
+  export type PaymentTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
+  }
+  export type PaymentTransactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
+  }
+  export type PaymentTransactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
+  }
+
+  export type $PaymentTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PaymentTransaction"
+    objects: {
+      student: Prisma.$UserPayload<ExtArgs>
+      chapter: Prisma.$ChapterPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      studentId: string
+      chapterId: string
+      paymobOrderId: string | null
+      paymobTransactionId: string | null
+      amount: number
+      currency: string
+      status: $Enums.PaymentStatus
+      errorMessage: string | null
+      rawCallback: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["paymentTransaction"]>
+    composites: {}
+  }
+
+  type PaymentTransactionGetPayload<S extends boolean | null | undefined | PaymentTransactionDefaultArgs> = $Result.GetResult<Prisma.$PaymentTransactionPayload, S>
+
+  type PaymentTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PaymentTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PaymentTransactionCountAggregateInputType | true
+    }
+
+  export interface PaymentTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PaymentTransaction'], meta: { name: 'PaymentTransaction' } }
+    /**
+     * Find zero or one PaymentTransaction that matches the filter.
+     * @param {PaymentTransactionFindUniqueArgs} args - Arguments to find a PaymentTransaction
+     * @example
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PaymentTransactionFindUniqueArgs>(args: SelectSubset<T, PaymentTransactionFindUniqueArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PaymentTransaction that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PaymentTransactionFindUniqueOrThrowArgs} args - Arguments to find a PaymentTransaction
+     * @example
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PaymentTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, PaymentTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PaymentTransaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionFindFirstArgs} args - Arguments to find a PaymentTransaction
+     * @example
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PaymentTransactionFindFirstArgs>(args?: SelectSubset<T, PaymentTransactionFindFirstArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PaymentTransaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionFindFirstOrThrowArgs} args - Arguments to find a PaymentTransaction
+     * @example
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PaymentTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, PaymentTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PaymentTransactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PaymentTransactions
+     * const paymentTransactions = await prisma.paymentTransaction.findMany()
+     * 
+     * // Get first 10 PaymentTransactions
+     * const paymentTransactions = await prisma.paymentTransaction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const paymentTransactionWithIdOnly = await prisma.paymentTransaction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PaymentTransactionFindManyArgs>(args?: SelectSubset<T, PaymentTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PaymentTransaction.
+     * @param {PaymentTransactionCreateArgs} args - Arguments to create a PaymentTransaction.
+     * @example
+     * // Create one PaymentTransaction
+     * const PaymentTransaction = await prisma.paymentTransaction.create({
+     *   data: {
+     *     // ... data to create a PaymentTransaction
+     *   }
+     * })
+     * 
+     */
+    create<T extends PaymentTransactionCreateArgs>(args: SelectSubset<T, PaymentTransactionCreateArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PaymentTransactions.
+     * @param {PaymentTransactionCreateManyArgs} args - Arguments to create many PaymentTransactions.
+     * @example
+     * // Create many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PaymentTransactionCreateManyArgs>(args?: SelectSubset<T, PaymentTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PaymentTransactions and returns the data saved in the database.
+     * @param {PaymentTransactionCreateManyAndReturnArgs} args - Arguments to create many PaymentTransactions.
+     * @example
+     * // Create many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PaymentTransactions and only return the `id`
+     * const paymentTransactionWithIdOnly = await prisma.paymentTransaction.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PaymentTransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, PaymentTransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PaymentTransaction.
+     * @param {PaymentTransactionDeleteArgs} args - Arguments to delete one PaymentTransaction.
+     * @example
+     * // Delete one PaymentTransaction
+     * const PaymentTransaction = await prisma.paymentTransaction.delete({
+     *   where: {
+     *     // ... filter to delete one PaymentTransaction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PaymentTransactionDeleteArgs>(args: SelectSubset<T, PaymentTransactionDeleteArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PaymentTransaction.
+     * @param {PaymentTransactionUpdateArgs} args - Arguments to update one PaymentTransaction.
+     * @example
+     * // Update one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PaymentTransactionUpdateArgs>(args: SelectSubset<T, PaymentTransactionUpdateArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PaymentTransactions.
+     * @param {PaymentTransactionDeleteManyArgs} args - Arguments to filter PaymentTransactions to delete.
+     * @example
+     * // Delete a few PaymentTransactions
+     * const { count } = await prisma.paymentTransaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PaymentTransactionDeleteManyArgs>(args?: SelectSubset<T, PaymentTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PaymentTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PaymentTransactionUpdateManyArgs>(args: SelectSubset<T, PaymentTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PaymentTransactions and returns the data updated in the database.
+     * @param {PaymentTransactionUpdateManyAndReturnArgs} args - Arguments to update many PaymentTransactions.
+     * @example
+     * // Update many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PaymentTransactions and only return the `id`
+     * const paymentTransactionWithIdOnly = await prisma.paymentTransaction.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PaymentTransactionUpdateManyAndReturnArgs>(args: SelectSubset<T, PaymentTransactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PaymentTransaction.
+     * @param {PaymentTransactionUpsertArgs} args - Arguments to update or create a PaymentTransaction.
+     * @example
+     * // Update or create a PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.upsert({
+     *   create: {
+     *     // ... data to create a PaymentTransaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PaymentTransaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PaymentTransactionUpsertArgs>(args: SelectSubset<T, PaymentTransactionUpsertArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PaymentTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionCountArgs} args - Arguments to filter PaymentTransactions to count.
+     * @example
+     * // Count the number of PaymentTransactions
+     * const count = await prisma.paymentTransaction.count({
+     *   where: {
+     *     // ... the filter for the PaymentTransactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends PaymentTransactionCountArgs>(
+      args?: Subset<T, PaymentTransactionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PaymentTransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PaymentTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PaymentTransactionAggregateArgs>(args: Subset<T, PaymentTransactionAggregateArgs>): Prisma.PrismaPromise<GetPaymentTransactionAggregateType<T>>
+
+    /**
+     * Group by PaymentTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PaymentTransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PaymentTransactionGroupByArgs['orderBy'] }
+        : { orderBy?: PaymentTransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PaymentTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPaymentTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PaymentTransaction model
+   */
+  readonly fields: PaymentTransactionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PaymentTransaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PaymentTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    chapter<T extends ChapterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChapterDefaultArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PaymentTransaction model
+   */
+  interface PaymentTransactionFieldRefs {
+    readonly id: FieldRef<"PaymentTransaction", 'String'>
+    readonly studentId: FieldRef<"PaymentTransaction", 'String'>
+    readonly chapterId: FieldRef<"PaymentTransaction", 'String'>
+    readonly paymobOrderId: FieldRef<"PaymentTransaction", 'String'>
+    readonly paymobTransactionId: FieldRef<"PaymentTransaction", 'String'>
+    readonly amount: FieldRef<"PaymentTransaction", 'Float'>
+    readonly currency: FieldRef<"PaymentTransaction", 'String'>
+    readonly status: FieldRef<"PaymentTransaction", 'PaymentStatus'>
+    readonly errorMessage: FieldRef<"PaymentTransaction", 'String'>
+    readonly rawCallback: FieldRef<"PaymentTransaction", 'Json'>
+    readonly createdAt: FieldRef<"PaymentTransaction", 'DateTime'>
+    readonly updatedAt: FieldRef<"PaymentTransaction", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PaymentTransaction findUnique
+   */
+  export type PaymentTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransaction to fetch.
+     */
+    where: PaymentTransactionWhereUniqueInput
+  }
+
+  /**
+   * PaymentTransaction findUniqueOrThrow
+   */
+  export type PaymentTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransaction to fetch.
+     */
+    where: PaymentTransactionWhereUniqueInput
+  }
+
+  /**
+   * PaymentTransaction findFirst
+   */
+  export type PaymentTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransaction to fetch.
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentTransactions to fetch.
+     */
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaymentTransactions.
+     */
+    cursor?: PaymentTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentTransactions.
+     */
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentTransaction findFirstOrThrow
+   */
+  export type PaymentTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransaction to fetch.
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentTransactions to fetch.
+     */
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaymentTransactions.
+     */
+    cursor?: PaymentTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentTransactions.
+     */
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentTransaction findMany
+   */
+  export type PaymentTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransactions to fetch.
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentTransactions to fetch.
+     */
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PaymentTransactions.
+     */
+    cursor?: PaymentTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentTransactions.
+     */
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentTransaction create
+   */
+  export type PaymentTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PaymentTransaction.
+     */
+    data: XOR<PaymentTransactionCreateInput, PaymentTransactionUncheckedCreateInput>
+  }
+
+  /**
+   * PaymentTransaction createMany
+   */
+  export type PaymentTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PaymentTransactions.
+     */
+    data: PaymentTransactionCreateManyInput | PaymentTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PaymentTransaction createManyAndReturn
+   */
+  export type PaymentTransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * The data used to create many PaymentTransactions.
+     */
+    data: PaymentTransactionCreateManyInput | PaymentTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PaymentTransaction update
+   */
+  export type PaymentTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PaymentTransaction.
+     */
+    data: XOR<PaymentTransactionUpdateInput, PaymentTransactionUncheckedUpdateInput>
+    /**
+     * Choose, which PaymentTransaction to update.
+     */
+    where: PaymentTransactionWhereUniqueInput
+  }
+
+  /**
+   * PaymentTransaction updateMany
+   */
+  export type PaymentTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PaymentTransactions.
+     */
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which PaymentTransactions to update
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * Limit how many PaymentTransactions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaymentTransaction updateManyAndReturn
+   */
+  export type PaymentTransactionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * The data used to update PaymentTransactions.
+     */
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which PaymentTransactions to update
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * Limit how many PaymentTransactions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PaymentTransaction upsert
+   */
+  export type PaymentTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PaymentTransaction to update in case it exists.
+     */
+    where: PaymentTransactionWhereUniqueInput
+    /**
+     * In case the PaymentTransaction found by the `where` argument doesn't exist, create a new PaymentTransaction with this data.
+     */
+    create: XOR<PaymentTransactionCreateInput, PaymentTransactionUncheckedCreateInput>
+    /**
+     * In case the PaymentTransaction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PaymentTransactionUpdateInput, PaymentTransactionUncheckedUpdateInput>
+  }
+
+  /**
+   * PaymentTransaction delete
+   */
+  export type PaymentTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter which PaymentTransaction to delete.
+     */
+    where: PaymentTransactionWhereUniqueInput
+  }
+
+  /**
+   * PaymentTransaction deleteMany
+   */
+  export type PaymentTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaymentTransactions to delete
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * Limit how many PaymentTransactions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaymentTransaction without action
+   */
+  export type PaymentTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
   }
 
 
@@ -22587,6 +23959,24 @@ export namespace Prisma {
   export type EnrollmentScalarFieldEnum = (typeof EnrollmentScalarFieldEnum)[keyof typeof EnrollmentScalarFieldEnum]
 
 
+  export const PaymentTransactionScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    chapterId: 'chapterId',
+    paymobOrderId: 'paymobOrderId',
+    paymobTransactionId: 'paymobTransactionId',
+    amount: 'amount',
+    currency: 'currency',
+    status: 'status',
+    errorMessage: 'errorMessage',
+    rawCallback: 'rawCallback',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PaymentTransactionScalarFieldEnum = (typeof PaymentTransactionScalarFieldEnum)[keyof typeof PaymentTransactionScalarFieldEnum]
+
+
   export const LessonProgressScalarFieldEnum: {
     id: 'id',
     studentId: 'studentId',
@@ -22924,6 +24314,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'PaymentStatus'
+   */
+  export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'PaymentStatus[]'
+   */
+  export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -23000,6 +24404,7 @@ export namespace Prisma {
     stages?: StageListRelationFilter
     studentProfile?: XOR<StudentProfileNullableScalarRelationFilter, StudentProfileWhereInput> | null
     teacherProfile?: XOR<TeacherProfileNullableScalarRelationFilter, TeacherProfileWhereInput> | null
+    paymentTransactions?: PaymentTransactionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -23024,6 +24429,7 @@ export namespace Prisma {
     stages?: StageOrderByRelationAggregateInput
     studentProfile?: StudentProfileOrderByWithRelationInput
     teacherProfile?: TeacherProfileOrderByWithRelationInput
+    paymentTransactions?: PaymentTransactionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -23051,6 +24457,7 @@ export namespace Prisma {
     stages?: StageListRelationFilter
     studentProfile?: XOR<StudentProfileNullableScalarRelationFilter, StudentProfileWhereInput> | null
     teacherProfile?: XOR<TeacherProfileNullableScalarRelationFilter, TeacherProfileWhereInput> | null
+    paymentTransactions?: PaymentTransactionListRelationFilter
   }, "id" | "email" | "mobile">
 
   export type UserOrderByWithAggregationInput = {
@@ -23295,6 +24702,7 @@ export namespace Prisma {
     enrollments?: EnrollmentListRelationFilter
     lessons?: LessonListRelationFilter
     quizzes?: QuizListRelationFilter
+    paymentTransactions?: PaymentTransactionListRelationFilter
   }
 
   export type ChapterOrderByWithRelationInput = {
@@ -23311,6 +24719,7 @@ export namespace Prisma {
     enrollments?: EnrollmentOrderByRelationAggregateInput
     lessons?: LessonOrderByRelationAggregateInput
     quizzes?: QuizOrderByRelationAggregateInput
+    paymentTransactions?: PaymentTransactionOrderByRelationAggregateInput
   }
 
   export type ChapterWhereUniqueInput = Prisma.AtLeast<{
@@ -23330,6 +24739,7 @@ export namespace Prisma {
     enrollments?: EnrollmentListRelationFilter
     lessons?: LessonListRelationFilter
     quizzes?: QuizListRelationFilter
+    paymentTransactions?: PaymentTransactionListRelationFilter
   }, "id">
 
   export type ChapterOrderByWithAggregationInput = {
@@ -23619,6 +25029,101 @@ export namespace Prisma {
     promoCodeId?: StringNullableWithAggregatesFilter<"Enrollment"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Enrollment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Enrollment"> | Date | string
+  }
+
+  export type PaymentTransactionWhereInput = {
+    AND?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    OR?: PaymentTransactionWhereInput[]
+    NOT?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    id?: StringFilter<"PaymentTransaction"> | string
+    studentId?: StringFilter<"PaymentTransaction"> | string
+    chapterId?: StringFilter<"PaymentTransaction"> | string
+    paymobOrderId?: StringNullableFilter<"PaymentTransaction"> | string | null
+    paymobTransactionId?: StringNullableFilter<"PaymentTransaction"> | string | null
+    amount?: FloatFilter<"PaymentTransaction"> | number
+    currency?: StringFilter<"PaymentTransaction"> | string
+    status?: EnumPaymentStatusFilter<"PaymentTransaction"> | $Enums.PaymentStatus
+    errorMessage?: StringNullableFilter<"PaymentTransaction"> | string | null
+    rawCallback?: JsonNullableFilter<"PaymentTransaction">
+    createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    student?: XOR<UserScalarRelationFilter, UserWhereInput>
+    chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
+  }
+
+  export type PaymentTransactionOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    chapterId?: SortOrder
+    paymobOrderId?: SortOrderInput | SortOrder
+    paymobTransactionId?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    rawCallback?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    student?: UserOrderByWithRelationInput
+    chapter?: ChapterOrderByWithRelationInput
+  }
+
+  export type PaymentTransactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    paymobOrderId?: string
+    AND?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    OR?: PaymentTransactionWhereInput[]
+    NOT?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    studentId?: StringFilter<"PaymentTransaction"> | string
+    chapterId?: StringFilter<"PaymentTransaction"> | string
+    paymobTransactionId?: StringNullableFilter<"PaymentTransaction"> | string | null
+    amount?: FloatFilter<"PaymentTransaction"> | number
+    currency?: StringFilter<"PaymentTransaction"> | string
+    status?: EnumPaymentStatusFilter<"PaymentTransaction"> | $Enums.PaymentStatus
+    errorMessage?: StringNullableFilter<"PaymentTransaction"> | string | null
+    rawCallback?: JsonNullableFilter<"PaymentTransaction">
+    createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    student?: XOR<UserScalarRelationFilter, UserWhereInput>
+    chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
+  }, "id" | "paymobOrderId">
+
+  export type PaymentTransactionOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    chapterId?: SortOrder
+    paymobOrderId?: SortOrderInput | SortOrder
+    paymobTransactionId?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    rawCallback?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PaymentTransactionCountOrderByAggregateInput
+    _avg?: PaymentTransactionAvgOrderByAggregateInput
+    _max?: PaymentTransactionMaxOrderByAggregateInput
+    _min?: PaymentTransactionMinOrderByAggregateInput
+    _sum?: PaymentTransactionSumOrderByAggregateInput
+  }
+
+  export type PaymentTransactionScalarWhereWithAggregatesInput = {
+    AND?: PaymentTransactionScalarWhereWithAggregatesInput | PaymentTransactionScalarWhereWithAggregatesInput[]
+    OR?: PaymentTransactionScalarWhereWithAggregatesInput[]
+    NOT?: PaymentTransactionScalarWhereWithAggregatesInput | PaymentTransactionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    studentId?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    chapterId?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    paymobOrderId?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
+    paymobTransactionId?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
+    amount?: FloatWithAggregatesFilter<"PaymentTransaction"> | number
+    currency?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    status?: EnumPaymentStatusWithAggregatesFilter<"PaymentTransaction"> | $Enums.PaymentStatus
+    errorMessage?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
+    rawCallback?: JsonNullableWithAggregatesFilter<"PaymentTransaction">
+    createdAt?: DateTimeWithAggregatesFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PaymentTransaction"> | Date | string
   }
 
   export type LessonProgressWhereInput = {
@@ -24317,6 +25822,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -24341,6 +25847,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserUpdateInput = {
@@ -24365,6 +25872,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -24389,6 +25897,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -24644,6 +26153,7 @@ export namespace Prisma {
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateInput = {
@@ -24659,6 +26169,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUpdateInput = {
@@ -24674,6 +26185,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateInput = {
@@ -24689,6 +26201,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterCreateManyInput = {
@@ -25003,6 +26516,109 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     promoCodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionCreateInput = {
+    id?: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    student: UserCreateNestedOneWithoutPaymentTransactionsInput
+    chapter: ChapterCreateNestedOneWithoutPaymentTransactionsInput
+  }
+
+  export type PaymentTransactionUncheckedCreateInput = {
+    id?: string
+    studentId: string
+    chapterId: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentTransactionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutPaymentTransactionsNestedInput
+    chapter?: ChapterUpdateOneRequiredWithoutPaymentTransactionsNestedInput
+  }
+
+  export type PaymentTransactionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    chapterId?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionCreateManyInput = {
+    id?: string
+    studentId: string
+    chapterId: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentTransactionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    chapterId?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25820,6 +27436,12 @@ export namespace Prisma {
     isNot?: TeacherProfileWhereInput | null
   }
 
+  export type PaymentTransactionListRelationFilter = {
+    every?: PaymentTransactionWhereInput
+    some?: PaymentTransactionWhereInput
+    none?: PaymentTransactionWhereInput
+  }
+
   export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -25853,6 +27475,10 @@ export namespace Prisma {
   }
 
   export type StageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PaymentTransactionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26524,6 +28150,74 @@ export namespace Prisma {
     _max?: NestedEnumPaymentMethodFilter<$PrismaModel>
   }
 
+  export type EnumPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
+  }
+
+  export type PaymentTransactionCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    chapterId?: SortOrder
+    paymobOrderId?: SortOrder
+    paymobTransactionId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    errorMessage?: SortOrder
+    rawCallback?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentTransactionAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type PaymentTransactionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    chapterId?: SortOrder
+    paymobOrderId?: SortOrder
+    paymobTransactionId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentTransactionMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    chapterId?: SortOrder
+    paymobOrderId?: SortOrder
+    paymobTransactionId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentTransactionSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type EnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.PaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
+  }
+
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -27127,6 +28821,13 @@ export namespace Prisma {
     connect?: TeacherProfileWhereUniqueInput
   }
 
+  export type PaymentTransactionCreateNestedManyWithoutStudentInput = {
+    create?: XOR<PaymentTransactionCreateWithoutStudentInput, PaymentTransactionUncheckedCreateWithoutStudentInput> | PaymentTransactionCreateWithoutStudentInput[] | PaymentTransactionUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutStudentInput | PaymentTransactionCreateOrConnectWithoutStudentInput[]
+    createMany?: PaymentTransactionCreateManyStudentInputEnvelope
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+  }
+
   export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -27207,6 +28908,13 @@ export namespace Prisma {
     create?: XOR<TeacherProfileCreateWithoutUserInput, TeacherProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: TeacherProfileCreateOrConnectWithoutUserInput
     connect?: TeacherProfileWhereUniqueInput
+  }
+
+  export type PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<PaymentTransactionCreateWithoutStudentInput, PaymentTransactionUncheckedCreateWithoutStudentInput> | PaymentTransactionCreateWithoutStudentInput[] | PaymentTransactionUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutStudentInput | PaymentTransactionCreateOrConnectWithoutStudentInput[]
+    createMany?: PaymentTransactionCreateManyStudentInputEnvelope
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -27385,6 +29093,20 @@ export namespace Prisma {
     update?: XOR<XOR<TeacherProfileUpdateToOneWithWhereWithoutUserInput, TeacherProfileUpdateWithoutUserInput>, TeacherProfileUncheckedUpdateWithoutUserInput>
   }
 
+  export type PaymentTransactionUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutStudentInput, PaymentTransactionUncheckedCreateWithoutStudentInput> | PaymentTransactionCreateWithoutStudentInput[] | PaymentTransactionUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutStudentInput | PaymentTransactionCreateOrConnectWithoutStudentInput[]
+    upsert?: PaymentTransactionUpsertWithWhereUniqueWithoutStudentInput | PaymentTransactionUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: PaymentTransactionCreateManyStudentInputEnvelope
+    set?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    disconnect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    delete?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    update?: PaymentTransactionUpdateWithWhereUniqueWithoutStudentInput | PaymentTransactionUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: PaymentTransactionUpdateManyWithWhereWithoutStudentInput | PaymentTransactionUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+  }
+
   export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -27545,6 +29267,20 @@ export namespace Prisma {
     update?: XOR<XOR<TeacherProfileUpdateToOneWithWhereWithoutUserInput, TeacherProfileUpdateWithoutUserInput>, TeacherProfileUncheckedUpdateWithoutUserInput>
   }
 
+  export type PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutStudentInput, PaymentTransactionUncheckedCreateWithoutStudentInput> | PaymentTransactionCreateWithoutStudentInput[] | PaymentTransactionUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutStudentInput | PaymentTransactionCreateOrConnectWithoutStudentInput[]
+    upsert?: PaymentTransactionUpsertWithWhereUniqueWithoutStudentInput | PaymentTransactionUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: PaymentTransactionCreateManyStudentInputEnvelope
+    set?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    disconnect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    delete?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    update?: PaymentTransactionUpdateWithWhereUniqueWithoutStudentInput | PaymentTransactionUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: PaymentTransactionUpdateManyWithWhereWithoutStudentInput | PaymentTransactionUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutStudentProfileInput = {
     create?: XOR<UserCreateWithoutStudentProfileInput, UserUncheckedCreateWithoutStudentProfileInput>
     connectOrCreate?: UserCreateOrConnectWithoutStudentProfileInput
@@ -27672,6 +29408,13 @@ export namespace Prisma {
     connect?: QuizWhereUniqueInput | QuizWhereUniqueInput[]
   }
 
+  export type PaymentTransactionCreateNestedManyWithoutChapterInput = {
+    create?: XOR<PaymentTransactionCreateWithoutChapterInput, PaymentTransactionUncheckedCreateWithoutChapterInput> | PaymentTransactionCreateWithoutChapterInput[] | PaymentTransactionUncheckedCreateWithoutChapterInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutChapterInput | PaymentTransactionCreateOrConnectWithoutChapterInput[]
+    createMany?: PaymentTransactionCreateManyChapterInputEnvelope
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+  }
+
   export type EnrollmentUncheckedCreateNestedManyWithoutChapterInput = {
     create?: XOR<EnrollmentCreateWithoutChapterInput, EnrollmentUncheckedCreateWithoutChapterInput> | EnrollmentCreateWithoutChapterInput[] | EnrollmentUncheckedCreateWithoutChapterInput[]
     connectOrCreate?: EnrollmentCreateOrConnectWithoutChapterInput | EnrollmentCreateOrConnectWithoutChapterInput[]
@@ -27691,6 +29434,13 @@ export namespace Prisma {
     connectOrCreate?: QuizCreateOrConnectWithoutChapterInput | QuizCreateOrConnectWithoutChapterInput[]
     createMany?: QuizCreateManyChapterInputEnvelope
     connect?: QuizWhereUniqueInput | QuizWhereUniqueInput[]
+  }
+
+  export type PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput = {
+    create?: XOR<PaymentTransactionCreateWithoutChapterInput, PaymentTransactionUncheckedCreateWithoutChapterInput> | PaymentTransactionCreateWithoutChapterInput[] | PaymentTransactionUncheckedCreateWithoutChapterInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutChapterInput | PaymentTransactionCreateOrConnectWithoutChapterInput[]
+    createMany?: PaymentTransactionCreateManyChapterInputEnvelope
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
   }
 
   export type NullableDecimalFieldUpdateOperationsInput = {
@@ -27751,6 +29501,20 @@ export namespace Prisma {
     deleteMany?: QuizScalarWhereInput | QuizScalarWhereInput[]
   }
 
+  export type PaymentTransactionUpdateManyWithoutChapterNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutChapterInput, PaymentTransactionUncheckedCreateWithoutChapterInput> | PaymentTransactionCreateWithoutChapterInput[] | PaymentTransactionUncheckedCreateWithoutChapterInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutChapterInput | PaymentTransactionCreateOrConnectWithoutChapterInput[]
+    upsert?: PaymentTransactionUpsertWithWhereUniqueWithoutChapterInput | PaymentTransactionUpsertWithWhereUniqueWithoutChapterInput[]
+    createMany?: PaymentTransactionCreateManyChapterInputEnvelope
+    set?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    disconnect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    delete?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    update?: PaymentTransactionUpdateWithWhereUniqueWithoutChapterInput | PaymentTransactionUpdateWithWhereUniqueWithoutChapterInput[]
+    updateMany?: PaymentTransactionUpdateManyWithWhereWithoutChapterInput | PaymentTransactionUpdateManyWithWhereWithoutChapterInput[]
+    deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+  }
+
   export type EnrollmentUncheckedUpdateManyWithoutChapterNestedInput = {
     create?: XOR<EnrollmentCreateWithoutChapterInput, EnrollmentUncheckedCreateWithoutChapterInput> | EnrollmentCreateWithoutChapterInput[] | EnrollmentUncheckedCreateWithoutChapterInput[]
     connectOrCreate?: EnrollmentCreateOrConnectWithoutChapterInput | EnrollmentCreateOrConnectWithoutChapterInput[]
@@ -27791,6 +29555,20 @@ export namespace Prisma {
     update?: QuizUpdateWithWhereUniqueWithoutChapterInput | QuizUpdateWithWhereUniqueWithoutChapterInput[]
     updateMany?: QuizUpdateManyWithWhereWithoutChapterInput | QuizUpdateManyWithWhereWithoutChapterInput[]
     deleteMany?: QuizScalarWhereInput | QuizScalarWhereInput[]
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutChapterInput, PaymentTransactionUncheckedCreateWithoutChapterInput> | PaymentTransactionCreateWithoutChapterInput[] | PaymentTransactionUncheckedCreateWithoutChapterInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutChapterInput | PaymentTransactionCreateOrConnectWithoutChapterInput[]
+    upsert?: PaymentTransactionUpsertWithWhereUniqueWithoutChapterInput | PaymentTransactionUpsertWithWhereUniqueWithoutChapterInput[]
+    createMany?: PaymentTransactionCreateManyChapterInputEnvelope
+    set?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    disconnect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    delete?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    update?: PaymentTransactionUpdateWithWhereUniqueWithoutChapterInput | PaymentTransactionUpdateWithWhereUniqueWithoutChapterInput[]
+    updateMany?: PaymentTransactionUpdateManyWithWhereWithoutChapterInput | PaymentTransactionUpdateManyWithWhereWithoutChapterInput[]
+    deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
   }
 
   export type LessonMaterialCreateNestedManyWithoutLessonInput = {
@@ -27993,6 +29771,38 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutEnrollmentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEnrollmentsInput, UserUpdateWithoutEnrollmentsInput>, UserUncheckedUpdateWithoutEnrollmentsInput>
+  }
+
+  export type UserCreateNestedOneWithoutPaymentTransactionsInput = {
+    create?: XOR<UserCreateWithoutPaymentTransactionsInput, UserUncheckedCreateWithoutPaymentTransactionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPaymentTransactionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ChapterCreateNestedOneWithoutPaymentTransactionsInput = {
+    create?: XOR<ChapterCreateWithoutPaymentTransactionsInput, ChapterUncheckedCreateWithoutPaymentTransactionsInput>
+    connectOrCreate?: ChapterCreateOrConnectWithoutPaymentTransactionsInput
+    connect?: ChapterWhereUniqueInput
+  }
+
+  export type EnumPaymentStatusFieldUpdateOperationsInput = {
+    set?: $Enums.PaymentStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutPaymentTransactionsNestedInput = {
+    create?: XOR<UserCreateWithoutPaymentTransactionsInput, UserUncheckedCreateWithoutPaymentTransactionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPaymentTransactionsInput
+    upsert?: UserUpsertWithoutPaymentTransactionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPaymentTransactionsInput, UserUpdateWithoutPaymentTransactionsInput>, UserUncheckedUpdateWithoutPaymentTransactionsInput>
+  }
+
+  export type ChapterUpdateOneRequiredWithoutPaymentTransactionsNestedInput = {
+    create?: XOR<ChapterCreateWithoutPaymentTransactionsInput, ChapterUncheckedCreateWithoutPaymentTransactionsInput>
+    connectOrCreate?: ChapterCreateOrConnectWithoutPaymentTransactionsInput
+    upsert?: ChapterUpsertWithoutPaymentTransactionsInput
+    connect?: ChapterWhereUniqueInput
+    update?: XOR<XOR<ChapterUpdateToOneWithWhereWithoutPaymentTransactionsInput, ChapterUpdateWithoutPaymentTransactionsInput>, ChapterUncheckedUpdateWithoutPaymentTransactionsInput>
   }
 
   export type LessonCreateNestedOneWithoutLessonProgressInput = {
@@ -28601,6 +30411,23 @@ export namespace Prisma {
     _max?: NestedEnumPaymentMethodFilter<$PrismaModel>
   }
 
+  export type NestedEnumPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
+  }
+
+  export type NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.PaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -29073,6 +30900,44 @@ export namespace Prisma {
     create: XOR<TeacherProfileCreateWithoutUserInput, TeacherProfileUncheckedCreateWithoutUserInput>
   }
 
+  export type PaymentTransactionCreateWithoutStudentInput = {
+    id?: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    chapter: ChapterCreateNestedOneWithoutPaymentTransactionsInput
+  }
+
+  export type PaymentTransactionUncheckedCreateWithoutStudentInput = {
+    id?: string
+    chapterId: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentTransactionCreateOrConnectWithoutStudentInput = {
+    where: PaymentTransactionWhereUniqueInput
+    create: XOR<PaymentTransactionCreateWithoutStudentInput, PaymentTransactionUncheckedCreateWithoutStudentInput>
+  }
+
+  export type PaymentTransactionCreateManyStudentInputEnvelope = {
+    data: PaymentTransactionCreateManyStudentInput | PaymentTransactionCreateManyStudentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AuditLogUpsertWithWhereUniqueWithoutUserInput = {
     where: AuditLogWhereUniqueInput
     update: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
@@ -29418,6 +31283,40 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PaymentTransactionUpsertWithWhereUniqueWithoutStudentInput = {
+    where: PaymentTransactionWhereUniqueInput
+    update: XOR<PaymentTransactionUpdateWithoutStudentInput, PaymentTransactionUncheckedUpdateWithoutStudentInput>
+    create: XOR<PaymentTransactionCreateWithoutStudentInput, PaymentTransactionUncheckedCreateWithoutStudentInput>
+  }
+
+  export type PaymentTransactionUpdateWithWhereUniqueWithoutStudentInput = {
+    where: PaymentTransactionWhereUniqueInput
+    data: XOR<PaymentTransactionUpdateWithoutStudentInput, PaymentTransactionUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type PaymentTransactionUpdateManyWithWhereWithoutStudentInput = {
+    where: PaymentTransactionScalarWhereInput
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type PaymentTransactionScalarWhereInput = {
+    AND?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+    OR?: PaymentTransactionScalarWhereInput[]
+    NOT?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+    id?: StringFilter<"PaymentTransaction"> | string
+    studentId?: StringFilter<"PaymentTransaction"> | string
+    chapterId?: StringFilter<"PaymentTransaction"> | string
+    paymobOrderId?: StringNullableFilter<"PaymentTransaction"> | string | null
+    paymobTransactionId?: StringNullableFilter<"PaymentTransaction"> | string | null
+    amount?: FloatFilter<"PaymentTransaction"> | number
+    currency?: StringFilter<"PaymentTransaction"> | string
+    status?: EnumPaymentStatusFilter<"PaymentTransaction"> | $Enums.PaymentStatus
+    errorMessage?: StringNullableFilter<"PaymentTransaction"> | string | null
+    rawCallback?: JsonNullableFilter<"PaymentTransaction">
+    createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+  }
+
   export type UserCreateWithoutStudentProfileInput = {
     id?: string
     fullName: string
@@ -29439,6 +31338,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -29462,6 +31362,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -29501,6 +31402,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -29524,6 +31426,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutTeacherProfileInput = {
@@ -29547,6 +31450,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutTeacherProfileInput = {
@@ -29570,6 +31474,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutTeacherProfileInput = {
@@ -29609,6 +31514,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherProfileInput = {
@@ -29632,6 +31538,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterCreateWithoutStageInput = {
@@ -29646,6 +31553,7 @@ export namespace Prisma {
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutStageInput = {
@@ -29660,6 +31568,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutStageInput = {
@@ -29693,6 +31602,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutStagesInput = {
@@ -29716,6 +31626,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutStagesInput = {
@@ -29786,6 +31697,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStagesInput = {
@@ -29809,6 +31721,7 @@ export namespace Prisma {
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StageCreateWithoutChaptersInput = {
@@ -29956,6 +31869,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PaymentTransactionCreateWithoutChapterInput = {
+    id?: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    student: UserCreateNestedOneWithoutPaymentTransactionsInput
+  }
+
+  export type PaymentTransactionUncheckedCreateWithoutChapterInput = {
+    id?: string
+    studentId: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentTransactionCreateOrConnectWithoutChapterInput = {
+    where: PaymentTransactionWhereUniqueInput
+    create: XOR<PaymentTransactionCreateWithoutChapterInput, PaymentTransactionUncheckedCreateWithoutChapterInput>
+  }
+
+  export type PaymentTransactionCreateManyChapterInputEnvelope = {
+    data: PaymentTransactionCreateManyChapterInput | PaymentTransactionCreateManyChapterInput[]
+    skipDuplicates?: boolean
+  }
+
   export type StageUpsertWithoutChaptersInput = {
     update: XOR<StageUpdateWithoutChaptersInput, StageUncheckedUpdateWithoutChaptersInput>
     create: XOR<StageCreateWithoutChaptersInput, StageUncheckedCreateWithoutChaptersInput>
@@ -30055,6 +32006,22 @@ export namespace Prisma {
     data: XOR<QuizUpdateManyMutationInput, QuizUncheckedUpdateManyWithoutChapterInput>
   }
 
+  export type PaymentTransactionUpsertWithWhereUniqueWithoutChapterInput = {
+    where: PaymentTransactionWhereUniqueInput
+    update: XOR<PaymentTransactionUpdateWithoutChapterInput, PaymentTransactionUncheckedUpdateWithoutChapterInput>
+    create: XOR<PaymentTransactionCreateWithoutChapterInput, PaymentTransactionUncheckedCreateWithoutChapterInput>
+  }
+
+  export type PaymentTransactionUpdateWithWhereUniqueWithoutChapterInput = {
+    where: PaymentTransactionWhereUniqueInput
+    data: XOR<PaymentTransactionUpdateWithoutChapterInput, PaymentTransactionUncheckedUpdateWithoutChapterInput>
+  }
+
+  export type PaymentTransactionUpdateManyWithWhereWithoutChapterInput = {
+    where: PaymentTransactionScalarWhereInput
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyWithoutChapterInput>
+  }
+
   export type LessonMaterialCreateWithoutLessonInput = {
     id?: string
     filePath: string
@@ -30149,6 +32116,7 @@ export namespace Prisma {
     stage: StageCreateNestedOneWithoutChaptersInput
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutLessonsInput = {
@@ -30163,6 +32131,7 @@ export namespace Prisma {
     stageId: string
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutLessonsInput = {
@@ -30267,6 +32236,7 @@ export namespace Prisma {
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutLessonsInput = {
@@ -30281,6 +32251,7 @@ export namespace Prisma {
     stageId?: StringFieldUpdateOperationsInput | string
     enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type UserCreateWithoutOtpsInput = {
@@ -30304,6 +32275,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutOtpsInput = {
@@ -30327,6 +32299,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutOtpsInput = {
@@ -30366,6 +32339,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOtpsInput = {
@@ -30389,6 +32363,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterCreateWithoutEnrollmentsInput = {
@@ -30403,6 +32378,7 @@ export namespace Prisma {
     stage: StageCreateNestedOneWithoutChaptersInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutEnrollmentsInput = {
@@ -30417,6 +32393,7 @@ export namespace Prisma {
     stageId: string
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutEnrollmentsInput = {
@@ -30445,6 +32422,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -30468,6 +32446,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -30498,6 +32477,7 @@ export namespace Prisma {
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutEnrollmentsInput = {
@@ -30512,6 +32492,7 @@ export namespace Prisma {
     stageId?: StringFieldUpdateOperationsInput | string
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type UserUpsertWithoutEnrollmentsInput = {
@@ -30546,6 +32527,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -30569,6 +32551,195 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserCreateWithoutPaymentTransactionsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPaymentTransactionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPaymentTransactionsInput, UserUncheckedCreateWithoutPaymentTransactionsInput>
+  }
+
+  export type ChapterCreateWithoutPaymentTransactionsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    price?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    stage: StageCreateNestedOneWithoutChaptersInput
+    enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
+    lessons?: LessonCreateNestedManyWithoutChapterInput
+    quizzes?: QuizCreateNestedManyWithoutChapterInput
+  }
+
+  export type ChapterUncheckedCreateWithoutPaymentTransactionsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    price?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    stageId: string
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
+    lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
+  }
+
+  export type ChapterCreateOrConnectWithoutPaymentTransactionsInput = {
+    where: ChapterWhereUniqueInput
+    create: XOR<ChapterCreateWithoutPaymentTransactionsInput, ChapterUncheckedCreateWithoutPaymentTransactionsInput>
+  }
+
+  export type UserUpsertWithoutPaymentTransactionsInput = {
+    update: XOR<UserUpdateWithoutPaymentTransactionsInput, UserUncheckedUpdateWithoutPaymentTransactionsInput>
+    create: XOR<UserCreateWithoutPaymentTransactionsInput, UserUncheckedCreateWithoutPaymentTransactionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPaymentTransactionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPaymentTransactionsInput, UserUncheckedUpdateWithoutPaymentTransactionsInput>
+  }
+
+  export type UserUpdateWithoutPaymentTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type ChapterUpsertWithoutPaymentTransactionsInput = {
+    update: XOR<ChapterUpdateWithoutPaymentTransactionsInput, ChapterUncheckedUpdateWithoutPaymentTransactionsInput>
+    create: XOR<ChapterCreateWithoutPaymentTransactionsInput, ChapterUncheckedCreateWithoutPaymentTransactionsInput>
+    where?: ChapterWhereInput
+  }
+
+  export type ChapterUpdateToOneWithWhereWithoutPaymentTransactionsInput = {
+    where?: ChapterWhereInput
+    data: XOR<ChapterUpdateWithoutPaymentTransactionsInput, ChapterUncheckedUpdateWithoutPaymentTransactionsInput>
+  }
+
+  export type ChapterUpdateWithoutPaymentTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
+    lessons?: LessonUpdateManyWithoutChapterNestedInput
+    quizzes?: QuizUpdateManyWithoutChapterNestedInput
+  }
+
+  export type ChapterUncheckedUpdateWithoutPaymentTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stageId?: StringFieldUpdateOperationsInput | string
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
+    lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type LessonCreateWithoutLessonProgressInput = {
@@ -30631,6 +32802,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -30654,6 +32826,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -30738,6 +32911,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -30761,6 +32935,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type LessonCreateWithoutLessonMaterialsInput = {
@@ -30952,6 +33127,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -30975,6 +33151,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -31014,6 +33191,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -31037,6 +33215,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutRefreshTokensInput = {
@@ -31060,6 +33239,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -31083,6 +33263,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -31122,6 +33303,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -31145,6 +33327,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type QuestionCreateWithoutQuizInput = {
@@ -31229,6 +33412,7 @@ export namespace Prisma {
     stage: StageCreateNestedOneWithoutChaptersInput
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutQuizzesInput = {
@@ -31243,6 +33427,7 @@ export namespace Prisma {
     stageId: string
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutQuizzesInput = {
@@ -31271,6 +33456,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutQuizzesInput = {
@@ -31294,6 +33480,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutQuizzesInput = {
@@ -31372,6 +33559,7 @@ export namespace Prisma {
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutQuizzesInput = {
@@ -31386,6 +33574,7 @@ export namespace Prisma {
     stageId?: StringFieldUpdateOperationsInput | string
     enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type UserUpsertWithoutQuizzesInput = {
@@ -31420,6 +33609,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizzesInput = {
@@ -31443,6 +33633,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type QuizCreateWithoutQuestionsInput = {
@@ -31577,6 +33768,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -31600,6 +33792,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -31680,6 +33873,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -31703,6 +33897,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutUsedPromoCodesInput = {
@@ -31726,6 +33921,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutUsedPromoCodesInput = {
@@ -31749,6 +33945,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutUsedPromoCodesInput = {
@@ -31777,6 +33974,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutCreatedPromoCodesInput = {
@@ -31800,6 +33998,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutCreatedPromoCodesInput = {
@@ -31839,6 +34038,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsedPromoCodesInput = {
@@ -31862,6 +34062,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutCreatedPromoCodesInput = {
@@ -31896,6 +34097,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedPromoCodesInput = {
@@ -31919,6 +34121,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type AuditLogCreateManyUserInput = {
@@ -32024,6 +34227,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+  }
+
+  export type PaymentTransactionCreateManyStudentInput = {
+    id?: string
+    chapterId: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AuditLogUpdateWithoutUserInput = {
@@ -32347,6 +34564,48 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type PaymentTransactionUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chapter?: ChapterUpdateOneRequiredWithoutPaymentTransactionsNestedInput
+  }
+
+  export type PaymentTransactionUncheckedUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chapterId?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chapterId?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ChapterCreateManyStageInput = {
     id?: string
     name: string
@@ -32370,6 +34629,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutStageInput = {
@@ -32384,6 +34644,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateManyWithoutStageInput = {
@@ -32434,6 +34695,20 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+  }
+
+  export type PaymentTransactionCreateManyChapterInput = {
+    id?: string
+    studentId: string
+    paymobOrderId?: string | null
+    paymobTransactionId?: string | null
+    amount: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type EnrollmentUpdateWithoutChapterInput = {
@@ -32561,6 +34836,48 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PaymentTransactionUpdateWithoutChapterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutPaymentTransactionsNestedInput
+  }
+
+  export type PaymentTransactionUncheckedUpdateWithoutChapterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyWithoutChapterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    paymobOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymobTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LessonMaterialCreateManyLessonInput = {
