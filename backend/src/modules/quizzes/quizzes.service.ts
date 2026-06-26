@@ -372,25 +372,52 @@ export class QuizService {
     teacherId: string,
   ): Promise<QuizResponseDTO> {
     const existing = await this.assertQuizOwned(quizId, teacherId);
-    this.assertQuizDraft(existing.status);
 
-    const questionCount = await prisma.question.count({
+    // Duplicate publish / invalid transition → 409 (idempotency-safe).
+    if (existing.status !== "DRAFT") {
+      throw new AppError("Quiz is already published", 409);
+    }
+
+    // STORY-47: a quiz must be assigned to a chapter before it can be published.
+    if (!existing.chapterId) {
+      throw new AppError(
+        "Quiz must be assigned to a chapter before publishing",
+        400,
+      );
+    }
+
+    const questions = await prisma.question.findMany({
       where: { quizId },
+      select: { points: true },
     });
 
-    if (questionCount === 0) {
+    if (questions.length === 0) {
       throw new AppError(
         "Quiz must have at least 1 question to be published",
         400,
       );
     }
 
-    const quiz = await prisma.quiz.update({
-      where: { id: quizId },
+    const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
+
+    // Atomic publish: only transitions a still-DRAFT quiz; concurrent publishes
+    // see 0 rows updated and get a 409.
+    const updated = await prisma.quiz.updateMany({
+      where: { id: quizId, status: "DRAFT" },
       data: {
         status: "PUBLISHED",
         publishedAt: new Date(),
+        questionCount: questions.length,
+        totalPoints,
       },
+    });
+
+    if (updated.count === 0) {
+      throw new AppError("Quiz is already published", 409);
+    }
+
+    const quiz = await prisma.quiz.findUniqueOrThrow({
+      where: { id: quizId },
       select: { ...quizPublicFields, _count: { select: { questions: true } } },
     });
 
@@ -404,7 +431,7 @@ export class QuizService {
       actorId: teacherId,
       actorType: "TEACHER",
       scopeTeacherId: teacherId,
-      details: { title: existing.title, questionCount },
+      details: { title: existing.title, questionCount: questions.length },
     });
 
     return {
@@ -420,7 +447,21 @@ export class QuizService {
   ): Promise<QuizResponseDTO> {
     const existing = await this.assertQuizOwned(quizId, teacherId);
 
-    const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
+    // Reassigning a published quiz would break question/chapter immutability.
+    if (existing.status !== "DRAFT") {
+      throw new AppError("Cannot reassign a published quiz", 409);
+    }
+
+    // Chapter must exist, be active, and belong to the same teacher
+    // (Chapter -> Stage -> teacherId). Prevents cross-teacher assignment.
+    const chapter = await prisma.chapter.findFirst({
+      where: {
+        id: chapterId,
+        deletedAt: null,
+        stage: { teacherId, deletedAt: null },
+      },
+      select: { id: true },
+    });
     if (!chapter) {
       throw new AppError("Chapter not found", 404);
     }
@@ -479,7 +520,17 @@ export class QuizService {
       return {
         ...rest,
         questionCount: count.questions,
-        questions: (questions as Record<string, unknown>[]).map(toQuestionResponseDTO),
+        // Student-facing: never expose correctAnswer (omit the field entirely).
+        questions: (questions as Record<string, unknown>[]).map((row) => ({
+          id: row.id as string,
+          quizId: row.quizId as string,
+          type: row.type,
+          content: row.text as string,
+          options: row.options as Record<string, string>,
+          sortOrder: row.sortOrder as number,
+          createdAt: row.createdAt as Date,
+          updatedAt: row.updatedAt as Date,
+        })),
       } as unknown as QuizDetailResponseDTO;
     });
   }

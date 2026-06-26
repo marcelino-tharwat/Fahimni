@@ -3,6 +3,61 @@
 Local-only Postman assets for testing `POST /api/quizzes/generate` against the
 seeded **General Secondary Education** dataset.
 
+---
+
+## Quiz Generation & Submission E2E (STORY-45 / 47 / 48) — direct run
+
+A self-populating collection that runs the full journey: generate by chapter,
+generate by lessons, assign, publish, chapter quizzes, assigned quizzes, start
+attempt, partial + complete submit, auto-grade, essay grading, and
+duplicate/authorization protections. **No IDs, bodies, answers, or grades are
+entered manually** — every runtime value is captured by scripts.
+
+| File | Tracked? | Purpose |
+|---|---|---|
+| `Fahimni_Quiz_Generation_Submission_E2E.postman_collection.json` | ✅ tracked | The collection. |
+| `Fahimni_Quiz_Generation_Submission.template.postman_environment.json` | ✅ tracked | Safe template (empty creds/IDs). |
+| `Fahimni_Quiz_Generation_Submission.local.postman_environment.json` | 🚫 git-ignored | Populated by the prepare script (IDs + local password). Import this. |
+
+### How to run (4 steps)
+
+```powershell
+# 1) Seed + prepare the populated environment (verifies fixtures & RAG readiness)
+npm run db:seed
+npm run postman:prepare:quiz-e2e
+# 2) Start the backend (uses the local dev DB + a valid GEMINI_API_KEY)
+npm run dev
+```
+
+3. In Postman: **Import** the collection and the populated local environment
+   (`Fahimni_Quiz_Generation_Submission.local.postman_environment.json`), select
+   the environment.
+4. Open the **"RUN DIRECT — Quiz Generation and Submission E2E"** folder and click
+   **Run**.
+
+CLI (Newman):
+
+```bash
+newman run postman/Fahimni_Quiz_Generation_Submission_E2E.postman_collection.json \
+  -e postman/Fahimni_Quiz_Generation_Submission.local.postman_environment.json \
+  --folder "RUN DIRECT — Quiz Generation and Submission E2E" \
+  --delay-request 500 --timeout-request 60000
+```
+
+### Notes
+
+- **Auth:** the backend sets an HttpOnly `access_token` cookie. Postman/Newman's
+  cookie jar reuses it automatically; the collection logs in as the right role
+  immediately before that role's requests (teacher → student → teacher again).
+- **Live Gemini:** requests 04 and 05 call Gemini for real and consume quota. On a
+  slow/throttled key a generation can exceed the backend's 20s cap and return 422;
+  re-run when the key responds within budget. The journey logic is deterministic.
+- The local password lives only in the git-ignored populated environment.
+
+---
+
+## STORY-45 seed environment (separate)
+
 ## Files
 
 | File | Tracked? | Purpose |

@@ -237,9 +237,14 @@ export class GeminiClient {
           throw error;
         }
 
+        // Retry policy is status-driven (not message-text driven): rate limits
+        // and 5xx server responses are retryable; genuine transport failures
+        // (GeminiNetworkError without a status) are not.
         const isRetryable =
           error instanceof GeminiRateLimitError ||
-          (error instanceof GeminiNetworkError && /5\d{2}/.test(error.message));
+          (error instanceof GeminiNetworkError &&
+            error.status !== undefined &&
+            error.status >= 500);
 
         if (isRetryable && attempt < MAX_RETRIES - 1) {
           const delay = RETRY_DELAYS_MS[attempt]!;
@@ -301,6 +306,7 @@ export class GeminiClient {
           .catch(() => ({}))) as GeminiErrorBody;
         throw new GeminiNetworkError(
           errorBody.error?.message ?? `HTTP ${response.status} server error`,
+          response.status,
         );
       }
 
