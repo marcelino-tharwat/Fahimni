@@ -7,11 +7,16 @@ import type { ApiError } from '@/shared/lib/api/client';
 export const STUDENT_TREE_KEY = ['student', 'content', 'tree'] as const;
 export const STUDENT_MY_COURSES_KEY = ['student', 'content', 'my-courses'] as const;
 
-/** All Content tree (stages -> chapters -> lessons) for the authenticated student. */
-export function useStudentTree() {
+/**
+ * All Content tree (stages -> chapters -> lessons) for the authenticated student.
+ * `enabled` lets callers fetch lazily (e.g. only when a surface is active); it
+ * defaults to true so existing callers keep their current behavior.
+ */
+export function useStudentTree(enabled = true) {
   return useQuery({
     queryKey: STUDENT_TREE_KEY,
     queryFn: () => studentContentApi.getTree(),
+    enabled,
   });
 }
 

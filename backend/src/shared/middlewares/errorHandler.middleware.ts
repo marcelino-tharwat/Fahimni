@@ -28,9 +28,24 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     logger.error(message, err);
   }
 
+  // Surface safe, structured fields (reason/details/suggestion) only when the
+  // error explicitly carries them as strings — e.g. quiz-generation 422 errors.
+  // Other errors are unaffected.
+  const safeExtras: Record<string, string> = {};
+  if (err && typeof err === "object") {
+    for (const key of ["reason", "details", "suggestion"] as const) {
+      const value = (err as Record<string, unknown>)[key];
+      if (typeof value === "string") {
+        safeExtras[key] = value;
+      }
+    }
+  }
+
   res.status(status).json({
     success: false,
+    statusCode: status,
     message,
+    ...safeExtras,
     ...(env.NODE_ENV === "development" &&
     status >= 500 &&
     err instanceof Error &&

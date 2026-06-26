@@ -18,7 +18,9 @@ import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import aiRouter from "./modules/ai/ai.routes.js";
 import enrollmentRoutes from "./modules/enrollment/enrollment.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
+import promoCodeRoutes from "./modules/promo-code/promo-code.routes.js";
 import quizRoutes from "./modules/quizzes/quizzes.routes.js";
+import attemptsRoutes from "./modules/quizzes/attempts.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -51,10 +53,12 @@ export function createApp(): Application {
   app.use("/api/ai", aiRouter);
 
   app.use("/api/enrollments", enrollmentRoutes);
+  app.use("/api/promo-codes", promoCodeRoutes);
 
   app.use("/api/payments", paymentRoutes);
 
   app.use("/api/quizzes", quizRoutes);
+  app.use("/api/attempts", attemptsRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

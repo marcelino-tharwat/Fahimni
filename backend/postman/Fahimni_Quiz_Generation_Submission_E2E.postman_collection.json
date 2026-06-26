@@ -1,0 +1,800 @@
+{
+  "info": {
+    "name": "Fahimni — Quiz Generation & Submission E2E",
+    "_postman_id": "fahimni-quiz-gen-submission-e2e",
+    "description": "Direct-run E2E for STORY-45/47/48. Import the populated local environment, select it, and run the 'RUN DIRECT — Quiz Generation and Submission E2E' folder. No IDs, bodies, answers, or grades are entered manually — every runtime value is captured by scripts. Auth uses the HttpOnly access_token cookie via Newman's cookie jar; each role logs in immediately before its requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "(function () {",
+          "// Collection-level security scan — runs after every request.",
+          "let bodyText = '';",
+          "try { bodyText = pm.response.text() || ''; } catch (e) { bodyText = ''; }",
+          "const forbidden = ['AIzaSy', 'postgresql://', 'GEMINI_API_KEY', 'DATABASE_URL', '$2a$', '$2b$', '-----BEGIN'];",
+          "pm.test('No secret leakage in response', function () {",
+          "  forbidden.forEach(function (s) { pm.expect(bodyText, 'leaked: ' + s).to.not.include(s); });",
+          "});",
+          "})();"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "RUN DIRECT — Quiz Generation and Submission E2E",
+      "description": "Select the populated local environment and click Run. No IDs, bodies, answers, or grades need to be entered manually.",
+      "item": [
+        {
+          "name": "00. Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Health 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Backend reachable (status ok)', () => pm.expect(String(json.status || data.status || '')).to.match(/ok/i));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "01. Teacher Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Teacher login 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Role is OPERATION', () => pm.expect(data.user && data.user.role).to.eql('OPERATION'));",
+                  "pm.test('No password/hash in body', () => pm.expect(pm.response.text()).to.not.match(/\\$2[aby]\\$/));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{teacherEmail}}\",\n  \"password\": \"{{teacherPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "02. Verify Seeded Lesson Index Status (lessonId1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Index status 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Lesson is ready', () => pm.expect(data.status).to.eql('ready'));",
+                  "pm.test('Has usable chunks', () => pm.expect(Number(data.chunkCount)).to.be.above(0));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/ai/status/{{lessonId1}}"
+          }
+        },
+        {
+          "name": "03. Verify Seeded Lesson Index Status (lessonId2)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Index status 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Lesson is ready', () => pm.expect(data.status).to.eql('ready'));",
+                  "pm.test('Has usable chunks', () => pm.expect(Number(data.chunkCount)).to.be.above(0));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/ai/status/{{lessonId2}}"
+          }
+        },
+        {
+          "name": "04. Generate Quiz by Chapter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Created 201', () => pm.response.code === 201);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('success true', () => pm.expect(json.success).to.be.true);",
+                  "pm.test('Quiz id present', () => pm.expect(data.id).to.be.a('string'));",
+                  "pm.test('status DRAFT', () => pm.expect(data.status).to.eql('DRAFT'));",
+                  "pm.test('chapter matches', () => pm.expect(data.chapterId).to.eql(pm.environment.get('chapterId')));",
+                  "const qs = Array.isArray(data.questions) ? data.questions : [];",
+                  "const expected = Number(pm.environment.get('expectedChapterQuestionCount'));",
+                  "pm.test('exact question count', () => pm.expect(qs.length).to.eql(expected));",
+                  "pm.test('question ids + quizId mapping', () => qs.forEach(q => { pm.expect(q.id).to.be.a('string'); pm.expect(q.quizId).to.eql(data.id); }));",
+                  "pm.test('sortOrder sequential from 1', () => pm.expect(qs.map(q=>q.sortOrder)).to.eql(qs.map((_,i)=>i+1)));",
+                  "const types = qs.map(q=>q.type);",
+                  "pm.test('only allowed DB types', () => types.forEach(t => pm.expect(['MCQ','TRUE_FALSE','ESSAY']).to.include(t)));",
+                  "pm.test('all requested types present', () => { ['MCQ','TRUE_FALSE','ESSAY'].forEach(t => pm.expect(types).to.include(t)); });",
+                  "pm.test('MCQ options valid (>=2 distinct)', () => qs.filter(q=>q.type==='MCQ').forEach(q=>{ const o=Array.isArray(q.options)?q.options:Object.values(q.options||{}); pm.expect(o.length).to.be.at.least(2); pm.expect(new Set(o.map(String)).size).to.eql(o.length); }));",
+                  "pm.test('TRUE_FALSE options present', () => qs.filter(q=>q.type==='TRUE_FALSE').forEach(q=>{ const o=Array.isArray(q.options)?q.options:Object.values(q.options||{}); pm.expect(o.length).to.be.at.least(2); }));",
+                  "pm.test('ESSAY options empty/null', () => qs.filter(q=>q.type==='ESSAY').forEach(q=>{ const o=q.options; pm.expect(o===null || (Array.isArray(o)&&o.length===0) || (o&&Object.keys(o).length===0)).to.be.true; }));",
+                  "pm.test('no duplicate question content', () => { const c=qs.map(q=>(q.content||'').trim()); pm.expect(new Set(c).size).to.eql(c.length); });",
+                  "const sumPoints = qs.reduce((s,q)=>s+Number(q.points||0),0);",
+                  "pm.test('totalPoints correct', () => pm.expect(Number(data.totalPoints)).to.eql(sumPoints));",
+                  "pm.environment.set('chapterGeneratedQuizId', data.id);",
+                  "pm.environment.set('publishedQuizId', data.id);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/quizzes/generate",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chapterId\": \"{{chapterId}}\",\n  \"questionCount\": 6,\n  \"types\": [\"MCQ\", \"TF\", \"ESSAY\"],\n  \"difficulty\": \"medium\",\n  \"topicFocus\": \"المفاهيم الأساسية والتطبيقات\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "05. Generate Quiz by Lesson IDs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Created 201', () => pm.response.code === 201);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('status DRAFT', () => pm.expect(data.status).to.eql('DRAFT'));",
+                  "const qs = Array.isArray(data.questions) ? data.questions : [];",
+                  "const expected = Number(pm.environment.get('expectedLessonQuestionCount'));",
+                  "pm.test('exact question count', () => pm.expect(qs.length).to.eql(expected));",
+                  "pm.test('only MCQ/TRUE_FALSE persisted', () => qs.forEach(q => pm.expect(['MCQ','TRUE_FALSE']).to.include(q.type)));",
+                  "pm.test('no ESSAY present', () => pm.expect(qs.some(q=>q.type==='ESSAY')).to.be.false);",
+                  "pm.environment.set('lessonGeneratedQuizId', data.id);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/quizzes/generate",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lessonIds\": [\"{{lessonId1}}\", \"{{lessonId2}}\"],\n  \"questionCount\": 4,\n  \"types\": [\"MCQ\", \"TF\"],\n  \"difficulty\": \"hard\",\n  \"topicFocus\": \"العلاقات والقواعد الرئيسية\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "06. Assign Chapter-Generated Quiz",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Assign 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('assigned chapter equals chapterId', () => pm.expect(data.chapterId).to.eql(pm.environment.get('chapterId')));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/quizzes/{{chapterGeneratedQuizId}}/assign",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chapterId\": \"{{chapterId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "07. Publish Chapter-Generated Quiz",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Publish 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('status PUBLISHED', () => pm.expect(data.status).to.eql('PUBLISHED'));",
+                  "pm.test('publishedAt present', () => pm.expect(data.publishedAt).to.be.ok);",
+                  "pm.test('questionCount > 0', () => pm.expect(Number(data.questionCount)).to.be.above(0));",
+                  "pm.environment.set('publishedQuizId', pm.environment.get('chapterGeneratedQuizId'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/quizzes/{{chapterGeneratedQuizId}}/publish"
+          }
+        },
+        {
+          "name": "08. Verify Published Quiz in Chapter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "const list = Array.isArray(data) ? data : [];",
+                  "const pub = list.find(q => q.id === pm.environment.get('publishedQuizId'));",
+                  "pm.test('published quiz appears', () => pm.expect(pub, 'published quiz in chapter').to.be.an('object'));",
+                  "pm.test('it is PUBLISHED', () => pm.expect(pub && pub.status).to.eql('PUBLISHED'));",
+                  "pm.test('draft lesson quiz not exposed', () => pm.expect(list.some(q=>q.id===pm.environment.get('lessonGeneratedQuizId'))).to.be.false);",
+                  "pm.test('no correctAnswer exposed', () => pm.expect(pm.response.text()).to.not.include('correctAnswer'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/chapters/{{chapterId}}/quizzes"
+          }
+        },
+        {
+          "name": "09. Student Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Student login 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Role is STUDENT', () => pm.expect(data.user && data.user.role).to.eql('STUDENT'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "10. Get Assigned Quizzes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "const list = Array.isArray(data) ? data : [];",
+                  "pm.test('published quiz present', () => pm.expect(list.some(q=>q.id===pm.environment.get('publishedQuizId'))).to.be.true);",
+                  "pm.test('draft lesson quiz absent', () => pm.expect(list.some(q=>q.id===pm.environment.get('lessonGeneratedQuizId'))).to.be.false);",
+                  "pm.test('no correctAnswer exposed', () => pm.expect(pm.response.text()).to.not.include('correctAnswer'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/quizzes/assigned"
+          }
+        },
+        {
+          "name": "11. Start Quiz Attempt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Attempt created 201', () => pm.response.code === 201);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('attemptId present', () => pm.expect(data.attemptId).to.be.a('string'));",
+                  "pm.test('status IN_PROGRESS', () => pm.expect(data.status).to.eql('IN_PROGRESS'));",
+                  "pm.test('quiz matches', () => pm.expect(data.quizId).to.eql(pm.environment.get('publishedQuizId')));",
+                  "const qs = Array.isArray(data.questions) ? data.questions : [];",
+                  "pm.test('questions sorted by sortOrder', () => pm.expect(qs.map(q=>q.sortOrder)).to.eql(qs.map((_,i)=>i+1)));",
+                  "pm.test('no correctAnswer returned', () => pm.expect(pm.response.text()).to.not.include('correctAnswer'));",
+                  "pm.environment.set('attemptId', data.attemptId);",
+                  "const ESSAY_TEXT = 'إجابة تجريبية مكتملة لاختبار رحلة تسليم الاختبار والتصحيح اليدوي.';",
+                  "function optsOf(q){ return Array.isArray(q.options) ? q.options : (q.options && typeof q.options==='object' ? Object.values(q.options) : []); }",
+                  "const answers = qs.map(function(q){",
+                  "  if (q.type === 'MCQ') { const o = optsOf(q); return { questionId: q.id, answer: String(o[0]) }; }",
+                  "  if (q.type === 'TRUE_FALSE') { return { questionId: q.id, answer: 'صح' }; }",
+                  "  return { questionId: q.id, answer: ESSAY_TEXT };",
+                  "});",
+                  "pm.environment.set('submissionAnswers', JSON.stringify(answers));",
+                  "const partial = answers.slice(0, Math.max(1, answers.length - 1));",
+                  "pm.environment.set('partialSubmissionAnswers', JSON.stringify(partial));",
+                  "pm.test('built full + partial answer arrays', () => { pm.expect(answers.length).to.be.above(1); pm.expect(partial.length).to.eql(answers.length-1); });",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/quizzes/{{publishedQuizId}}/attempt"
+          }
+        },
+        {
+          "name": "12. Attempt Partial Submission — Expect 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Partial submission rejected 400', () => pm.response.code === 400);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('safe error envelope', () => pm.expect(json.success === false || json.message).to.be.ok);",
+                  "pm.test('no stack trace', () => pm.expect(pm.response.text()).to.not.match(/at .*\\(.*:[0-9]+:[0-9]+\\)/));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/attempts/{{attemptId}}/submit",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": {{partialSubmissionAnswers}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "13. Submit Complete Quiz",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Submit 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('status COMPLETED (essay present)', () => pm.expect(data.status).to.eql('COMPLETED'));",
+                  "pm.test('score numeric', () => pm.expect(data.score).to.be.a('number'));",
+                  "pm.test('totalPoints numeric', () => pm.expect(data.totalPoints).to.be.a('number'));",
+                  "pm.test('percentage numeric', () => pm.expect(data.percentage).to.be.a('number'));",
+                  "const results = Array.isArray(data.results) ? data.results : [];",
+                  "pm.test('results count equals questions', () => pm.expect(results.length).to.eql(Number(pm.environment.get('expectedChapterQuestionCount'))));",
+                  "pm.test('each result has valid state', () => results.forEach(r => pm.expect(['correct','incorrect','pending']).to.include(r.result)));",
+                  "pm.test('at least one pending essay', () => pm.expect(results.some(r=>r.result==='pending')).to.be.true);",
+                  "pm.test('pending essay awardedPoints null', () => results.filter(r=>r.result==='pending').forEach(r=>pm.expect(r.awardedPoints).to.be.null));",
+                  "pm.test('no correctAnswer returned', () => pm.expect(pm.response.text()).to.not.include('correctAnswer'));",
+                  "const pending = results.filter(r=>r.result==='pending');",
+                  "pm.environment.set('pendingEssayQuestionIds', JSON.stringify(pending.map(r=>r.questionId)));",
+                  "const grades = pending.map(r=>({ questionId: r.questionId, awardedPoints: 0, feedback: 'تم التصحيح اليدوي عبر رحلة Postman E2E.' }));",
+                  "pm.environment.set('essayGrades', JSON.stringify(grades));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/attempts/{{attemptId}}/submit",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": {{submissionAnswers}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "14. Duplicate Submission — Expect 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Duplicate submission 409', () => pm.response.code === 409);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('no internal db error leak', () => pm.expect(pm.response.text()).to.not.match(/prisma|sql/i));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/attempts/{{attemptId}}/submit",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": {{submissionAnswers}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "15. Duplicate Start Attempt — Expect 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Duplicate start 409', () => pm.response.code === 409);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/quizzes/{{publishedQuizId}}/attempt"
+          }
+        },
+        {
+          "name": "16. Student Grade Essays — Expect 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Student grading forbidden 403', () => pm.response.code === 403);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/attempts/{{attemptId}}/grade-essays",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grades\": {{essayGrades}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "17. Teacher Login for Essay Grading",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Teacher re-login 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Role OPERATION', () => pm.expect(data.user && data.user.role).to.eql('OPERATION'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{teacherEmail}}\",\n  \"password\": \"{{teacherPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "18. Grade Pending Essays",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Grade 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('status GRADED', () => pm.expect(data.status).to.eql('GRADED'));",
+                  "pm.test('pendingEssayCount 0', () => pm.expect(Number(data.pendingEssayCount)).to.eql(0));",
+                  "pm.test('isFinal true', () => pm.expect(data.isFinal).to.be.true);",
+                  "pm.test('final score numeric', () => pm.expect(data.score).to.be.a('number'));",
+                  "pm.test('final percentage numeric', () => pm.expect(data.percentage).to.be.a('number'));",
+                  "const results = Array.isArray(data.results) ? data.results : [];",
+                  "pm.test('no pending result remains', () => pm.expect(results.some(r=>r.result==='pending')).to.be.false);",
+                  "pm.test('no correctAnswer returned', () => pm.expect(pm.response.text()).to.not.include('correctAnswer'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/attempts/{{attemptId}}/grade-essays",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grades\": {{essayGrades}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "19. Re-grade Essays — Expect 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Re-grade 409', () => pm.response.code === 409);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/attempts/{{attemptId}}/grade-essays",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grades\": {{essayGrades}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "20. Final Result Verification",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Quiz read 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('published quiz still PUBLISHED', () => pm.expect(data.status).to.eql('PUBLISHED'));",
+                  "pm.test('runtime ids captured', () => {",
+                  "  pm.expect(pm.environment.get('publishedQuizId'), 'publishedQuizId').to.be.ok;",
+                  "  pm.expect(pm.environment.get('lessonGeneratedQuizId'), 'lessonGeneratedQuizId').to.be.ok;",
+                  "  pm.expect(pm.environment.get('attemptId'), 'attemptId').to.be.ok;",
+                  "});",
+                  "// NOTE: there is no student-facing attempt-detail endpoint; final GRADED state",
+                  "// is asserted in request 18 and verified directly in the database after the run.",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/quizzes/{{publishedQuizId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

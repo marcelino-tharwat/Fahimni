@@ -11,7 +11,11 @@
     "test:watch": "vitest",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "db:seed:secondary": "tsx prisma/seed.ts",
+    "db:seed:verify": "tsx prisma/seed-verify.ts",
+    "test:e2e:story48": "vitest run --config vitest.e2e.config.ts",
+    "postman:prepare:quiz-e2e": "tsx scripts/prepare-quiz-postman-e2e.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

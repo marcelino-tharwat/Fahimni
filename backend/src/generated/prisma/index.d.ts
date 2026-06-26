@@ -98,6 +98,11 @@ export type Question = $Result.DefaultSelection<Prisma.$QuestionPayload>
  * 
  */
 export type QuizAttempt = $Result.DefaultSelection<Prisma.$QuizAttemptPayload>
+/**
+ * Model PromoCode
+ * 
+ */
+export type PromoCode = $Result.DefaultSelection<Prisma.$PromoCodePayload>
 
 /**
  * Enums
@@ -136,6 +141,15 @@ export const QuizStatus: {
 };
 
 export type QuizStatus = (typeof QuizStatus)[keyof typeof QuizStatus]
+
+
+export const AttemptStatus: {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  GRADED: 'GRADED'
+};
+
+export type AttemptStatus = (typeof AttemptStatus)[keyof typeof AttemptStatus]
 
 
 export const OtpType: {
@@ -190,6 +204,10 @@ export const QuestionType: typeof $Enums.QuestionType
 export type QuizStatus = $Enums.QuizStatus
 
 export const QuizStatus: typeof $Enums.QuizStatus
+
+export type AttemptStatus = $Enums.AttemptStatus
+
+export const AttemptStatus: typeof $Enums.AttemptStatus
 
 export type OtpType = $Enums.OtpType
 
@@ -497,6 +515,16 @@ export class PrismaClient<
     * ```
     */
   get quizAttempt(): Prisma.QuizAttemptDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.promoCode`: Exposes CRUD operations for the **PromoCode** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PromoCodes
+    * const promoCodes = await prisma.promoCode.findMany()
+    * ```
+    */
+  get promoCode(): Prisma.PromoCodeDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -947,7 +975,8 @@ export namespace Prisma {
     RefreshToken: 'RefreshToken',
     Quiz: 'Quiz',
     Question: 'Question',
-    QuizAttempt: 'QuizAttempt'
+    QuizAttempt: 'QuizAttempt',
+    PromoCode: 'PromoCode'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -963,7 +992,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "contentChunk" | "auditLog" | "refreshToken" | "quiz" | "question" | "quizAttempt"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "contentChunk" | "auditLog" | "refreshToken" | "quiz" | "question" | "quizAttempt" | "promoCode"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2225,6 +2254,80 @@ export namespace Prisma {
           }
         }
       }
+      PromoCode: {
+        payload: Prisma.$PromoCodePayload<ExtArgs>
+        fields: Prisma.PromoCodeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PromoCodeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PromoCodeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>
+          }
+          findFirst: {
+            args: Prisma.PromoCodeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PromoCodeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>
+          }
+          findMany: {
+            args: Prisma.PromoCodeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>[]
+          }
+          create: {
+            args: Prisma.PromoCodeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>
+          }
+          createMany: {
+            args: Prisma.PromoCodeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PromoCodeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>[]
+          }
+          delete: {
+            args: Prisma.PromoCodeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>
+          }
+          update: {
+            args: Prisma.PromoCodeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>
+          }
+          deleteMany: {
+            args: Prisma.PromoCodeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PromoCodeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PromoCodeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>[]
+          }
+          upsert: {
+            args: Prisma.PromoCodeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PromoCodePayload>
+          }
+          aggregate: {
+            args: Prisma.PromoCodeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePromoCode>
+          }
+          groupBy: {
+            args: Prisma.PromoCodeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PromoCodeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PromoCodeCountArgs<ExtArgs>
+            result: $Utils.Optional<PromoCodeCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2350,6 +2453,7 @@ export namespace Prisma {
     quiz?: QuizOmit
     question?: QuestionOmit
     quizAttempt?: QuizAttemptOmit
+    promoCode?: PromoCodeOmit
   }
 
   /* Types for Logging */
@@ -2431,6 +2535,8 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     auditLogs: number
+    createdPromoCodes: number
+    usedPromoCodes: number
     enrollments: number
     lessonProgress: number
     otps: number
@@ -2443,6 +2549,8 @@ export namespace Prisma {
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+    createdPromoCodes?: boolean | UserCountOutputTypeCountCreatedPromoCodesArgs
+    usedPromoCodes?: boolean | UserCountOutputTypeCountUsedPromoCodesArgs
     enrollments?: boolean | UserCountOutputTypeCountEnrollmentsArgs
     lessonProgress?: boolean | UserCountOutputTypeCountLessonProgressArgs
     otps?: boolean | UserCountOutputTypeCountOtpsArgs
@@ -2469,6 +2577,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuditLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreatedPromoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PromoCodeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountUsedPromoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PromoCodeWhereInput
   }
 
   /**
@@ -2907,6 +3029,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    createdPromoCodes?: boolean | User$createdPromoCodesArgs<ExtArgs>
+    usedPromoCodes?: boolean | User$usedPromoCodesArgs<ExtArgs>
     enrollments?: boolean | User$enrollmentsArgs<ExtArgs>
     lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
     otps?: boolean | User$otpsArgs<ExtArgs>
@@ -2959,6 +3083,8 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fullName" | "email" | "password" | "mobile" | "role" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    createdPromoCodes?: boolean | User$createdPromoCodesArgs<ExtArgs>
+    usedPromoCodes?: boolean | User$usedPromoCodesArgs<ExtArgs>
     enrollments?: boolean | User$enrollmentsArgs<ExtArgs>
     lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
     otps?: boolean | User$otpsArgs<ExtArgs>
@@ -2978,6 +3104,8 @@ export namespace Prisma {
     name: "User"
     objects: {
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+      createdPromoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
+      usedPromoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
       enrollments: Prisma.$EnrollmentPayload<ExtArgs>[]
       lessonProgress: Prisma.$LessonProgressPayload<ExtArgs>[]
       otps: Prisma.$OtpPayload<ExtArgs>[]
@@ -3394,6 +3522,8 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdPromoCodes<T extends User$createdPromoCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdPromoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    usedPromoCodes<T extends User$usedPromoCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$usedPromoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     enrollments<T extends User$enrollmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     lessonProgress<T extends User$lessonProgressArgs<ExtArgs> = {}>(args?: Subset<T, User$lessonProgressArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     otps<T extends User$otpsArgs<ExtArgs> = {}>(args?: Subset<T, User$otpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OtpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3856,6 +3986,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.createdPromoCodes
+   */
+  export type User$createdPromoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    where?: PromoCodeWhereInput
+    orderBy?: PromoCodeOrderByWithRelationInput | PromoCodeOrderByWithRelationInput[]
+    cursor?: PromoCodeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PromoCodeScalarFieldEnum | PromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * User.usedPromoCodes
+   */
+  export type User$usedPromoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    where?: PromoCodeWhereInput
+    orderBy?: PromoCodeOrderByWithRelationInput | PromoCodeOrderByWithRelationInput[]
+    cursor?: PromoCodeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PromoCodeScalarFieldEnum | PromoCodeScalarFieldEnum[]
   }
 
   /**
@@ -18919,8 +19097,20 @@ export namespace Prisma {
 
   export type AggregateQuiz = {
     _count: QuizCountAggregateOutputType | null
+    _avg: QuizAvgAggregateOutputType | null
+    _sum: QuizSumAggregateOutputType | null
     _min: QuizMinAggregateOutputType | null
     _max: QuizMaxAggregateOutputType | null
+  }
+
+  export type QuizAvgAggregateOutputType = {
+    questionCount: number | null
+    totalPoints: number | null
+  }
+
+  export type QuizSumAggregateOutputType = {
+    questionCount: number | null
+    totalPoints: number | null
   }
 
   export type QuizMinAggregateOutputType = {
@@ -18929,9 +19119,12 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     status: $Enums.QuizStatus | null
+    questionCount: number | null
+    totalPoints: number | null
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    publishedAt: Date | null
   }
 
   export type QuizMaxAggregateOutputType = {
@@ -18940,9 +19133,12 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     status: $Enums.QuizStatus | null
+    questionCount: number | null
+    totalPoints: number | null
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    publishedAt: Date | null
   }
 
   export type QuizCountAggregateOutputType = {
@@ -18951,12 +19147,25 @@ export namespace Prisma {
     description: number
     chapterId: number
     status: number
+    questionCount: number
+    totalPoints: number
     createdBy: number
     createdAt: number
     updatedAt: number
+    publishedAt: number
     _all: number
   }
 
+
+  export type QuizAvgAggregateInputType = {
+    questionCount?: true
+    totalPoints?: true
+  }
+
+  export type QuizSumAggregateInputType = {
+    questionCount?: true
+    totalPoints?: true
+  }
 
   export type QuizMinAggregateInputType = {
     id?: true
@@ -18964,9 +19173,12 @@ export namespace Prisma {
     description?: true
     chapterId?: true
     status?: true
+    questionCount?: true
+    totalPoints?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
+    publishedAt?: true
   }
 
   export type QuizMaxAggregateInputType = {
@@ -18975,9 +19187,12 @@ export namespace Prisma {
     description?: true
     chapterId?: true
     status?: true
+    questionCount?: true
+    totalPoints?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
+    publishedAt?: true
   }
 
   export type QuizCountAggregateInputType = {
@@ -18986,9 +19201,12 @@ export namespace Prisma {
     description?: true
     chapterId?: true
     status?: true
+    questionCount?: true
+    totalPoints?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
+    publishedAt?: true
     _all?: true
   }
 
@@ -19030,6 +19248,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: QuizAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: QuizSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: QuizMinAggregateInputType
@@ -19060,6 +19290,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: QuizCountAggregateInputType | true
+    _avg?: QuizAvgAggregateInputType
+    _sum?: QuizSumAggregateInputType
     _min?: QuizMinAggregateInputType
     _max?: QuizMaxAggregateInputType
   }
@@ -19070,10 +19302,15 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     status: $Enums.QuizStatus
+    questionCount: number
+    totalPoints: number
     createdBy: string
     createdAt: Date
     updatedAt: Date
+    publishedAt: Date | null
     _count: QuizCountAggregateOutputType | null
+    _avg: QuizAvgAggregateOutputType | null
+    _sum: QuizSumAggregateOutputType | null
     _min: QuizMinAggregateOutputType | null
     _max: QuizMaxAggregateOutputType | null
   }
@@ -19098,9 +19335,12 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     status?: boolean
+    questionCount?: boolean
+    totalPoints?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    publishedAt?: boolean
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
     chapter?: boolean | Quiz$chapterArgs<ExtArgs>
@@ -19114,9 +19354,12 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     status?: boolean
+    questionCount?: boolean
+    totalPoints?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    publishedAt?: boolean
     chapter?: boolean | Quiz$chapterArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["quiz"]>
@@ -19127,9 +19370,12 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     status?: boolean
+    questionCount?: boolean
+    totalPoints?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    publishedAt?: boolean
     chapter?: boolean | Quiz$chapterArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["quiz"]>
@@ -19140,12 +19386,15 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     status?: boolean
+    questionCount?: boolean
+    totalPoints?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    publishedAt?: boolean
   }
 
-  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "status" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["quiz"]>
+  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "status" | "questionCount" | "totalPoints" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt", ExtArgs["result"]["quiz"]>
   export type QuizInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
@@ -19176,9 +19425,12 @@ export namespace Prisma {
       description: string | null
       chapterId: string | null
       status: $Enums.QuizStatus
+      questionCount: number
+      totalPoints: number
       createdBy: string
       createdAt: Date
       updatedAt: Date
+      publishedAt: Date | null
     }, ExtArgs["result"]["quiz"]>
     composites: {}
   }
@@ -19611,9 +19863,12 @@ export namespace Prisma {
     readonly description: FieldRef<"Quiz", 'String'>
     readonly chapterId: FieldRef<"Quiz", 'String'>
     readonly status: FieldRef<"Quiz", 'QuizStatus'>
+    readonly questionCount: FieldRef<"Quiz", 'Int'>
+    readonly totalPoints: FieldRef<"Quiz", 'Int'>
     readonly createdBy: FieldRef<"Quiz", 'String'>
     readonly createdAt: FieldRef<"Quiz", 'DateTime'>
     readonly updatedAt: FieldRef<"Quiz", 'DateTime'>
+    readonly publishedAt: FieldRef<"Quiz", 'DateTime'>
   }
     
 
@@ -20114,10 +20369,12 @@ export namespace Prisma {
 
   export type QuestionAvgAggregateOutputType = {
     sortOrder: number | null
+    points: number | null
   }
 
   export type QuestionSumAggregateOutputType = {
     sortOrder: number | null
+    points: number | null
   }
 
   export type QuestionMinAggregateOutputType = {
@@ -20127,6 +20384,7 @@ export namespace Prisma {
     text: string | null
     correctAnswer: string | null
     sortOrder: number | null
+    points: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -20138,6 +20396,7 @@ export namespace Prisma {
     text: string | null
     correctAnswer: string | null
     sortOrder: number | null
+    points: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -20150,6 +20409,7 @@ export namespace Prisma {
     options: number
     correctAnswer: number
     sortOrder: number
+    points: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -20158,10 +20418,12 @@ export namespace Prisma {
 
   export type QuestionAvgAggregateInputType = {
     sortOrder?: true
+    points?: true
   }
 
   export type QuestionSumAggregateInputType = {
     sortOrder?: true
+    points?: true
   }
 
   export type QuestionMinAggregateInputType = {
@@ -20171,6 +20433,7 @@ export namespace Prisma {
     text?: true
     correctAnswer?: true
     sortOrder?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -20182,6 +20445,7 @@ export namespace Prisma {
     text?: true
     correctAnswer?: true
     sortOrder?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -20194,6 +20458,7 @@ export namespace Prisma {
     options?: true
     correctAnswer?: true
     sortOrder?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -20293,6 +20558,7 @@ export namespace Prisma {
     options: JsonValue
     correctAnswer: string | null
     sortOrder: number
+    points: number
     createdAt: Date
     updatedAt: Date
     _count: QuestionCountAggregateOutputType | null
@@ -20324,6 +20590,7 @@ export namespace Prisma {
     options?: boolean
     correctAnswer?: boolean
     sortOrder?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -20337,6 +20604,7 @@ export namespace Prisma {
     options?: boolean
     correctAnswer?: boolean
     sortOrder?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -20350,6 +20618,7 @@ export namespace Prisma {
     options?: boolean
     correctAnswer?: boolean
     sortOrder?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -20363,11 +20632,12 @@ export namespace Prisma {
     options?: boolean
     correctAnswer?: boolean
     sortOrder?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type QuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "type" | "text" | "options" | "correctAnswer" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
+  export type QuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "type" | "text" | "options" | "correctAnswer" | "sortOrder" | "points" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
   export type QuestionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
   }
@@ -20391,6 +20661,7 @@ export namespace Prisma {
       options: Prisma.JsonValue
       correctAnswer: string | null
       sortOrder: number
+      points: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["question"]>
@@ -20824,6 +21095,7 @@ export namespace Prisma {
     readonly options: FieldRef<"Question", 'Json'>
     readonly correctAnswer: FieldRef<"Question", 'String'>
     readonly sortOrder: FieldRef<"Question", 'Int'>
+    readonly points: FieldRef<"Question", 'Int'>
     readonly createdAt: FieldRef<"Question", 'DateTime'>
     readonly updatedAt: FieldRef<"Question", 'DateTime'>
   }
@@ -21259,10 +21531,12 @@ export namespace Prisma {
 
   export type QuizAttemptAvgAggregateOutputType = {
     score: number | null
+    totalPoints: number | null
   }
 
   export type QuizAttemptSumAggregateOutputType = {
     score: number | null
+    totalPoints: number | null
   }
 
   export type QuizAttemptMinAggregateOutputType = {
@@ -21270,6 +21544,10 @@ export namespace Prisma {
     quizId: string | null
     studentId: string | null
     score: number | null
+    totalPoints: number | null
+    status: $Enums.AttemptStatus | null
+    startedAt: Date | null
+    completedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -21279,6 +21557,10 @@ export namespace Prisma {
     quizId: string | null
     studentId: string | null
     score: number | null
+    totalPoints: number | null
+    status: $Enums.AttemptStatus | null
+    startedAt: Date | null
+    completedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -21289,6 +21571,10 @@ export namespace Prisma {
     studentId: number
     answers: number
     score: number
+    totalPoints: number
+    status: number
+    startedAt: number
+    completedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -21297,10 +21583,12 @@ export namespace Prisma {
 
   export type QuizAttemptAvgAggregateInputType = {
     score?: true
+    totalPoints?: true
   }
 
   export type QuizAttemptSumAggregateInputType = {
     score?: true
+    totalPoints?: true
   }
 
   export type QuizAttemptMinAggregateInputType = {
@@ -21308,6 +21596,10 @@ export namespace Prisma {
     quizId?: true
     studentId?: true
     score?: true
+    totalPoints?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -21317,6 +21609,10 @@ export namespace Prisma {
     quizId?: true
     studentId?: true
     score?: true
+    totalPoints?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -21327,6 +21623,10 @@ export namespace Prisma {
     studentId?: true
     answers?: true
     score?: true
+    totalPoints?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -21424,6 +21724,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonValue
     score: number | null
+    totalPoints: number
+    status: $Enums.AttemptStatus
+    startedAt: Date
+    completedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: QuizAttemptCountAggregateOutputType | null
@@ -21453,6 +21757,10 @@ export namespace Prisma {
     studentId?: boolean
     answers?: boolean
     score?: boolean
+    totalPoints?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -21465,6 +21773,10 @@ export namespace Prisma {
     studentId?: boolean
     answers?: boolean
     score?: boolean
+    totalPoints?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -21477,6 +21789,10 @@ export namespace Prisma {
     studentId?: boolean
     answers?: boolean
     score?: boolean
+    totalPoints?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -21489,11 +21805,15 @@ export namespace Prisma {
     studentId?: boolean
     answers?: boolean
     score?: boolean
+    totalPoints?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type QuizAttemptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "studentId" | "answers" | "score" | "createdAt" | "updatedAt", ExtArgs["result"]["quizAttempt"]>
+  export type QuizAttemptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "studentId" | "answers" | "score" | "totalPoints" | "status" | "startedAt" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["quizAttempt"]>
   export type QuizAttemptInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
     student?: boolean | UserDefaultArgs<ExtArgs>
@@ -21519,6 +21839,10 @@ export namespace Prisma {
       studentId: string
       answers: Prisma.JsonValue
       score: number | null
+      totalPoints: number
+      status: $Enums.AttemptStatus
+      startedAt: Date
+      completedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["quizAttempt"]>
@@ -21951,6 +22275,10 @@ export namespace Prisma {
     readonly studentId: FieldRef<"QuizAttempt", 'String'>
     readonly answers: FieldRef<"QuizAttempt", 'Json'>
     readonly score: FieldRef<"QuizAttempt", 'Float'>
+    readonly totalPoints: FieldRef<"QuizAttempt", 'Int'>
+    readonly status: FieldRef<"QuizAttempt", 'AttemptStatus'>
+    readonly startedAt: FieldRef<"QuizAttempt", 'DateTime'>
+    readonly completedAt: FieldRef<"QuizAttempt", 'DateTime'>
     readonly createdAt: FieldRef<"QuizAttempt", 'DateTime'>
     readonly updatedAt: FieldRef<"QuizAttempt", 'DateTime'>
   }
@@ -22373,6 +22701,1135 @@ export namespace Prisma {
 
 
   /**
+   * Model PromoCode
+   */
+
+  export type AggregatePromoCode = {
+    _count: PromoCodeCountAggregateOutputType | null
+    _min: PromoCodeMinAggregateOutputType | null
+    _max: PromoCodeMaxAggregateOutputType | null
+  }
+
+  export type PromoCodeMinAggregateOutputType = {
+    id: string | null
+    code: string | null
+    isUsed: boolean | null
+    usedByStudentId: string | null
+    usedAt: Date | null
+    createdById: string | null
+    createdAt: Date | null
+    expiresAt: Date | null
+  }
+
+  export type PromoCodeMaxAggregateOutputType = {
+    id: string | null
+    code: string | null
+    isUsed: boolean | null
+    usedByStudentId: string | null
+    usedAt: Date | null
+    createdById: string | null
+    createdAt: Date | null
+    expiresAt: Date | null
+  }
+
+  export type PromoCodeCountAggregateOutputType = {
+    id: number
+    code: number
+    isUsed: number
+    usedByStudentId: number
+    usedAt: number
+    createdById: number
+    createdAt: number
+    expiresAt: number
+    _all: number
+  }
+
+
+  export type PromoCodeMinAggregateInputType = {
+    id?: true
+    code?: true
+    isUsed?: true
+    usedByStudentId?: true
+    usedAt?: true
+    createdById?: true
+    createdAt?: true
+    expiresAt?: true
+  }
+
+  export type PromoCodeMaxAggregateInputType = {
+    id?: true
+    code?: true
+    isUsed?: true
+    usedByStudentId?: true
+    usedAt?: true
+    createdById?: true
+    createdAt?: true
+    expiresAt?: true
+  }
+
+  export type PromoCodeCountAggregateInputType = {
+    id?: true
+    code?: true
+    isUsed?: true
+    usedByStudentId?: true
+    usedAt?: true
+    createdById?: true
+    createdAt?: true
+    expiresAt?: true
+    _all?: true
+  }
+
+  export type PromoCodeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PromoCode to aggregate.
+     */
+    where?: PromoCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PromoCodes to fetch.
+     */
+    orderBy?: PromoCodeOrderByWithRelationInput | PromoCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PromoCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PromoCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PromoCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PromoCodes
+    **/
+    _count?: true | PromoCodeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PromoCodeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PromoCodeMaxAggregateInputType
+  }
+
+  export type GetPromoCodeAggregateType<T extends PromoCodeAggregateArgs> = {
+        [P in keyof T & keyof AggregatePromoCode]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePromoCode[P]>
+      : GetScalarType<T[P], AggregatePromoCode[P]>
+  }
+
+
+
+
+  export type PromoCodeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PromoCodeWhereInput
+    orderBy?: PromoCodeOrderByWithAggregationInput | PromoCodeOrderByWithAggregationInput[]
+    by: PromoCodeScalarFieldEnum[] | PromoCodeScalarFieldEnum
+    having?: PromoCodeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PromoCodeCountAggregateInputType | true
+    _min?: PromoCodeMinAggregateInputType
+    _max?: PromoCodeMaxAggregateInputType
+  }
+
+  export type PromoCodeGroupByOutputType = {
+    id: string
+    code: string
+    isUsed: boolean
+    usedByStudentId: string | null
+    usedAt: Date | null
+    createdById: string
+    createdAt: Date
+    expiresAt: Date | null
+    _count: PromoCodeCountAggregateOutputType | null
+    _min: PromoCodeMinAggregateOutputType | null
+    _max: PromoCodeMaxAggregateOutputType | null
+  }
+
+  type GetPromoCodeGroupByPayload<T extends PromoCodeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PromoCodeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PromoCodeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PromoCodeGroupByOutputType[P]>
+            : GetScalarType<T[P], PromoCodeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PromoCodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    isUsed?: boolean
+    usedByStudentId?: boolean
+    usedAt?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    expiresAt?: boolean
+    usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["promoCode"]>
+
+  export type PromoCodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    isUsed?: boolean
+    usedByStudentId?: boolean
+    usedAt?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    expiresAt?: boolean
+    usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["promoCode"]>
+
+  export type PromoCodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    isUsed?: boolean
+    usedByStudentId?: boolean
+    usedAt?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    expiresAt?: boolean
+    usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["promoCode"]>
+
+  export type PromoCodeSelectScalar = {
+    id?: boolean
+    code?: boolean
+    isUsed?: boolean
+    usedByStudentId?: boolean
+    usedAt?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    expiresAt?: boolean
+  }
+
+  export type PromoCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "isUsed" | "usedByStudentId" | "usedAt" | "createdById" | "createdAt" | "expiresAt", ExtArgs["result"]["promoCode"]>
+  export type PromoCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PromoCodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PromoCodeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PromoCodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PromoCode"
+    objects: {
+      usedByStudent: Prisma.$UserPayload<ExtArgs> | null
+      createdBy: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      code: string
+      isUsed: boolean
+      usedByStudentId: string | null
+      usedAt: Date | null
+      createdById: string
+      createdAt: Date
+      expiresAt: Date | null
+    }, ExtArgs["result"]["promoCode"]>
+    composites: {}
+  }
+
+  type PromoCodeGetPayload<S extends boolean | null | undefined | PromoCodeDefaultArgs> = $Result.GetResult<Prisma.$PromoCodePayload, S>
+
+  type PromoCodeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PromoCodeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PromoCodeCountAggregateInputType | true
+    }
+
+  export interface PromoCodeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PromoCode'], meta: { name: 'PromoCode' } }
+    /**
+     * Find zero or one PromoCode that matches the filter.
+     * @param {PromoCodeFindUniqueArgs} args - Arguments to find a PromoCode
+     * @example
+     * // Get one PromoCode
+     * const promoCode = await prisma.promoCode.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PromoCodeFindUniqueArgs>(args: SelectSubset<T, PromoCodeFindUniqueArgs<ExtArgs>>): Prisma__PromoCodeClient<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PromoCode that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PromoCodeFindUniqueOrThrowArgs} args - Arguments to find a PromoCode
+     * @example
+     * // Get one PromoCode
+     * const promoCode = await prisma.promoCode.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PromoCodeFindUniqueOrThrowArgs>(args: SelectSubset<T, PromoCodeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PromoCodeClient<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PromoCode that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromoCodeFindFirstArgs} args - Arguments to find a PromoCode
+     * @example
+     * // Get one PromoCode
+     * const promoCode = await prisma.promoCode.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PromoCodeFindFirstArgs>(args?: SelectSubset<T, PromoCodeFindFirstArgs<ExtArgs>>): Prisma__PromoCodeClient<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PromoCode that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromoCodeFindFirstOrThrowArgs} args - Arguments to find a PromoCode
+     * @example
+     * // Get one PromoCode
+     * const promoCode = await prisma.promoCode.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PromoCodeFindFirstOrThrowArgs>(args?: SelectSubset<T, PromoCodeFindFirstOrThrowArgs<ExtArgs>>): Prisma__PromoCodeClient<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PromoCodes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromoCodeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PromoCodes
+     * const promoCodes = await prisma.promoCode.findMany()
+     * 
+     * // Get first 10 PromoCodes
+     * const promoCodes = await prisma.promoCode.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const promoCodeWithIdOnly = await prisma.promoCode.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PromoCodeFindManyArgs>(args?: SelectSubset<T, PromoCodeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PromoCode.
+     * @param {PromoCodeCreateArgs} args - Arguments to create a PromoCode.
+     * @example
+     * // Create one PromoCode
+     * const PromoCode = await prisma.promoCode.create({
+     *   data: {
+     *     // ... data to create a PromoCode
+     *   }
+     * })
+     * 
+     */
+    create<T extends PromoCodeCreateArgs>(args: SelectSubset<T, PromoCodeCreateArgs<ExtArgs>>): Prisma__PromoCodeClient<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PromoCodes.
+     * @param {PromoCodeCreateManyArgs} args - Arguments to create many PromoCodes.
+     * @example
+     * // Create many PromoCodes
+     * const promoCode = await prisma.promoCode.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PromoCodeCreateManyArgs>(args?: SelectSubset<T, PromoCodeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PromoCodes and returns the data saved in the database.
+     * @param {PromoCodeCreateManyAndReturnArgs} args - Arguments to create many PromoCodes.
+     * @example
+     * // Create many PromoCodes
+     * const promoCode = await prisma.promoCode.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PromoCodes and only return the `id`
+     * const promoCodeWithIdOnly = await prisma.promoCode.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PromoCodeCreateManyAndReturnArgs>(args?: SelectSubset<T, PromoCodeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PromoCode.
+     * @param {PromoCodeDeleteArgs} args - Arguments to delete one PromoCode.
+     * @example
+     * // Delete one PromoCode
+     * const PromoCode = await prisma.promoCode.delete({
+     *   where: {
+     *     // ... filter to delete one PromoCode
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PromoCodeDeleteArgs>(args: SelectSubset<T, PromoCodeDeleteArgs<ExtArgs>>): Prisma__PromoCodeClient<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PromoCode.
+     * @param {PromoCodeUpdateArgs} args - Arguments to update one PromoCode.
+     * @example
+     * // Update one PromoCode
+     * const promoCode = await prisma.promoCode.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PromoCodeUpdateArgs>(args: SelectSubset<T, PromoCodeUpdateArgs<ExtArgs>>): Prisma__PromoCodeClient<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PromoCodes.
+     * @param {PromoCodeDeleteManyArgs} args - Arguments to filter PromoCodes to delete.
+     * @example
+     * // Delete a few PromoCodes
+     * const { count } = await prisma.promoCode.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PromoCodeDeleteManyArgs>(args?: SelectSubset<T, PromoCodeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PromoCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromoCodeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PromoCodes
+     * const promoCode = await prisma.promoCode.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PromoCodeUpdateManyArgs>(args: SelectSubset<T, PromoCodeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PromoCodes and returns the data updated in the database.
+     * @param {PromoCodeUpdateManyAndReturnArgs} args - Arguments to update many PromoCodes.
+     * @example
+     * // Update many PromoCodes
+     * const promoCode = await prisma.promoCode.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PromoCodes and only return the `id`
+     * const promoCodeWithIdOnly = await prisma.promoCode.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PromoCodeUpdateManyAndReturnArgs>(args: SelectSubset<T, PromoCodeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PromoCode.
+     * @param {PromoCodeUpsertArgs} args - Arguments to update or create a PromoCode.
+     * @example
+     * // Update or create a PromoCode
+     * const promoCode = await prisma.promoCode.upsert({
+     *   create: {
+     *     // ... data to create a PromoCode
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PromoCode we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PromoCodeUpsertArgs>(args: SelectSubset<T, PromoCodeUpsertArgs<ExtArgs>>): Prisma__PromoCodeClient<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PromoCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromoCodeCountArgs} args - Arguments to filter PromoCodes to count.
+     * @example
+     * // Count the number of PromoCodes
+     * const count = await prisma.promoCode.count({
+     *   where: {
+     *     // ... the filter for the PromoCodes we want to count
+     *   }
+     * })
+    **/
+    count<T extends PromoCodeCountArgs>(
+      args?: Subset<T, PromoCodeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PromoCodeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PromoCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromoCodeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PromoCodeAggregateArgs>(args: Subset<T, PromoCodeAggregateArgs>): Prisma.PrismaPromise<GetPromoCodeAggregateType<T>>
+
+    /**
+     * Group by PromoCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PromoCodeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PromoCodeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PromoCodeGroupByArgs['orderBy'] }
+        : { orderBy?: PromoCodeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PromoCodeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPromoCodeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PromoCode model
+   */
+  readonly fields: PromoCodeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PromoCode.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PromoCodeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    usedByStudent<T extends PromoCode$usedByStudentArgs<ExtArgs> = {}>(args?: Subset<T, PromoCode$usedByStudentArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PromoCode model
+   */
+  interface PromoCodeFieldRefs {
+    readonly id: FieldRef<"PromoCode", 'String'>
+    readonly code: FieldRef<"PromoCode", 'String'>
+    readonly isUsed: FieldRef<"PromoCode", 'Boolean'>
+    readonly usedByStudentId: FieldRef<"PromoCode", 'String'>
+    readonly usedAt: FieldRef<"PromoCode", 'DateTime'>
+    readonly createdById: FieldRef<"PromoCode", 'String'>
+    readonly createdAt: FieldRef<"PromoCode", 'DateTime'>
+    readonly expiresAt: FieldRef<"PromoCode", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PromoCode findUnique
+   */
+  export type PromoCodeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PromoCode to fetch.
+     */
+    where: PromoCodeWhereUniqueInput
+  }
+
+  /**
+   * PromoCode findUniqueOrThrow
+   */
+  export type PromoCodeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PromoCode to fetch.
+     */
+    where: PromoCodeWhereUniqueInput
+  }
+
+  /**
+   * PromoCode findFirst
+   */
+  export type PromoCodeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PromoCode to fetch.
+     */
+    where?: PromoCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PromoCodes to fetch.
+     */
+    orderBy?: PromoCodeOrderByWithRelationInput | PromoCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PromoCodes.
+     */
+    cursor?: PromoCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PromoCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PromoCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PromoCodes.
+     */
+    distinct?: PromoCodeScalarFieldEnum | PromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * PromoCode findFirstOrThrow
+   */
+  export type PromoCodeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PromoCode to fetch.
+     */
+    where?: PromoCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PromoCodes to fetch.
+     */
+    orderBy?: PromoCodeOrderByWithRelationInput | PromoCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PromoCodes.
+     */
+    cursor?: PromoCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PromoCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PromoCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PromoCodes.
+     */
+    distinct?: PromoCodeScalarFieldEnum | PromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * PromoCode findMany
+   */
+  export type PromoCodeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PromoCodes to fetch.
+     */
+    where?: PromoCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PromoCodes to fetch.
+     */
+    orderBy?: PromoCodeOrderByWithRelationInput | PromoCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PromoCodes.
+     */
+    cursor?: PromoCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PromoCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PromoCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PromoCodes.
+     */
+    distinct?: PromoCodeScalarFieldEnum | PromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * PromoCode create
+   */
+  export type PromoCodeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PromoCode.
+     */
+    data: XOR<PromoCodeCreateInput, PromoCodeUncheckedCreateInput>
+  }
+
+  /**
+   * PromoCode createMany
+   */
+  export type PromoCodeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PromoCodes.
+     */
+    data: PromoCodeCreateManyInput | PromoCodeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PromoCode createManyAndReturn
+   */
+  export type PromoCodeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * The data used to create many PromoCodes.
+     */
+    data: PromoCodeCreateManyInput | PromoCodeCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PromoCode update
+   */
+  export type PromoCodeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PromoCode.
+     */
+    data: XOR<PromoCodeUpdateInput, PromoCodeUncheckedUpdateInput>
+    /**
+     * Choose, which PromoCode to update.
+     */
+    where: PromoCodeWhereUniqueInput
+  }
+
+  /**
+   * PromoCode updateMany
+   */
+  export type PromoCodeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PromoCodes.
+     */
+    data: XOR<PromoCodeUpdateManyMutationInput, PromoCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which PromoCodes to update
+     */
+    where?: PromoCodeWhereInput
+    /**
+     * Limit how many PromoCodes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PromoCode updateManyAndReturn
+   */
+  export type PromoCodeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * The data used to update PromoCodes.
+     */
+    data: XOR<PromoCodeUpdateManyMutationInput, PromoCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which PromoCodes to update
+     */
+    where?: PromoCodeWhereInput
+    /**
+     * Limit how many PromoCodes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PromoCode upsert
+   */
+  export type PromoCodeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PromoCode to update in case it exists.
+     */
+    where: PromoCodeWhereUniqueInput
+    /**
+     * In case the PromoCode found by the `where` argument doesn't exist, create a new PromoCode with this data.
+     */
+    create: XOR<PromoCodeCreateInput, PromoCodeUncheckedCreateInput>
+    /**
+     * In case the PromoCode was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PromoCodeUpdateInput, PromoCodeUncheckedUpdateInput>
+  }
+
+  /**
+   * PromoCode delete
+   */
+  export type PromoCodeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter which PromoCode to delete.
+     */
+    where: PromoCodeWhereUniqueInput
+  }
+
+  /**
+   * PromoCode deleteMany
+   */
+  export type PromoCodeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PromoCodes to delete
+     */
+    where?: PromoCodeWhereInput
+    /**
+     * Limit how many PromoCodes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PromoCode.usedByStudent
+   */
+  export type PromoCode$usedByStudentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * PromoCode without action
+   */
+  export type PromoCodeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -22591,9 +24048,12 @@ export namespace Prisma {
     description: 'description',
     chapterId: 'chapterId',
     status: 'status',
+    questionCount: 'questionCount',
+    totalPoints: 'totalPoints',
     createdBy: 'createdBy',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    publishedAt: 'publishedAt'
   };
 
   export type QuizScalarFieldEnum = (typeof QuizScalarFieldEnum)[keyof typeof QuizScalarFieldEnum]
@@ -22607,6 +24067,7 @@ export namespace Prisma {
     options: 'options',
     correctAnswer: 'correctAnswer',
     sortOrder: 'sortOrder',
+    points: 'points',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -22620,11 +24081,29 @@ export namespace Prisma {
     studentId: 'studentId',
     answers: 'answers',
     score: 'score',
+    totalPoints: 'totalPoints',
+    status: 'status',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type QuizAttemptScalarFieldEnum = (typeof QuizAttemptScalarFieldEnum)[keyof typeof QuizAttemptScalarFieldEnum]
+
+
+  export const PromoCodeScalarFieldEnum: {
+    id: 'id',
+    code: 'code',
+    isUsed: 'isUsed',
+    usedByStudentId: 'usedByStudentId',
+    usedAt: 'usedAt',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    expiresAt: 'expiresAt'
+  };
+
+  export type PromoCodeScalarFieldEnum = (typeof PromoCodeScalarFieldEnum)[keyof typeof PromoCodeScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -22881,6 +24360,20 @@ export namespace Prisma {
    */
   export type ListEnumQuestionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuestionType[]'>
     
+
+
+  /**
+   * Reference to a field of type 'AttemptStatus'
+   */
+  export type EnumAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttemptStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'AttemptStatus[]'
+   */
+  export type ListEnumAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttemptStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -22900,6 +24393,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     auditLogs?: AuditLogListRelationFilter
+    createdPromoCodes?: PromoCodeListRelationFilter
+    usedPromoCodes?: PromoCodeListRelationFilter
     enrollments?: EnrollmentListRelationFilter
     lessonProgress?: LessonProgressListRelationFilter
     otps?: OtpListRelationFilter
@@ -22923,6 +24418,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     auditLogs?: AuditLogOrderByRelationAggregateInput
+    createdPromoCodes?: PromoCodeOrderByRelationAggregateInput
+    usedPromoCodes?: PromoCodeOrderByRelationAggregateInput
     enrollments?: EnrollmentOrderByRelationAggregateInput
     lessonProgress?: LessonProgressOrderByRelationAggregateInput
     otps?: OtpOrderByRelationAggregateInput
@@ -22949,6 +24446,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     auditLogs?: AuditLogListRelationFilter
+    createdPromoCodes?: PromoCodeListRelationFilter
+    usedPromoCodes?: PromoCodeListRelationFilter
     enrollments?: EnrollmentListRelationFilter
     lessonProgress?: LessonProgressListRelationFilter
     otps?: OtpListRelationFilter
@@ -23967,9 +25466,12 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
+    questionCount?: IntFilter<"Quiz"> | number
+    totalPoints?: IntFilter<"Quiz"> | number
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
+    publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
     questions?: QuestionListRelationFilter
     attempts?: QuizAttemptListRelationFilter
     chapter?: XOR<ChapterNullableScalarRelationFilter, ChapterWhereInput> | null
@@ -23982,9 +25484,12 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     chapterId?: SortOrderInput | SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
     questions?: QuestionOrderByRelationAggregateInput
     attempts?: QuizAttemptOrderByRelationAggregateInput
     chapter?: ChapterOrderByWithRelationInput
@@ -24000,9 +25505,12 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
+    questionCount?: IntFilter<"Quiz"> | number
+    totalPoints?: IntFilter<"Quiz"> | number
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
+    publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
     questions?: QuestionListRelationFilter
     attempts?: QuizAttemptListRelationFilter
     chapter?: XOR<ChapterNullableScalarRelationFilter, ChapterWhereInput> | null
@@ -24015,12 +25523,17 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     chapterId?: SortOrderInput | SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
     _count?: QuizCountOrderByAggregateInput
+    _avg?: QuizAvgOrderByAggregateInput
     _max?: QuizMaxOrderByAggregateInput
     _min?: QuizMinOrderByAggregateInput
+    _sum?: QuizSumOrderByAggregateInput
   }
 
   export type QuizScalarWhereWithAggregatesInput = {
@@ -24032,9 +25545,12 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Quiz"> | string | null
     chapterId?: StringNullableWithAggregatesFilter<"Quiz"> | string | null
     status?: EnumQuizStatusWithAggregatesFilter<"Quiz"> | $Enums.QuizStatus
+    questionCount?: IntWithAggregatesFilter<"Quiz"> | number
+    totalPoints?: IntWithAggregatesFilter<"Quiz"> | number
     createdBy?: StringWithAggregatesFilter<"Quiz"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"Quiz"> | Date | string | null
   }
 
   export type QuestionWhereInput = {
@@ -24048,6 +25564,7 @@ export namespace Prisma {
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
+    points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
@@ -24061,6 +25578,7 @@ export namespace Prisma {
     options?: SortOrder
     correctAnswer?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quiz?: QuizOrderByWithRelationInput
@@ -24078,6 +25596,7 @@ export namespace Prisma {
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
+    points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
@@ -24091,6 +25610,7 @@ export namespace Prisma {
     options?: SortOrder
     correctAnswer?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: QuestionCountOrderByAggregateInput
@@ -24111,6 +25631,7 @@ export namespace Prisma {
     options?: JsonWithAggregatesFilter<"Question">
     correctAnswer?: StringNullableWithAggregatesFilter<"Question"> | string | null
     sortOrder?: IntWithAggregatesFilter<"Question"> | number
+    points?: IntWithAggregatesFilter<"Question"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
   }
@@ -24124,6 +25645,10 @@ export namespace Prisma {
     studentId?: StringFilter<"QuizAttempt"> | string
     answers?: JsonFilter<"QuizAttempt">
     score?: FloatNullableFilter<"QuizAttempt"> | number | null
+    totalPoints?: IntFilter<"QuizAttempt"> | number
+    status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
+    startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
+    completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
@@ -24136,6 +25661,10 @@ export namespace Prisma {
     studentId?: SortOrder
     answers?: SortOrder
     score?: SortOrderInput | SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quiz?: QuizOrderByWithRelationInput
@@ -24144,6 +25673,7 @@ export namespace Prisma {
 
   export type QuizAttemptWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    quizId_studentId?: QuizAttemptQuizIdStudentIdCompoundUniqueInput
     AND?: QuizAttemptWhereInput | QuizAttemptWhereInput[]
     OR?: QuizAttemptWhereInput[]
     NOT?: QuizAttemptWhereInput | QuizAttemptWhereInput[]
@@ -24151,11 +25681,15 @@ export namespace Prisma {
     studentId?: StringFilter<"QuizAttempt"> | string
     answers?: JsonFilter<"QuizAttempt">
     score?: FloatNullableFilter<"QuizAttempt"> | number | null
+    totalPoints?: IntFilter<"QuizAttempt"> | number
+    status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
+    startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
+    completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
     student?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id">
+  }, "id" | "quizId_studentId">
 
   export type QuizAttemptOrderByWithAggregationInput = {
     id?: SortOrder
@@ -24163,6 +25697,10 @@ export namespace Prisma {
     studentId?: SortOrder
     answers?: SortOrder
     score?: SortOrderInput | SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: QuizAttemptCountOrderByAggregateInput
@@ -24181,8 +25719,85 @@ export namespace Prisma {
     studentId?: StringWithAggregatesFilter<"QuizAttempt"> | string
     answers?: JsonWithAggregatesFilter<"QuizAttempt">
     score?: FloatNullableWithAggregatesFilter<"QuizAttempt"> | number | null
+    totalPoints?: IntWithAggregatesFilter<"QuizAttempt"> | number
+    status?: EnumAttemptStatusWithAggregatesFilter<"QuizAttempt"> | $Enums.AttemptStatus
+    startedAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
+    completedAt?: DateTimeNullableWithAggregatesFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
+  }
+
+  export type PromoCodeWhereInput = {
+    AND?: PromoCodeWhereInput | PromoCodeWhereInput[]
+    OR?: PromoCodeWhereInput[]
+    NOT?: PromoCodeWhereInput | PromoCodeWhereInput[]
+    id?: StringFilter<"PromoCode"> | string
+    code?: StringFilter<"PromoCode"> | string
+    isUsed?: BoolFilter<"PromoCode"> | boolean
+    usedByStudentId?: StringNullableFilter<"PromoCode"> | string | null
+    usedAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
+    createdById?: StringFilter<"PromoCode"> | string
+    createdAt?: DateTimeFilter<"PromoCode"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
+    usedByStudent?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type PromoCodeOrderByWithRelationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    isUsed?: SortOrder
+    usedByStudentId?: SortOrderInput | SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    usedByStudent?: UserOrderByWithRelationInput
+    createdBy?: UserOrderByWithRelationInput
+  }
+
+  export type PromoCodeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    code?: string
+    AND?: PromoCodeWhereInput | PromoCodeWhereInput[]
+    OR?: PromoCodeWhereInput[]
+    NOT?: PromoCodeWhereInput | PromoCodeWhereInput[]
+    isUsed?: BoolFilter<"PromoCode"> | boolean
+    usedByStudentId?: StringNullableFilter<"PromoCode"> | string | null
+    usedAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
+    createdById?: StringFilter<"PromoCode"> | string
+    createdAt?: DateTimeFilter<"PromoCode"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
+    usedByStudent?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "code">
+
+  export type PromoCodeOrderByWithAggregationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    isUsed?: SortOrder
+    usedByStudentId?: SortOrderInput | SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    _count?: PromoCodeCountOrderByAggregateInput
+    _max?: PromoCodeMaxOrderByAggregateInput
+    _min?: PromoCodeMinOrderByAggregateInput
+  }
+
+  export type PromoCodeScalarWhereWithAggregatesInput = {
+    AND?: PromoCodeScalarWhereWithAggregatesInput | PromoCodeScalarWhereWithAggregatesInput[]
+    OR?: PromoCodeScalarWhereWithAggregatesInput[]
+    NOT?: PromoCodeScalarWhereWithAggregatesInput | PromoCodeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PromoCode"> | string
+    code?: StringWithAggregatesFilter<"PromoCode"> | string
+    isUsed?: BoolWithAggregatesFilter<"PromoCode"> | boolean
+    usedByStudentId?: StringNullableWithAggregatesFilter<"PromoCode"> | string | null
+    usedAt?: DateTimeNullableWithAggregatesFilter<"PromoCode"> | Date | string | null
+    createdById?: StringWithAggregatesFilter<"PromoCode"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"PromoCode"> | Date | string
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"PromoCode"> | Date | string | null
   }
 
   export type UserCreateInput = {
@@ -24196,6 +25811,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -24219,6 +25836,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -24242,6 +25861,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -24265,6 +25886,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -25349,8 +26972,11 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     chapter?: ChapterCreateNestedOneWithoutQuizzesInput
@@ -25363,9 +26989,12 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
   }
@@ -25375,8 +27004,11 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     chapter?: ChapterUpdateOneWithoutQuizzesNestedInput
@@ -25389,9 +27021,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
   }
@@ -25402,9 +27037,12 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
   }
 
   export type QuizUpdateManyMutationInput = {
@@ -25412,8 +27050,11 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type QuizUncheckedUpdateManyInput = {
@@ -25422,9 +27063,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type QuestionCreateInput = {
@@ -25434,6 +27078,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     quiz: QuizCreateNestedOneWithoutQuestionsInput
@@ -25447,6 +27092,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25458,6 +27104,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quiz?: QuizUpdateOneRequiredWithoutQuestionsNestedInput
@@ -25471,6 +27118,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25483,6 +27131,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25494,6 +27143,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25506,6 +27156,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25514,6 +27165,10 @@ export namespace Prisma {
     id?: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quiz: QuizCreateNestedOneWithoutAttemptsInput
@@ -25526,6 +27181,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25534,6 +27193,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quiz?: QuizUpdateOneRequiredWithoutAttemptsNestedInput
@@ -25546,6 +27209,10 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25556,6 +27223,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25564,6 +27235,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25574,8 +27249,87 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PromoCodeCreateInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+    usedByStudent?: UserCreateNestedOneWithoutUsedPromoCodesInput
+    createdBy: UserCreateNestedOneWithoutCreatedPromoCodesInput
+  }
+
+  export type PromoCodeUncheckedCreateInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedByStudentId?: string | null
+    usedAt?: Date | string | null
+    createdById: string
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type PromoCodeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usedByStudent?: UserUpdateOneWithoutUsedPromoCodesNestedInput
+    createdBy?: UserUpdateOneRequiredWithoutCreatedPromoCodesNestedInput
+  }
+
+  export type PromoCodeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PromoCodeCreateManyInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedByStudentId?: string | null
+    usedAt?: Date | string | null
+    createdById: string
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type PromoCodeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PromoCodeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -25622,6 +27376,12 @@ export namespace Prisma {
     every?: AuditLogWhereInput
     some?: AuditLogWhereInput
     none?: AuditLogWhereInput
+  }
+
+  export type PromoCodeListRelationFilter = {
+    every?: PromoCodeWhereInput
+    some?: PromoCodeWhereInput
+    none?: PromoCodeWhereInput
   }
 
   export type EnrollmentListRelationFilter = {
@@ -25683,6 +27443,10 @@ export namespace Prisma {
   }
 
   export type AuditLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PromoCodeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26708,9 +28472,17 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrder
+  }
+
+  export type QuizAvgOrderByAggregateInput = {
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
   }
 
   export type QuizMaxOrderByAggregateInput = {
@@ -26719,9 +28491,12 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrder
   }
 
   export type QuizMinOrderByAggregateInput = {
@@ -26730,9 +28505,17 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    publishedAt?: SortOrder
+  }
+
+  export type QuizSumOrderByAggregateInput = {
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
   }
 
   export type EnumQuizStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -26770,12 +28553,14 @@ export namespace Prisma {
     options?: SortOrder
     correctAnswer?: SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type QuestionAvgOrderByAggregateInput = {
     sortOrder?: SortOrder
+    points?: SortOrder
   }
 
   export type QuestionMaxOrderByAggregateInput = {
@@ -26785,6 +28570,7 @@ export namespace Prisma {
     text?: SortOrder
     correctAnswer?: SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26796,12 +28582,14 @@ export namespace Prisma {
     text?: SortOrder
     correctAnswer?: SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type QuestionSumOrderByAggregateInput = {
     sortOrder?: SortOrder
+    points?: SortOrder
   }
 
   export type EnumQuestionTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -26825,18 +28613,35 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type EnumAttemptStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptStatus | EnumAttemptStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAttemptStatusFilter<$PrismaModel> | $Enums.AttemptStatus
+  }
+
+  export type QuizAttemptQuizIdStudentIdCompoundUniqueInput = {
+    quizId: string
+    studentId: string
+  }
+
   export type QuizAttemptCountOrderByAggregateInput = {
     id?: SortOrder
     quizId?: SortOrder
     studentId?: SortOrder
     answers?: SortOrder
     score?: SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type QuizAttemptAvgOrderByAggregateInput = {
     score?: SortOrder
+    totalPoints?: SortOrder
   }
 
   export type QuizAttemptMaxOrderByAggregateInput = {
@@ -26844,6 +28649,10 @@ export namespace Prisma {
     quizId?: SortOrder
     studentId?: SortOrder
     score?: SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26853,12 +28662,17 @@ export namespace Prisma {
     quizId?: SortOrder
     studentId?: SortOrder
     score?: SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type QuizAttemptSumOrderByAggregateInput = {
     score?: SortOrder
+    totalPoints?: SortOrder
   }
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -26877,11 +28691,73 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type EnumAttemptStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptStatus | EnumAttemptStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAttemptStatusWithAggregatesFilter<$PrismaModel> | $Enums.AttemptStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAttemptStatusFilter<$PrismaModel>
+    _max?: NestedEnumAttemptStatusFilter<$PrismaModel>
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type PromoCodeCountOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    isUsed?: SortOrder
+    usedByStudentId?: SortOrder
+    usedAt?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type PromoCodeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    isUsed?: SortOrder
+    usedByStudentId?: SortOrder
+    usedAt?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type PromoCodeMinOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    isUsed?: SortOrder
+    usedByStudentId?: SortOrder
+    usedAt?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
   export type AuditLogCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
     createMany?: AuditLogCreateManyUserInputEnvelope
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
+  export type PromoCodeCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<PromoCodeCreateWithoutCreatedByInput, PromoCodeUncheckedCreateWithoutCreatedByInput> | PromoCodeCreateWithoutCreatedByInput[] | PromoCodeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutCreatedByInput | PromoCodeCreateOrConnectWithoutCreatedByInput[]
+    createMany?: PromoCodeCreateManyCreatedByInputEnvelope
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+  }
+
+  export type PromoCodeCreateNestedManyWithoutUsedByStudentInput = {
+    create?: XOR<PromoCodeCreateWithoutUsedByStudentInput, PromoCodeUncheckedCreateWithoutUsedByStudentInput> | PromoCodeCreateWithoutUsedByStudentInput[] | PromoCodeUncheckedCreateWithoutUsedByStudentInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutUsedByStudentInput | PromoCodeCreateOrConnectWithoutUsedByStudentInput[]
+    createMany?: PromoCodeCreateManyUsedByStudentInputEnvelope
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
   }
 
   export type EnrollmentCreateNestedManyWithoutStudentInput = {
@@ -26957,6 +28833,20 @@ export namespace Prisma {
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
     createMany?: AuditLogCreateManyUserInputEnvelope
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
+  export type PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<PromoCodeCreateWithoutCreatedByInput, PromoCodeUncheckedCreateWithoutCreatedByInput> | PromoCodeCreateWithoutCreatedByInput[] | PromoCodeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutCreatedByInput | PromoCodeCreateOrConnectWithoutCreatedByInput[]
+    createMany?: PromoCodeCreateManyCreatedByInputEnvelope
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+  }
+
+  export type PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput = {
+    create?: XOR<PromoCodeCreateWithoutUsedByStudentInput, PromoCodeUncheckedCreateWithoutUsedByStudentInput> | PromoCodeCreateWithoutUsedByStudentInput[] | PromoCodeUncheckedCreateWithoutUsedByStudentInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutUsedByStudentInput | PromoCodeCreateOrConnectWithoutUsedByStudentInput[]
+    createMany?: PromoCodeCreateManyUsedByStudentInputEnvelope
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
   }
 
   export type EnrollmentUncheckedCreateNestedManyWithoutStudentInput = {
@@ -27055,6 +28945,34 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type PromoCodeUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<PromoCodeCreateWithoutCreatedByInput, PromoCodeUncheckedCreateWithoutCreatedByInput> | PromoCodeCreateWithoutCreatedByInput[] | PromoCodeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutCreatedByInput | PromoCodeCreateOrConnectWithoutCreatedByInput[]
+    upsert?: PromoCodeUpsertWithWhereUniqueWithoutCreatedByInput | PromoCodeUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: PromoCodeCreateManyCreatedByInputEnvelope
+    set?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    disconnect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    delete?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    update?: PromoCodeUpdateWithWhereUniqueWithoutCreatedByInput | PromoCodeUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: PromoCodeUpdateManyWithWhereWithoutCreatedByInput | PromoCodeUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
+  }
+
+  export type PromoCodeUpdateManyWithoutUsedByStudentNestedInput = {
+    create?: XOR<PromoCodeCreateWithoutUsedByStudentInput, PromoCodeUncheckedCreateWithoutUsedByStudentInput> | PromoCodeCreateWithoutUsedByStudentInput[] | PromoCodeUncheckedCreateWithoutUsedByStudentInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutUsedByStudentInput | PromoCodeCreateOrConnectWithoutUsedByStudentInput[]
+    upsert?: PromoCodeUpsertWithWhereUniqueWithoutUsedByStudentInput | PromoCodeUpsertWithWhereUniqueWithoutUsedByStudentInput[]
+    createMany?: PromoCodeCreateManyUsedByStudentInputEnvelope
+    set?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    disconnect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    delete?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    update?: PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput | PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput[]
+    updateMany?: PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput | PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput[]
+    deleteMany?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
   }
 
   export type EnrollmentUpdateManyWithoutStudentNestedInput = {
@@ -27201,6 +29119,34 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<PromoCodeCreateWithoutCreatedByInput, PromoCodeUncheckedCreateWithoutCreatedByInput> | PromoCodeCreateWithoutCreatedByInput[] | PromoCodeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutCreatedByInput | PromoCodeCreateOrConnectWithoutCreatedByInput[]
+    upsert?: PromoCodeUpsertWithWhereUniqueWithoutCreatedByInput | PromoCodeUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: PromoCodeCreateManyCreatedByInputEnvelope
+    set?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    disconnect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    delete?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    update?: PromoCodeUpdateWithWhereUniqueWithoutCreatedByInput | PromoCodeUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: PromoCodeUpdateManyWithWhereWithoutCreatedByInput | PromoCodeUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
+  }
+
+  export type PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput = {
+    create?: XOR<PromoCodeCreateWithoutUsedByStudentInput, PromoCodeUncheckedCreateWithoutUsedByStudentInput> | PromoCodeCreateWithoutUsedByStudentInput[] | PromoCodeUncheckedCreateWithoutUsedByStudentInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutUsedByStudentInput | PromoCodeCreateOrConnectWithoutUsedByStudentInput[]
+    upsert?: PromoCodeUpsertWithWhereUniqueWithoutUsedByStudentInput | PromoCodeUpsertWithWhereUniqueWithoutUsedByStudentInput[]
+    createMany?: PromoCodeCreateManyUsedByStudentInputEnvelope
+    set?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    disconnect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    delete?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    update?: PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput | PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput[]
+    updateMany?: PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput | PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput[]
+    deleteMany?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
   }
 
   export type EnrollmentUncheckedUpdateManyWithoutStudentNestedInput = {
@@ -28103,6 +30049,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type EnumAttemptStatusFieldUpdateOperationsInput = {
+    set?: $Enums.AttemptStatus
+  }
+
   export type QuizUpdateOneRequiredWithoutAttemptsNestedInput = {
     create?: XOR<QuizCreateWithoutAttemptsInput, QuizUncheckedCreateWithoutAttemptsInput>
     connectOrCreate?: QuizCreateOrConnectWithoutAttemptsInput
@@ -28117,6 +30067,36 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutQuizAttemptsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutQuizAttemptsInput, UserUpdateWithoutQuizAttemptsInput>, UserUncheckedUpdateWithoutQuizAttemptsInput>
+  }
+
+  export type UserCreateNestedOneWithoutUsedPromoCodesInput = {
+    create?: XOR<UserCreateWithoutUsedPromoCodesInput, UserUncheckedCreateWithoutUsedPromoCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUsedPromoCodesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutCreatedPromoCodesInput = {
+    create?: XOR<UserCreateWithoutCreatedPromoCodesInput, UserUncheckedCreateWithoutCreatedPromoCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedPromoCodesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneWithoutUsedPromoCodesNestedInput = {
+    create?: XOR<UserCreateWithoutUsedPromoCodesInput, UserUncheckedCreateWithoutUsedPromoCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUsedPromoCodesInput
+    upsert?: UserUpsertWithoutUsedPromoCodesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUsedPromoCodesInput, UserUpdateWithoutUsedPromoCodesInput>, UserUncheckedUpdateWithoutUsedPromoCodesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutCreatedPromoCodesNestedInput = {
+    create?: XOR<UserCreateWithoutCreatedPromoCodesInput, UserUncheckedCreateWithoutCreatedPromoCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedPromoCodesInput
+    upsert?: UserUpsertWithoutCreatedPromoCodesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedPromoCodesInput, UserUpdateWithoutCreatedPromoCodesInput>, UserUncheckedUpdateWithoutCreatedPromoCodesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -28529,6 +30509,13 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedEnumAttemptStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptStatus | EnumAttemptStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAttemptStatusFilter<$PrismaModel> | $Enums.AttemptStatus
+  }
+
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -28543,6 +30530,16 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAttemptStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptStatus | EnumAttemptStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAttemptStatusWithAggregatesFilter<$PrismaModel> | $Enums.AttemptStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAttemptStatusFilter<$PrismaModel>
+    _max?: NestedEnumAttemptStatusFilter<$PrismaModel>
   }
 
   export type AuditLogCreateWithoutUserInput = {
@@ -28576,6 +30573,66 @@ export namespace Prisma {
 
   export type AuditLogCreateManyUserInputEnvelope = {
     data: AuditLogCreateManyUserInput | AuditLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PromoCodeCreateWithoutCreatedByInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+    usedByStudent?: UserCreateNestedOneWithoutUsedPromoCodesInput
+  }
+
+  export type PromoCodeUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedByStudentId?: string | null
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type PromoCodeCreateOrConnectWithoutCreatedByInput = {
+    where: PromoCodeWhereUniqueInput
+    create: XOR<PromoCodeCreateWithoutCreatedByInput, PromoCodeUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type PromoCodeCreateManyCreatedByInputEnvelope = {
+    data: PromoCodeCreateManyCreatedByInput | PromoCodeCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PromoCodeCreateWithoutUsedByStudentInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+    createdBy: UserCreateNestedOneWithoutCreatedPromoCodesInput
+  }
+
+  export type PromoCodeUncheckedCreateWithoutUsedByStudentInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedAt?: Date | string | null
+    createdById: string
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type PromoCodeCreateOrConnectWithoutUsedByStudentInput = {
+    where: PromoCodeWhereUniqueInput
+    create: XOR<PromoCodeCreateWithoutUsedByStudentInput, PromoCodeUncheckedCreateWithoutUsedByStudentInput>
+  }
+
+  export type PromoCodeCreateManyUsedByStudentInputEnvelope = {
+    data: PromoCodeCreateManyUsedByStudentInput | PromoCodeCreateManyUsedByStudentInput[]
     skipDuplicates?: boolean
   }
 
@@ -28673,6 +30730,10 @@ export namespace Prisma {
     id?: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quiz: QuizCreateNestedOneWithoutAttemptsInput
@@ -28683,6 +30744,10 @@ export namespace Prisma {
     quizId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -28702,8 +30767,11 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     chapter?: ChapterCreateNestedOneWithoutQuizzesInput
@@ -28715,8 +30783,11 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
   }
@@ -28899,6 +30970,52 @@ export namespace Prisma {
     scopeTeacherId?: StringNullableFilter<"AuditLog"> | string | null
   }
 
+  export type PromoCodeUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: PromoCodeWhereUniqueInput
+    update: XOR<PromoCodeUpdateWithoutCreatedByInput, PromoCodeUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<PromoCodeCreateWithoutCreatedByInput, PromoCodeUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type PromoCodeUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: PromoCodeWhereUniqueInput
+    data: XOR<PromoCodeUpdateWithoutCreatedByInput, PromoCodeUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type PromoCodeUpdateManyWithWhereWithoutCreatedByInput = {
+    where: PromoCodeScalarWhereInput
+    data: XOR<PromoCodeUpdateManyMutationInput, PromoCodeUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type PromoCodeScalarWhereInput = {
+    AND?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
+    OR?: PromoCodeScalarWhereInput[]
+    NOT?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
+    id?: StringFilter<"PromoCode"> | string
+    code?: StringFilter<"PromoCode"> | string
+    isUsed?: BoolFilter<"PromoCode"> | boolean
+    usedByStudentId?: StringNullableFilter<"PromoCode"> | string | null
+    usedAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
+    createdById?: StringFilter<"PromoCode"> | string
+    createdAt?: DateTimeFilter<"PromoCode"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
+  }
+
+  export type PromoCodeUpsertWithWhereUniqueWithoutUsedByStudentInput = {
+    where: PromoCodeWhereUniqueInput
+    update: XOR<PromoCodeUpdateWithoutUsedByStudentInput, PromoCodeUncheckedUpdateWithoutUsedByStudentInput>
+    create: XOR<PromoCodeCreateWithoutUsedByStudentInput, PromoCodeUncheckedCreateWithoutUsedByStudentInput>
+  }
+
+  export type PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput = {
+    where: PromoCodeWhereUniqueInput
+    data: XOR<PromoCodeUpdateWithoutUsedByStudentInput, PromoCodeUncheckedUpdateWithoutUsedByStudentInput>
+  }
+
+  export type PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput = {
+    where: PromoCodeScalarWhereInput
+    data: XOR<PromoCodeUpdateManyMutationInput, PromoCodeUncheckedUpdateManyWithoutUsedByStudentInput>
+  }
+
   export type EnrollmentUpsertWithWhereUniqueWithoutStudentInput = {
     where: EnrollmentWhereUniqueInput
     update: XOR<EnrollmentUpdateWithoutStudentInput, EnrollmentUncheckedUpdateWithoutStudentInput>
@@ -29014,6 +31131,10 @@ export namespace Prisma {
     studentId?: StringFilter<"QuizAttempt"> | string
     answers?: JsonFilter<"QuizAttempt">
     score?: FloatNullableFilter<"QuizAttempt"> | number | null
+    totalPoints?: IntFilter<"QuizAttempt"> | number
+    status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
+    startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
+    completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
   }
@@ -29043,9 +31164,12 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
+    questionCount?: IntFilter<"Quiz"> | number
+    totalPoints?: IntFilter<"Quiz"> | number
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
+    publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
   }
 
   export type RefreshTokenUpsertWithWhereUniqueWithoutUserInput = {
@@ -29204,6 +31328,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -29226,6 +31352,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -29264,6 +31392,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -29286,6 +31416,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -29308,6 +31440,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -29330,6 +31464,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -29368,6 +31504,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -29390,6 +31528,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -29452,6 +31592,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -29474,6 +31616,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -29543,6 +31687,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -29565,6 +31711,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -29686,8 +31834,11 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     creator: UserCreateNestedOneWithoutQuizzesInput
@@ -29698,9 +31849,12 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
   }
@@ -30111,6 +32265,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
@@ -30133,6 +32289,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
@@ -30171,6 +32329,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
@@ -30193,6 +32353,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
@@ -30250,6 +32412,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
@@ -30272,6 +32436,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
@@ -30351,6 +32517,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
@@ -30373,6 +32541,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
@@ -30395,6 +32565,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -30417,6 +32589,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -30490,6 +32664,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -30512,6 +32688,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -30614,6 +32792,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
@@ -30636,6 +32816,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
@@ -30719,6 +32901,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
@@ -30741,6 +32925,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
@@ -30930,6 +33116,8 @@ export namespace Prisma {
     status?: $Enums.Status
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -30952,6 +33140,8 @@ export namespace Prisma {
     status?: $Enums.Status
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -30990,6 +33180,8 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -31012,6 +33204,8 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -31035,6 +33229,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -31057,6 +33253,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -31095,6 +33293,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -31117,6 +33317,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -31135,6 +33337,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31146,6 +33349,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31164,6 +33368,10 @@ export namespace Prisma {
     id?: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: UserCreateNestedOneWithoutQuizAttemptsInput
@@ -31174,6 +33382,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31234,6 +33446,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -31256,6 +33470,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -31299,6 +33515,7 @@ export namespace Prisma {
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
+    points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
   }
@@ -31382,6 +33599,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -31404,6 +33623,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -31420,8 +33641,11 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     chapter?: ChapterCreateNestedOneWithoutQuizzesInput
     creator: UserCreateNestedOneWithoutQuizzesInput
@@ -31433,9 +33657,12 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
   }
 
@@ -31460,8 +33687,11 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     chapter?: ChapterUpdateOneWithoutQuizzesNestedInput
     creator?: UserUpdateOneRequiredWithoutQuizzesNestedInput
@@ -31473,9 +33703,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
   }
 
@@ -31484,8 +33717,11 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     chapter?: ChapterCreateNestedOneWithoutQuizzesInput
     creator: UserCreateNestedOneWithoutQuizzesInput
@@ -31497,9 +33733,12 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
   }
 
@@ -31519,6 +33758,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -31541,6 +33782,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -31573,8 +33816,11 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     chapter?: ChapterUpdateOneWithoutQuizzesNestedInput
     creator?: UserUpdateOneRequiredWithoutQuizzesNestedInput
@@ -31586,9 +33832,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
   }
 
@@ -31614,6 +33863,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -31636,9 +33887,235 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserCreateWithoutUsedPromoCodesInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserUncheckedCreateWithoutUsedPromoCodesInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserCreateOrConnectWithoutUsedPromoCodesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutUsedPromoCodesInput, UserUncheckedCreateWithoutUsedPromoCodesInput>
+  }
+
+  export type UserCreateWithoutCreatedPromoCodesInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserUncheckedCreateWithoutCreatedPromoCodesInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserCreateOrConnectWithoutCreatedPromoCodesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreatedPromoCodesInput, UserUncheckedCreateWithoutCreatedPromoCodesInput>
+  }
+
+  export type UserUpsertWithoutUsedPromoCodesInput = {
+    update: XOR<UserUpdateWithoutUsedPromoCodesInput, UserUncheckedUpdateWithoutUsedPromoCodesInput>
+    create: XOR<UserCreateWithoutUsedPromoCodesInput, UserUncheckedCreateWithoutUsedPromoCodesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutUsedPromoCodesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutUsedPromoCodesInput, UserUncheckedUpdateWithoutUsedPromoCodesInput>
+  }
+
+  export type UserUpdateWithoutUsedPromoCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUsedPromoCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUpsertWithoutCreatedPromoCodesInput = {
+    update: XOR<UserUpdateWithoutCreatedPromoCodesInput, UserUncheckedUpdateWithoutCreatedPromoCodesInput>
+    create: XOR<UserCreateWithoutCreatedPromoCodesInput, UserUncheckedCreateWithoutCreatedPromoCodesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreatedPromoCodesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreatedPromoCodesInput, UserUncheckedUpdateWithoutCreatedPromoCodesInput>
+  }
+
+  export type UserUpdateWithoutCreatedPromoCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreatedPromoCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
@@ -31657,6 +34134,26 @@ export namespace Prisma {
     actorType?: string | null
     actorName?: string | null
     scopeTeacherId?: string | null
+  }
+
+  export type PromoCodeCreateManyCreatedByInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedByStudentId?: string | null
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type PromoCodeCreateManyUsedByStudentInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedAt?: Date | string | null
+    createdById: string
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
   }
 
   export type EnrollmentCreateManyStudentInput = {
@@ -31694,6 +34191,10 @@ export namespace Prisma {
     quizId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31704,8 +34205,11 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
   }
 
   export type RefreshTokenCreateManyUserInput = {
@@ -31773,6 +34277,66 @@ export namespace Prisma {
     actorType?: NullableStringFieldUpdateOperationsInput | string | null
     actorName?: NullableStringFieldUpdateOperationsInput | string | null
     scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PromoCodeUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usedByStudent?: UserUpdateOneWithoutUsedPromoCodesNestedInput
+  }
+
+  export type PromoCodeUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PromoCodeUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PromoCodeUpdateWithoutUsedByStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: UserUpdateOneRequiredWithoutCreatedPromoCodesNestedInput
+  }
+
+  export type PromoCodeUncheckedUpdateWithoutUsedByStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PromoCodeUncheckedUpdateManyWithoutUsedByStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type EnrollmentUpdateWithoutStudentInput = {
@@ -31869,6 +34433,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quiz?: QuizUpdateOneRequiredWithoutAttemptsNestedInput
@@ -31879,6 +34447,10 @@ export namespace Prisma {
     quizId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31888,6 +34460,10 @@ export namespace Prisma {
     quizId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31897,8 +34473,11 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     chapter?: ChapterUpdateOneWithoutQuizzesNestedInput
@@ -31910,8 +34489,11 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
   }
@@ -31922,8 +34504,11 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type RefreshTokenUpdateWithoutUserInput = {
@@ -32104,9 +34689,12 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    publishedAt?: Date | string | null
   }
 
   export type PaymentTransactionCreateManyChapterInput = {
@@ -32212,8 +34800,11 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     creator?: UserUpdateOneRequiredWithoutQuizzesNestedInput
@@ -32224,9 +34815,12 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
   }
@@ -32236,9 +34830,12 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PaymentTransactionUpdateWithoutChapterInput = {
@@ -32394,6 +34991,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32403,6 +35001,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32414,6 +35016,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32425,6 +35028,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32436,6 +35040,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32444,6 +35049,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: UserUpdateOneRequiredWithoutQuizAttemptsNestedInput
@@ -32454,6 +35063,10 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32463,6 +35076,10 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

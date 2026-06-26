@@ -10,10 +10,14 @@ import {
   addQuestionSchema,
   updateQuestionSchema,
   reorderSchema,
+  assignQuizSchema,
 } from "./quizzes.validation.js";
+import { generateQuizSchema } from "./dto/generate-quiz.dto.js";
+import { AttemptsController } from "./attempts.controller.js";
 
 const quizController = new QuizzesController();
 const questionsController = new QuestionsController();
+const attemptsController = new AttemptsController();
 
 // ── Standalone routes (mounted at /api/quizzes) ────────────────────────
 export const quizStandaloneRouter = Router();
@@ -31,6 +35,32 @@ quizStandaloneRouter.post(
   authorizeMiddleware("OPERATION"),
   validateRequest(createQuizSchema),
   quizController.create,
+);
+
+// ── AI quiz generation (STORY-45) ──────────────────────────────────────
+// Final route: POST /api/quizzes/generate
+quizStandaloneRouter.post(
+  "/generate",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(generateQuizSchema),
+  quizController.generate,
+);
+
+// ── Student quiz-taking (STORY-48) ─────────────────────────────────────
+// Static /assigned must be registered before parameterized /:id routes.
+quizStandaloneRouter.get(
+  "/assigned",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  attemptsController.getAssigned,
+);
+
+quizStandaloneRouter.post(
+  "/:id/attempt",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  attemptsController.startAttempt,
 );
 
 // ── Nested question routes (mounted at /:quizId/questions) ─────────────
@@ -69,6 +99,22 @@ questionNestedRouter.delete(
 
 // Mount nested question routes BEFORE parameterized /:id routes
 quizStandaloneRouter.use("/:quizId/questions", questionNestedRouter);
+
+// ── Publish & Assign ────────────────────────────────────────────────────
+quizStandaloneRouter.patch(
+  "/:id/publish",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  quizController.publishQuiz,
+);
+
+quizStandaloneRouter.post(
+  "/:id/assign",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(assignQuizSchema),
+  quizController.assignQuiz,
+);
 
 // ── Parameterized quiz routes ──────────────────────────────────────────
 quizStandaloneRouter.get(

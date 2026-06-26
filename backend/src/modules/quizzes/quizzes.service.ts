@@ -1,7 +1,11 @@
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
-import { quizPublicFields, questionPublicFields } from "./quizzes.types.js";
+import {
+  quizPublicFields,
+  questionPublicFields,
+  studentQuestionPublicFields,
+} from "./quizzes.types.js";
 import type {
   QuizResponseDTO,
   QuizDetailResponseDTO,
@@ -13,6 +17,7 @@ import type {
   AddQuestionInput,
   UpdateQuestionInput,
   ReorderInput,
+  AssignQuizInput,
 } from "./quizzes.validation.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 
@@ -143,6 +148,7 @@ export class QuizService {
     input: UpdateQuizInput,
   ): Promise<QuizResponseDTO> {
     const existing = await this.assertQuizOwned(id, teacherId);
+    // Snapshot enforcement: questions are immutable once quiz is published
     this.assertQuizDraft(existing.status);
 
     const data: Prisma.QuizUpdateInput = {};
@@ -183,6 +189,7 @@ export class QuizService {
 
   public async delete(id: string, teacherId: string): Promise<void> {
     const existing = await this.assertQuizOwned(id, teacherId);
+    // Snapshot enforcement: questions are immutable once quiz is published
     this.assertQuizDraft(existing.status);
 
     await prisma.quiz.delete({ where: { id } });
@@ -204,6 +211,7 @@ export class QuizService {
     input: AddQuestionInput,
   ): Promise<QuestionResponseDTO> {
     const quiz = await this.assertQuizOwned(quizId, teacherId);
+    // Snapshot enforcement: questions are immutable once quiz is published
     this.assertQuizDraft(quiz.status);
 
     const maxQuestion = await prisma.question.aggregate({
@@ -243,6 +251,7 @@ export class QuizService {
     input: UpdateQuestionInput,
   ): Promise<QuestionResponseDTO> {
     const quiz = await this.assertQuizOwned(quizId, teacherId);
+    // Snapshot enforcement: questions are immutable once quiz is published
     this.assertQuizDraft(quiz.status);
 
     const existing = await prisma.question.findFirst({
@@ -285,6 +294,7 @@ export class QuizService {
     teacherId: string,
   ): Promise<void> {
     const quiz = await this.assertQuizOwned(quizId, teacherId);
+    // Snapshot enforcement: questions are immutable once quiz is published
     this.assertQuizDraft(quiz.status);
 
     const existing = await prisma.question.findFirst({
@@ -314,6 +324,7 @@ export class QuizService {
     ids: ReorderInput,
   ): Promise<QuestionResponseDTO[]> {
     const quiz = await this.assertQuizOwned(quizId, teacherId);
+    // Snapshot enforcement: questions are immutable once quiz is published
     this.assertQuizDraft(quiz.status);
 
     const allQuestions = await prisma.question.findMany({
@@ -354,5 +365,173 @@ export class QuizService {
     return updated.map((q) =>
       toQuestionResponseDTO(q as unknown as Record<string, unknown>),
     );
+  }
+
+  public async publishQuiz(
+    quizId: string,
+    teacherId: string,
+  ): Promise<QuizResponseDTO> {
+    const existing = await this.assertQuizOwned(quizId, teacherId);
+
+    // Duplicate publish / invalid transition → 409 (idempotency-safe).
+    if (existing.status !== "DRAFT") {
+      throw new AppError("Quiz is already published", 409);
+    }
+
+    // STORY-47: a quiz must be assigned to a chapter before it can be published.
+    if (!existing.chapterId) {
+      throw new AppError(
+        "Quiz must be assigned to a chapter before publishing",
+        400,
+      );
+    }
+
+    const questions = await prisma.question.findMany({
+      where: { quizId },
+      select: { points: true },
+    });
+
+    if (questions.length === 0) {
+      throw new AppError(
+        "Quiz must have at least 1 question to be published",
+        400,
+      );
+    }
+
+    const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
+
+    // Atomic publish: only transitions a still-DRAFT quiz; concurrent publishes
+    // see 0 rows updated and get a 409.
+    const updated = await prisma.quiz.updateMany({
+      where: { id: quizId, status: "DRAFT" },
+      data: {
+        status: "PUBLISHED",
+        publishedAt: new Date(),
+        questionCount: questions.length,
+        totalPoints,
+      },
+    });
+
+    if (updated.count === 0) {
+      throw new AppError("Quiz is already published", 409);
+    }
+
+    const quiz = await prisma.quiz.findUniqueOrThrow({
+      where: { id: quizId },
+      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+    });
+
+    const { _count: count, ...quizFields } =
+      quiz as unknown as { _count: { questions: number } } & Record<string, unknown>;
+
+    await auditLogService.record({
+      action: "QUIZ_PUBLISHED",
+      resourceType: "QUIZ",
+      resourceId: quizId,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { title: existing.title, questionCount: questions.length },
+    });
+
+    return {
+      ...quizFields,
+      questionCount: count.questions,
+    } as unknown as QuizResponseDTO;
+  }
+
+  public async assignQuiz(
+    quizId: string,
+    teacherId: string,
+    chapterId: string,
+  ): Promise<QuizResponseDTO> {
+    const existing = await this.assertQuizOwned(quizId, teacherId);
+
+    // Reassigning a published quiz would break question/chapter immutability.
+    if (existing.status !== "DRAFT") {
+      throw new AppError("Cannot reassign a published quiz", 409);
+    }
+
+    // Chapter must exist, be active, and belong to the same teacher
+    // (Chapter -> Stage -> teacherId). Prevents cross-teacher assignment.
+    const chapter = await prisma.chapter.findFirst({
+      where: {
+        id: chapterId,
+        deletedAt: null,
+        stage: { teacherId, deletedAt: null },
+      },
+      select: { id: true },
+    });
+    if (!chapter) {
+      throw new AppError("Chapter not found", 404);
+    }
+
+    const quiz = await prisma.quiz.update({
+      where: { id: quizId },
+      data: {
+        chapter: { connect: { id: chapterId } },
+      },
+      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+    });
+
+    const { _count: count, ...quizFields } =
+      quiz as unknown as { _count: { questions: number } } & Record<string, unknown>;
+
+    await auditLogService.record({
+      action: "QUIZ_ASSIGNED",
+      resourceType: "QUIZ",
+      resourceId: quizId,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { title: existing.title, chapterId },
+    });
+
+    return {
+      ...quizFields,
+      questionCount: count.questions,
+    } as unknown as QuizResponseDTO;
+  }
+
+  public async getChapterQuizzes(
+    chapterId: string,
+  ): Promise<QuizDetailResponseDTO[]> {
+    const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
+    if (!chapter) {
+      throw new AppError("Chapter not found", 404);
+    }
+
+    const quizzes = await prisma.quiz.findMany({
+      where: { chapterId, status: "PUBLISHED" },
+      select: {
+        ...quizPublicFields,
+        _count: { select: { questions: true } },
+        questions: {
+          select: studentQuestionPublicFields,
+          orderBy: { sortOrder: "asc" },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return quizzes.map((q) => {
+      const { _count: count, questions, ...rest } =
+        q as unknown as { _count: { questions: number }; questions: unknown[] } & Record<string, unknown>;
+      return {
+        ...rest,
+        questionCount: count.questions,
+        // Student-facing: never expose correctAnswer (omit the field entirely).
+        questions: (questions as Record<string, unknown>[]).map((row) => ({
+          id: row.id as string,
+          quizId: row.quizId as string,
+          type: row.type,
+          content: row.text as string,
+          options: row.options as Record<string, string>,
+          sortOrder: row.sortOrder as number,
+          createdAt: row.createdAt as Date,
+          updatedAt: row.updatedAt as Date,
+        })),
+      } as unknown as QuizDetailResponseDTO;
+    });
   }
 }

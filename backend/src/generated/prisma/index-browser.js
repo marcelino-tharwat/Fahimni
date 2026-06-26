@@ -283,9 +283,12 @@ exports.Prisma.QuizScalarFieldEnum = {
   description: 'description',
   chapterId: 'chapterId',
   status: 'status',
+  questionCount: 'questionCount',
+  totalPoints: 'totalPoints',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  publishedAt: 'publishedAt'
 };
 
 exports.Prisma.QuestionScalarFieldEnum = {
@@ -296,6 +299,7 @@ exports.Prisma.QuestionScalarFieldEnum = {
   options: 'options',
   correctAnswer: 'correctAnswer',
   sortOrder: 'sortOrder',
+  points: 'points',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -306,8 +310,23 @@ exports.Prisma.QuizAttemptScalarFieldEnum = {
   studentId: 'studentId',
   answers: 'answers',
   score: 'score',
+  totalPoints: 'totalPoints',
+  status: 'status',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PromoCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  isUsed: 'isUsed',
+  usedByStudentId: 'usedByStudentId',
+  usedAt: 'usedAt',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -386,6 +405,12 @@ exports.QuestionType = exports.$Enums.QuestionType = {
   ESSAY: 'ESSAY'
 };
 
+exports.AttemptStatus = exports.$Enums.AttemptStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  GRADED: 'GRADED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   StudentProfile: 'StudentProfile',
@@ -403,7 +428,8 @@ exports.Prisma.ModelName = {
   RefreshToken: 'RefreshToken',
   Quiz: 'Quiz',
   Question: 'Question',
-  QuizAttempt: 'QuizAttempt'
+  QuizAttempt: 'QuizAttempt',
+  PromoCode: 'PromoCode'
 };
 
 /**
