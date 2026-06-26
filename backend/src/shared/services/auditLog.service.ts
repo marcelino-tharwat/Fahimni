@@ -28,6 +28,8 @@ export type AuditLogAction =
   | "QUIZ_COMPLETED"
   | "STUDENT_ENROLLED"
   | "STUDENT_UNENROLLED"
+  | "PAYMENT_COMPLETED"
+  | "PAYMENT_FAILED"
   // Legacy values retained so historical rows remain readable.
   | "DELETE_STAGE"
   | "DELETE_CHAPTER"

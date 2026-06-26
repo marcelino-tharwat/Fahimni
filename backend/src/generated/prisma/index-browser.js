@@ -212,6 +212,21 @@ exports.Prisma.EnrollmentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PaymentTransactionScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  chapterId: 'chapterId',
+  paymobOrderId: 'paymobOrderId',
+  paymobTransactionId: 'paymobTransactionId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  rawCallback: 'rawCallback',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.LessonProgressScalarFieldEnum = {
   id: 'id',
   studentId: 'studentId',
@@ -343,13 +358,21 @@ exports.OtpType = exports.$Enums.OtpType = {
 
 exports.EnrollmentStatus = exports.$Enums.EnrollmentStatus = {
   ACTIVE: 'ACTIVE',
-  DEACTIVATED: 'DEACTIVATED'
+  DEACTIVATED: 'DEACTIVATED',
+  PAYMENT_PENDING: 'PAYMENT_PENDING'
 };
 
 exports.PaymentMethod = exports.$Enums.PaymentMethod = {
   CASH: 'CASH',
   VISA: 'VISA',
-  PROMO: 'PROMO'
+  PROMO: 'PROMO',
+  PAYMOB: 'PAYMOB'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED'
 };
 
 exports.QuizStatus = exports.$Enums.QuizStatus = {
@@ -372,6 +395,7 @@ exports.Prisma.ModelName = {
   Lesson: 'Lesson',
   Otp: 'Otp',
   Enrollment: 'Enrollment',
+  PaymentTransaction: 'PaymentTransaction',
   LessonProgress: 'LessonProgress',
   LessonMaterial: 'LessonMaterial',
   ContentChunk: 'ContentChunk',

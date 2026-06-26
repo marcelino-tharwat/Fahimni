@@ -8,25 +8,26 @@ datasource db {
 }
 
 model User {
-  id             String           @id @default(uuid())
-  fullName       String
-  email          String           @unique
-  password       String
-  mobile         String           @unique
-  role           Role             @default(STUDENT)
-  status         Status           @default(ACTIVE)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  auditLogs      AuditLog[]
-  enrollments    Enrollment[]
-  lessonProgress LessonProgress[]
-  otps           Otp[]
-  quizAttempts   QuizAttempt[]
-  quizzes        Quiz[]
-  refreshTokens  RefreshToken[]
-  stages         Stage[]
-  studentProfile StudentProfile?
-  teacherProfile TeacherProfile?
+  id                  String               @id @default(uuid())
+  fullName            String
+  email               String               @unique
+  password            String
+  mobile              String               @unique
+  role                Role                 @default(STUDENT)
+  status              Status               @default(ACTIVE)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  auditLogs           AuditLog[]
+  enrollments         Enrollment[]
+  lessonProgress      LessonProgress[]
+  otps                Otp[]
+  quizAttempts        QuizAttempt[]
+  quizzes             Quiz[]
+  refreshTokens       RefreshToken[]
+  stages              Stage[]
+  studentProfile      StudentProfile?
+  teacherProfile      TeacherProfile?
+  paymentTransactions PaymentTransaction[]
 }
 
 model StudentProfile {
@@ -70,19 +71,20 @@ model Stage {
 }
 
 model Chapter {
-  id          String       @id @default(uuid())
-  name        String
-  description String?
-  sortOrder   Int
-  price       Decimal?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  deletedAt   DateTime?
-  stageId     String
-  stage       Stage        @relation(fields: [stageId], references: [id])
-  enrollments Enrollment[]
-  lessons     Lesson[]
-  quizzes     Quiz[]
+  id                  String               @id @default(uuid())
+  name                String
+  description         String?
+  sortOrder           Int
+  price               Decimal?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  deletedAt           DateTime?
+  stageId             String
+  stage               Stage                @relation(fields: [stageId], references: [id])
+  enrollments         Enrollment[]
+  lessons             Lesson[]
+  quizzes             Quiz[]
+  paymentTransactions PaymentTransaction[]
 
   @@index([stageId])
   @@index([stageId, sortOrder])
@@ -144,6 +146,27 @@ model Enrollment {
   @@index([studentId])
   @@index([chapterId])
   @@map("enrollments")
+}
+
+model PaymentTransaction {
+  id                  String        @id @default(uuid())
+  studentId           String
+  chapterId           String
+  paymobOrderId       String?       @unique
+  paymobTransactionId String?
+  amount              Float
+  currency            String        @default("EGP")
+  status              PaymentStatus @default(PENDING)
+  errorMessage        String?
+  rawCallback         Json?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  student             User          @relation(fields: [studentId], references: [id])
+  chapter             Chapter       @relation(fields: [chapterId], references: [id])
+
+  @@index([studentId])
+  @@index([chapterId])
+  @@map("payment_transactions")
 }
 
 model LessonProgress {
@@ -297,10 +320,18 @@ enum OtpType {
 enum EnrollmentStatus {
   ACTIVE
   DEACTIVATED
+  PAYMENT_PENDING
 }
 
 enum PaymentMethod {
   CASH
   VISA
   PROMO
+  PAYMOB
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }
