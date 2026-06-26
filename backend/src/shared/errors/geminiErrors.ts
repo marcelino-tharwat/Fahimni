@@ -31,9 +31,17 @@ export class GeminiTimeoutError extends Error {
 }
 
 export class GeminiNetworkError extends Error {
-  constructor(message: string) {
+  /**
+   * HTTP status when this error originates from an HTTP response (e.g. 5xx).
+   * Undefined for genuine transport failures (fetch rejection). Retry policy
+   * uses this — not the message text — to decide whether to retry.
+   */
+  public readonly status: number | undefined;
+
+  constructor(message: string, status?: number) {
     super(message);
     this.name = "GeminiNetworkError";
+    this.status = status;
     Object.setPrototypeOf(this, GeminiNetworkError.prototype);
   }
 }

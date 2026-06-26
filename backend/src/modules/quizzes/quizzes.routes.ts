@@ -13,9 +13,11 @@ import {
   assignQuizSchema,
 } from "./quizzes.validation.js";
 import { generateQuizSchema } from "./dto/generate-quiz.dto.js";
+import { AttemptsController } from "./attempts.controller.js";
 
 const quizController = new QuizzesController();
 const questionsController = new QuestionsController();
+const attemptsController = new AttemptsController();
 
 // ── Standalone routes (mounted at /api/quizzes) ────────────────────────
 export const quizStandaloneRouter = Router();
@@ -43,6 +45,22 @@ quizStandaloneRouter.post(
   authorizeMiddleware("OPERATION"),
   validateRequest(generateQuizSchema),
   quizController.generate,
+);
+
+// ── Student quiz-taking (STORY-48) ─────────────────────────────────────
+// Static /assigned must be registered before parameterized /:id routes.
+quizStandaloneRouter.get(
+  "/assigned",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  attemptsController.getAssigned,
+);
+
+quizStandaloneRouter.post(
+  "/:id/attempt",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  attemptsController.startAttempt,
 );
 
 // ── Nested question routes (mounted at /:quizId/questions) ─────────────

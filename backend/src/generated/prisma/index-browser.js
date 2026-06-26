@@ -268,6 +268,8 @@ exports.Prisma.QuizScalarFieldEnum = {
   description: 'description',
   chapterId: 'chapterId',
   status: 'status',
+  questionCount: 'questionCount',
+  totalPoints: 'totalPoints',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -282,6 +284,7 @@ exports.Prisma.QuestionScalarFieldEnum = {
   options: 'options',
   correctAnswer: 'correctAnswer',
   sortOrder: 'sortOrder',
+  points: 'points',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -292,6 +295,10 @@ exports.Prisma.QuizAttemptScalarFieldEnum = {
   studentId: 'studentId',
   answers: 'answers',
   score: 'score',
+  totalPoints: 'totalPoints',
+  status: 'status',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -373,6 +380,12 @@ exports.QuestionType = exports.$Enums.QuestionType = {
   MCQ: 'MCQ',
   TRUE_FALSE: 'TRUE_FALSE',
   ESSAY: 'ESSAY'
+};
+
+exports.AttemptStatus = exports.$Enums.AttemptStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  GRADED: 'GRADED'
 };
 
 exports.Prisma.ModelName = {

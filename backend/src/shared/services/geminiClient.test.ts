@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import {
   GeminiClient,
@@ -43,6 +43,11 @@ describe('GeminiClient', () => {
     vi.clearAllMocks();
     setEnv();
     client = new GeminiClient();
+  });
+
+  afterEach(() => {
+    // Ensure no test leaves fake timers active for the next test.
+    vi.useRealTimers();
   });
 
   describe('constructor', () => {
@@ -193,19 +198,27 @@ describe('GeminiClient', () => {
     });
 
     it('throws GeminiRateLimitError on HTTP 429', async () => {
-      mockFetch.mockResolvedValueOnce({
+      // 429 is retryable; every attempt returns 429, so after retries are
+      // exhausted the final typed error must remain GeminiRateLimitError.
+      vi.useFakeTimers();
+      mockFetch.mockResolvedValue({
         ok: false,
         status: 429,
         json: () => Promise.resolve({}),
       });
 
-      await expect(client.generateContent('test')).rejects.toThrow(
-        GeminiRateLimitError,
-      );
+      const p = client.generateContent('test');
+      const assertion = expect(p).rejects.toThrow(GeminiRateLimitError);
+      await vi.runAllTimersAsync();
+      await assertion;
+      expect(mockFetch).toHaveBeenCalledTimes(3);
     });
 
     it('throws GeminiNetworkError on HTTP 500', async () => {
-      mockFetch.mockResolvedValueOnce({
+      // 500 is retryable; every attempt returns 500, so after retries are
+      // exhausted the final typed error must remain GeminiNetworkError.
+      vi.useFakeTimers();
+      mockFetch.mockResolvedValue({
         ok: false,
         status: 500,
         json: () =>
@@ -214,9 +227,11 @@ describe('GeminiClient', () => {
           }),
       });
 
-      await expect(client.generateContent('test')).rejects.toThrow(
-        GeminiNetworkError,
-      );
+      const p = client.generateContent('test');
+      const assertion = expect(p).rejects.toThrow(GeminiNetworkError);
+      await vi.runAllTimersAsync();
+      await assertion;
+      expect(mockFetch).toHaveBeenCalledTimes(3);
     });
 
     it('throws GeminiTimeoutError when fetch is aborted', async () => {
@@ -288,6 +303,7 @@ describe('GeminiClient', () => {
 
   describe('retry logic', () => {
     it('retries on 429 and succeeds on third attempt', async () => {
+      vi.useFakeTimers();
       mockFetch
         .mockResolvedValueOnce({
           ok: false,
@@ -305,13 +321,16 @@ describe('GeminiClient', () => {
           json: () => Promise.resolve(mockGenerateContentResponse('done')),
         });
 
-      const result = await client.generateContent('test');
+      const p = client.generateContent('test');
+      await vi.runAllTimersAsync();
+      const result = await p;
 
       expect(result).toBe('done');
       expect(mockFetch).toHaveBeenCalledTimes(3);
-    }, 10_000);
+    });
 
     it('retries on 500 and succeeds on second attempt', async () => {
+      vi.useFakeTimers();
       mockFetch
         .mockResolvedValueOnce({
           ok: false,
@@ -324,11 +343,13 @@ describe('GeminiClient', () => {
           json: () => Promise.resolve(mockGenerateContentResponse('recovered')),
         });
 
-      const result = await client.generateContent('test');
+      const p = client.generateContent('test');
+      await vi.runAllTimersAsync();
+      const result = await p;
 
       expect(result).toBe('recovered');
       expect(mockFetch).toHaveBeenCalledTimes(2);
-    }, 10_000);
+    });
 
     it('does not retry on GeminiAuthError', async () => {
       mockFetch.mockResolvedValueOnce({

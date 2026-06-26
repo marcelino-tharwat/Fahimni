@@ -222,20 +222,23 @@ model RefreshToken {
 }
 
 model Quiz {
-  id          String        @id @default(uuid())
-  title       String
-  description String?
-  chapterId   String?
-  status      QuizStatus    @default(DRAFT)
-  createdBy   String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  publishedAt DateTime?
-  questions   Question[]
-  attempts    QuizAttempt[]
-  chapter     Chapter?      @relation(fields: [chapterId], references: [id])
-  creator     User         @relation(fields: [createdBy], references: [id])
+  id            String        @id @default(uuid())
+  title         String
+  description   String?
+  chapterId     String?
+  status        QuizStatus    @default(DRAFT)
+  questionCount Int           @default(0)
+  totalPoints   Int           @default(0)
+  createdBy     String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  publishedAt   DateTime?
+  questions     Question[]
+  attempts      QuizAttempt[]
+  chapter       Chapter?      @relation(fields: [chapterId], references: [id])
+  creator       User          @relation(fields: [createdBy], references: [id])
 
+  @@index([chapterId, status])
   @@map("quizzes")
 }
 
@@ -247,6 +250,7 @@ model Question {
   options       Json
   correctAnswer String?
   sortOrder     Int          @default(0)
+  points        Int          @default(1)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   quiz          Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
@@ -256,16 +260,23 @@ model Question {
 }
 
 model QuizAttempt {
-  id        String   @id @default(uuid())
-  quizId    String
-  studentId String
-  answers   Json
-  score     Float?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id          String        @id @default(uuid())
+  quizId      String
+  studentId   String
+  answers     Json
+  score       Float?
+  totalPoints Int           @default(0)
+  status      AttemptStatus @default(IN_PROGRESS)
+  startedAt   DateTime      @default(now())
+  completedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  quiz        Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student     User          @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
+  @@unique([quizId, studentId])
+  @@index([studentId])
+  @@index([quizId])
   @@map("quiz_attempts")
 }
 
@@ -307,6 +318,12 @@ enum QuestionType {
 enum QuizStatus {
   DRAFT
   PUBLISHED
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  COMPLETED
+  GRADED
 }
 
 enum OtpType {

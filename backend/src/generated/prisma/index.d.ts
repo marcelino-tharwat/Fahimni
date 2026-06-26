@@ -138,6 +138,15 @@ export const QuizStatus: {
 export type QuizStatus = (typeof QuizStatus)[keyof typeof QuizStatus]
 
 
+export const AttemptStatus: {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  GRADED: 'GRADED'
+};
+
+export type AttemptStatus = (typeof AttemptStatus)[keyof typeof AttemptStatus]
+
+
 export const OtpType: {
   EMAIL_VERIFICATION: 'EMAIL_VERIFICATION',
   PASSWORD_RESET: 'PASSWORD_RESET'
@@ -179,6 +188,10 @@ export const QuestionType: typeof $Enums.QuestionType
 export type QuizStatus = $Enums.QuizStatus
 
 export const QuizStatus: typeof $Enums.QuizStatus
+
+export type AttemptStatus = $Enums.AttemptStatus
+
+export const AttemptStatus: typeof $Enums.AttemptStatus
 
 export type OtpType = $Enums.OtpType
 
@@ -17712,8 +17725,20 @@ export namespace Prisma {
 
   export type AggregateQuiz = {
     _count: QuizCountAggregateOutputType | null
+    _avg: QuizAvgAggregateOutputType | null
+    _sum: QuizSumAggregateOutputType | null
     _min: QuizMinAggregateOutputType | null
     _max: QuizMaxAggregateOutputType | null
+  }
+
+  export type QuizAvgAggregateOutputType = {
+    questionCount: number | null
+    totalPoints: number | null
+  }
+
+  export type QuizSumAggregateOutputType = {
+    questionCount: number | null
+    totalPoints: number | null
   }
 
   export type QuizMinAggregateOutputType = {
@@ -17722,6 +17747,8 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     status: $Enums.QuizStatus | null
+    questionCount: number | null
+    totalPoints: number | null
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -17734,6 +17761,8 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     status: $Enums.QuizStatus | null
+    questionCount: number | null
+    totalPoints: number | null
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -17746,6 +17775,8 @@ export namespace Prisma {
     description: number
     chapterId: number
     status: number
+    questionCount: number
+    totalPoints: number
     createdBy: number
     createdAt: number
     updatedAt: number
@@ -17754,12 +17785,24 @@ export namespace Prisma {
   }
 
 
+  export type QuizAvgAggregateInputType = {
+    questionCount?: true
+    totalPoints?: true
+  }
+
+  export type QuizSumAggregateInputType = {
+    questionCount?: true
+    totalPoints?: true
+  }
+
   export type QuizMinAggregateInputType = {
     id?: true
     title?: true
     description?: true
     chapterId?: true
     status?: true
+    questionCount?: true
+    totalPoints?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -17772,6 +17815,8 @@ export namespace Prisma {
     description?: true
     chapterId?: true
     status?: true
+    questionCount?: true
+    totalPoints?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -17784,6 +17829,8 @@ export namespace Prisma {
     description?: true
     chapterId?: true
     status?: true
+    questionCount?: true
+    totalPoints?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -17829,6 +17876,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: QuizAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: QuizSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: QuizMinAggregateInputType
@@ -17859,6 +17918,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: QuizCountAggregateInputType | true
+    _avg?: QuizAvgAggregateInputType
+    _sum?: QuizSumAggregateInputType
     _min?: QuizMinAggregateInputType
     _max?: QuizMaxAggregateInputType
   }
@@ -17869,11 +17930,15 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     status: $Enums.QuizStatus
+    questionCount: number
+    totalPoints: number
     createdBy: string
     createdAt: Date
     updatedAt: Date
     publishedAt: Date | null
     _count: QuizCountAggregateOutputType | null
+    _avg: QuizAvgAggregateOutputType | null
+    _sum: QuizSumAggregateOutputType | null
     _min: QuizMinAggregateOutputType | null
     _max: QuizMaxAggregateOutputType | null
   }
@@ -17898,6 +17963,8 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     status?: boolean
+    questionCount?: boolean
+    totalPoints?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17915,6 +17982,8 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     status?: boolean
+    questionCount?: boolean
+    totalPoints?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17929,6 +17998,8 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     status?: boolean
+    questionCount?: boolean
+    totalPoints?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17943,13 +18014,15 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     status?: boolean
+    questionCount?: boolean
+    totalPoints?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
   }
 
-  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "status" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt", ExtArgs["result"]["quiz"]>
+  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "status" | "questionCount" | "totalPoints" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt", ExtArgs["result"]["quiz"]>
   export type QuizInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
@@ -17980,6 +18053,8 @@ export namespace Prisma {
       description: string | null
       chapterId: string | null
       status: $Enums.QuizStatus
+      questionCount: number
+      totalPoints: number
       createdBy: string
       createdAt: Date
       updatedAt: Date
@@ -18416,6 +18491,8 @@ export namespace Prisma {
     readonly description: FieldRef<"Quiz", 'String'>
     readonly chapterId: FieldRef<"Quiz", 'String'>
     readonly status: FieldRef<"Quiz", 'QuizStatus'>
+    readonly questionCount: FieldRef<"Quiz", 'Int'>
+    readonly totalPoints: FieldRef<"Quiz", 'Int'>
     readonly createdBy: FieldRef<"Quiz", 'String'>
     readonly createdAt: FieldRef<"Quiz", 'DateTime'>
     readonly updatedAt: FieldRef<"Quiz", 'DateTime'>
@@ -18920,10 +18997,12 @@ export namespace Prisma {
 
   export type QuestionAvgAggregateOutputType = {
     sortOrder: number | null
+    points: number | null
   }
 
   export type QuestionSumAggregateOutputType = {
     sortOrder: number | null
+    points: number | null
   }
 
   export type QuestionMinAggregateOutputType = {
@@ -18933,6 +19012,7 @@ export namespace Prisma {
     text: string | null
     correctAnswer: string | null
     sortOrder: number | null
+    points: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -18944,6 +19024,7 @@ export namespace Prisma {
     text: string | null
     correctAnswer: string | null
     sortOrder: number | null
+    points: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -18956,6 +19037,7 @@ export namespace Prisma {
     options: number
     correctAnswer: number
     sortOrder: number
+    points: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -18964,10 +19046,12 @@ export namespace Prisma {
 
   export type QuestionAvgAggregateInputType = {
     sortOrder?: true
+    points?: true
   }
 
   export type QuestionSumAggregateInputType = {
     sortOrder?: true
+    points?: true
   }
 
   export type QuestionMinAggregateInputType = {
@@ -18977,6 +19061,7 @@ export namespace Prisma {
     text?: true
     correctAnswer?: true
     sortOrder?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -18988,6 +19073,7 @@ export namespace Prisma {
     text?: true
     correctAnswer?: true
     sortOrder?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -19000,6 +19086,7 @@ export namespace Prisma {
     options?: true
     correctAnswer?: true
     sortOrder?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -19099,6 +19186,7 @@ export namespace Prisma {
     options: JsonValue
     correctAnswer: string | null
     sortOrder: number
+    points: number
     createdAt: Date
     updatedAt: Date
     _count: QuestionCountAggregateOutputType | null
@@ -19130,6 +19218,7 @@ export namespace Prisma {
     options?: boolean
     correctAnswer?: boolean
     sortOrder?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -19143,6 +19232,7 @@ export namespace Prisma {
     options?: boolean
     correctAnswer?: boolean
     sortOrder?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -19156,6 +19246,7 @@ export namespace Prisma {
     options?: boolean
     correctAnswer?: boolean
     sortOrder?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -19169,11 +19260,12 @@ export namespace Prisma {
     options?: boolean
     correctAnswer?: boolean
     sortOrder?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type QuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "type" | "text" | "options" | "correctAnswer" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
+  export type QuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "type" | "text" | "options" | "correctAnswer" | "sortOrder" | "points" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
   export type QuestionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
   }
@@ -19197,6 +19289,7 @@ export namespace Prisma {
       options: Prisma.JsonValue
       correctAnswer: string | null
       sortOrder: number
+      points: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["question"]>
@@ -19630,6 +19723,7 @@ export namespace Prisma {
     readonly options: FieldRef<"Question", 'Json'>
     readonly correctAnswer: FieldRef<"Question", 'String'>
     readonly sortOrder: FieldRef<"Question", 'Int'>
+    readonly points: FieldRef<"Question", 'Int'>
     readonly createdAt: FieldRef<"Question", 'DateTime'>
     readonly updatedAt: FieldRef<"Question", 'DateTime'>
   }
@@ -20065,10 +20159,12 @@ export namespace Prisma {
 
   export type QuizAttemptAvgAggregateOutputType = {
     score: number | null
+    totalPoints: number | null
   }
 
   export type QuizAttemptSumAggregateOutputType = {
     score: number | null
+    totalPoints: number | null
   }
 
   export type QuizAttemptMinAggregateOutputType = {
@@ -20076,6 +20172,10 @@ export namespace Prisma {
     quizId: string | null
     studentId: string | null
     score: number | null
+    totalPoints: number | null
+    status: $Enums.AttemptStatus | null
+    startedAt: Date | null
+    completedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -20085,6 +20185,10 @@ export namespace Prisma {
     quizId: string | null
     studentId: string | null
     score: number | null
+    totalPoints: number | null
+    status: $Enums.AttemptStatus | null
+    startedAt: Date | null
+    completedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -20095,6 +20199,10 @@ export namespace Prisma {
     studentId: number
     answers: number
     score: number
+    totalPoints: number
+    status: number
+    startedAt: number
+    completedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -20103,10 +20211,12 @@ export namespace Prisma {
 
   export type QuizAttemptAvgAggregateInputType = {
     score?: true
+    totalPoints?: true
   }
 
   export type QuizAttemptSumAggregateInputType = {
     score?: true
+    totalPoints?: true
   }
 
   export type QuizAttemptMinAggregateInputType = {
@@ -20114,6 +20224,10 @@ export namespace Prisma {
     quizId?: true
     studentId?: true
     score?: true
+    totalPoints?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -20123,6 +20237,10 @@ export namespace Prisma {
     quizId?: true
     studentId?: true
     score?: true
+    totalPoints?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -20133,6 +20251,10 @@ export namespace Prisma {
     studentId?: true
     answers?: true
     score?: true
+    totalPoints?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -20230,6 +20352,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonValue
     score: number | null
+    totalPoints: number
+    status: $Enums.AttemptStatus
+    startedAt: Date
+    completedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: QuizAttemptCountAggregateOutputType | null
@@ -20259,6 +20385,10 @@ export namespace Prisma {
     studentId?: boolean
     answers?: boolean
     score?: boolean
+    totalPoints?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -20271,6 +20401,10 @@ export namespace Prisma {
     studentId?: boolean
     answers?: boolean
     score?: boolean
+    totalPoints?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -20283,6 +20417,10 @@ export namespace Prisma {
     studentId?: boolean
     answers?: boolean
     score?: boolean
+    totalPoints?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -20295,11 +20433,15 @@ export namespace Prisma {
     studentId?: boolean
     answers?: boolean
     score?: boolean
+    totalPoints?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type QuizAttemptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "studentId" | "answers" | "score" | "createdAt" | "updatedAt", ExtArgs["result"]["quizAttempt"]>
+  export type QuizAttemptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "studentId" | "answers" | "score" | "totalPoints" | "status" | "startedAt" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["quizAttempt"]>
   export type QuizAttemptInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
     student?: boolean | UserDefaultArgs<ExtArgs>
@@ -20325,6 +20467,10 @@ export namespace Prisma {
       studentId: string
       answers: Prisma.JsonValue
       score: number | null
+      totalPoints: number
+      status: $Enums.AttemptStatus
+      startedAt: Date
+      completedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["quizAttempt"]>
@@ -20757,6 +20903,10 @@ export namespace Prisma {
     readonly studentId: FieldRef<"QuizAttempt", 'String'>
     readonly answers: FieldRef<"QuizAttempt", 'Json'>
     readonly score: FieldRef<"QuizAttempt", 'Float'>
+    readonly totalPoints: FieldRef<"QuizAttempt", 'Int'>
+    readonly status: FieldRef<"QuizAttempt", 'AttemptStatus'>
+    readonly startedAt: FieldRef<"QuizAttempt", 'DateTime'>
+    readonly completedAt: FieldRef<"QuizAttempt", 'DateTime'>
     readonly createdAt: FieldRef<"QuizAttempt", 'DateTime'>
     readonly updatedAt: FieldRef<"QuizAttempt", 'DateTime'>
   }
@@ -22508,6 +22658,8 @@ export namespace Prisma {
     description: 'description',
     chapterId: 'chapterId',
     status: 'status',
+    questionCount: 'questionCount',
+    totalPoints: 'totalPoints',
     createdBy: 'createdBy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -22525,6 +22677,7 @@ export namespace Prisma {
     options: 'options',
     correctAnswer: 'correctAnswer',
     sortOrder: 'sortOrder',
+    points: 'points',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -22538,6 +22691,10 @@ export namespace Prisma {
     studentId: 'studentId',
     answers: 'answers',
     score: 'score',
+    totalPoints: 'totalPoints',
+    status: 'status',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -22798,6 +22955,20 @@ export namespace Prisma {
    * Reference to a field of type 'QuestionType[]'
    */
   export type ListEnumQuestionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuestionType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'AttemptStatus'
+   */
+  export type EnumAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttemptStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'AttemptStatus[]'
+   */
+  export type ListEnumAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttemptStatus[]'>
     
   /**
    * Deep Input Types
@@ -23790,6 +23961,8 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
+    questionCount?: IntFilter<"Quiz"> | number
+    totalPoints?: IntFilter<"Quiz"> | number
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
@@ -23806,6 +23979,8 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     chapterId?: SortOrderInput | SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -23825,6 +24000,8 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
+    questionCount?: IntFilter<"Quiz"> | number
+    totalPoints?: IntFilter<"Quiz"> | number
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
@@ -23841,13 +24018,17 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     chapterId?: SortOrderInput | SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
     _count?: QuizCountOrderByAggregateInput
+    _avg?: QuizAvgOrderByAggregateInput
     _max?: QuizMaxOrderByAggregateInput
     _min?: QuizMinOrderByAggregateInput
+    _sum?: QuizSumOrderByAggregateInput
   }
 
   export type QuizScalarWhereWithAggregatesInput = {
@@ -23859,6 +24040,8 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Quiz"> | string | null
     chapterId?: StringNullableWithAggregatesFilter<"Quiz"> | string | null
     status?: EnumQuizStatusWithAggregatesFilter<"Quiz"> | $Enums.QuizStatus
+    questionCount?: IntWithAggregatesFilter<"Quiz"> | number
+    totalPoints?: IntWithAggregatesFilter<"Quiz"> | number
     createdBy?: StringWithAggregatesFilter<"Quiz"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
@@ -23876,6 +24059,7 @@ export namespace Prisma {
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
+    points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
@@ -23889,6 +24073,7 @@ export namespace Prisma {
     options?: SortOrder
     correctAnswer?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quiz?: QuizOrderByWithRelationInput
@@ -23906,6 +24091,7 @@ export namespace Prisma {
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
+    points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
@@ -23919,6 +24105,7 @@ export namespace Prisma {
     options?: SortOrder
     correctAnswer?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: QuestionCountOrderByAggregateInput
@@ -23939,6 +24126,7 @@ export namespace Prisma {
     options?: JsonWithAggregatesFilter<"Question">
     correctAnswer?: StringNullableWithAggregatesFilter<"Question"> | string | null
     sortOrder?: IntWithAggregatesFilter<"Question"> | number
+    points?: IntWithAggregatesFilter<"Question"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
   }
@@ -23952,6 +24140,10 @@ export namespace Prisma {
     studentId?: StringFilter<"QuizAttempt"> | string
     answers?: JsonFilter<"QuizAttempt">
     score?: FloatNullableFilter<"QuizAttempt"> | number | null
+    totalPoints?: IntFilter<"QuizAttempt"> | number
+    status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
+    startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
+    completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
@@ -23964,6 +24156,10 @@ export namespace Prisma {
     studentId?: SortOrder
     answers?: SortOrder
     score?: SortOrderInput | SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quiz?: QuizOrderByWithRelationInput
@@ -23972,6 +24168,7 @@ export namespace Prisma {
 
   export type QuizAttemptWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    quizId_studentId?: QuizAttemptQuizIdStudentIdCompoundUniqueInput
     AND?: QuizAttemptWhereInput | QuizAttemptWhereInput[]
     OR?: QuizAttemptWhereInput[]
     NOT?: QuizAttemptWhereInput | QuizAttemptWhereInput[]
@@ -23979,11 +24176,15 @@ export namespace Prisma {
     studentId?: StringFilter<"QuizAttempt"> | string
     answers?: JsonFilter<"QuizAttempt">
     score?: FloatNullableFilter<"QuizAttempt"> | number | null
+    totalPoints?: IntFilter<"QuizAttempt"> | number
+    status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
+    startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
+    completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
     student?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id">
+  }, "id" | "quizId_studentId">
 
   export type QuizAttemptOrderByWithAggregationInput = {
     id?: SortOrder
@@ -23991,6 +24192,10 @@ export namespace Prisma {
     studentId?: SortOrder
     answers?: SortOrder
     score?: SortOrderInput | SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: QuizAttemptCountOrderByAggregateInput
@@ -24009,6 +24214,10 @@ export namespace Prisma {
     studentId?: StringWithAggregatesFilter<"QuizAttempt"> | string
     answers?: JsonWithAggregatesFilter<"QuizAttempt">
     score?: FloatNullableWithAggregatesFilter<"QuizAttempt"> | number | null
+    totalPoints?: IntWithAggregatesFilter<"QuizAttempt"> | number
+    status?: EnumAttemptStatusWithAggregatesFilter<"QuizAttempt"> | $Enums.AttemptStatus
+    startedAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
+    completedAt?: DateTimeNullableWithAggregatesFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
   }
@@ -25147,6 +25356,8 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -25162,6 +25373,8 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25175,6 +25388,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -25190,6 +25405,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25204,6 +25421,8 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25215,6 +25434,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -25226,6 +25447,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25239,6 +25462,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     quiz: QuizCreateNestedOneWithoutQuestionsInput
@@ -25252,6 +25476,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25263,6 +25488,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quiz?: QuizUpdateOneRequiredWithoutQuestionsNestedInput
@@ -25276,6 +25502,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25288,6 +25515,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25299,6 +25527,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25311,6 +25540,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25319,6 +25549,10 @@ export namespace Prisma {
     id?: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quiz: QuizCreateNestedOneWithoutAttemptsInput
@@ -25331,6 +25565,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25339,6 +25577,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quiz?: QuizUpdateOneRequiredWithoutAttemptsNestedInput
@@ -25351,6 +25593,10 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25361,6 +25607,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25369,6 +25619,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25379,6 +25633,10 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26520,10 +26778,17 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrder
+  }
+
+  export type QuizAvgOrderByAggregateInput = {
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
   }
 
   export type QuizMaxOrderByAggregateInput = {
@@ -26532,6 +26797,8 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -26544,10 +26811,17 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     status?: SortOrder
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrder
+  }
+
+  export type QuizSumOrderByAggregateInput = {
+    questionCount?: SortOrder
+    totalPoints?: SortOrder
   }
 
   export type EnumQuizStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -26585,12 +26859,14 @@ export namespace Prisma {
     options?: SortOrder
     correctAnswer?: SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type QuestionAvgOrderByAggregateInput = {
     sortOrder?: SortOrder
+    points?: SortOrder
   }
 
   export type QuestionMaxOrderByAggregateInput = {
@@ -26600,6 +26876,7 @@ export namespace Prisma {
     text?: SortOrder
     correctAnswer?: SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26611,12 +26888,14 @@ export namespace Prisma {
     text?: SortOrder
     correctAnswer?: SortOrder
     sortOrder?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type QuestionSumOrderByAggregateInput = {
     sortOrder?: SortOrder
+    points?: SortOrder
   }
 
   export type EnumQuestionTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -26640,18 +26919,35 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type EnumAttemptStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptStatus | EnumAttemptStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAttemptStatusFilter<$PrismaModel> | $Enums.AttemptStatus
+  }
+
+  export type QuizAttemptQuizIdStudentIdCompoundUniqueInput = {
+    quizId: string
+    studentId: string
+  }
+
   export type QuizAttemptCountOrderByAggregateInput = {
     id?: SortOrder
     quizId?: SortOrder
     studentId?: SortOrder
     answers?: SortOrder
     score?: SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type QuizAttemptAvgOrderByAggregateInput = {
     score?: SortOrder
+    totalPoints?: SortOrder
   }
 
   export type QuizAttemptMaxOrderByAggregateInput = {
@@ -26659,6 +26955,10 @@ export namespace Prisma {
     quizId?: SortOrder
     studentId?: SortOrder
     score?: SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26668,12 +26968,17 @@ export namespace Prisma {
     quizId?: SortOrder
     studentId?: SortOrder
     score?: SortOrder
+    totalPoints?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type QuizAttemptSumOrderByAggregateInput = {
     score?: SortOrder
+    totalPoints?: SortOrder
   }
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -26690,6 +26995,16 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type EnumAttemptStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptStatus | EnumAttemptStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAttemptStatusWithAggregatesFilter<$PrismaModel> | $Enums.AttemptStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAttemptStatusFilter<$PrismaModel>
+    _max?: NestedEnumAttemptStatusFilter<$PrismaModel>
   }
 
   export type UserNullableScalarRelationFilter = {
@@ -27924,6 +28239,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type EnumAttemptStatusFieldUpdateOperationsInput = {
+    set?: $Enums.AttemptStatus
+  }
+
   export type QuizUpdateOneRequiredWithoutAttemptsNestedInput = {
     create?: XOR<QuizCreateWithoutAttemptsInput, QuizUncheckedCreateWithoutAttemptsInput>
     connectOrCreate?: QuizCreateOrConnectWithoutAttemptsInput
@@ -28363,6 +28682,13 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedEnumAttemptStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptStatus | EnumAttemptStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAttemptStatusFilter<$PrismaModel> | $Enums.AttemptStatus
+  }
+
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -28377,6 +28703,16 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAttemptStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptStatus | EnumAttemptStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AttemptStatus[] | ListEnumAttemptStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAttemptStatusWithAggregatesFilter<$PrismaModel> | $Enums.AttemptStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAttemptStatusFilter<$PrismaModel>
+    _max?: NestedEnumAttemptStatusFilter<$PrismaModel>
   }
 
   export type AuditLogCreateWithoutUserInput = {
@@ -28567,6 +28903,10 @@ export namespace Prisma {
     id?: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quiz: QuizCreateNestedOneWithoutAttemptsInput
@@ -28577,6 +28917,10 @@ export namespace Prisma {
     quizId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -28596,6 +28940,8 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -28610,6 +28956,8 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -28918,6 +29266,10 @@ export namespace Prisma {
     studentId?: StringFilter<"QuizAttempt"> | string
     answers?: JsonFilter<"QuizAttempt">
     score?: FloatNullableFilter<"QuizAttempt"> | number | null
+    totalPoints?: IntFilter<"QuizAttempt"> | number
+    status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
+    startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
+    completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
   }
@@ -28947,6 +29299,8 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
+    questionCount?: IntFilter<"Quiz"> | number
+    totalPoints?: IntFilter<"Quiz"> | number
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
@@ -29567,6 +29921,8 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -29580,6 +29936,8 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30796,6 +31154,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30807,6 +31166,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30825,6 +31185,10 @@ export namespace Prisma {
     id?: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: UserCreateNestedOneWithoutQuizAttemptsInput
@@ -30835,6 +31199,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30960,6 +31328,7 @@ export namespace Prisma {
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
+    points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
   }
@@ -31081,6 +31450,8 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -31095,6 +31466,8 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31123,6 +31496,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31137,6 +31512,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31149,6 +31526,8 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -31163,6 +31542,8 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31242,6 +31623,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31256,6 +31639,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31603,6 +31988,10 @@ export namespace Prisma {
     quizId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31613,6 +32002,8 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -31825,6 +32216,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quiz?: QuizUpdateOneRequiredWithoutAttemptsNestedInput
@@ -31835,6 +32230,10 @@ export namespace Prisma {
     quizId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31844,6 +32243,10 @@ export namespace Prisma {
     quizId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31853,6 +32256,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31867,6 +32272,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -31880,6 +32287,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -32019,6 +32428,8 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: $Enums.QuizStatus
+    questionCount?: number
+    totalPoints?: number
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32114,6 +32525,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -32127,6 +32540,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32140,6 +32555,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
+    questionCount?: IntFieldUpdateOperationsInput | number
+    totalPoints?: IntFieldUpdateOperationsInput | number
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32257,6 +32674,7 @@ export namespace Prisma {
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
     sortOrder?: number
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32266,6 +32684,10 @@ export namespace Prisma {
     studentId: string
     answers: JsonNullValueInput | InputJsonValue
     score?: number | null
+    totalPoints?: number
+    status?: $Enums.AttemptStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32277,6 +32699,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32288,6 +32711,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32299,6 +32723,7 @@ export namespace Prisma {
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32307,6 +32732,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: UserUpdateOneRequiredWithoutQuizAttemptsNestedInput
@@ -32317,6 +32746,10 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32326,6 +32759,10 @@ export namespace Prisma {
     studentId?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     score?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalPoints?: IntFieldUpdateOperationsInput | number
+    status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -15,7 +15,9 @@ _bmad/
 .opencode/
 docs/
 
-# Postman — the *.template.json env is tracked; everything below stays local-only
-*.postman_collection.json
-postman/*.postman_environment.json
+# Postman — collection + *.template.* envs are tracked; populated local envs and
+# seed manifests (contain seed credentials) stay local-only.
+postman/Fahimni_Local.postman_environment.json
+postman/*.local.postman_environment.json
 postman/*.local.json
+docs/postman/
