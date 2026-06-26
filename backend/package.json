@@ -15,6 +15,7 @@
     "db:seed:secondary": "tsx prisma/seed.ts",
     "db:seed:verify": "tsx prisma/seed-verify.ts",
     "test:e2e:story48": "vitest run --config vitest.e2e.config.ts",
+    "test:e2e:story53": "vitest run --config vitest.e2e.config.ts src/modules/promo-code/promo-code.redeem.e2e.test.ts",
     "postman:prepare:quiz-e2e": "tsx scripts/prepare-quiz-postman-e2e.ts"
   },
   "prisma": {

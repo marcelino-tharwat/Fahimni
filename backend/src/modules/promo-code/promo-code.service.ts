@@ -9,25 +9,24 @@ import type {
   PromoCodeResponseDTO,
   PromoCodeListItemDTO,
   PromoCodeValidationResult,
-  PromoCodeInvalidReason,
   PaginatedPromoCodes,
 } from "./promo-code.types.js";
 import { enrollmentPublicFields } from "../enrollment/enrollment.types.js";
 import type { EnrollmentResponseDTO } from "../enrollment/enrollment.types.js";
 import type { ListPromoCodesQuery } from "./promo-code.validation.js";
+import { REDEEM_MESSAGES, type Locale } from "./promo-code.i18n.js";
+
+/** Result of a successful redemption: the new enrollment + safe promo summary. */
+export interface RedeemResult {
+  enrollment: EnrollmentResponseDTO;
+  promoCode: { code: string; isUsed: boolean; usedAt: Date };
+}
 
 // Uppercase alphanumeric, minus visually ambiguous characters (0/O, 1/I/L).
-const CODE_CHARSET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-const CODE_LENGTH = 8;
+// Exported so the redeem DTO validates against the exact same alphabet/length.
+export const CODE_CHARSET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+export const CODE_LENGTH = 8;
 const MAX_CODE_ATTEMPTS = 10;
-
-// Human-readable message for each machine-readable validation reason, used when
-// a failed validation is surfaced as an error (e.g. on redeem).
-const INVALID_REASON_MESSAGES: Record<PromoCodeInvalidReason, string> = {
-  CODE_NOT_FOUND: "Promo code not found",
-  CODE_ALREADY_USED: "Promo code has already been used",
-  CODE_EXPIRED: "Promo code has expired",
-};
 
 export class PromoCodeService {
   /**
@@ -140,29 +139,35 @@ export class PromoCodeService {
   }
 
   /**
-   * Redeem a code: validate it, then in a single transaction atomically claim
-   * the code (guarding against a concurrent redeem) and create a free PROMO
-   * enrollment for the given chapter. Returns the created enrollment.
+   * STORY-53 — Redeem a promo code for a chapter as the authenticated student.
+   *
+   * Checks are ordered so an invalid chapter or an already-enrolled student is
+   * rejected BEFORE any code is consumed. The code is then claimed and the
+   * enrollment created inside a single transaction so they succeed or fail
+   * together:
+   *  - the claim's `isUsed: false` + expiry guard means a concurrent redeem of
+   *    the SAME code updates 0 rows → safe "already used" (Case A);
+   *  - the enrollment's unique (studentId, chapterId) constraint means a
+   *    concurrent redeem of TWO codes for the SAME chapter throws on create →
+   *    we map it to "already enrolled" and the transaction rolls back the claim,
+   *    so the losing code stays unused (Case B).
+   *
+   * Domain failures return 400 with locale-aware messages.
    */
   public async redeem(
     code: string,
     studentId: string,
     chapterId: string,
-  ): Promise<EnrollmentResponseDTO> {
-    const validation = await this.validate(code);
-    if (!validation.valid) {
-      const message = validation.reason
-        ? INVALID_REASON_MESSAGES[validation.reason]
-        : "Invalid promo code";
-      throw new AppError(message, 400);
-    }
+    locale: Locale = "en",
+  ): Promise<RedeemResult> {
+    const m = REDEEM_MESSAGES[locale];
 
     const chapter = await prisma.chapter.findUnique({
       where: { id: chapterId },
       select: { id: true, deletedAt: true },
     });
     if (!chapter || chapter.deletedAt) {
-      throw new AppError("Chapter not found", 404);
+      throw new AppError(m.chapterNotFound, 404);
     }
 
     const existingEnrollment = await prisma.enrollment.findUnique({
@@ -170,7 +175,17 @@ export class PromoCodeService {
       select: { id: true },
     });
     if (existingEnrollment) {
-      throw new AppError("You are already enrolled in this chapter", 409);
+      throw new AppError(m.alreadyEnrolled, 400);
+    }
+
+    const validation = await this.validate(code);
+    if (!validation.valid) {
+      throw new AppError(
+        validation.reason === "CODE_ALREADY_USED"
+          ? m.alreadyUsed
+          : m.invalidCode,
+        400,
+      );
     }
 
     const promoCode = await prisma.promoCode.findUnique({
@@ -178,38 +193,52 @@ export class PromoCodeService {
       select: { id: true },
     });
     if (!promoCode) {
-      throw new AppError("Promo code not found", 404);
+      throw new AppError(m.invalidCode, 400);
     }
 
+    const usedAt = new Date();
+
     const enrollment = await prisma.$transaction(async (tx) => {
-      // Atomically claim the code: the `isUsed: false` guard means a concurrent
-      // redeem of the same code updates 0 rows and is rejected below.
+      // Atomically claim the code (unused + not expired). A concurrent redeem of
+      // the same code updates 0 rows and is rejected as already used.
       const claimed = await tx.promoCode.updateMany({
-        where: { id: promoCode.id, isUsed: false },
-        data: {
-          isUsed: true,
-          usedByStudentId: studentId,
-          usedAt: new Date(),
+        where: {
+          id: promoCode.id,
+          isUsed: false,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: usedAt } }],
         },
+        data: { isUsed: true, usedByStudentId: studentId, usedAt },
       });
 
       if (claimed.count === 0) {
-        throw new AppError("Promo code has already been used", 409);
+        throw new AppError(m.alreadyUsed, 400);
       }
 
-      return tx.enrollment.create({
-        data: {
-          studentId,
-          chapterId,
-          price: 0,
-          paymentMethod: "PROMO",
-          promoCodeId: promoCode.id,
-        },
-        select: enrollmentPublicFields,
-      });
+      try {
+        return await tx.enrollment.create({
+          data: {
+            studentId,
+            chapterId,
+            price: 0,
+            paymentMethod: "PROMO",
+            promoCodeId: promoCode.id,
+          },
+          select: enrollmentPublicFields,
+        });
+      } catch (e) {
+        // Unique (studentId, chapterId) violation → already enrolled. Throwing
+        // here rolls back the code claim above, so the code remains unused.
+        if ((e as { code?: string } | null)?.code === "P2002") {
+          throw new AppError(m.alreadyEnrolled, 400);
+        }
+        throw e;
+      }
     });
 
-    return this.toEnrollmentResponseDTO(enrollment);
+    return {
+      enrollment: this.toEnrollmentResponseDTO(enrollment),
+      promoCode: { code, isUsed: true, usedAt },
+    };
   }
 
   /** Normalize Decimal/Float prices to numbers for the enrollment response shape. */

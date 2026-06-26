@@ -795,6 +795,664 @@
           }
         }
       ]
+    },
+    {
+      "name": "STORY-53 — Promo Code Redemption",
+      "description": "Run after preparing the local environment (npm run postman:prepare:quiz-e2e) with the backend running. Auth is the HttpOnly access_token cookie via the cookie jar; each role logs in before its block. Localized assertions follow {{acceptLanguage}} (en|ar).",
+      "item": [
+        {
+          "name": "53-00. Admin Login (promo creator)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Admin login 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Role ADMIN', () => pm.expect(data.user && data.user.role).to.eql('ADMIN'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-01. Create Promo Code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Created 201', () => pm.response.code === 201);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('success envelope', () => pm.expect(json.success).to.be.true);",
+                  "pm.test('code is 8-char uppercase, unambiguous charset', () => pm.expect(String(data.code)).to.match(/^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{8}$/));",
+                  "pm.test('new code is unused', () => pm.expect(data.isUsed).to.eql(false));",
+                  "pm.environment.set('createdPromoCode', data.code);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-02. List Promo Codes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('List 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('paginated envelope', () => { pm.expect(data).to.have.property('total'); pm.expect(data).to.have.property('page'); pm.expect(Array.isArray(data.data)).to.be.true; });",
+                  "pm.test('created code appears as unused', () => pm.expect(data.data.some(c => c.code === pm.environment.get('createdPromoCode'))).to.be.true);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/promo-codes?isUsed=false&limit=100"
+          }
+        },
+        {
+          "name": "53-03. Create Second Promo Code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Created 201', () => pm.response.code === 201);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.environment.set('secondPromoCode', data.code);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-04. Student Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Student login 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Role STUDENT', () => pm.expect(data.user && data.user.role).to.eql('STUDENT'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-05. Validate Promo Code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Validate 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('fresh code is valid', () => pm.expect(data.valid).to.be.true);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/promo-codes/{{createdPromoCode}}/validate"
+          }
+        },
+        {
+          "name": "53-06. Redeem Promo Code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Redeem 201', () => pm.response.code === 201);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('enrollment created (PROMO, active, correct chapter)', () => {",
+                  "  pm.expect(data.enrollment.paymentMethod).to.eql('PROMO');",
+                  "  pm.expect(data.enrollment.status).to.eql('ACTIVE');",
+                  "  pm.expect(data.enrollment.chapterId).to.eql(pm.environment.get('promoChapterId'));",
+                  "});",
+                  "pm.test('promo code marked used with timestamp', () => { pm.expect(data.promoCode.isUsed).to.eql(true); pm.expect(data.promoCode.usedAt).to.be.ok; });",
+                  "if (data.enrollment && data.enrollment.id) pm.environment.set('createdEnrollmentId', data.enrollment.id);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{acceptLanguage}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes/redeem",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{createdPromoCode}}\",\n  \"chapterId\": \"{{promoChapterId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-07. Verify Enrollment In My Courses",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('My courses 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "const list = Array.isArray(data) ? data : [];",
+                  "pm.test('redeemed chapter is visible to the student', () => pm.expect(list.some(c => c.id === pm.environment.get('promoChapterId'))).to.be.true);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/content/student/my-courses"
+          }
+        },
+        {
+          "name": "53-08. Redeem Used Code (other chapter) — Expect 400 Used",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Already-used 400', () => pm.response.code === 400);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "const MSG = {",
+                  "  ar: { invalidCode: 'الكود غير صالح', alreadyUsed: 'تم استخدام هذا الكود من قبل', alreadyEnrolled: 'أنت مشترك بالفعل في هذا الفصل' },",
+                  "  en: { invalidCode: 'Invalid code', alreadyUsed: 'Code already used', alreadyEnrolled: 'Already enrolled in this chapter' },",
+                  "};",
+                  "const loc = (pm.environment.get('acceptLanguage') || 'en').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en';",
+                  "pm.test('localized already-used message', () => pm.expect(json.message).to.eql(MSG[loc].alreadyUsed));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{acceptLanguage}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes/redeem",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{createdPromoCode}}\",\n  \"chapterId\": \"{{promoChapterId2}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-09. Redeem Fresh Code For Enrolled Chapter — Expect 400 Enrolled",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Already-enrolled 400', () => pm.response.code === 400);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "const MSG = {",
+                  "  ar: { invalidCode: 'الكود غير صالح', alreadyUsed: 'تم استخدام هذا الكود من قبل', alreadyEnrolled: 'أنت مشترك بالفعل في هذا الفصل' },",
+                  "  en: { invalidCode: 'Invalid code', alreadyUsed: 'Code already used', alreadyEnrolled: 'Already enrolled in this chapter' },",
+                  "};",
+                  "const loc = (pm.environment.get('acceptLanguage') || 'en').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en';",
+                  "pm.test('localized already-enrolled message', () => pm.expect(json.message).to.eql(MSG[loc].alreadyEnrolled));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{acceptLanguage}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes/redeem",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{secondPromoCode}}\",\n  \"chapterId\": \"{{alreadyEnrolledChapterId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-10. Verify Fresh Code Still Unused",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Validate 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('losing code remains valid/unused', () => pm.expect(data.valid).to.be.true);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/promo-codes/{{secondPromoCode}}/validate"
+          }
+        },
+        {
+          "name": "53-11. Redeem Invalid Code — Expect 400 Invalid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Invalid-code 400', () => pm.response.code === 400);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "const MSG = {",
+                  "  ar: { invalidCode: 'الكود غير صالح', alreadyUsed: 'تم استخدام هذا الكود من قبل', alreadyEnrolled: 'أنت مشترك بالفعل في هذا الفصل' },",
+                  "  en: { invalidCode: 'Invalid code', alreadyUsed: 'Code already used', alreadyEnrolled: 'Already enrolled in this chapter' },",
+                  "};",
+                  "const loc = (pm.environment.get('acceptLanguage') || 'en').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en';",
+                  "pm.test('localized invalid-code message', () => pm.expect(json.message).to.eql(MSG[loc].invalidCode));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{acceptLanguage}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes/redeem",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{invalidPromoCode}}\",\n  \"chapterId\": \"{{promoChapterId2}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-12. Second Student Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Second student login 200', () => pm.response.code === 200);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "pm.test('Role STUDENT', () => pm.expect(data.user && data.user.role).to.eql('STUDENT'));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{secondStudentEmail}}\",\n  \"password\": \"{{secondStudentPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-13. Second Student Reuses Consumed Code — Expect 400 Used",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Already-used 400', () => pm.response.code === 400);",
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { json = {}; }",
+                  "const data = (json && json.data) ? json.data : {};",
+                  "const MSG = {",
+                  "  ar: { invalidCode: 'الكود غير صالح', alreadyUsed: 'تم استخدام هذا الكود من قبل', alreadyEnrolled: 'أنت مشترك بالفعل في هذا الفصل' },",
+                  "  en: { invalidCode: 'Invalid code', alreadyUsed: 'Code already used', alreadyEnrolled: 'Already enrolled in this chapter' },",
+                  "};",
+                  "const loc = (pm.environment.get('acceptLanguage') || 'en').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en';",
+                  "pm.test('localized already-used message', () => pm.expect(json.message).to.eql(MSG[loc].alreadyUsed));",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{acceptLanguage}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes/redeem",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{createdPromoCode}}\",\n  \"chapterId\": \"{{promoChapterId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-14. Redeem Without Auth — Expect 401",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "const base = pm.variables.replaceIn('{{baseUrl}}');",
+                  "const jar = pm.cookies.jar();",
+                  "jar.clear(base, function () {});",
+                  "})();"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Unauthenticated 401', () => pm.response.code === 401);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{acceptLanguage}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes/redeem",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{createdPromoCode}}\",\n  \"chapterId\": \"{{promoChapterId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "53-15. Redeem As Operation Role — Expect 403",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "const base = pm.variables.replaceIn('{{baseUrl}}');",
+                  "const jar = pm.cookies.jar();",
+                  "jar.clear(base, function () {",
+                  "  pm.sendRequest({",
+                  "    url: base + '/api/v1/auth/login',",
+                  "    method: 'POST',",
+                  "    header: { 'Content-Type': 'application/json' },",
+                  "    body: { mode: 'raw', raw: JSON.stringify({ email: pm.variables.replaceIn('{{otherTeacherEmail}}'), password: pm.variables.replaceIn('{{otherTeacherPassword}}') }) },",
+                  "  }, function () {});",
+                  "});",
+                  "})();"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "(function () {",
+                  "pm.test('Forbidden 403', () => pm.response.code === 403);",
+                  "})();"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{acceptLanguage}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/promo-codes/redeem",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{secondPromoCode}}\",\n  \"chapterId\": \"{{promoChapterId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }
