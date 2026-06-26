@@ -7,6 +7,7 @@ import {
   codeParamSchema,
   redeemPromoCodeSchema,
 } from "./promo-code.validation.js";
+import { redeemDtoSchema } from "./dto/redeem.dto.js";
 
 /**
  * Promo Code Routes — Authorization Matrix
@@ -46,6 +47,16 @@ router.post(
   authorizeMiddleware("STUDENT"),
   validateRequest(codeParamSchema, "params"),
   controller.validatePromoCode,
+);
+
+// STORY-53 canonical redemption — code + chapterId in the body. Registered
+// before "/:code/redeem" so the static path is matched first.
+router.post(
+  "/redeem",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  validateRequest(redeemDtoSchema),
+  controller.redeemByBody,
 );
 
 router.post(

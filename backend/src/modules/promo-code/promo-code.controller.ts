@@ -7,9 +7,11 @@ import type {
   PromoCodeValidationResult,
   PaginatedPromoCodes,
 } from "./promo-code.types.js";
-import type { EnrollmentResponseDTO } from "../enrollment/enrollment.types.js";
 import { listPromoCodesSchema } from "./promo-code.validation.js";
 import type { RedeemPromoCodeInput } from "./promo-code.validation.js";
+import type { RedeemDtoInput } from "./dto/redeem.dto.js";
+import type { RedeemResult } from "./promo-code.service.js";
+import { REDEEM_MESSAGES, resolveLocale } from "./promo-code.i18n.js";
 
 const promoCodeService = new PromoCodeService();
 
@@ -62,27 +64,50 @@ export class PromoCodeController {
     },
   );
 
-  public redeemPromoCode = asyncHandler(
+  /**
+   * STORY-53 canonical: POST /api/promo-codes/redeem  body: { code, chapterId }.
+   * Student id always from auth; never from the body.
+   */
+  public redeemByBody = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
-      const code = req.params.code as string;
       const studentId = req.user!.id;
-      // The service requires a chapter to enroll into (Enrollment.chapterId is
-      // NOT NULL); the code comes from the route param, the student from the
-      // auth context, and the target chapter from the validated request body.
-      const { chapterId } = req.body as RedeemPromoCodeInput;
+      const { code, chapterId } = req.body as RedeemDtoInput;
+      const locale = resolveLocale(req.headers["accept-language"]);
 
-      const enrollment = await promoCodeService.redeem(
+      const result = await promoCodeService.redeem(
         code,
         studentId,
         chapterId,
+        locale,
       );
 
       res
         .status(201)
-        .json(okResponse<EnrollmentResponseDTO>(
-          "Promo code redeemed successfully",
-          enrollment,
-        ));
+        .json(okResponse<RedeemResult>(REDEEM_MESSAGES[locale].success, result));
+    },
+  );
+
+  /**
+   * Compatibility alias retained from STORY-52: POST /api/promo-codes/:code/redeem.
+   * Delegates to the same shared redemption service method as the canonical route.
+   */
+  public redeemPromoCode = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const code = req.params.code as string;
+      const studentId = req.user!.id;
+      const { chapterId } = req.body as RedeemPromoCodeInput;
+      const locale = resolveLocale(req.headers["accept-language"]);
+
+      const result = await promoCodeService.redeem(
+        code,
+        studentId,
+        chapterId,
+        locale,
+      );
+
+      res
+        .status(201)
+        .json(okResponse<RedeemResult>(REDEEM_MESSAGES[locale].success, result));
     },
   );
 }
