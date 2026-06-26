@@ -9,6 +9,7 @@ import { errorHandler } from "./shared/middlewares/errorHandler.middleware.js";
 import { notFoundHandler } from "./shared/middlewares/notFound.middleware.js";
 import studentRoutes from "./modules/students/student.routes.js";
 import teacherRoutes from "./modules/teacher/teacher.routes.js";
+import quizRoutes from "./modules/quizzes/quizzes.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -27,6 +28,7 @@ export function createApp(): Application {
   app.use("/api/users", userRoutes);
   app.use("/api/students", studentRoutes);
   app.use("/api/teachers", teacherRoutes);
+  app.use("/api/v1/quizzes", quizRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

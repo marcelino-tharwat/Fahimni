@@ -168,9 +168,55 @@ exports.Prisma.RefreshTokenScalarFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.QuizScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  teacherId: 'teacherId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QuestionScalarFieldEnum = {
+  id: 'id',
+  quizId: 'quizId',
+  type: 'type',
+  text: 'text',
+  options: 'options',
+  correctAnswer: 'correctAnswer',
+  points: 'points',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.QuizAttemptScalarFieldEnum = {
+  id: 'id',
+  quizId: 'quizId',
+  studentId: 'studentId',
+  status: 'status',
+  score: 'score',
+  totalPoints: 'totalPoints',
+  percentage: 'percentage',
+  submittedAt: 'submittedAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QuestionAnswerScalarFieldEnum = {
+  id: 'id',
+  attemptId: 'attemptId',
+  questionId: 'questionId',
+  submittedAnswer: 'submittedAnswer',
+  isCorrect: 'isCorrect',
+  points: 'points'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -181,6 +227,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
@@ -199,12 +251,27 @@ exports.OtpType = exports.$Enums.OtpType = {
   PASSWORD_RESET: 'PASSWORD_RESET'
 };
 
+exports.QuestionType = exports.$Enums.QuestionType = {
+  mcq: 'mcq',
+  true_false: 'true_false',
+  essay: 'essay'
+};
+
+exports.AttemptStatus = exports.$Enums.AttemptStatus = {
+  graded: 'graded',
+  partial: 'partial'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   StudentProfile: 'StudentProfile',
   TeacherProfile: 'TeacherProfile',
   Otp: 'Otp',
-  RefreshToken: 'RefreshToken'
+  RefreshToken: 'RefreshToken',
+  Quiz: 'Quiz',
+  Question: 'Question',
+  QuizAttempt: 'QuizAttempt',
+  QuestionAnswer: 'QuestionAnswer'
 };
 
 /**

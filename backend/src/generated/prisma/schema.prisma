@@ -36,11 +36,12 @@ model User {
 }
 
 model StudentProfile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String        @id @default(uuid())
+  userId    String        @unique
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attempts  QuizAttempt[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   @@map("student_profiles")
 }
@@ -53,6 +54,7 @@ model TeacherProfile {
   bio      String?
   photoUrl String?
   logoUrl  String?
+  quizzes  Quiz[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -87,4 +89,74 @@ model RefreshToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
+}
+
+enum QuestionType {
+  mcq
+  true_false
+  essay
+}
+
+enum AttemptStatus {
+  graded
+  partial
+}
+
+model Quiz {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  questions   Question[]
+  attempts    QuizAttempt[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("quizzes")
+}
+
+model Question {
+  id            String           @id @default(uuid())
+  quizId        String
+  quiz          Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  type          QuestionType
+  text          String
+  options       Json?
+  correctAnswer String?
+  points        Float            @default(1)
+  answers       QuestionAnswer[]
+  createdAt     DateTime         @default(now())
+
+  @@map("questions")
+}
+
+model QuizAttempt {
+  id          String           @id @default(uuid())
+  quizId      String
+  quiz        Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     StudentProfile   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status      AttemptStatus    @default(partial)
+  score       Float            @default(0)
+  totalPoints Float            @default(0)
+  percentage  Float            @default(0)
+  answers     QuestionAnswer[]
+  submittedAt DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("quiz_attempts")
+}
+
+model QuestionAnswer {
+  id              String      @id @default(uuid())
+  attemptId       String
+  attempt         QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId      String
+  question        Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  submittedAnswer String?
+  isCorrect       Boolean?
+  points          Float       @default(0)
+
+  @@map("question_answers")
 }
