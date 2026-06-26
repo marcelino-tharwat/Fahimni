@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../config/database.js";
 import { env } from "../../config/env.js";
+import { logger } from "../../config/logger.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
 import { PaymobService } from "./paymob.service.js";
@@ -48,7 +49,7 @@ export class PaymentService {
 
     const amountEGP = Number(chapter.price);
 
-    const token = await this.paymobService.authenticate();
+    const token = await this.paymobService.getValidToken();
     const paymobOrderId = await this.paymobService.createOrder(token, amountEGP);
 
     const student = await prisma.user.findUnique({
@@ -103,11 +104,15 @@ export class PaymentService {
   async handleWebhook(payload: Record<string, unknown>, hmacFromQuery: string): Promise<void> {
     const calculated = this.calculateHmac(payload);
     if (calculated !== hmacFromQuery) {
+      logger.warn("Paymob webhook rejected — HMAC mismatch");
       throw new AppError("Invalid HMAC signature", 401);
     }
 
+    logger.info("Paymob webhook received — HMAC verified");
+
     const payloadOrder = payload.order as Record<string, unknown> | undefined;
     if (!payloadOrder?.id) {
+      logger.info("Paymob webhook skipped — no order ID in payload");
       return;
     }
 
@@ -123,10 +128,15 @@ export class PaymentService {
     });
 
     if (!transaction) {
+      logger.info("Paymob webhook skipped — unknown order", { paymobOrderId });
       return;
     }
 
     if (transaction.status === "SUCCESS" || transaction.status === "FAILED") {
+      logger.info("Paymob webhook skipped — already processed", {
+        paymobOrderId,
+        status: transaction.status,
+      });
       return;
     }
 
@@ -159,6 +169,12 @@ export class PaymentService {
         });
       });
 
+      logger.info("Paymob payment succeeded — enrollment created", {
+        paymobOrderId,
+        transactionId: transaction.id,
+        paymobTransactionId: String(payload.id),
+      });
+
       await auditLogService.record({
         action: "PAYMENT_COMPLETED",
         resourceType: "PAYMENT_TRANSACTION",
@@ -180,6 +196,12 @@ export class PaymentService {
           errorMessage: ((payload.data as Record<string, unknown> | undefined)?.message as string) ?? "Payment failed",
           rawCallback: payload as unknown as Prisma.InputJsonValue,
         },
+      });
+
+      logger.info("Paymob payment failed", {
+        paymobOrderId,
+        transactionId: transaction.id,
+        error: ((payload.data as Record<string, unknown> | undefined)?.message as string) ?? "Payment failed",
       });
 
       await auditLogService.record({

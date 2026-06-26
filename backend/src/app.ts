@@ -24,6 +24,7 @@ import attemptsRoutes from "./modules/quizzes/attempts.routes.js";
 
 export function createApp(): Application {
   const app = express();
+  app.set("trust proxy", 1);
   app.use(helmet());
   app.use(
     cors({
@@ -35,6 +36,7 @@ export function createApp(): Application {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(rateLimiter);
+  ``;
 
   app.get("/health", (_req, res) => {
     res.json({ status: "ok" });

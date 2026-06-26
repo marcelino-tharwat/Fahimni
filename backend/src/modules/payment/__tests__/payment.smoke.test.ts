@@ -13,14 +13,14 @@ const mockPrisma = vi.hoisted(() => ({
 vi.mock("../../../config/database.js", () => ({ prisma: mockPrisma }));
 
 // ── PaymobService mock ─────────────────────────────────────────────────────
-const mockAuthenticate = vi.hoisted(() => vi.fn());
+const mockGetValidToken = vi.hoisted(() => vi.fn());
 const mockCreateOrder = vi.hoisted(() => vi.fn());
 const mockGetPaymentKey = vi.hoisted(() => vi.fn());
 const mockBuildIframeUrl = vi.hoisted(() => vi.fn());
 
 vi.mock("../paymob.service.js", () => ({
   PaymobService: vi.fn(() => ({
-    authenticate: mockAuthenticate,
+    getValidToken: mockGetValidToken,
     createOrder: mockCreateOrder,
     getPaymentKey: mockGetPaymentKey,
     buildIframeUrl: mockBuildIframeUrl,
@@ -34,6 +34,8 @@ vi.mock("../../../config/env.js", () => ({
     PAYMOB_INTEGRATION_ID: 456,
     PAYMOB_IFRAME_ID: "test-iframe",
     PAYMOB_HMAC_SECRET: "test-hmac-secret",
+    PAYMOB_CURRENCY: "EGP",
+    PAYMOB_BASE_URL: "https://accept.paymob.com",
   },
 }));
 

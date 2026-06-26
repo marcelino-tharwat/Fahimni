@@ -47,7 +47,9 @@ async function cleanupLegacySeed(): Promise<number> {
   ];
 
   const legacyUsers = await prisma.user.findMany({
-    where: { OR: [{ email: { in: legacyEmails } }, { id: { startsWith: "seed-" } }] },
+    where: {
+      OR: [{ email: { in: legacyEmails } }, { id: { startsWith: "seed-" } }],
+    },
     select: { id: true },
   });
   const userIds = legacyUsers.map((u) => u.id);
@@ -94,7 +96,9 @@ async function cleanupLegacySeed(): Promise<number> {
     });
   }
   if (chapterIds.length) {
-    await prisma.lesson.deleteMany({ where: { chapterId: { in: chapterIds } } });
+    await prisma.lesson.deleteMany({
+      where: { chapterId: { in: chapterIds } },
+    });
   }
   await prisma.lesson.deleteMany({ where: { id: { startsWith: "seed-" } } });
   if (chapterIds.length) {
@@ -105,18 +109,49 @@ async function cleanupLegacySeed(): Promise<number> {
   }
   if (userIds.length) {
     await prisma.auditLog.deleteMany({
-      where: { OR: [{ userId: { in: userIds } }, { scopeTeacherId: { in: userIds } }] },
+      where: {
+        OR: [{ userId: { in: userIds } }, { scopeTeacherId: { in: userIds } }],
+      },
     });
     // promo_codes may not exist in every local DB (schema/DB drift); ignore only
     // the "table does not exist" case so cleanup stays resilient.
     try {
-      await prisma.promoCode.deleteMany({ where: { createdById: { in: userIds } } });
+      await prisma.promoCode.deleteMany({
+        where: { createdById: { in: userIds } },
+      });
     } catch (e) {
       const code = (e as { code?: string }).code;
       if (code !== "P2021") throw e;
     }
-    await prisma.teacherProfile.deleteMany({ where: { userId: { in: userIds } } });
-    await prisma.studentProfile.deleteMany({ where: { userId: { in: userIds } } });
+    const legacyQuizzes = await prisma.quiz.findMany({
+      where: { createdBy: { in: userIds } },
+      select: { id: true },
+    });
+    const quizIds = legacyQuizzes.map((q) => q.id);
+    if (quizIds.length) {
+      try {
+        await prisma.quizAttempt.deleteMany({
+          where: { quizId: { in: quizIds } },
+        });
+      } catch (e) {
+        if ((e as { code?: string }).code !== "P2021") throw e;
+      }
+      try {
+        await prisma.question.deleteMany({
+          where: { quizId: { in: quizIds } },
+        });
+      } catch (e) {
+        if ((e as { code?: string }).code !== "P2021") throw e;
+      }
+      await prisma.quiz.deleteMany({ where: { id: { in: quizIds } } });
+    }
+
+    await prisma.teacherProfile.deleteMany({
+      where: { userId: { in: userIds } },
+    });
+    await prisma.studentProfile.deleteMany({
+      where: { userId: { in: userIds } },
+    });
     await prisma.user.deleteMany({ where: { id: { in: userIds } } });
   }
 
@@ -143,8 +178,23 @@ async function upsertAccounts(passwordHash: string): Promise<void> {
   const t1 = ACCOUNTS.teacher1;
   await prisma.user.upsert({
     where: { id: t1.id },
-    update: { email: t1.email, fullName: t1.fullName, mobile: t1.mobile, password: passwordHash, role: Role.OPERATION, status: "ACTIVE" },
-    create: { id: t1.id, email: t1.email, fullName: t1.fullName, mobile: t1.mobile, password: passwordHash, role: Role.OPERATION, status: "ACTIVE" },
+    update: {
+      email: t1.email,
+      fullName: t1.fullName,
+      mobile: t1.mobile,
+      password: passwordHash,
+      role: Role.OPERATION,
+      status: "ACTIVE",
+    },
+    create: {
+      id: t1.id,
+      email: t1.email,
+      fullName: t1.fullName,
+      mobile: t1.mobile,
+      password: passwordHash,
+      role: Role.OPERATION,
+      status: "ACTIVE",
+    },
   });
   await prisma.teacherProfile.upsert({
     where: { userId: t1.id },
@@ -155,8 +205,23 @@ async function upsertAccounts(passwordHash: string): Promise<void> {
   const t2 = ACCOUNTS.teacher2;
   await prisma.user.upsert({
     where: { id: t2.id },
-    update: { email: t2.email, fullName: t2.fullName, mobile: t2.mobile, password: passwordHash, role: Role.OPERATION, status: "ACTIVE" },
-    create: { id: t2.id, email: t2.email, fullName: t2.fullName, mobile: t2.mobile, password: passwordHash, role: Role.OPERATION, status: "ACTIVE" },
+    update: {
+      email: t2.email,
+      fullName: t2.fullName,
+      mobile: t2.mobile,
+      password: passwordHash,
+      role: Role.OPERATION,
+      status: "ACTIVE",
+    },
+    create: {
+      id: t2.id,
+      email: t2.email,
+      fullName: t2.fullName,
+      mobile: t2.mobile,
+      password: passwordHash,
+      role: Role.OPERATION,
+      status: "ACTIVE",
+    },
   });
   await prisma.teacherProfile.upsert({
     where: { userId: t2.id },
@@ -167,8 +232,23 @@ async function upsertAccounts(passwordHash: string): Promise<void> {
   const st = ACCOUNTS.student;
   await prisma.user.upsert({
     where: { id: st.id },
-    update: { email: st.email, fullName: st.fullName, mobile: st.mobile, password: passwordHash, role: Role.STUDENT, status: "ACTIVE" },
-    create: { id: st.id, email: st.email, fullName: st.fullName, mobile: st.mobile, password: passwordHash, role: Role.STUDENT, status: "ACTIVE" },
+    update: {
+      email: st.email,
+      fullName: st.fullName,
+      mobile: st.mobile,
+      password: passwordHash,
+      role: Role.STUDENT,
+      status: "ACTIVE",
+    },
+    create: {
+      id: st.id,
+      email: st.email,
+      fullName: st.fullName,
+      mobile: st.mobile,
+      password: passwordHash,
+      role: Role.STUDENT,
+      status: "ACTIVE",
+    },
   });
   await prisma.studentProfile.upsert({
     where: { userId: st.id },
@@ -198,6 +278,7 @@ async function seedRelational(): Promise<{
     description: c.description,
     sortOrder: c.sortOrder,
     stageId: c.stageId,
+    price: c.price ?? null,
   }));
 
   const lessonRows = allChapters.flatMap((c) =>
@@ -211,9 +292,24 @@ async function seedRelational(): Promise<{
     })),
   );
 
-  const stages = await prisma.stage.createMany({ data: stageRows, skipDuplicates: true });
-  const chapters = await prisma.chapter.createMany({ data: chapterRows, skipDuplicates: true });
-  const lessons = await prisma.lesson.createMany({ data: lessonRows, skipDuplicates: true });
+  const chapterIds = allChapters.map((c) => c.id);
+  const lessonIds = allChapters.flatMap((c) => c.lessons.map((l) => l.id));
+
+  // Delete then re-create so prices and other fields refresh on re-seed.
+  // Deterministic IDs (f4500...) ensure we never touch user-created content.
+  await prisma.lesson.deleteMany({ where: { id: { in: lessonIds } } });
+  await prisma.chapter.deleteMany({ where: { id: { in: chapterIds } } });
+
+  const stages = await prisma.stage.createMany({
+    data: stageRows,
+    skipDuplicates: true,
+  });
+  const chapters = await prisma.chapter.createMany({
+    data: chapterRows,
+  });
+  const lessons = await prisma.lesson.createMany({
+    data: lessonRows,
+  });
 
   return {
     stages: { inserted: stages.count, total: stageRows.length },
@@ -223,7 +319,10 @@ async function seedRelational(): Promise<{
 }
 
 /** AI-ready indexing of the successful chapter's lessons (skips already-indexed). */
-async function indexSuccessfulLessons(): Promise<{ indexed: number; skipped: number }> {
+async function indexSuccessfulLessons(): Promise<{
+  indexed: number;
+  skipped: number;
+}> {
   if (!process.env.GEMINI_API_KEY) {
     throw new Error(
       "SEED_AI_READY=true requires GEMINI_API_KEY to be set for embeddings.",
@@ -233,7 +332,8 @@ async function indexSuccessfulLessons(): Promise<{ indexed: number; skipped: num
 
   const textById = new Map<string, { title: string; text: string }>();
   for (const c of TEACHER1_CHAPTERS) {
-    for (const l of c.lessons) textById.set(l.id, { title: l.title, text: l.text });
+    for (const l of c.lessons)
+      textById.set(l.id, { title: l.title, text: l.text });
   }
 
   let indexed = 0;
@@ -288,7 +388,11 @@ function writeArtifacts(ragReady: boolean, localPassword: string): void {
     JSON.stringify(manifest, null, 2) + "\n",
   );
 
-  const v = (key: string, value: string, type: "default" | "secret" = "default") => ({
+  const v = (
+    key: string,
+    value: string,
+    type: "default" | "secret" = "default",
+  ) => ({
     key,
     value,
     enabled: true,
@@ -343,7 +447,9 @@ async function main(): Promise<void> {
     databaseUrl: process.env.DATABASE_URL,
     productionFlag: process.env.PRODUCTION,
   });
-  console.log(`[seed] Local database verified (host: ${host}). Version: ${SEED_VERSION}`);
+  console.log(
+    `[seed] Local database verified (host: ${host}). Version: ${SEED_VERSION}`,
+  );
 
   if (!LOCAL_PASSWORD) {
     throw new Error(
@@ -357,11 +463,15 @@ async function main(): Promise<void> {
 
   const removed = await cleanupLegacySeed();
   if (removed > 0) {
-    console.log(`[seed] Removed ${removed} legacy seed user(s) and their content.`);
+    console.log(
+      `[seed] Removed ${removed} legacy seed user(s) and their content.`,
+    );
   }
 
   await upsertAccounts(passwordHash);
-  console.log("[seed] Accounts upserted: teacher1, teacher2, student (+ admin).");
+  console.log(
+    "[seed] Accounts upserted: teacher1, teacher2, student (+ admin).",
+  );
 
   const relStart = Date.now();
   const counts = await seedRelational();
@@ -400,7 +510,9 @@ async function main(): Promise<void> {
   }
 
   writeArtifacts(ragReady, LOCAL_PASSWORD);
-  console.log("[seed] Wrote postman/story45-seed-manifest.local.json and Fahimni_Local.postman_environment.json (git-ignored).");
+  console.log(
+    "[seed] Wrote postman/story45-seed-manifest.local.json and Fahimni_Local.postman_environment.json (git-ignored).",
+  );
 
   console.log(
     `[seed] Done in ${Date.now() - startedAt}ms (relational ${relMs}ms${aiMs ? `, ai ${aiMs}ms` : ""}).`,
@@ -409,7 +521,10 @@ async function main(): Promise<void> {
 
 main()
   .catch((error) => {
-    console.error("[seed] FAILED:", error instanceof Error ? error.message : error);
+    console.error(
+      "[seed] FAILED:",
+      error instanceof Error ? error.message : error,
+    );
     process.exit(1);
   })
   .finally(async () => {

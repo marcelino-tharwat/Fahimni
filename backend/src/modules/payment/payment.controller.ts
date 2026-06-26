@@ -19,10 +19,12 @@ export class PaymentController {
 
       res
         .status(201)
-        .json(okResponse<{ iframeUrl: string; orderId: string }>(
-          paymentMessages.checkoutSuccess[lang],
-          result,
-        ));
+        .json(
+          okResponse<{ iframeUrl: string; orderId: string }>(
+            paymentMessages.checkoutSuccess[lang],
+            result,
+          ),
+        );
     },
   );
 
@@ -33,9 +35,7 @@ export class PaymentController {
 
       await paymentService.handleWebhook(payload, hmac);
 
-      res
-        .status(200)
-        .json(okResponse("Webhook processed"));
+      res.status(200).json(okResponse("Webhook processed"));
     },
   );
 
@@ -45,14 +45,20 @@ export class PaymentController {
       const { orderId } = req.params as { orderId: string };
       const lang = getLang(req.headers["accept-language"]);
 
-      const status = await paymentService.getPaymentStatus(orderId, studentId, lang);
+      const status = await paymentService.getPaymentStatus(
+        orderId,
+        studentId,
+        lang,
+      );
 
       res
         .status(200)
-        .json(okResponse<PaymentStatusDTO>(
-          paymentMessages.paymentStatusRetrieved[lang],
-          status,
-        ));
+        .json(
+          okResponse<PaymentStatusDTO>(
+            paymentMessages.paymentStatusRetrieved[lang],
+            status,
+          ),
+        );
     },
   );
 }
