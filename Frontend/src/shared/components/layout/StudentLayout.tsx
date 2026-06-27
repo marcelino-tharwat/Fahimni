@@ -25,7 +25,7 @@ export function StudentLayout() {
         <header className="shrink-0">
           <Topbar showMenu={false} />
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-3 pb-20 md:p-4 md:pb-6 lg:p-6">
           <Outlet />
         </main>
       </div>

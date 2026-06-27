@@ -33,13 +33,13 @@ export function QuizPage() {
             </h3>
 
             {question.type === 'true_false' ? (
-              <div className="flex gap-3">
+              <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
                 {[true, false].map((value) => (
                   <Button
                     key={String(value)}
                     variant={answers[question.id] === value ? 'primary' : 'outline'}
                     onClick={() => setAnswer(question.id, value)}
-                    className="flex-1"
+                    className="w-full sm:flex-1"
                   >
                     {value ? 'صح' : 'خطأ'}
                   </Button>

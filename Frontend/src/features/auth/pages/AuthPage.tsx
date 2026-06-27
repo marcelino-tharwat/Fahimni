@@ -219,7 +219,7 @@ function RegisterForm() {
     setError(null);
     setLoading(true);
     try {
-      const res = await dispatch(registerThunk(v)).unwrap();
+      const res = await dispatch(registerThunk({ ...v, role: 'STUDENT' })).unwrap();
       navigate(dashboardPathByRole[res.user.role]);
     } catch (err) {
       setError(err ? String(err) : t("auth:errGeneric"));
@@ -276,6 +276,12 @@ function RegisterForm() {
         registration={register("password", {
           required: t("auth:errPasswordRequired"),
           minLength: { value: 8, message: t("auth:errPasswordMin") },
+          validate: {
+            uppercase: (v: string) => /[A-Z]/.test(v) || t('auth:errPasswordUppercase'),
+            lowercase: (v: string) => /[a-z]/.test(v) || t('auth:errPasswordLowercase'),
+            number: (v: string) => /[0-9]/.test(v) || t('auth:errPasswordNumber'),
+            special: (v: string) => /[^A-Za-z0-9]/.test(v) || t('auth:errPasswordSpecial'),
+          },
         })}
       />
       <p className="text-right text-small text-gray-500">
@@ -301,10 +307,10 @@ export function AuthPage() {
   return (
     <>
       <AuthNavbar />
-      <div className="flex min-h-[calc(100vh-73px)]">
+      <div className="flex min-h-[calc(100vh-73px)] flex-col lg:flex-row">
         {/* Form Panel */}
-        <main className="flex w-3/5 items-center justify-center bg-gray-100 p-8">
-          <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-modal">
+        <main className="flex w-full items-center justify-center bg-gray-100 px-4 py-8 lg:w-3/5 lg:p-8">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-modal md:p-8">
           {/* Logo row */}
           <div className="mb-6 text-center">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-500 text-lg font-bold text-white">
@@ -352,7 +358,7 @@ export function AuthPage() {
       </main>
 
       {/* Hero Panel */}
-      <aside className="flex w-2/5 flex-col items-center justify-center bg-hero-gradient p-12 text-center">
+      <aside className="hidden w-full flex-col items-center justify-center bg-hero-gradient px-6 py-12 text-center lg:flex lg:w-2/5 lg:p-12">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-xl border border-cyan-500/30 bg-navy-800">
           <GraduationCap className="text-cyan-500" size={36} />
         </div>

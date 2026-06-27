@@ -114,14 +114,14 @@ export const initAuth = createAsyncThunk<
 
 export const register = createAsyncThunk<
   { user: User },
-  { fullName: string; email: string; mobile: string; password: string },
+  { fullName: string; email: string; mobile: string; password: string; role?: string },
   { rejectValue: string }
 >('auth/register', async (payload, { rejectWithValue }) => {
   try {
     const { data } = await apiClient.post<{
       message: string;
       data: { user: User; refreshToken: string };
-    }>('/v1/auth/register', payload);
+    }>('/v1/auth/register', { ...payload, role: payload.role ?? 'STUDENT' });
     saveUser(data.data.user);
     saveRefreshToken(data.data.refreshToken);
     return { user: data.data.user };

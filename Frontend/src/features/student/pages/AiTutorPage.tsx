@@ -32,7 +32,7 @@ export function AiTutorPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-9rem)] w-full max-w-2xl flex-col gap-4">
+    <div className="mx-auto flex h-[calc(100dvh-8rem)] w-full max-w-2xl flex-col gap-4 md:h-[calc(100vh-9rem)]">
       <div className="flex items-center justify-between gap-2">
         <h1 className="font-cairo text-xl font-bold text-text-primary">
           {t('student:aiTutor.title')}

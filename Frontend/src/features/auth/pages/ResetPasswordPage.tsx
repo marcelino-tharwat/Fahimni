@@ -191,7 +191,7 @@ export function ResetPasswordPage() {
           </div>
         </div>
 
-        <div className="p-8">
+        <div className="p-6 md:p-8">
           <Stepper steps={steps} currentStep={step - 1} />
 
           <div

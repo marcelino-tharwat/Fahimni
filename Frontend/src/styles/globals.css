@@ -4,6 +4,10 @@
 @import "tailwindcss";
 @import "./tokens.css";
 
+:root {
+  --color-accent: #00C9DB;
+}
+
 /* Load the v3-style theme (custom colors, radii, fonts) from tailwind.config.ts.
    Tailwind v4 does not auto-discover a JS config — this directive is required
    for utilities like bg-accent, text-text-primary, rounded-card, etc. to exist. */
