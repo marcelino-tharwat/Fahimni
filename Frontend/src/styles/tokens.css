@@ -1,4 +1,8 @@
-:root {
+/* Tailwind v4 design tokens. These MUST live in @theme (not :root) so Tailwind
+   generates the utilities the codebase relies on — bg-surface, border-border,
+   text-text-primary, text-success, rounded-button, etc. @theme also emits each
+   value to :root, so var(--color-*) references keep working. */
+@theme {
   --color-primary: #1a103d;
   --color-secondary: #37306b;
   --color-accent: #00c9db;
@@ -10,10 +14,15 @@
   --color-surface: #ffffff;
   --color-text-primary: #1a103d;
   --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
   --color-border: #e5e7eb;
   --radius-card: 14px;
   --radius-button: 12px;
   --radius-input: 10px;
+}
+
+/* Non-utility vars (tenant theming + base font) stay plain CSS variables. */
+:root {
   --font-family: "Cairo", sans-serif;
   --tenant-primary: var(--color-primary);
   --tenant-secondary: var(--color-secondary);

@@ -51,9 +51,23 @@
       "retry": "Retry"
     }
   },
-  "stats": { "totalStudents": "Total Students", "activeThisMonth": "Active This Month", "publishedChapters": "Published Chapters", "quizzesCreated": "Quizzes" },
-  "quickActions": { "addLesson": "Add Lesson", "generateQuiz": "Generate Quiz" },
-  "contentManager": { "title": "Content Management", "selectLesson": "Select a lesson to edit", "stages": "Stages", "chapters": "Chapters", "lessons": "Lessons" },
+  "stats": {
+    "totalStudents": "Total Students",
+    "activeThisMonth": "Active This Month",
+    "publishedChapters": "Published Chapters",
+    "quizzesCreated": "Quizzes"
+  },
+  "quickActions": {
+    "addLesson": "Add Lesson",
+    "generateQuiz": "Generate Quiz"
+  },
+  "contentManager": {
+    "title": "Content Management",
+    "selectLesson": "Select a lesson to edit",
+    "stages": "Stages",
+    "chapters": "Chapters",
+    "lessons": "Lessons"
+  },
   "quizGenerator": {
     "title": "AI Quiz Generator",
     "subtitle": "Configure quiz settings and AI will generate questions automatically",
@@ -118,7 +132,96 @@
     "quizId": "Quiz ID:",
     "reviewUnderDevelopment": "Question review page under development",
     "backToSettings": "Back to Settings",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "review": {
+      "questionsTitle": "Questions",
+      "countBadge": "{{count}} questions",
+      "addQuestion": "Add Question",
+      "loading": "Loading questions...",
+      "retry": "Retry",
+      "backToStep1": "Back to Settings",
+      "continueToStep3": "Continue to Publish",
+      "correct": "Correct answer",
+      "modelAnswer": "Model answer",
+      "essayManualGrading": "Essay — graded manually",
+      "dragHandle": "Reorder question {{number}}",
+      "editQuestion": "Edit question {{number}}",
+      "deleteQuestion": "Delete question {{number}}",
+      "markCorrect": "Mark option {{label}} as correct",
+      "optionInput": "Option {{label}} text",
+      "types": {
+        "mcq": "Multiple Choice",
+        "trueFalse": "True / False",
+        "essay": "Essay"
+      },
+      "editTitle": "Edit Question",
+      "addTitle": "Add Question",
+      "typeLabel": "Question type",
+      "contentLabel": "Question content",
+      "optionsLabel": "Options",
+      "correctAnswerLabel": "Correct answer",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "empty": {
+        "title": "No questions yet",
+        "description": "Add a question manually to continue."
+      },
+      "deleteConfirm": {
+        "title": "Delete question",
+        "message": "This removes the question from the draft. Are you sure?",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "contentRequired": "Question content is required",
+        "mcqFourOptions": "Enter four non-empty options",
+        "mcqDuplicateOptions": "Duplicate options are not allowed",
+        "correctAnswerRequired": "Select the correct answer",
+        "saveFailed": "Could not save the question. Please try again.",
+        "deleteFailed": "Could not delete the question.",
+        "reorderFailed": "Could not save the new order.",
+        "loadFailed": "Could not load the draft."
+      },
+      "step3": {
+        "title": "Step 3: Publish",
+        "comingSoon": "The publish screen lands in STORY-56.",
+        "backToReview": "Back to review"
+      },
+      "pageTitle": "Review Questions",
+      "pageSubtitle": "Review the generated questions — edit, delete, or reorder them as you need",
+      "pointsBadge": "{{count}} points",
+      "questionLabel": "Question {{number}}",
+      "pointsLabel": "{{count}} pts",
+      "saveDraft": "Save as draft",
+      "collapseAll": "Collapse all",
+      "expandAll": "Expand all",
+      "filters": {
+        "all": "All",
+        "mcq": "Multiple Choice",
+        "trueFalse": "True / False",
+        "essay": "Essay"
+      }
+    },
+    "indexing": {
+      "button": "Index lesson content",
+      "hint": "Chapter lessons must be indexed before AI quiz generation.",
+      "title": "Index lesson content",
+      "description": "Paste each lesson's text and click Index to prepare it for question generation.",
+      "noLessons": "Select a chapter with lessons first.",
+      "close": "Close",
+      "checking": "Checking...",
+      "ready": "Indexed ({{count}} chunks)",
+      "notReady": "Not indexed",
+      "failed": "Indexing failed",
+      "indexedHint": "This lesson is ready for generation.",
+      "contentPlaceholder": "Paste the full lesson text here...",
+      "contentLabel": "Lesson text: {{title}}",
+      "contentRequired": "Lesson text is required.",
+      "indexButton": "Index",
+      "indexing": "Indexing...",
+      "indexError": "Could not index the lesson. Check the content and try again."
+    }
   },
   "stages": {
     "title": "All Stages",
@@ -227,7 +330,12 @@
     "durationMax": "Duration must not exceed 300 minutes",
     "youtubeUrlInvalid": "Must be a valid URL"
   },
-  "branding": { "title": "Branding", "logo": "Logo", "colors": "Colors", "teacherPhoto": "Teacher Photo" },
+  "branding": {
+    "title": "Branding",
+    "logo": "Logo",
+    "colors": "Colors",
+    "teacherPhoto": "Teacher Photo"
+  },
   "settings": {
     "pageTitle": "Account Settings",
     "pageSubtitle": "Update your personal information and academy branding",

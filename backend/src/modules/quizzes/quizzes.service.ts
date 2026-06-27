@@ -352,6 +352,16 @@ export class QuizService {
     }
 
     const updated = await prisma.$transaction(async (tx) => {
+      // Two-phase update: the @@unique([quizId, sortOrder]) constraint is checked
+      // immediately, so assigning final positions directly can transiently
+      // collide with an existing row's sortOrder. First move every question to a
+      // unique negative placeholder, then set the final 1-based positions.
+      for (let i = 0; i < ids.length; i++) {
+        await tx.question.update({
+          where: { id: ids[i]! },
+          data: { sortOrder: -(i + 1) },
+        });
+      }
       for (let i = 0; i < ids.length; i++) {
         await tx.question.update({
           where: { id: ids[i]! },

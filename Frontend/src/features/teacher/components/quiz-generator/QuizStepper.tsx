@@ -25,7 +25,7 @@ export function QuizStepper({ activeStep }: QuizStepperProps) {
               <span
                 className={cn(
                   'flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-all duration-300',
-                  isPast && 'bg-success text-white',
+                  isPast && 'bg-accent/90 text-white',
                   isActive && 'bg-accent text-white shadow-lg shadow-accent/30',
                   !isPast && !isActive && 'bg-gray-100 text-gray-400',
                 )}
@@ -35,7 +35,7 @@ export function QuizStepper({ activeStep }: QuizStepperProps) {
               <span
                 className={cn(
                   'text-center font-cairo text-xs whitespace-nowrap hidden sm:block',
-                  isPast && 'text-success font-bold',
+                  isPast && 'text-accent font-bold',
                   isActive && 'text-accent font-bold',
                   !isPast && !isActive && 'text-gray-400 font-medium',
                 )}

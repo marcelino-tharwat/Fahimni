@@ -33,4 +33,76 @@ export const quizGenerationApi = {
     );
     return data.data;
   },
+
+  // ── STORY-55 / STORY-46: draft review & edit (real persistence) ─────────
+
+  /** GET /quizzes/:id — full draft quiz with all questions. */
+  getDraftQuiz: async (quizId: string): Promise<DraftQuizResponse> => {
+    const { data } = await apiClient.get<ApiResponse<DraftQuizResponse>>(`/quizzes/${quizId}`);
+    return data.data;
+  },
+
+  /** POST /quizzes/:id/questions — manually add a question to the draft. */
+  createQuestion: async (quizId: string, body: QuestionWriteBody): Promise<DraftQuestion> => {
+    const { data } = await apiClient.post<ApiResponse<DraftQuestion>>(
+      `/quizzes/${quizId}/questions`,
+      body,
+    );
+    return data.data;
+  },
+
+  /** PUT /quizzes/:id/questions/:questionId — update a question (keeps its id). */
+  updateQuestion: async (
+    quizId: string,
+    questionId: string,
+    body: Partial<QuestionWriteBody>,
+  ): Promise<DraftQuestion> => {
+    const { data } = await apiClient.put<ApiResponse<DraftQuestion>>(
+      `/quizzes/${quizId}/questions/${questionId}`,
+      body,
+    );
+    return data.data;
+  },
+
+  /** DELETE /quizzes/:id/questions/:questionId — remove a question. */
+  deleteQuestion: async (quizId: string, questionId: string): Promise<void> => {
+    await apiClient.delete(`/quizzes/${quizId}/questions/${questionId}`);
+  },
+
+  /** PATCH /quizzes/:id/questions/reorder — persist the final order (all ids). */
+  reorderQuestions: async (quizId: string, orderedIds: string[]): Promise<void> => {
+    await apiClient.patch(`/quizzes/${quizId}/questions/reorder`, orderedIds);
+  },
 };
+
+export interface DraftQuestion {
+  id: string;
+  quizId: string;
+  type: string;
+  content: string;
+  options?: unknown;
+  correctAnswer?: string | number | boolean | null;
+  sortOrder: number;
+  points?: number;
+}
+
+export interface DraftQuizResponse {
+  id: string;
+  title: string;
+  description?: string | null;
+  chapterId: string | null;
+  status: string;
+  questionCount: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string | null;
+  questions: DraftQuestion[];
+}
+
+export interface QuestionWriteBody {
+  type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY';
+  content: string;
+  options: Record<string, string>;
+  correctAnswer: string | null;
+  sortOrder?: number;
+}
