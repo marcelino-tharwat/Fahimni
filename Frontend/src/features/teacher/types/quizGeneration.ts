@@ -3,7 +3,7 @@ import type { Chapter } from '@/shared/types/content';
 import type { Lesson } from '@/shared/types/content';
 
 export type QuestionTypeKey = 'MCQ' | 'TF' | 'ESSAY';
-export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+export type DifficultyLevel = 'easy' | 'medium' | 'hard' | '';
 export interface QuizGeneratorFormState {
   stageId: string;
   chapterId: string;

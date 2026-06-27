@@ -90,6 +90,7 @@
     "validationStage": "Please select a stage",
     "validationChapter": "Please select a chapter",
     "validationQuestionType": "Please select at least one question type",
+    "validationDifficulty": "Please select a difficulty level",
     "generationFailed": "An error occurred while generating the quiz",
     "generationFailedHint": "Try reducing the question count or selecting only one type",
     "emptyStages": "You have no content yet",
