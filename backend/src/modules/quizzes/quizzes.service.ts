@@ -68,6 +68,7 @@ export class QuizService {
         title: input.title,
         description: input.description ?? null,
         chapterId: input.chapterId ?? null,
+        durationMinutes: input.durationMinutes ?? null,
         createdBy: teacherId,
       },
       select: { ...quizPublicFields, _count: { select: { questions: true } } },
@@ -160,6 +161,9 @@ export class QuizService {
     }
     if (input.status !== undefined) {
       data.status = input.status;
+    }
+    if (input.durationMinutes !== undefined) {
+      data.durationMinutes = input.durationMinutes;
     }
 
     const quiz = await prisma.quiz.update({

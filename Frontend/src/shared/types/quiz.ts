@@ -1,22 +1,38 @@
-export type QuizStatus = 'draft' | 'published' | 'archived';
-export type QuestionType = 'mcq' | 'true_false' | 'essay';
+export type QuestionType = 'mcq' | 'tf' | 'essay' | 'fill';
+
+export interface QuizOption {
+  id: 'a' | 'b' | 'c' | 'd';
+  label: string;
+  text: string;
+}
 
 export interface QuizQuestion {
   id: string;
   type: QuestionType;
-  question: string;
-  options?: string[];
-  correctAnswer?: number | boolean;
-  explanation?: string;
-  modelAnswer?: string;
+  text: string;
+  points: number;
+  options?: QuizOption[];
+  placeholder?: string;
+  maxLength?: number;
 }
+
+export interface QuizMeta {
+  title: string;
+  chapterLabel?: string;
+  totalQuestions: number;
+  totalPoints: number;
+  durationMinutes?: number;
+  attemptLabel: string;
+}
+
+export type PageStatus = 'loading' | 'active' | 'error-403' | 'error-400';
 
 export interface Quiz {
   id: string;
   tenantId: string;
   chapterId: string;
   title: string;
-  status: QuizStatus;
+  status: 'draft' | 'published' | 'archived';
   questions: QuizQuestion[];
   createdAt: string;
 }

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
 
 // Layouts
 import { PublicLayout } from '@/shared/components/layout/PublicLayout';
@@ -76,11 +76,17 @@ const router = createBrowserRouter([
               { path: '/student/courses', element: <MyCoursesPage /> },
               { path: '/student/content', element: <AllContentPage /> },
               { path: '/student/lessons/:lessonId', element: <LessonPage /> },
-              { path: '/student/quizzes/:quizId', element: <QuizPage /> },
               { path: '/student/quizzes/:quizId/results', element: <QuizResultsPage /> },
               { path: '/student/ai-tutor', element: <AiTutorPage /> },
               { path: '/student/pay/:chapterId', element: <PaymentPage /> },
               { path: '/student/profile', element: <StudentProfilePage /> },
+            ],
+          },
+          // Quiz taking page — no sidebar, no bottom tab bar (distraction-free)
+          {
+            element: <Outlet />,
+            children: [
+              { path: '/student/quizzes/:quizId', element: <QuizPage /> },
             ],
           },
         ],

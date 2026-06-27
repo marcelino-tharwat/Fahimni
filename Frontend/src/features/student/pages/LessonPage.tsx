@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,9 +14,9 @@ import {
   Lock,
 } from 'lucide-react';
 import { Badge, Button, Card, Skeleton } from '@/shared/components/ui';
-import { cn } from '@/shared/lib/utils/cn';
 import { useLesson, useStudentTree } from '@/features/student/hooks/useStudentContent';
 import { contentApi } from '@/features/student/api/content';
+import { quizApi } from '@/features/student/api/quiz';
 import type { StudentContentTreeItem } from '@/features/student/types/studentContent';
 import type { ApiError } from '@/shared/lib/api/client';
 
@@ -38,6 +39,21 @@ function findLessonInTree(
       const found = ch.lessons.find((l) => l.id === lessonId);
       if (found) {
         return { stageName: item.stage.name, chapterName: ch.chapter.name };
+      }
+    }
+  }
+  return null;
+}
+
+function findChapterIdForLesson(
+  tree: StudentContentTreeItem[],
+  lessonId: string,
+): string | null {
+  for (const item of tree) {
+    for (const ch of item.chapters) {
+      const found = ch.lessons.find((l) => l.id === lessonId);
+      if (found) {
+        return ch.chapter.id;
       }
     }
   }
@@ -80,6 +96,22 @@ export function LessonPage() {
     if (!tree) return null;
     return findLessonInTree(tree, lessonId ?? '');
   }, [tree, lessonId]);
+
+  const chapterId = useMemo(() => {
+    if (!tree) return null;
+    return findChapterIdForLesson(tree, lessonId ?? '');
+  }, [tree, lessonId]);
+
+  const { data: chapterQuizzes } = useQuery({
+    queryKey: ['chapter', 'quizzes', chapterId],
+    queryFn: async () => {
+      const { data } = await quizApi.getChapterQuizzes(chapterId!);
+      return data.data;
+    },
+    enabled: !!chapterId,
+  });
+
+  const chapterQuiz = chapterQuizzes?.[0] ?? null;
 
   const allLessons = useMemo(() => {
     if (!tree) return [];
@@ -265,6 +297,26 @@ export function LessonPage() {
           <div className="border-t border-border pt-3 font-cairo text-xs text-gray-500">
             {t('student:lesson.totalFiles', { count: lesson.attachments?.length ?? 0 })}
           </div>
+        </Card>
+      )}
+
+      {/* Quiz */}
+      {chapterQuiz && (
+        <Card padding="md" className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <span className="font-cairo text-base font-semibold text-navy-900">
+              {t('student:takeQuiz')}
+            </span>
+            <span className="font-cairo text-sm text-gray-500">
+              {chapterQuiz.description ?? t('student:takeQuiz')}
+            </span>
+          </div>
+          <Button
+            variant="primary"
+            onClick={() => navigate(`/student/quizzes/${chapterQuiz.id}`)}
+          >
+            {t('student:takeQuiz')}
+          </Button>
         </Card>
       )}
 
