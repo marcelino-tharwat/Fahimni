@@ -39,6 +39,7 @@ import { AiQuizPublishPage } from '@/features/teacher/pages/AiQuizPublishPage';
 import { StudentEngagementPage } from '@/features/teacher/pages/StudentEngagementPage';
 import { TeacherBrandingPage } from '@/features/teacher/pages/TeacherBrandingPage';
 import { TeacherSettingsPage } from '@/features/teacher/pages/TeacherSettingsPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 import { AllStagesPage } from '@/features/teacher/pages/AllStagesPage';
 import { StageDetailPage } from '@/features/teacher/pages/StageDetailPage';
 import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
@@ -106,6 +107,7 @@ const router = createBrowserRouter([
               { path: '/teacher/quizzes/generator/publish/:quizId', element: <AiQuizPublishPage /> },
               { path: '/teacher/students', element: <StudentEngagementPage /> },
               { path: '/teacher/branding', element: <TeacherBrandingPage /> },
+              { path: '/teacher/profile', element: <ProfilePage /> },
               { path: '/teacher/settings', element: <TeacherSettingsPage /> },
             ],
           },
