@@ -12,6 +12,8 @@ const config: Config = {
       },
 
       colors: {
+        accent: '#00C9DB',
+
         // ─── Brand Navy (Hero, Navbar, Footer, Dark Sections) ───
         navy: {
           950: "#08061B", 

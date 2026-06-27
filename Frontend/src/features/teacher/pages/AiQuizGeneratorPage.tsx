@@ -1,85 +1,282 @@
+import { useState, useCallback, useReducer, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Sparkles } from 'lucide-react';
-import { Button, Card, Input } from '@/shared/components/ui';
-import { addToast } from '@/shared/store/slices/toastSlice';
-import { useAppDispatch } from '@/shared/store/hooks';
-import { cn } from '@/shared/lib/utils/cn';
+import {
+  BrainCircuit, BookOpen, ListChecks, Gauge, Minus, Plus, AlertCircle,
+} from 'lucide-react';
+import { Button, Card } from '@/shared/components/ui';
+import {
+  useStagesList,
+  useChaptersByStage,
+  useLessonsByChapter,
+  useGenerateQuiz,
+} from '@/features/teacher/hooks/useQuizGeneration';
+import {
+  QuizStepper,
+  ContentSelector,
+  QuestionTypeCards,
+  DifficultySelector,
+} from '@/features/teacher/components/quiz-generator';
+import type { QuizGeneratorFormState, GenerateQuizPayload } from '@/features/teacher/types/quizGeneration';
+
+const SESSION_KEY = 'quizGeneratorFormState';
+
+const DEFAULT_FORM: QuizGeneratorFormState = {
+  stageId: '',
+  chapterId: '',
+  lessonIds: [],
+  title: '',
+  questionCount: 5,
+  timeLimit: 30,
+  questionTypes: [],
+  difficultyMode: 'uniform',
+  difficulty: 'medium',
+  mixedDifficulty: { easy: 33, medium: 34, hard: 33 },
+};
+
+type Action =
+  | { type: 'SET_FIELD'; field: keyof QuizGeneratorFormState; value: unknown }
+  | { type: 'SET_MIXED_DIFFICULTY'; value: QuizGeneratorFormState['mixedDifficulty'] }
+  | { type: 'RESET' };
+
+function formReducer(state: QuizGeneratorFormState, action: Action): QuizGeneratorFormState {
+  switch (action.type) {
+    case 'SET_FIELD':
+      return { ...state, [action.field]: action.value as never };
+    case 'SET_MIXED_DIFFICULTY':
+      return { ...state, mixedDifficulty: action.value };
+    case 'RESET':
+      return DEFAULT_FORM;
+    default:
+      return state;
+  }
+}
+
+function SectionHead({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div className="mb-4 flex items-center gap-2.5">
+      <span className="text-text-secondary">{icon}</span>
+      <h3 className="font-cairo text-base font-bold text-text-primary">{title}</h3>
+    </div>
+  );
+}
+
+function FormDivider() {
+  return <div className="my-6 h-px bg-border" />;
+}
 
 export function AiQuizGeneratorPage() {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [form, dispatch] = useReducer(formReducer, DEFAULT_FORM, (initial) => {
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      return saved ? (JSON.parse(saved) as QuizGeneratorFormState) : initial;
+    } catch {
+      return initial;
+    }
+  });
 
-  const steps = [
-    { num: '١', labelKey: 'teacher:quizGenerator.step1' },
-    { num: '٢', labelKey: 'teacher:quizGenerator.step2' },
-    { num: '٣', labelKey: 'teacher:quizGenerator.step3' },
-  ];
-  const activeStep = 0;
+  useEffect(() => {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(form));
+  }, [form]);
+
+  const { data: stages = [], isLoading: stagesLoading, isError: stagesIsError, refetch: refetchStages } = useStagesList();
+  const { data: chapters = [], isLoading: chaptersLoading, isError: chaptersIsError, refetch: refetchChapters } = useChaptersByStage(form.stageId);
+  const { data: lessons = [], isLoading: lessonsLoading, isError: lessonsIsError, refetch: refetchLessons } = useLessonsByChapter(form.chapterId);
+  const generateQuiz = useGenerateQuiz();
+
+  const setField = useCallback(<K extends keyof QuizGeneratorFormState>(field: K, value: QuizGeneratorFormState[K]) => {
+    dispatch({ type: 'SET_FIELD', field, value } as Action);
+  }, []);
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = useCallback((): boolean => {
+    const errs: Record<string, string> = {};
+    if (!form.stageId) errs.stageId = t('teacher:quizGenerator.validationStage');
+    if (!form.chapterId) errs.chapterId = t('teacher:quizGenerator.validationChapter');
+    if (form.questionTypes.length === 0) errs.questionTypes = t('teacher:quizGenerator.validationQuestionType');
+    if (form.questionCount < 1) errs.questionCount = t('teacher:quizGenerator.requiredQuestionCount');
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  }, [form, t]);
+
+  const handleSubmit = useCallback(async () => {
+    if (!validate()) return;
+    const payload: GenerateQuizPayload = {
+      chapterId: form.chapterId,
+      lessonIds: form.lessonIds.length > 0 ? form.lessonIds : undefined,
+      questionCount: form.questionCount,
+      types: form.questionTypes as ('MCQ' | 'TF' | 'ESSAY')[],
+      difficulty: form.difficulty,
+    };
+    try {
+      const result = await generateQuiz.mutateAsync(payload);
+      navigate(`/teacher/quizzes/generator/review/${result.id}`);
+    } catch {
+      /* handled by react-query */
+    }
+  }, [form, validate, generateQuiz, navigate]);
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-      <h1 className="font-cairo text-2xl font-bold text-text-primary">
-        {t('teacher:quizGenerator.title')}
-      </h1>
-
-      {/* Stepper */}
-      <div className="flex items-center gap-3">
-        {steps.map((step, index) => {
-          const isActive = index === activeStep;
-          return (
-            <div
-              key={step.labelKey}
-              className={cn(
-                'flex items-center gap-2 font-cairo text-sm font-medium',
-                isActive ? 'text-accent' : 'text-text-secondary',
-              )}
-            >
-              <span
-                className={cn(
-                  'flex h-7 w-7 items-center justify-center rounded-full text-sm',
-                  isActive ? 'bg-accent text-white' : 'bg-gray-200 text-text-secondary',
-                )}
-              >
-                {step.num}
-              </span>
-              <span>{t(step.labelKey)}</span>
-            </div>
-          );
-        })}
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      <div className="flex items-start gap-3">
+        <span className="flex w-11 h-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 text-white">
+          <BrainCircuit size={22} />
+        </span>
+        <div className="flex flex-col gap-1">
+          <h1 className="font-cairo text-2xl font-extrabold text-text-primary">
+            {t('teacher:quizGenerator.title')}
+          </h1>
+          <p className="font-cairo text-sm text-text-secondary">
+            {t('teacher:quizGenerator.subtitle')}
+          </p>
+        </div>
       </div>
 
-      {/* Step 1 form */}
-      <Card padding="lg" className="flex flex-col gap-4">
-        <Input label={t('teacher:quizGenerator.topic')} placeholder="مثال: الأحماض والقواعد" />
-        <Input
-          type="number"
-          label={t('teacher:quizGenerator.questionCount')}
-          defaultValue={5}
-          min={1}
+      <QuizStepper activeStep={0} />
+
+      <Card padding="none" className="relative z-0 p-6 md:p-8">
+        <SectionHead icon={<BookOpen size={18} />} title={t('teacher:quizGenerator.contentSelection')} />
+
+        <ContentSelector
+          stageId={form.stageId}
+          chapterId={form.chapterId}
+          lessonIds={form.lessonIds}
+          onStageChange={(id) => {
+            setField('stageId', id);
+            setField('chapterId', '');
+            setField('lessonIds', []);
+          }}
+          onChapterChange={(id) => {
+            setField('chapterId', id);
+            setField('lessonIds', []);
+          }}
+          onLessonsChange={(ids) => setField('lessonIds', ids)}
+          stages={stages}
+          chapters={chapters}
+          lessons={lessons}
+          stagesLoading={stagesLoading}
+          stagesError={stagesIsError ? t('teacher:quizGenerator.errorLoadStages') : null}
+          chaptersLoading={chaptersLoading}
+          chaptersError={chaptersIsError ? t('teacher:quizGenerator.errorLoadChapters') : null}
+          lessonsLoading={lessonsLoading}
+          lessonsError={lessonsIsError ? t('teacher:quizGenerator.errorLoadLessons') : null}
+          onRetryStages={() => refetchStages()}
+          onRetryChapters={() => refetchChapters()}
+          onRetryLessons={() => refetchLessons()}
         />
 
-        <div className="flex w-full flex-col gap-1">
-          <label htmlFor="difficulty" className="text-start font-cairo text-sm font-medium text-text-primary">
-            {t('teacher:quizGenerator.difficulty')}
-          </label>
-          <select
-            id="difficulty"
-            className="h-[48px] w-full rounded-input border border-border bg-surface px-3 font-cairo text-text-primary outline-none focus:border-accent"
-            defaultValue="medium"
-          >
-            <option value="easy">سهل</option>
-            <option value="medium">متوسط</option>
-            <option value="hard">صعب</option>
-          </select>
+        <FormDivider />
+
+        <SectionHead icon={<ListChecks size={18} />} title={t('teacher:quizGenerator.quizSettings')} />
+
+        <div className="flex flex-col gap-4">
+          <QuestionTypeCards
+            selected={form.questionTypes}
+            onChange={(types) => setField('questionTypes', types)}
+          />
+          {errors.questionTypes && (
+            <p className="flex items-center gap-1 font-cairo text-xs text-danger">
+              <AlertCircle size={11} />
+              {errors.questionTypes}
+            </p>
+          )}
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <label className="font-cairo text-sm font-medium text-text-primary">
+                {t('teacher:quizGenerator.questionCount')}
+              </label>
+              <div className="flex h-[48px] items-center gap-0 overflow-hidden rounded-input border border-gray-300 hover:border-gray-400 bg-surface">
+                <button
+                  type="button"
+                  onClick={() => setField('questionCount', Math.max(1, form.questionCount - 1))}
+                  className="flex h-full w-12 shrink-0 items-center justify-center text-text-secondary hover:bg-gray-100 border-e border-border disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={form.questionCount <= 1}
+                >
+                  <Minus size={16} />
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  value={form.questionCount}
+                  onChange={(e) => setField('questionCount', Math.max(1, Number(e.target.value) || 1))}
+                  className="h-full w-full flex-1 border-0 bg-transparent text-center font-cairo text-base text-text-primary outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setField('questionCount', form.questionCount + 1)}
+                  className="flex h-full w-12 shrink-0 items-center justify-center text-text-secondary hover:bg-gray-100 border-s border-border"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="font-cairo text-sm font-medium text-text-primary">
+                {t('teacher:quizGenerator.timeLimit')}
+              </label>
+              <div className="flex h-[48px] items-center gap-0 overflow-hidden rounded-input border border-gray-300 hover:border-gray-400 bg-surface">
+                <button
+                  type="button"
+                  onClick={() => setField('timeLimit', Math.max(1, form.timeLimit - 1))}
+                  className="flex h-full w-12 shrink-0 items-center justify-center text-text-secondary hover:bg-gray-100 border-e border-border disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={form.timeLimit <= 1}
+                >
+                  <Minus size={16} />
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  value={form.timeLimit}
+                  onChange={(e) => setField('timeLimit', Math.max(1, Number(e.target.value) || 1))}
+                  className="h-full w-full flex-1 border-0 bg-transparent text-center font-cairo text-base text-text-primary outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setField('timeLimit', form.timeLimit + 1)}
+                  className="flex h-full w-12 shrink-0 items-center justify-center text-text-secondary hover:bg-gray-100 border-s border-border"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <Button
-          className="self-start"
-          onClick={() => dispatch(addToast({ type: 'info', message: 'جارٍ توليد الاختبار بالذكاء الاصطناعي...' }))}
-        >
-          <Sparkles size={18} />
-          {t('teacher:quizGenerator.generateBtn')}
-        </Button>
+        <FormDivider />
+
+        <SectionHead icon={<Gauge size={18} />} title={t('teacher:quizGenerator.difficulty')} />
+
+        <DifficultySelector
+          mode={form.difficultyMode}
+          uniformValue={form.difficulty}
+          mixedValue={form.mixedDifficulty}
+          onModeChange={(mode) => setField('difficultyMode', mode)}
+          onUniformChange={(val) => setField('difficulty', val)}
+          onMixedChange={(val) => dispatch({ type: 'SET_MIXED_DIFFICULTY', value: val })}
+        />
+
+        <div className="mt-5 flex flex-wrap items-center justify-start gap-3">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/teacher/dashboard')}
+            className="h-11 px-5 rounded-xl text-sm font-medium"
+          >
+            {t('teacher:quizGenerator.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            loading={generateQuiz.isPending}
+            className="min-w-[200px] h-12 px-8 gap-2.5 transition-all duration-200 bg-[linear-gradient(135deg,#00C9DB,#0EA5E9)] text-white font-bold text-base rounded-full active:scale-[0.98] disabled:opacity-90 shadow-[0_8px_24px_-6px_rgba(0,201,219,0.5)] hover:shadow-[0_0_20px_rgba(0,201,219,0.6),0_8px_24px_-6px_rgba(0,201,219,0.5)]"
+          >
+            {generateQuiz.isPending ? t('teacher:quizGenerator.generating') : t('teacher:quizGenerator.generateBtn')}
+          </Button>
+        </div>
       </Card>
     </div>
   );

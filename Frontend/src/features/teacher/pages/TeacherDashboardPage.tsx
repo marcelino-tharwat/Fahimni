@@ -198,9 +198,9 @@ function DashboardContent({
             className={`flex flex-col gap-4 rounded-card border ${stat.border} bg-white p-5 shadow-card`}
           >
             <div
-              className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${stat.gradient} shadow-md`}
+              className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br sm:h-14 sm:w-14 sm:rounded-2xl ${stat.gradient} shadow-md`}
             >
-              <stat.icon size={26} className="text-white" />
+              <stat.icon size={22} className="text-white" />
             </div>
             <div>
               <div
