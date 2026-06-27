@@ -51,9 +51,23 @@
       "retry": "إعادة المحاولة"
     }
   },
-  "stats": { "totalStudents": "إجمالي الطلاب", "activeThisMonth": "نشطين هذا الشهر", "publishedChapters": "الأبواب المنشورة", "quizzesCreated": "الاختبارات" },
-  "quickActions": { "addLesson": "أضف درس", "generateQuiz": "أنشئ اختبار" },
-  "contentManager": { "title": "إدارة المحتوى", "selectLesson": "اختر درس للتعديل", "stages": "المراحل", "chapters": "الأبواب", "lessons": "الدروس" },
+  "stats": {
+    "totalStudents": "إجمالي الطلاب",
+    "activeThisMonth": "نشطين هذا الشهر",
+    "publishedChapters": "الأبواب المنشورة",
+    "quizzesCreated": "الاختبارات"
+  },
+  "quickActions": {
+    "addLesson": "أضف درس",
+    "generateQuiz": "أنشئ اختبار"
+  },
+  "contentManager": {
+    "title": "إدارة المحتوى",
+    "selectLesson": "اختر درس للتعديل",
+    "stages": "المراحل",
+    "chapters": "الأبواب",
+    "lessons": "الدروس"
+  },
   "quizGenerator": {
     "title": "إنشاء اختبار بالذكاء الاصطناعي",
     "subtitle": "حدد إعدادات الاختبار وسيقوم الذكاء الاصطناعي بإنشاء الأسئلة تلقائياً",
@@ -117,7 +131,63 @@
     "quizId": "معرف الاختبار:",
     "reviewUnderDevelopment": "صفحة مراجعة الأسئلة قيد التطوير",
     "backToSettings": "العودة إلى الإعدادات",
-    "dashboard": "لوحة التحكم"
+    "dashboard": "لوحة التحكم",
+    "review": {
+      "questionsTitle": "الأسئلة",
+      "countBadge": "{{count}} سؤال",
+      "addQuestion": "إضافة سؤال",
+      "loading": "جارٍ تحميل الأسئلة...",
+      "retry": "إعادة المحاولة",
+      "backToStep1": "العودة للإعدادات",
+      "continueToStep3": "المتابعة للنشر",
+      "correct": "الإجابة الصحيحة",
+      "modelAnswer": "إجابة نموذجية",
+      "essayManualGrading": "سؤال مقالي — يُصحّح يدوياً",
+      "dragHandle": "إعادة ترتيب السؤال {{number}}",
+      "editQuestion": "تعديل السؤال {{number}}",
+      "deleteQuestion": "حذف السؤال {{number}}",
+      "markCorrect": "تحديد الخيار {{label}} كإجابة صحيحة",
+      "optionInput": "نص الخيار {{label}}",
+      "types": {
+        "mcq": "اختيار من متعدد",
+        "trueFalse": "صح أو خطأ",
+        "essay": "مقالي"
+      },
+      "editTitle": "تعديل السؤال",
+      "addTitle": "إضافة سؤال",
+      "typeLabel": "نوع السؤال",
+      "contentLabel": "نص السؤال",
+      "optionsLabel": "الخيارات",
+      "correctAnswerLabel": "الإجابة الصحيحة",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "empty": {
+        "title": "لا توجد أسئلة بعد",
+        "description": "أضف سؤالاً يدوياً للمتابعة."
+      },
+      "deleteConfirm": {
+        "title": "حذف السؤال",
+        "message": "سيؤدي هذا إلى إزالة السؤال من المسودة. هل أنت متأكد؟",
+        "confirm": "حذف",
+        "cancel": "إلغاء"
+      },
+      "errors": {
+        "contentRequired": "نص السؤال مطلوب",
+        "mcqFourOptions": "يجب إدخال أربعة خيارات غير فارغة",
+        "mcqDuplicateOptions": "لا يُسمح بخيارات مكررة",
+        "correctAnswerRequired": "يجب تحديد الإجابة الصحيحة",
+        "saveFailed": "تعذّر حفظ السؤال. حاول مرة أخرى.",
+        "deleteFailed": "تعذّر حذف السؤال.",
+        "reorderFailed": "تعذّر حفظ الترتيب الجديد.",
+        "loadFailed": "تعذّر تحميل المسودة."
+      },
+      "step3": {
+        "title": "الخطوة الثالثة: النشر",
+        "comingSoon": "سيتم تنفيذ شاشة النشر في STORY-56.",
+        "backToReview": "العودة للمراجعة"
+      }
+    }
   },
   "stages": {
     "title": "جميع المراحل",
@@ -226,7 +296,12 @@
     "durationMax": "يجب ألا تزيد المدة عن ٣٠٠ دقيقة",
     "youtubeUrlInvalid": "يجب أن يكون رابطًا صحيحًا"
   },
-  "branding": { "title": "الهوية البصرية", "logo": "الشعار", "colors": "الألوان", "teacherPhoto": "صورة المعلم" },
+  "branding": {
+    "title": "الهوية البصرية",
+    "logo": "الشعار",
+    "colors": "الألوان",
+    "teacherPhoto": "صورة المعلم"
+  },
   "settings": {
     "pageTitle": "إعدادات الحساب",
     "pageSubtitle": "قم بتحديث معلوماتك الشخصية وهوية أكاديميتك",

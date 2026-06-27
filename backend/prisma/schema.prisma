@@ -250,7 +250,7 @@ model Quiz {
   description     String?
   chapterId       String?
   status          QuizStatus    @default(DRAFT)
-  durationMinutes Int?
+  durationMinutes Int?          @map("duration_minutes")
   questionCount   Int           @default(0)
   totalPoints     Int           @default(0)
   createdBy       String
