@@ -10,10 +10,6 @@ import {
 import type { GradeEssaysInput, SubmitAttemptInput } from "./attempts.validation.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 
-function isUniqueViolation(e: unknown): boolean {
-  return (e as { code?: string } | null)?.code === "P2002";
-}
-
 interface SafeQuestion {
   id: string;
   type: GradableQuestion["type"];
@@ -81,6 +77,7 @@ export class AttemptsService {
         id: true,
         title: true,
         description: true,
+        durationMinutes: true,
         status: true,
         chapterId: true,
         chapter: { select: { deletedAt: true } },
@@ -118,7 +115,23 @@ export class AttemptsService {
     const totalPoints = questions.reduce((s, q) => s + q.points, 0);
 
     let attempt;
-    try {
+    // If there's already an IN_PROGRESS attempt, return it (handles Strict Mode
+    // double-mount, page refresh, and accidental re-entry).
+    const existing = await prisma.quizAttempt.findFirst({
+      where: { quizId, studentId, status: "IN_PROGRESS" },
+      select: { id: true, status: true, startedAt: true, totalPoints: true },
+    });
+    if (existing) {
+      attempt = existing;
+    } else {
+      // COMPLETED attempt blocks a new one
+      const completed = await prisma.quizAttempt.findFirst({
+        where: { quizId, studentId, status: "COMPLETED" },
+      });
+      if (completed) {
+        throw new AppError("You have already attempted this quiz", 409);
+      }
+
       attempt = await prisma.quizAttempt.create({
         data: {
           quizId,
@@ -131,11 +144,6 @@ export class AttemptsService {
         },
         select: { id: true, status: true, startedAt: true, totalPoints: true },
       });
-    } catch (e) {
-      if (isUniqueViolation(e)) {
-        throw new AppError("You have already attempted this quiz", 409);
-      }
-      throw e;
     }
 
     const safeQuestions: SafeQuestion[] = questions.map((q) => ({
@@ -153,6 +161,7 @@ export class AttemptsService {
       status: attempt.status,
       startedAt: attempt.startedAt,
       totalPoints: attempt.totalPoints,
+      durationMinutes: quiz.durationMinutes,
       quiz: { id: quiz.id, title: quiz.title, description: quiz.description },
       questions: safeQuestions,
     };

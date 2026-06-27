@@ -245,14 +245,15 @@ model RefreshToken {
 }
 
 model Quiz {
-  id            String        @id @default(uuid())
-  title         String
-  description   String?
-  chapterId     String?
-  status        QuizStatus    @default(DRAFT)
-  questionCount Int           @default(0)
-  totalPoints   Int           @default(0)
-  createdBy     String
+  id              String        @id @default(uuid())
+  title           String
+  description     String?
+  chapterId       String?
+  status          QuizStatus    @default(DRAFT)
+  durationMinutes Int?
+  questionCount   Int           @default(0)
+  totalPoints     Int           @default(0)
+  createdBy       String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   publishedAt   DateTime?

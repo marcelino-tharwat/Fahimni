@@ -6,6 +6,7 @@ export const quizPublicFields = {
   description: true,
   chapterId: true,
   status: true,
+  durationMinutes: true,
   createdBy: true,
   createdAt: true,
   updatedAt: true,
@@ -41,6 +42,7 @@ export interface QuizResponseDTO {
   description: string | null;
   chapterId: string | null;
   status: QuizStatus;
+  durationMinutes: number | null;
   questionCount: number;
   createdAt: Date;
   updatedAt: Date;

@@ -13,6 +13,12 @@ export const createQuizSchema = z.object({
     .optional()
     .nullable(),
   chapterId: z.string().optional().nullable(),
+  durationMinutes: z
+    .number()
+    .int("Duration must be an integer")
+    .min(1, "Duration must be at least 1 minute")
+    .optional()
+    .nullable(),
 });
 
 export const updateQuizSchema = z
@@ -30,6 +36,12 @@ export const updateQuizSchema = z
       .optional()
       .nullable(),
     status: z.enum(["DRAFT", "PUBLISHED"]).optional(),
+    durationMinutes: z
+      .number()
+      .int("Duration must be an integer")
+      .min(1, "Duration must be at least 1 minute")
+      .optional()
+      .nullable(),
   })
   .refine(
     (data) =>

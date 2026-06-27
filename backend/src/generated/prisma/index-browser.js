@@ -283,6 +283,7 @@ exports.Prisma.QuizScalarFieldEnum = {
   description: 'description',
   chapterId: 'chapterId',
   status: 'status',
+  durationMinutes: 'durationMinutes',
   questionCount: 'questionCount',
   totalPoints: 'totalPoints',
   createdBy: 'createdBy',
