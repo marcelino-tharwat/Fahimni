@@ -47,9 +47,9 @@ export function PaymentPage() {
             {t('student:payment.usePromoCode')}
           </h2>
         </div>
-        <div className="flex items-end gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
           <Input
-            className="flex-1"
+            className="w-full sm:flex-1"
             placeholder={t('student:payment.enterCode')}
             value={promoCode}
             onChange={(event) => setPromoCode(event.target.value)}

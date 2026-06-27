@@ -247,7 +247,7 @@ export function AllStagesPage() {
 
       {/* Search + New Stage */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative max-w-sm">
+        <div className="relative w-full md:max-w-sm">
           <Search
             size={18}
             className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -304,8 +304,8 @@ export function AllStagesPage() {
           onDragCancel={handleDragCancel}
         >
           <div style={isMutating ? { pointerEvents: 'none', opacity: 0.7 } : undefined}>
-            {/* Column headers */}
-            <div className="mb-2 flex items-center gap-3 px-5">
+            {/* Column headers (hidden on mobile) */}
+            <div className="mb-2 hidden items-center gap-3 px-5 md:flex">
               <ColLabel className="flex-1 text-start">
                 {t('teacher:stages.columns.stageName')}
               </ColLabel>
@@ -347,25 +347,24 @@ export function AllStagesPage() {
                           }
                         }}
                         className={cn(
-                          'flex cursor-pointer items-center gap-3 rounded-card border border-gray-100 bg-white px-5 py-4 shadow-card transition-transform duration-200 ease-in-out hover:scale-[1.01] hover:shadow-md',
+                          'flex flex-col gap-2 rounded-card border border-gray-100 bg-white px-4 py-3 shadow-card transition-transform duration-200 ease-in-out hover:scale-[1.01] hover:shadow-md md:flex-row md:items-center md:gap-3 md:px-5 md:py-4',
                           dragProps.isDragging && 'opacity-50 shadow-elevated',
                         )}
                       >
-                        {/* Drag handle */}
-                        {canReorder && displayItems.length > 1 ? (
-                          <button
-                            type="button"
-                            className="shrink-0 cursor-grab rounded p-1 text-gray-400 opacity-0 transition-all hover:bg-gray-100 hover:text-navy-600 group-hover:opacity-100 active:cursor-grabbing"
-                            {...dragProps.attributes}
-                            {...dragProps.listeners}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <GripVertical size={16} />
-                          </button>
-                        ) : null}
-
-                        {/* Stage name */}
+                        {/* Top row: drag handle + stage name (always visible) */}
                         <div className="flex min-w-0 flex-1 items-center gap-3 text-start">
+                          {/* Drag handle */}
+                          {canReorder && displayItems.length > 1 ? (
+                            <button
+                              type="button"
+                              className="shrink-0 cursor-grab rounded p-1 text-gray-400 opacity-0 transition-all hover:bg-gray-100 hover:text-navy-600 group-hover:opacity-100 active:cursor-grabbing"
+                              {...dragProps.attributes}
+                              {...dragProps.listeners}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <GripVertical size={16} />
+                            </button>
+                          ) : null}
                           <StageMarker index={idx} />
                           <div className="min-w-0">
                             <p className="font-cairo text-sm font-semibold text-navy-900">
@@ -379,41 +378,54 @@ export function AllStagesPage() {
                           </div>
                         </div>
 
-                        {/* Chapters */}
-                        <div className="flex w-24 items-center justify-center gap-1.5">
-                          <BookOpen size={14} className="text-cyan-500" />
-                          <span className="font-cairo text-sm font-medium text-navy-800">
-                            {stage.chapterCount}
-                          </span>
-                        </div>
+                        {/* Bottom row: meta info + actions (mobile: below name, desktop: inline) */}
+                        <div className="flex items-center justify-between gap-2 md:gap-0">
+                          <div className="flex items-center gap-3">
+                            {/* Chapters */}
+                            <div className="flex items-center gap-1 md:w-24 md:justify-center">
+                              <BookOpen size={14} className="text-cyan-500 md:hidden" />
+                              <span className="font-cairo text-xs text-gray-500 md:hidden">
+                                {t('teacher:stages.columns.chapters')}:
+                              </span>
+                              <BookOpen size={14} className="hidden text-cyan-500 md:block" />
+                              <span className="font-cairo text-sm font-medium text-navy-800">
+                                {stage.chapterCount}
+                              </span>
+                            </div>
 
-                        {/* Lessons */}
-                        <div className="flex w-24 items-center justify-center gap-1.5">
-                          <FileText size={14} className="text-purple-500" />
-                          <span className="font-cairo text-sm font-medium text-navy-800">
-                            {stage.lessonCount}
-                          </span>
-                        </div>
+                            {/* Lessons */}
+                            <div className="flex items-center gap-1 md:w-24 md:justify-center">
+                              <FileText size={14} className="text-purple-500 md:hidden" />
+                              <span className="font-cairo text-xs text-gray-500 md:hidden">
+                                {t('teacher:stages.columns.lessons')}:
+                              </span>
+                              <FileText size={14} className="hidden text-purple-500 md:block" />
+                              <span className="font-cairo text-sm font-medium text-navy-800">
+                                {stage.lessonCount}
+                              </span>
+                            </div>
+                          </div>
 
-                        {/* Actions */}
-                        <div className="flex w-32 items-center justify-center gap-2">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/teacher/content/${stage.id}`);
-                            }}
-                            className="rounded-lg bg-cyan-600 px-4 py-1.5 font-cairo text-sm font-medium text-white transition-colors hover:bg-cyan-700"
-                          >
-                            {t('teacher:stages.actions.details')}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => handleDelete(stage.id, e)}
-                            className="rounded-lg bg-danger-500 px-3 py-1.5 font-cairo text-sm font-medium text-white transition-colors hover:bg-danger-600"
-                          >
-                            {t('actions.delete')}
-                          </button>
+                          {/* Actions */}
+                          <div className="flex items-center gap-2 md:w-32 md:justify-center">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/teacher/content/${stage.id}`);
+                              }}
+                              className="rounded-lg bg-cyan-600 px-3 py-1 font-cairo text-xs font-medium text-white transition-colors hover:bg-cyan-700 md:px-4 md:py-1.5 md:text-sm"
+                            >
+                              {t('teacher:stages.actions.details')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => handleDelete(stage.id, e)}
+                              className="rounded-lg bg-danger-500 px-2 py-1 font-cairo text-xs font-medium text-white transition-colors hover:bg-danger-600 md:px-3 md:py-1.5 md:text-sm"
+                            >
+                              {t('actions.delete')}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}

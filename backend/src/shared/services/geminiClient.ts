@@ -16,7 +16,7 @@ import type {
   GeminiErrorBody,
 } from "../types/gemini.types.js";
 
-const GENERATION_TIMEOUT_MS = 30_000;
+const GENERATION_TIMEOUT_MS = 60_000;
 const EMBED_TIMEOUT_MS = 10_000;
 const MAX_RETRIES = 3;
 const RETRY_DELAYS_MS = [500, 1_000, 2_000] as const;

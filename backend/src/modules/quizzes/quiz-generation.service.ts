@@ -26,8 +26,8 @@ import type { GenerateQuizInput } from "./dto/generate-quiz.dto.js";
 import type { QuestionType, QuizStatus } from "../../generated/prisma/client.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 
-const DEFAULT_TOTAL_TIMEOUT_MS = 25_000;
-const DEFAULT_GEMINI_TIMEOUT_MS = 20_000;
+const DEFAULT_TOTAL_TIMEOUT_MS = 60_000;
+const DEFAULT_GEMINI_TIMEOUT_MS = 55_000;
 const DEFAULT_TOP_K = 8;
 const DEFAULT_MAX_PROMPT_CHARS = 12_000;
 const MAX_TITLE_LENGTH = 200;

@@ -79,7 +79,7 @@ export function CreateStagePage() {
       </div>
 
       {/* Form card — matches the content-tree editor panel styling */}
-      <div className="rounded-card border border-gray-100 bg-surface p-6 shadow-sm">
+      <div className="rounded-card border border-border bg-surface p-4 shadow-sm md:p-6">
         <form
           onSubmit={(e) => {
             e.preventDefault();

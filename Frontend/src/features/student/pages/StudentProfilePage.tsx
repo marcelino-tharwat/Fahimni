@@ -119,7 +119,7 @@ function AcademicProgressCard() {
   const { t } = useTranslation('student');
 
   return (
-    <div className="rounded-card bg-white p-5 shadow-card">
+    <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
         {t('profile.academicProgress')}
       </h2>
@@ -159,7 +159,7 @@ function MyCoursesCard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-card bg-white p-5 shadow-card">
+      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
           <div className="h-5 w-24 animate-pulse rounded bg-gray-200" />
@@ -182,7 +182,7 @@ function MyCoursesCard() {
 
   if (isError) {
     return (
-      <div className="rounded-card bg-white p-5 shadow-card">
+      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
         <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
           {t('profile.myCourses')}
         </h2>
@@ -206,7 +206,7 @@ function MyCoursesCard() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-card bg-white p-5 shadow-card">
+      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
         <div className="mb-4 flex items-center justify-between">
           <div />
           <h2 className="font-cairo text-h3 font-bold text-navy-900">
@@ -223,7 +223,7 @@ function MyCoursesCard() {
   }
 
   return (
-    <div className="rounded-card bg-white p-5 shadow-card">
+    <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <div className="mb-4 flex items-center justify-between">
         <button type="button" className="text-small text-cyan-600 underline underline-offset-2">
           {t('profile.viewAll')}
@@ -263,7 +263,7 @@ function SubscriptionHistoryCard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-card bg-white p-5 shadow-card">
+      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
         <Skeleton className="mb-4 h-6 w-40" />
         <div className="flex flex-col gap-3">
           <Skeleton className="h-14 w-full" />
@@ -277,7 +277,7 @@ function SubscriptionHistoryCard() {
 
   if (isError) {
     return (
-      <div className="rounded-card bg-white p-5 shadow-card">
+      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
         <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
           {t('profile.subscriptionHistory')}
         </h2>
@@ -303,7 +303,7 @@ function SubscriptionHistoryCard() {
     : [];
 
   return (
-    <div className="rounded-card bg-white p-5 shadow-card">
+    <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <div className="mb-4 flex items-center justify-between">
         <button type="button" className="text-small text-cyan-600 underline underline-offset-2">
           {t('profile.viewAll')}
@@ -362,7 +362,7 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
 
   if (isLoading) {
     return (
-      <div className="rounded-card bg-white p-6 shadow-card">
+      <div className="rounded-card bg-white p-4 shadow-card md:p-6">
         <div className="flex flex-col items-center">
           <div className="mb-3 h-20 w-20 animate-pulse rounded-full bg-gray-200" />
           <div className="mb-3 h-5 w-32 animate-pulse rounded bg-gray-200" />
@@ -417,7 +417,7 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
 
   if (isEditing) {
     return (
-      <div className="rounded-card bg-white p-6 shadow-card">
+      <div className="rounded-card bg-white p-4 shadow-card md:p-6">
         <div className="flex flex-col items-center">
           <div className="relative mb-3">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-navy-700">
@@ -475,7 +475,7 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
   }
 
   return (
-    <div className="rounded-card bg-white p-6 shadow-card">
+    <div className="rounded-card bg-white p-4 shadow-card md:p-6">
       <div className="flex flex-col items-center">
         <div className="relative mb-3">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-navy-700">
@@ -539,7 +539,7 @@ function AchievementsCard() {
   const { t } = useTranslation('student');
 
   return (
-    <div className="rounded-card bg-white p-5 shadow-card">
+    <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
         {t('profile.achievements')}
       </h2>
