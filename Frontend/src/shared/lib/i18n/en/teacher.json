@@ -187,7 +187,40 @@
         "title": "Step 3: Publish",
         "comingSoon": "The publish screen lands in STORY-56.",
         "backToReview": "Back to review"
+      },
+      "pageTitle": "Review Questions",
+      "pageSubtitle": "Review the generated questions — edit, delete, or reorder them as you need",
+      "pointsBadge": "{{count}} points",
+      "questionLabel": "Question {{number}}",
+      "pointsLabel": "{{count}} pts",
+      "saveDraft": "Save as draft",
+      "collapseAll": "Collapse all",
+      "expandAll": "Expand all",
+      "filters": {
+        "all": "All",
+        "mcq": "Multiple Choice",
+        "trueFalse": "True / False",
+        "essay": "Essay"
       }
+    },
+    "indexing": {
+      "button": "Index lesson content",
+      "hint": "Chapter lessons must be indexed before AI quiz generation.",
+      "title": "Index lesson content",
+      "description": "Paste each lesson's text and click Index to prepare it for question generation.",
+      "noLessons": "Select a chapter with lessons first.",
+      "close": "Close",
+      "checking": "Checking...",
+      "ready": "Indexed ({{count}} chunks)",
+      "notReady": "Not indexed",
+      "failed": "Indexing failed",
+      "indexedHint": "This lesson is ready for generation.",
+      "contentPlaceholder": "Paste the full lesson text here...",
+      "contentLabel": "Lesson text: {{title}}",
+      "contentRequired": "Lesson text is required.",
+      "indexButton": "Index",
+      "indexing": "Indexing...",
+      "indexError": "Could not index the lesson. Check the content and try again."
     }
   },
   "stages": {

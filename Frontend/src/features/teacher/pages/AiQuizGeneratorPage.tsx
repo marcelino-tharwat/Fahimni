@@ -17,6 +17,7 @@ import {
   QuestionTypeCards,
   DifficultySelector,
 } from '@/features/teacher/components/quiz-generator';
+import { ContentIndexingDialog } from '@/features/teacher/components/quiz-generator/ContentIndexingDialog';
 import type { QuizGeneratorFormState, GenerateQuizPayload } from '@/features/teacher/types/quizGeneration';
 
 const SESSION_KEY = 'quizGeneratorFormState_v2';
@@ -91,6 +92,13 @@ export function AiQuizGeneratorPage() {
   }, []);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [indexOpen, setIndexOpen] = useState(false);
+  // Lessons to offer for indexing: the explicitly selected ones, or all of the
+  // chapter when none are individually selected.
+  const lessonsToIndex =
+    form.lessonIds.length > 0
+      ? lessons.filter((l) => form.lessonIds.includes(l.id))
+      : lessons;
 
   const validate = useCallback((): boolean => {
     const errs: Record<string, string> = {};
@@ -167,6 +175,27 @@ export function AiQuizGeneratorPage() {
           onRetryStages={() => refetchStages()}
           onRetryChapters={() => refetchChapters()}
           onRetryLessons={() => refetchLessons()}
+        />
+
+        <div className="mt-3 flex flex-col gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIndexOpen(true)}
+            disabled={!form.chapterId || lessons.length === 0}
+          >
+            {t('teacher:quizGenerator.indexing.button')}
+          </Button>
+          <span className="font-cairo text-xs text-text-secondary">
+            {t('teacher:quizGenerator.indexing.hint')}
+          </span>
+        </div>
+
+        <ContentIndexingDialog
+          isOpen={indexOpen}
+          onClose={() => setIndexOpen(false)}
+          lessons={lessonsToIndex}
         />
 
         <FormDivider />

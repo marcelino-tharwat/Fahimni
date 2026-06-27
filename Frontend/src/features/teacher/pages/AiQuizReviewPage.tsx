@@ -16,9 +16,18 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { ArrowLeft, ArrowRight, Plus, AlertCircle, RefreshCw } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Plus,
+  AlertCircle,
+  RefreshCw,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 import { Button, Card, Badge, Spinner, EmptyState } from '@/shared/components/ui';
 import { ConfirmDialog } from '@/shared/components/ui';
+import { cn } from '@/shared/lib/utils/cn';
 import { QuizStepper } from '@/features/teacher/components/quiz-generator';
 import { QuestionCard } from '@/features/teacher/components/quiz-generator/QuestionCard';
 import { QuestionEditor } from '@/features/teacher/components/quiz-generator/QuestionEditor';
@@ -35,7 +44,16 @@ import {
   toReviewQuestion,
   type QuestionDraft,
   type ReviewQuestion,
+  type ReviewQuestionType,
 } from '@/features/teacher/lib/quizReview';
+
+type TypeFilter = 'all' | ReviewQuestionType;
+const FILTERS: { value: TypeFilter; key: string }[] = [
+  { value: 'all', key: 'filters.all' },
+  { value: 'MCQ', key: 'filters.mcq' },
+  { value: 'TRUE_FALSE', key: 'filters.trueFalse' },
+  { value: 'ESSAY', key: 'filters.essay' },
+];
 
 export function AiQuizReviewPage() {
   const { quizId } = useParams<{ quizId: string }>();
@@ -60,7 +78,9 @@ export function AiQuizReviewPage() {
   const questions = useMemo<ReviewQuestion[]>(() => {
     if (!orderOverride) return serverQuestions;
     const byId = new Map(serverQuestions.map((q) => [q.id, q]));
-    const ordered = orderOverride.map((id) => byId.get(id)).filter((q): q is ReviewQuestion => Boolean(q));
+    const ordered = orderOverride
+      .map((id) => byId.get(id))
+      .filter((q): q is ReviewQuestion => Boolean(q));
     // Append any questions not present in the override (e.g. newly added).
     const seen = new Set(orderOverride);
     return [...ordered, ...serverQuestions.filter((q) => !seen.has(q.id))];
@@ -71,6 +91,8 @@ export function AiQuizReviewPage() {
   const [editorError, setEditorError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ReviewQuestion | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<TypeFilter>('all');
+  const [collapsed, setCollapsed] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -100,7 +122,13 @@ export function AiQuizReviewPage() {
     } else {
       createQ.mutate(
         { ...payload, sortOrder: questions.length + 1 },
-        { onSuccess: () => { setOrderOverride(null); setEditorOpen(false); }, onError },
+        {
+          onSuccess: () => {
+            setOrderOverride(null);
+            setEditorOpen(false);
+          },
+          onError,
+        },
       );
     }
   };
@@ -109,7 +137,10 @@ export function AiQuizReviewPage() {
     if (!deleteTarget) return;
     setActionError(null);
     deleteQ.mutate(deleteTarget.id, {
-      onSuccess: () => { setOrderOverride(null); setDeleteTarget(null); },
+      onSuccess: () => {
+        setOrderOverride(null);
+        setDeleteTarget(null);
+      },
       onError: () => {
         setDeleteTarget(null);
         setActionError(tk('errors.deleteFailed'));
@@ -128,7 +159,11 @@ export function AiQuizReviewPage() {
     setActionError(null);
     reorderQ.mutate(next, {
       onSuccess: () => setOrderOverride(null),
-      onError: () => { setActionError(tk('errors.reorderFailed')); setOrderOverride(null); void refetch(); },
+      onError: () => {
+        setActionError(tk('errors.reorderFailed'));
+        setOrderOverride(null);
+        void refetch();
+      },
     });
   };
 
@@ -164,32 +199,85 @@ export function AiQuizReviewPage() {
   }
 
   const count = questions.length;
+  const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
   const savingEditor = createQ.isPending || updateQ.isPending;
+  const visible = filter === 'all' ? questions : questions.filter((q) => q.type === filter);
+  // Original 1-based position kept stable even when filtered.
+  const positionOf = (id: string) => questions.findIndex((q) => q.id === id) + 1;
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="font-cairo text-2xl font-bold text-text-primary">{t('teacher:quizGenerator.title')}</h1>
-        <p className="font-cairo text-sm text-text-secondary">{t('teacher:quizGenerator.subtitle')}</p>
-      </div>
-
+    <div className="mx-auto flex w-full max-w-[960px] flex-col gap-6">
       <QuizStepper activeStep={1} />
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h2 className="font-cairo text-lg font-bold text-text-primary">{tk('questionsTitle')}</h2>
-          <Badge variant="info">{tk('countBadge', { count })}</Badge>
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <h1 className="font-cairo text-2xl font-extrabold text-text-primary">
+              {tk('pageTitle')}
+            </h1>
+            <p className="font-cairo text-sm text-text-secondary">{tk('pageSubtitle')}</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <Badge variant="info">{tk('countBadge', { count })}</Badge>
+            <Badge className="bg-violet-100 text-violet-700">
+              {tk('pointsBadge', { count: totalPoints })}
+            </Badge>
+          </div>
         </div>
-        <Button variant="outline" size="sm" onClick={openAdd}>
-          <Plus size={16} />
-          {tk('addQuestion')}
-        </Button>
+        {data.title && (
+          <p className="font-cairo text-xs text-text-muted">{data.title}</p>
+        )}
       </div>
 
+      {/* Toolbar */}
+      <Card padding="sm" className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" onClick={openAdd}>
+            <Plus size={16} />
+            {tk('addQuestion')}
+          </Button>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {FILTERS.map((f) => (
+              <button
+                key={f.value}
+                type="button"
+                onClick={() => setFilter(f.value)}
+                className={cn(
+                  'rounded-full border px-3 py-1 font-cairo text-xs transition-colors',
+                  filter === f.value
+                    ? 'border-accent/30 bg-accent/10 text-accent'
+                    : 'border-border bg-surface text-text-secondary hover:bg-gray-50',
+                )}
+              >
+                {tk(f.key)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/teacher/dashboard')}>
+            {tk('saveDraft')}
+          </Button>
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            className="flex items-center gap-1 rounded-button px-2 py-1.5 font-cairo text-xs text-text-secondary hover:bg-gray-50"
+          >
+            {collapsed ? <Eye size={14} /> : <EyeOff size={14} />}
+            {collapsed ? tk('expandAll') : tk('collapseAll')}
+          </button>
+        </div>
+      </Card>
+
       {actionError && (
-        <p className="font-cairo text-sm text-danger" role="alert">{actionError}</p>
+        <p className="font-cairo text-sm text-danger" role="alert">
+          {actionError}
+        </p>
       )}
 
+      {/* Question list */}
       {count === 0 ? (
         <EmptyState
           title={tk('empty.title')}
@@ -198,13 +286,15 @@ export function AiQuizReviewPage() {
         />
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={questions.map((q) => q.id)} strategy={verticalListSortingStrategy}>
-            <div className="flex flex-col gap-3">
-              {questions.map((q, i) => (
+          <SortableContext items={visible.map((q) => q.id)} strategy={verticalListSortingStrategy}>
+            <div className="flex flex-col gap-4">
+              {visible.map((q) => (
                 <QuestionCard
                   key={q.id}
                   question={q}
-                  index={i + 1}
+                  index={positionOf(q.id)}
+                  reorderable={filter === 'all'}
+                  collapsed={collapsed}
                   onEdit={() => openEdit(q)}
                   onDelete={() => setDeleteTarget(q)}
                 />
@@ -214,17 +304,18 @@ export function AiQuizReviewPage() {
         </DndContext>
       )}
 
-      <div className="flex items-center justify-between border-t border-border pt-4">
-        <Button variant="outline" onClick={() => navigate('/teacher/quizzes/generator')}>
-          <ArrowLeft size={18} />
+      {/* Bottom nav (sticky within the content column) */}
+      <div className="sticky bottom-0 z-20 -mx-1 flex items-center justify-between gap-3 border-t border-border bg-surface/95 px-1 py-3 backdrop-blur">
+        <Button variant="ghost" onClick={() => navigate('/teacher/quizzes/generator')}>
+          <ArrowRight size={18} />
           {tk('backToStep1')}
         </Button>
         <Button
           onClick={() => navigate(`/teacher/quizzes/generator/publish/${quizId}`)}
           disabled={count === 0}
         >
-          {tk('continueToStep3')}
-          <ArrowRight size={18} />
+          {tk('continueToStep3')} ({tk('countBadge', { count })})
+          <ArrowLeft size={18} />
         </Button>
       </div>
 
