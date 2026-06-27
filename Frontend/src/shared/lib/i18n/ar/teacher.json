@@ -90,6 +90,7 @@
     "validationStage": "اختر المرحلة الدراسية",
     "validationChapter": "اختر الفصل",
     "validationQuestionType": "اختر نوع واحد على الأقل",
+    "validationDifficulty": "اختر مستوى الصعوبة",
     "generationFailed": "حدث خطأ أثناء إنشاء الاختبار",
     "generationFailedHint": "حاول تقليل عدد الأسئلة أو اختيار نوع واحد فقط",
     "emptyStages": "ليس لديك أي محتوى بعد",
