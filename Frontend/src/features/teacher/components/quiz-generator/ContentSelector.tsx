@@ -125,7 +125,7 @@ export function ContentSelector({
               value ? 'text-navy-800' : 'text-gray-400',
             )}
           >
-            <option value="" disabled>{placeholder}</option>
+            <option value="" hidden>{placeholder}</option>
             {options.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
