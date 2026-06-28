@@ -62,5 +62,14 @@ export const gradeEssaysSchema = z
   })
   .strict();
 
+/** GET /api/quizzes/:quizId/results — sort controls (STORY-68). */
+export const resultsQuerySchema = z
+  .object({
+    sortBy: z.enum(["score", "studentName"]).optional(),
+    sortOrder: z.enum(["asc", "desc"]).optional(),
+  })
+  .strip();
+
 export type SubmitAttemptInput = z.infer<typeof submitAttemptSchema>;
 export type GradeEssaysInput = z.infer<typeof gradeEssaysSchema>;
+export type ResultsQueryInput = z.infer<typeof resultsQuerySchema>;

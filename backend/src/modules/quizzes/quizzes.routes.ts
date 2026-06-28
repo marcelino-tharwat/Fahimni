@@ -107,6 +107,32 @@ questionNestedRouter.delete(
 // Mount nested question routes BEFORE parameterized /:id routes
 quizStandaloneRouter.use("/:quizId/questions", questionNestedRouter);
 
+// ── Teacher quiz results & CSV export (STORY-68) ───────────────────────
+// Static sub-paths registered before parameterized /:id routes.
+quizStandaloneRouter.get(
+  "/:quizId/results/ungraded",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  attemptsController.getUngradedResults,
+);
+
+quizStandaloneRouter.get(
+  "/:quizId/results/export",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  attemptsController.exportResults,
+);
+
+// Query params (sortBy/sortOrder) are validated inside the controller because
+// Express 5 exposes req.query as a read-only getter (validateRequest can't
+// reassign it).
+quizStandaloneRouter.get(
+  "/:quizId/results",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  attemptsController.getResults,
+);
+
 // ── Publish & Assign ────────────────────────────────────────────────────
 quizStandaloneRouter.patch(
   "/:id/publish",

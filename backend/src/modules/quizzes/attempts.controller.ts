@@ -3,7 +3,11 @@ import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { attemptsService } from "./attempts.service.js";
-import type { GradeEssaysInput, SubmitAttemptInput } from "./attempts.validation.js";
+import { resultsQuerySchema } from "./attempts.validation.js";
+import type {
+  GradeEssaysInput,
+  SubmitAttemptInput,
+} from "./attempts.validation.js";
 
 export class AttemptsController {
   /** GET /api/quizzes/student (student) — grouped quiz list for the quiz page. */
@@ -68,6 +72,53 @@ export class AttemptsController {
         input,
       );
       res.status(200).json(okResponse("Essays graded successfully", data));
+    },
+  );
+
+  /** GET /api/quizzes/:quizId/results (teacher) — all attempts + breakdown. */
+  public getResults = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const quizId = req.params.quizId;
+      if (typeof quizId !== "string") throw new AppError("Invalid quiz ID", 400);
+
+      const parsed = resultsQuerySchema.safeParse(req.query);
+      if (!parsed.success) throw parsed.error;
+
+      const data = await attemptsService.getQuizResults(
+        quizId,
+        req.user!.id,
+        parsed.data,
+      );
+      res.status(200).json(okResponse("Quiz results fetched successfully", data));
+    },
+  );
+
+  /** GET /api/quizzes/:quizId/results/ungraded (teacher). */
+  public getUngradedResults = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const quizId = req.params.quizId;
+      if (typeof quizId !== "string") throw new AppError("Invalid quiz ID", 400);
+
+      const data = await attemptsService.getUngradedResults(quizId, req.user!.id);
+      res
+        .status(200)
+        .json(okResponse("Ungraded attempts fetched successfully", data));
+    },
+  );
+
+  /** GET /api/quizzes/:quizId/results/export (teacher) — CSV download. */
+  public exportResults = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const quizId = req.params.quizId;
+      if (typeof quizId !== "string") throw new AppError("Invalid quiz ID", 400);
+
+      const csv = await attemptsService.buildResultsCsv(quizId, req.user!.id);
+      res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="quiz-${quizId}-results.csv"`,
+      );
+      res.status(200).send(csv);
     },
   );
 }
