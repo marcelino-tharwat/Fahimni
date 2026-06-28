@@ -7,6 +7,7 @@ export const teacherPublicFields = {
   bio: true,
   photoUrl: true,
   logoUrl: true,
+  aiTutorDailyQueryLimit: true,
   createdAt: true,
   updatedAt: true,
 } as const;
@@ -18,6 +19,7 @@ export interface TeacherProfileResponseDTO {
   bio: string | null;
   photoUrl: string | null;
   logoUrl: string | null;
+  aiTutorDailyQueryLimit: number;
   createdAt: Date;
   updatedAt: Date;
   user: {

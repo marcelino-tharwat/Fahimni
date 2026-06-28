@@ -5471,8 +5471,18 @@ export namespace Prisma {
 
   export type AggregateTeacherProfile = {
     _count: TeacherProfileCountAggregateOutputType | null
+    _avg: TeacherProfileAvgAggregateOutputType | null
+    _sum: TeacherProfileSumAggregateOutputType | null
     _min: TeacherProfileMinAggregateOutputType | null
     _max: TeacherProfileMaxAggregateOutputType | null
+  }
+
+  export type TeacherProfileAvgAggregateOutputType = {
+    aiTutorDailyQueryLimit: number | null
+  }
+
+  export type TeacherProfileSumAggregateOutputType = {
+    aiTutorDailyQueryLimit: number | null
   }
 
   export type TeacherProfileMinAggregateOutputType = {
@@ -5482,6 +5492,7 @@ export namespace Prisma {
     bio: string | null
     photoUrl: string | null
     logoUrl: string | null
+    aiTutorDailyQueryLimit: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5493,6 +5504,7 @@ export namespace Prisma {
     bio: string | null
     photoUrl: string | null
     logoUrl: string | null
+    aiTutorDailyQueryLimit: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5504,11 +5516,20 @@ export namespace Prisma {
     bio: number
     photoUrl: number
     logoUrl: number
+    aiTutorDailyQueryLimit: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
+
+  export type TeacherProfileAvgAggregateInputType = {
+    aiTutorDailyQueryLimit?: true
+  }
+
+  export type TeacherProfileSumAggregateInputType = {
+    aiTutorDailyQueryLimit?: true
+  }
 
   export type TeacherProfileMinAggregateInputType = {
     id?: true
@@ -5517,6 +5538,7 @@ export namespace Prisma {
     bio?: true
     photoUrl?: true
     logoUrl?: true
+    aiTutorDailyQueryLimit?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5528,6 +5550,7 @@ export namespace Prisma {
     bio?: true
     photoUrl?: true
     logoUrl?: true
+    aiTutorDailyQueryLimit?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5539,6 +5562,7 @@ export namespace Prisma {
     bio?: true
     photoUrl?: true
     logoUrl?: true
+    aiTutorDailyQueryLimit?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5582,6 +5606,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TeacherProfileAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TeacherProfileSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TeacherProfileMinAggregateInputType
@@ -5612,6 +5648,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TeacherProfileCountAggregateInputType | true
+    _avg?: TeacherProfileAvgAggregateInputType
+    _sum?: TeacherProfileSumAggregateInputType
     _min?: TeacherProfileMinAggregateInputType
     _max?: TeacherProfileMaxAggregateInputType
   }
@@ -5623,9 +5661,12 @@ export namespace Prisma {
     bio: string | null
     photoUrl: string | null
     logoUrl: string | null
+    aiTutorDailyQueryLimit: number
     createdAt: Date
     updatedAt: Date
     _count: TeacherProfileCountAggregateOutputType | null
+    _avg: TeacherProfileAvgAggregateOutputType | null
+    _sum: TeacherProfileSumAggregateOutputType | null
     _min: TeacherProfileMinAggregateOutputType | null
     _max: TeacherProfileMaxAggregateOutputType | null
   }
@@ -5651,6 +5692,7 @@ export namespace Prisma {
     bio?: boolean
     photoUrl?: boolean
     logoUrl?: boolean
+    aiTutorDailyQueryLimit?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5663,6 +5705,7 @@ export namespace Prisma {
     bio?: boolean
     photoUrl?: boolean
     logoUrl?: boolean
+    aiTutorDailyQueryLimit?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5675,6 +5718,7 @@ export namespace Prisma {
     bio?: boolean
     photoUrl?: boolean
     logoUrl?: boolean
+    aiTutorDailyQueryLimit?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5687,11 +5731,12 @@ export namespace Prisma {
     bio?: boolean
     photoUrl?: boolean
     logoUrl?: boolean
+    aiTutorDailyQueryLimit?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TeacherProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "subject" | "bio" | "photoUrl" | "logoUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherProfile"]>
+  export type TeacherProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "subject" | "bio" | "photoUrl" | "logoUrl" | "aiTutorDailyQueryLimit" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherProfile"]>
   export type TeacherProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -5714,6 +5759,7 @@ export namespace Prisma {
       bio: string | null
       photoUrl: string | null
       logoUrl: string | null
+      aiTutorDailyQueryLimit: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["teacherProfile"]>
@@ -6146,6 +6192,7 @@ export namespace Prisma {
     readonly bio: FieldRef<"TeacherProfile", 'String'>
     readonly photoUrl: FieldRef<"TeacherProfile", 'String'>
     readonly logoUrl: FieldRef<"TeacherProfile", 'String'>
+    readonly aiTutorDailyQueryLimit: FieldRef<"TeacherProfile", 'Int'>
     readonly createdAt: FieldRef<"TeacherProfile", 'DateTime'>
     readonly updatedAt: FieldRef<"TeacherProfile", 'DateTime'>
   }
@@ -25132,6 +25179,7 @@ export namespace Prisma {
     bio: 'bio',
     photoUrl: 'photoUrl',
     logoUrl: 'logoUrl',
+    aiTutorDailyQueryLimit: 'aiTutorDailyQueryLimit',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -25823,6 +25871,7 @@ export namespace Prisma {
     bio?: StringNullableFilter<"TeacherProfile"> | string | null
     photoUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     logoUrl?: StringNullableFilter<"TeacherProfile"> | string | null
+    aiTutorDailyQueryLimit?: IntFilter<"TeacherProfile"> | number
     createdAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -25835,6 +25884,7 @@ export namespace Prisma {
     bio?: SortOrderInput | SortOrder
     photoUrl?: SortOrderInput | SortOrder
     logoUrl?: SortOrderInput | SortOrder
+    aiTutorDailyQueryLimit?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -25850,6 +25900,7 @@ export namespace Prisma {
     bio?: StringNullableFilter<"TeacherProfile"> | string | null
     photoUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     logoUrl?: StringNullableFilter<"TeacherProfile"> | string | null
+    aiTutorDailyQueryLimit?: IntFilter<"TeacherProfile"> | number
     createdAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -25862,11 +25913,14 @@ export namespace Prisma {
     bio?: SortOrderInput | SortOrder
     photoUrl?: SortOrderInput | SortOrder
     logoUrl?: SortOrderInput | SortOrder
+    aiTutorDailyQueryLimit?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TeacherProfileCountOrderByAggregateInput
+    _avg?: TeacherProfileAvgOrderByAggregateInput
     _max?: TeacherProfileMaxOrderByAggregateInput
     _min?: TeacherProfileMinOrderByAggregateInput
+    _sum?: TeacherProfileSumOrderByAggregateInput
   }
 
   export type TeacherProfileScalarWhereWithAggregatesInput = {
@@ -25879,6 +25933,7 @@ export namespace Prisma {
     bio?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
     photoUrl?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
     logoUrl?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
+    aiTutorDailyQueryLimit?: IntWithAggregatesFilter<"TeacherProfile"> | number
     createdAt?: DateTimeWithAggregatesFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TeacherProfile"> | Date | string
   }
@@ -27335,6 +27390,7 @@ export namespace Prisma {
     bio?: string | null
     photoUrl?: string | null
     logoUrl?: string | null
+    aiTutorDailyQueryLimit?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutTeacherProfileInput
@@ -27347,6 +27403,7 @@ export namespace Prisma {
     bio?: string | null
     photoUrl?: string | null
     logoUrl?: string | null
+    aiTutorDailyQueryLimit?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27357,6 +27414,7 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTeacherProfileNestedInput
@@ -27369,6 +27427,7 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27380,6 +27439,7 @@ export namespace Prisma {
     bio?: string | null
     photoUrl?: string | null
     logoUrl?: string | null
+    aiTutorDailyQueryLimit?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27390,6 +27450,7 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27401,6 +27462,7 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -29035,6 +29097,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -29047,8 +29120,13 @@ export namespace Prisma {
     bio?: SortOrder
     photoUrl?: SortOrder
     logoUrl?: SortOrder
+    aiTutorDailyQueryLimit?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type TeacherProfileAvgOrderByAggregateInput = {
+    aiTutorDailyQueryLimit?: SortOrder
   }
 
   export type TeacherProfileMaxOrderByAggregateInput = {
@@ -29058,6 +29136,7 @@ export namespace Prisma {
     bio?: SortOrder
     photoUrl?: SortOrder
     logoUrl?: SortOrder
+    aiTutorDailyQueryLimit?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29069,8 +29148,13 @@ export namespace Prisma {
     bio?: SortOrder
     photoUrl?: SortOrder
     logoUrl?: SortOrder
+    aiTutorDailyQueryLimit?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type TeacherProfileSumOrderByAggregateInput = {
+    aiTutorDailyQueryLimit?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -29091,7 +29175,7 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type IntFilter<$PrismaModel = never> = {
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
     notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -29099,7 +29183,12 @@ export namespace Prisma {
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -29162,22 +29251,6 @@ export namespace Prisma {
 
   export type StageSumOrderByAggregateInput = {
     sortOrder?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -30843,6 +30916,14 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserUpdateOneRequiredWithoutTeacherProfileNestedInput = {
     create?: XOR<UserCreateWithoutTeacherProfileInput, UserUncheckedCreateWithoutTeacherProfileInput>
     connectOrCreate?: UserCreateOrConnectWithoutTeacherProfileInput
@@ -30869,14 +30950,6 @@ export namespace Prisma {
     connectOrCreate?: ChapterCreateOrConnectWithoutStageInput | ChapterCreateOrConnectWithoutStageInput[]
     createMany?: ChapterCreateManyStageInputEnvelope
     connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -31802,17 +31875,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -31838,6 +31900,17 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -32459,6 +32532,7 @@ export namespace Prisma {
     bio?: string | null
     photoUrl?: string | null
     logoUrl?: string | null
+    aiTutorDailyQueryLimit?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32469,6 +32543,7 @@ export namespace Prisma {
     bio?: string | null
     photoUrl?: string | null
     logoUrl?: string | null
+    aiTutorDailyQueryLimit?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32874,6 +32949,7 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32884,6 +32960,7 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

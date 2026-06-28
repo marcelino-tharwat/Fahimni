@@ -146,6 +146,7 @@ exports.Prisma.TeacherProfileScalarFieldEnum = {
   bio: 'bio',
   photoUrl: 'photoUrl',
   logoUrl: 'logoUrl',
+  aiTutorDailyQueryLimit: 'aiTutorDailyQueryLimit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
