@@ -23,12 +23,16 @@ attemptsRouter.post(
 );
 
 // Teacher grades pending essay answers.
-attemptsRouter.post(
-  "/:attemptId/grade-essays",
+// STORY-68 specifies PATCH; the original POST is kept as a backward-compatible
+// alias. Both map to the same handler + validation.
+const gradeEssaysChain = [
   authenticateMiddleware,
   authorizeMiddleware("OPERATION"),
   validateRequest(gradeEssaysSchema),
   controller.gradeEssays,
-);
+] as const;
+
+attemptsRouter.post("/:attemptId/grade-essays", ...gradeEssaysChain);
+attemptsRouter.patch("/:attemptId/grade-essays", ...gradeEssaysChain);
 
 export default attemptsRouter;

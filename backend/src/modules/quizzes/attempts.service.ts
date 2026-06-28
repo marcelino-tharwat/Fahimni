@@ -3,11 +3,16 @@ import { AppError } from "../../shared/utils/AppError.js";
 import {
   finalizeOutcome,
   gradeAttempt,
+  roundPercentage,
   validateAnswerFormat,
   type GradableQuestion,
   type QuestionResult,
 } from "./auto-grade.js";
-import type { GradeEssaysInput, SubmitAttemptInput } from "./attempts.validation.js";
+import type {
+  GradeEssaysInput,
+  ResultsQueryInput,
+  SubmitAttemptInput,
+} from "./attempts.validation.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 
 interface SafeQuestion {
@@ -448,6 +453,182 @@ export class AttemptsService {
     }
 
     return this.toSubmissionResponse(attemptId, attempt.quizId, "GRADED", newResults);
+  }
+
+  // ── STORY-68: teacher results & CSV export ───────────────────────────────
+
+  /**
+   * GET /api/quizzes/:quizId/results — all submitted attempts for a quiz the
+   * teacher owns, each with score + per-question breakdown. Sortable by score
+   * or student name with a deterministic tie-break.
+   */
+  public async getQuizResults(
+    quizId: string,
+    teacherId: string,
+    query: ResultsQueryInput,
+  ) {
+    await this.assertQuizOwnership(quizId, teacherId);
+    const rows = this.sortResults(await this.fetchResultRows(quizId), query);
+    return { quizId, count: rows.length, results: rows };
+  }
+
+  /**
+   * GET /api/quizzes/:quizId/results/ungraded — only attempts still awaiting
+   * essay grading (status COMPLETED ⟺ has pending essays). Oldest first.
+   */
+  public async getUngradedResults(quizId: string, teacherId: string) {
+    await this.assertQuizOwnership(quizId, teacherId);
+    const rows = (await this.fetchResultRows(quizId)).filter(
+      (r) => r.status === "COMPLETED",
+    );
+    rows.sort((a, b) => {
+      const at = a.submittedAt ? a.submittedAt.getTime() : 0;
+      const bt = b.submittedAt ? b.submittedAt.getTime() : 0;
+      return at !== bt ? at - bt : a.attemptId.localeCompare(b.attemptId);
+    });
+    return { quizId, count: rows.length, results: rows };
+  }
+
+  /**
+   * GET /api/quizzes/:quizId/results/export — results as a CSV string (one row
+   * per attempt). Includes a UTF-8 BOM (Arabic-friendly) and CSV-injection
+   * guarding. Sorted by student name for a stable export.
+   */
+  public async buildResultsCsv(quizId: string, teacherId: string): Promise<string> {
+    await this.assertQuizOwnership(quizId, teacherId);
+    const rows = this.sortResults(await this.fetchResultRows(quizId), {
+      sortBy: "studentName",
+      sortOrder: "asc",
+    });
+
+    const header = [
+      "Student Name",
+      "Status",
+      "Score",
+      "Total Points",
+      "Percentage",
+      "Pending Essays",
+      "Submitted At",
+    ];
+    const lines = [
+      header,
+      ...rows.map((r) => [
+        r.studentName,
+        r.status,
+        String(r.score),
+        String(r.totalPoints),
+        String(r.percentage),
+        String(r.pendingEssayCount),
+        r.submittedAt ? r.submittedAt.toISOString() : "",
+      ]),
+    ];
+
+    const body = lines
+      .map((cols) => cols.map((c) => this.escapeCsv(c)).join(","))
+      .join("\r\n");
+    return `﻿${body}\r\n`;
+  }
+
+  /** Verify the quiz exists and is owned by this teacher. */
+  private async assertQuizOwnership(quizId: string, teacherId: string) {
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: quizId },
+      select: { id: true, createdBy: true },
+    });
+    if (!quiz) throw new AppError("Quiz not found", 404);
+    if (quiz.createdBy !== teacherId) {
+      throw new AppError("You do not own this quiz", 403);
+    }
+    return quiz;
+  }
+
+  /** Load submitted attempts + questions and map to result rows. */
+  private async fetchResultRows(quizId: string) {
+    const [questions, attempts] = await Promise.all([
+      prisma.question.findMany({
+        where: { quizId },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, text: true, type: true, points: true, sortOrder: true },
+      }),
+      prisma.quizAttempt.findMany({
+        where: { quizId, status: { in: ["COMPLETED", "GRADED"] } },
+        select: {
+          id: true,
+          studentId: true,
+          status: true,
+          score: true,
+          totalPoints: true,
+          completedAt: true,
+          answers: true,
+          student: { select: { fullName: true } },
+        },
+      }),
+    ]);
+
+    return attempts.map((a) => {
+      const stored = (a.answers as unknown as QuestionResult[]) ?? [];
+      const byQuestion = new Map(stored.map((r) => [r.questionId, r]));
+      const breakdown = questions.map((q) => {
+        const r = byQuestion.get(q.id);
+        return {
+          questionId: q.id,
+          questionText: q.text,
+          type: q.type,
+          result: r?.result ?? "pending",
+          awardedPoints: r?.awardedPoints ?? null,
+          maxPoints: q.points,
+          ...(r?.feedback ? { feedback: r.feedback } : {}),
+        };
+      });
+      const score =
+        a.score ?? stored.reduce((s, r) => s + (r.awardedPoints ?? 0), 0);
+      const pendingEssayCount = stored.filter(
+        (r) => r.result === "pending",
+      ).length;
+
+      return {
+        attemptId: a.id,
+        studentId: a.studentId,
+        studentName: a.student.fullName,
+        status: a.status,
+        score,
+        totalPoints: a.totalPoints,
+        percentage: roundPercentage(score, a.totalPoints),
+        pendingEssayCount,
+        submittedAt: a.completedAt,
+        questions: breakdown,
+      };
+    });
+  }
+
+  /** Sort result rows with a fully deterministic order. */
+  private sortResults<
+    T extends { score: number; studentName: string; attemptId: string },
+  >(rows: T[], query: ResultsQueryInput): T[] {
+    const sortBy = query.sortBy ?? "score";
+    const sortOrder =
+      query.sortOrder ?? (sortBy === "score" ? "desc" : "asc");
+    const dir = sortOrder === "asc" ? 1 : -1;
+
+    return [...rows].sort((a, b) => {
+      const primary =
+        sortBy === "studentName"
+          ? a.studentName.localeCompare(b.studentName, "ar")
+          : a.score - b.score;
+      if (primary !== 0) return primary * dir;
+      // Deterministic tie-breakers regardless of direction.
+      const nameCmp = a.studentName.localeCompare(b.studentName, "ar");
+      if (nameCmp !== 0) return nameCmp;
+      return a.attemptId.localeCompare(b.attemptId);
+    });
+  }
+
+  /** CSV-escape a cell, guarding against CSV/formula injection. */
+  private escapeCsv(value: string): string {
+    let v = value ?? "";
+    if (/^[=+\-@\t\r]/.test(v)) v = `'${v}`;
+    if (/[",\r\n]/.test(v)) v = `"${v.replace(/"/g, '""')}"`;
+    return v;
   }
 
   /** Safe submission/grading response — never exposes correctAnswer. */
