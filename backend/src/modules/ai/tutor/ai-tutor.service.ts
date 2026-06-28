@@ -44,6 +44,17 @@ export interface TutorAnswer {
   citations: TutorCitation[];
 }
 
+/**
+ * Optional per-call budget overrides. When omitted, the instance defaults
+ * (total 25s / retrieval 15s / generation 10s) apply, so existing callers are
+ * unaffected. STORY-64's endpoint passes a tighter sub-20s budget here.
+ */
+export interface TutorAskOptions {
+  totalTimeoutMs?: number;
+  retrievalTimeoutMs?: number;
+  geminiTimeoutMs?: number;
+}
+
 /** A retrieved chunk enriched with trusted metadata, scoped to one ask call. */
 interface PreparedSource extends TutorPromptSource {
   lessonId: string;
@@ -104,21 +115,34 @@ export class AiTutorService {
     this.maxAnswerChars = deps.maxAnswerChars ?? DEFAULT_MAX_ANSWER_CHARS;
   }
 
-  public async ask(question: string, studentId: string): Promise<TutorAnswer> {
+  public async ask(
+    question: string,
+    studentId: string,
+    options: TutorAskOptions = {},
+  ): Promise<TutorAnswer> {
     const trimmed = this.validateQuestion(question);
     this.validateStudentId(studentId);
     const language = detectQuestionLanguage(trimmed);
 
-    const deadline = Date.now() + this.totalTimeoutMs;
+    const totalTimeoutMs = options.totalTimeoutMs ?? this.totalTimeoutMs;
+    const retrievalTimeoutMs =
+      options.retrievalTimeoutMs ?? this.retrievalTimeoutMs;
+    const geminiTimeoutMs = options.geminiTimeoutMs ?? this.geminiTimeoutMs;
+
+    const deadline = Date.now() + totalTimeoutMs;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const timeoutPromise = new Promise<never>((_, reject) => {
-      timer = setTimeout(
-        () => reject(new TutorTimeoutError()),
-        this.totalTimeoutMs,
-      );
+      timer = setTimeout(() => reject(new TutorTimeoutError()), totalTimeoutMs);
     });
 
-    const work = this._ask(trimmed, studentId, language, deadline);
+    const work = this._ask(
+      trimmed,
+      studentId,
+      language,
+      deadline,
+      retrievalTimeoutMs,
+      geminiTimeoutMs,
+    );
     // If the deadline wins the race, `work` may still settle later; swallow its
     // eventual rejection so it is never an unhandled promise.
     work.catch(() => undefined);
@@ -137,11 +161,13 @@ export class AiTutorService {
     studentId: string,
     language: "ar" | "en",
     deadline: number,
+    retrievalTimeoutMs: number,
+    geminiTimeoutMs: number,
   ): Promise<TutorAnswer> {
     const startedAt = Date.now();
 
-    // 1–3. Retrieval (embed + access-scoped top-K search) under the 15s budget.
-    const sources = await this.retrieve(question, studentId);
+    // 1–3. Retrieval (embed + access-scoped top-K search) under its budget.
+    const sources = await this.retrieve(question, studentId, retrievalTimeoutMs);
 
     // 7 (Phase): no accessible relevant chunks → localized not-found, no Gemini.
     if (sources.length === 0) {
@@ -158,7 +184,7 @@ export class AiTutorService {
     const systemInstruction = buildTutorSystemInstruction(language);
 
     const geminiStart = Date.now();
-    const raw = await this.callGemini(prompt, systemInstruction);
+    const raw = await this.callGemini(prompt, systemInstruction, geminiTimeoutMs);
     const geminiMs = Date.now() - geminiStart;
 
     this.assertDeadline(deadline);
@@ -179,16 +205,17 @@ export class AiTutorService {
     return { answer: parsed.answer, citations };
   }
 
-  /** Retrieval stage wrapped in its own 15s budget. */
+  /** Retrieval stage wrapped in its own budget. */
   private async retrieve(
     question: string,
     studentId: string,
+    retrievalTimeoutMs: number,
   ): Promise<PreparedSource[]> {
     let timer: ReturnType<typeof setTimeout> | undefined;
     const timeoutPromise = new Promise<never>((_, reject) => {
       timer = setTimeout(
         () => reject(new TutorTimeoutError("انتهت مهلة البحث في المحتوى.")),
-        this.retrievalTimeoutMs,
+        retrievalTimeoutMs,
       );
     });
 
@@ -273,6 +300,7 @@ export class AiTutorService {
   private async callGemini(
     prompt: string,
     systemInstruction: string,
+    geminiTimeoutMs: number,
   ): Promise<string> {
     try {
       return await this.gemini.generateContent(
@@ -282,7 +310,7 @@ export class AiTutorService {
           responseMimeType: "application/json",
           maxOutputTokens: 2_048,
         },
-        { timeoutMs: this.geminiTimeoutMs, systemInstruction },
+        { timeoutMs: geminiTimeoutMs, systemInstruction },
       );
     } catch (error) {
       if (error instanceof GeminiContentBlockedError) {
