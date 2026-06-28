@@ -9,7 +9,6 @@ vi.mock("../../../config/database.js", () => ({ prisma: {} }));
 import { TutorController } from "./tutor.controller.js";
 import {
   TutorNotEnrolledError,
-  TutorDailyLimitError,
   TutorTimeoutError,
   TutorSafetyBlockedError,
 } from "./ai-tutor.errors.js";
@@ -17,14 +16,16 @@ import { TUTOR_NOT_FOUND_MESSAGE } from "../gemini/prompts/tutor-prompt.js";
 import { logger } from "../../../config/logger.js";
 
 const STUDENT = "student-1";
+const RESETS_AT = "2026-06-29T00:00:00.000Z";
 
 const flush = () => new Promise((r) => setImmediate(r));
 
 function makeReqRes(body: unknown, user: { id: string; role?: string } | undefined = { id: STUDENT, role: "STUDENT" }) {
-  const req = { body, user } as unknown as Request;
+  const req = { body, user, headers: {} } as unknown as Request;
   const res = {
     status: vi.fn().mockReturnThis(),
     json: vi.fn().mockReturnThis(),
+    set: vi.fn().mockReturnThis(),
   } as unknown as Response;
   const next = vi.fn() as unknown as NextFunction;
   return { req, res, next };
@@ -37,9 +38,11 @@ function makeDeps(over: Record<string, unknown> = {}) {
       utcDateString: vi.fn().mockReturnValue("2026-06-28"),
       tryClaim: vi.fn().mockResolvedValue(true),
       refund: vi.fn().mockResolvedValue(undefined),
+      resolveEffectiveLimit: vi.fn().mockResolvedValue(5),
+      resetsAt: vi.fn().mockReturnValue(RESETS_AT),
+      getToday: vi.fn(),
     },
     enrollmentService: { hasActiveEnrollment: vi.fn().mockResolvedValue(true) },
-    dailyLimit: 5,
     ...over,
   };
 }
@@ -71,7 +74,7 @@ describe("TutorController.ask", () => {
     expect(res.json).not.toHaveBeenCalled();
   });
 
-  it("returns 429 when the daily quota claim is denied (tutor not called)", async () => {
+  it("returns 429 with limit/remaining/resetsAt metadata when the quota is exceeded", async () => {
     const deps = makeDeps();
     deps.usageService.tryClaim.mockResolvedValue(false);
     const c = new TutorController(deps as never);
@@ -80,12 +83,23 @@ describe("TutorController.ask", () => {
     c.ask(req, res, next);
     await flush();
 
-    expect(next).toHaveBeenCalledWith(expect.any(TutorDailyLimitError));
+    expect(res.status).toHaveBeenCalledWith(429);
+    const body = (res.json as ReturnType<typeof vi.fn>).mock.calls[0]![0];
+    expect(body).toMatchObject({
+      success: false,
+      statusCode: 429,
+      limit: 5,
+      remaining: 0,
+      resetsAt: RESETS_AT,
+    });
+    expect(res.set).toHaveBeenCalledWith("Retry-After", expect.any(String));
     expect(deps.tutorService.ask).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
 
-  it("claims quota with the configured limit and authenticated id", async () => {
+  it("claims quota with the resolved effective limit and authenticated id", async () => {
     const deps = makeDeps();
+    deps.usageService.resolveEffectiveLimit.mockResolvedValue(7);
     deps.tutorService.ask.mockResolvedValue(answer());
     const c = new TutorController(deps as never);
     const { req, res, next } = makeReqRes({ question: "سؤال صالح طويل", studentId: "evil" });
@@ -93,11 +107,32 @@ describe("TutorController.ask", () => {
     c.ask(req, res, next);
     await flush();
 
-    expect(deps.usageService.tryClaim).toHaveBeenCalledWith(STUDENT, 5, "2026-06-28");
+    expect(deps.usageService.resolveEffectiveLimit).toHaveBeenCalledWith(STUDENT);
+    expect(deps.usageService.tryClaim).toHaveBeenCalledWith(STUDENT, 7, "2026-06-28");
     expect(deps.tutorService.ask).toHaveBeenCalledTimes(1);
     // Uses authenticated id, ignores body studentId.
     expect(deps.tutorService.ask.mock.calls[0]![1]).toBe(STUDENT);
     expect(next).not.toHaveBeenCalled();
+  });
+
+  it("usage-today returns used/limit/remaining/resetsAt without incrementing", async () => {
+    const deps = makeDeps();
+    deps.usageService.resolveEffectiveLimit.mockResolvedValue(20);
+    deps.usageService.getToday.mockResolvedValue({
+      used: 4,
+      limit: 20,
+      remaining: 16,
+      resetsAt: RESETS_AT,
+    });
+    const c = new TutorController(deps as never);
+    const { req, res, next } = makeReqRes(undefined);
+
+    c.usageToday(req, res, next);
+    await flush();
+
+    const payload = (res.json as ReturnType<typeof vi.fn>).mock.calls[0]![0];
+    expect(payload.data).toEqual({ used: 4, limit: 20, remaining: 16, resetsAt: RESETS_AT });
+    expect(deps.usageService.tryClaim).not.toHaveBeenCalled();
   });
 
   it("returns the public answer + citations without relevanceScore", async () => {

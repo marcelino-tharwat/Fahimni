@@ -17,4 +17,12 @@ router.post(
   controller.ask,
 );
 
+// STORY-65 — read-only daily usage snapshot (never increments).
+router.get(
+  "/usage-today",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.usageToday,
+);
+
 export default router;

@@ -12,6 +12,7 @@ type TeacherProfileUpdateData = {
   bio?: string | null;
   photoUrl?: string | null;
   logoUrl?: string | null;
+  aiTutorDailyQueryLimit?: number;
 };
 
 const uploadService = new UploadService();
@@ -175,6 +176,9 @@ export class TeacherService {
     }
     if (input.logoUrl !== undefined) {
       data.logoUrl = input.logoUrl === "" ? null : input.logoUrl;
+    }
+    if (input.aiTutorDailyQueryLimit !== undefined) {
+      data.aiTutorDailyQueryLimit = input.aiTutorDailyQueryLimit;
     }
 
     return data;

@@ -50,6 +50,9 @@ model TeacherProfile {
   bio       String?
   photoUrl  String?
   logoUrl   String?
+  // STORY-65: teacher-configured daily AI-tutor question cap for this teacher's
+  // students. Default 20 (matches AI_TUTOR_DAILY_QUERY_LIMIT platform default).
+  aiTutorDailyQueryLimit Int @default(20)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

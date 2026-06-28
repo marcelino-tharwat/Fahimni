@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  AI_TUTOR_LIMIT_MIN,
+  AI_TUTOR_LIMIT_MAX,
+} from "../ai/tutor/tutor.constants.js";
 
 export const updateTeacherProfileSchema = z
   .object({
@@ -30,6 +34,12 @@ export const updateTeacherProfileSchema = z
       .optional(),
     photoUrl: z.string().optional(),
     logoUrl: z.string().optional(),
+    aiTutorDailyQueryLimit: z
+      .number({ message: "Daily query limit must be a number" })
+      .int("Daily query limit must be an integer")
+      .min(AI_TUTOR_LIMIT_MIN, `Daily query limit must be at least ${AI_TUTOR_LIMIT_MIN}`)
+      .max(AI_TUTOR_LIMIT_MAX, `Daily query limit must not exceed ${AI_TUTOR_LIMIT_MAX}`)
+      .optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided for update",
