@@ -45,6 +45,39 @@
   "takeQuiz": "ابدأ الاختبار",
   "quizResults": "نتيجة الاختبار",
   "score": "الدرجة: {{score}} من {{total}}",
+  "quizzes": {
+    "pageTitle": "الاختبارات",
+    "pageSubtitle": "راجع نتائج اختباراتك وابدأ اختبارات جديدة",
+    "stats": {
+      "total": "إجمالي الاختبارات",
+      "completed": "المكتملة",
+      "new": "الاختبارات الجديدة"
+    },
+    "chapter": {
+      "quizCount": "{{count}} اختبار",
+      "quizCount_plural": "{{count}} اختبارات",
+      "progress": "{{done}}/{{total}} مكتمل",
+      "noQuizzes": "لم يتم نشر اختبارات لهذا الفصل بعد"
+    },
+    "quiz": {
+      "questions": "{{count}} سؤال",
+      "questions_plural": "{{count}} أسئلة",
+      "points": "{{count}} نقطة",
+      "points_plural": "{{count}} نقاط",
+      "minutes": "{{count}} دقيقة",
+      "minutes_plural": "{{count}} دقائق"
+    },
+    "empty": {
+      "title": "لا توجد اختبارات متاحة",
+      "description": "ليس لديك أي اختبارات بعد. ستظهر الاختبارات هنا بمجرد تعيينها للفصول التي اشتركت فيها.",
+      "cta": "تصفّح المحتوى"
+    },
+    "error": {
+      "title": "تعذّر تحميل الاختبارات",
+      "description": "حدث خطأ أثناء تحميل الاختبارات. يرجى المحاولة مرة أخرى.",
+      "retry": "إعادة المحاولة"
+    }
+  },
   "aiTutor": { "title": "المساعد الذكي", "placeholder": "اكتب سؤالك هنا...", "send": "إرسال", "remainingQuestions": "{{count}} أسئلة متبقية اليوم", "source": "المصدر: {{lesson}}" },
   "payment": { "title": "الاشتراك في {{chapter}}", "payWithCard": "الدفع بالبطاقة", "usePromoCode": "عندي كود خصم", "enterCode": "ادخل الكود", "apply": "تطبيق", "success": "تم الاشتراك بنجاح!", "error": "حصل مشكلة في الدفع، حاول تاني" },
   "profile": {

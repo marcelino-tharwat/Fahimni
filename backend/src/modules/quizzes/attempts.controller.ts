@@ -6,6 +6,14 @@ import { attemptsService } from "./attempts.service.js";
 import type { GradeEssaysInput, SubmitAttemptInput } from "./attempts.validation.js";
 
 export class AttemptsController {
+  /** GET /api/quizzes/student (student) — grouped quiz list for the quiz page. */
+  public getStudentQuizList = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const data = await attemptsService.getStudentQuizList(req.user!.id);
+      res.status(200).json(okResponse("Student quizzes fetched successfully", data));
+    },
+  );
+
   /** GET /api/quizzes/assigned (student) */
   public getAssigned = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {

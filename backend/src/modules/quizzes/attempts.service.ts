@@ -26,6 +26,109 @@ export type AttemptState =
   | "GRADED";
 
 export class AttemptsService {
+  /** GET /api/quizzes/student — grouped quiz list for the student quiz page. */
+  public async getStudentQuizList(studentId: string) {
+    const enrollments = await prisma.enrollment.findMany({
+      where: { studentId, status: "ACTIVE", chapter: { deletedAt: null } },
+      select: {
+        chapterId: true,
+        chapter: {
+          select: {
+            id: true,
+            name: true,
+            stage: { select: { id: true, name: true } },
+            quizzes: {
+              where: { status: "PUBLISHED" },
+              select: {
+                id: true,
+                title: true,
+                questionCount: true,
+                totalPoints: true,
+                durationMinutes: true,
+                chapterId: true,
+              },
+              orderBy: { id: "asc" },
+            },
+          },
+        },
+      },
+    });
+    if (enrollments.length === 0) {
+      return { totalCount: 0, completedCount: 0, newCount: 0, chapters: [] };
+    }
+
+    const allQuizIds = enrollments.flatMap((e) =>
+      e.chapter.quizzes.map((q) => q.id),
+    );
+    if (allQuizIds.length === 0) {
+      return { totalCount: 0, completedCount: 0, newCount: 0, chapters: [] };
+    }
+
+    const attempts = await prisma.quizAttempt.findMany({
+      where: { studentId, quizId: { in: allQuizIds } },
+      select: { quizId: true, status: true, score: true, totalPoints: true },
+    });
+    const attemptByQuiz = new Map(attempts.map((a) => [a.quizId, a]));
+
+    type QuizStatus = "new" | "passed" | "failed" | "pending";
+    let totalCount = 0;
+    let completedCount = 0;
+    let newCount = 0;
+
+    const chapters = enrollments.map((e) => {
+      const quizzes = e.chapter.quizzes.map((q) => {
+        const attempt = attemptByQuiz.get(q.id);
+        let status: QuizStatus;
+        let score: number | undefined;
+        let retakeAllowed: boolean | undefined;
+
+        if (!attempt) {
+          status = "new";
+          newCount++;
+        } else if (attempt.status === "IN_PROGRESS" || attempt.status === "COMPLETED") {
+          status = "pending";
+        } else {
+          const pct =
+            attempt.totalPoints > 0
+              ? ((attempt.score ?? 0) / attempt.totalPoints) * 100
+              : 0;
+          if (pct >= 50) {
+            status = "passed";
+          } else {
+            status = "failed";
+            retakeAllowed = true;
+          }
+          completedCount++;
+          score = Math.round(pct);
+        }
+
+        totalCount++;
+
+        return {
+          id: q.id,
+          title: q.title,
+          questionCount: q.questionCount,
+          points: q.totalPoints,
+          durationMinutes: q.durationMinutes ?? 30,
+          difficulty: "medium" as const,
+          status,
+          ...(score !== undefined ? { score } : {}),
+          ...(retakeAllowed !== undefined ? { retakeAllowed } : {}),
+        };
+      });
+
+      return {
+        id: e.chapter.id,
+        title: e.chapter.name,
+        stage: e.chapter.stage.name,
+        quizzes,
+        defaultOpen: true,
+      };
+    });
+
+    return { totalCount, completedCount, newCount, chapters };
+  }
+
   /** GET /api/quizzes/assigned — published quizzes for the student's enrolled chapters. */
   public async getAssignedQuizzes(studentId: string) {
     const enrollments = await prisma.enrollment.findMany({

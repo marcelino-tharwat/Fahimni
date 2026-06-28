@@ -1,5 +1,6 @@
 import { apiClient } from '@/shared/lib/api/client';
 import type { QuestionType, QuizOption } from '@/shared/types';
+import type { StudentQuizzesData } from '@/features/student/types/studentQuiz';
 
 export interface ApiOptionValue {
   id: string;
@@ -121,6 +122,11 @@ export function mapMetaFromAttempt(
 }
 
 export const quizApi = {
+  /** GET /api/quizzes/student — all quizzes for the student grouped by chapter. */
+  getStudentQuizzes: () =>
+    apiClient.get<{ success: boolean; data: StudentQuizzesData }>('/quizzes/student'),
+
+  /** GET /api/chapters/:chapterId/quizzes — published quizzes for a chapter. */
   /** GET /api/chapters/:chapterId/quizzes — published quizzes for a chapter. */
   getChapterQuizzes: (chapterId: string) =>
     apiClient.get<{ success: boolean; data: ChapterQuizInfo[] }>(

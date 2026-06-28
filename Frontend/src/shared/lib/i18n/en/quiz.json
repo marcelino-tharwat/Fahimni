@@ -37,5 +37,24 @@
   "totalQuestions": "Total Questions",
   "totalPoints": "Total Points",
   "duration": "Duration",
-  "attempt": "Attempt"
+  "attempt": "Attempt",
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard"
+  },
+  "quiz": {
+    "status": {
+      "new": "New",
+      "passed": "Passed {{score}}%",
+      "failed": "Failed {{score}}%",
+      "pending": "Pending"
+    },
+    "action": {
+      "start": "Start Quiz",
+      "viewResult": "View Result",
+      "viewAnswers": "View Answers",
+      "retake": "Retake"
+    }
+  }
 }

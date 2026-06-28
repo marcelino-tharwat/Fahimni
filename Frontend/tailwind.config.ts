@@ -137,6 +137,7 @@ const config: Config = {
         "cta-gradient":     "linear-gradient(135deg, #1A103D 0%, #37306B 100%)",
         "card-dark":        "linear-gradient(180deg, #1A103D 0%, #251758 100%)",
         "cyan-gradient":    "linear-gradient(135deg, #00C9DB 0%, #0EA5E9 100%)",
+        "green-gradient":   "linear-gradient(135deg, #10B981 0%, #059669 100%)",
         "purple-gradient":  "linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)",
       },
     },
