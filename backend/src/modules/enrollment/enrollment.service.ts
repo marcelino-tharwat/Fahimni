@@ -125,6 +125,20 @@ export class EnrollmentService {
     return this.toResponseDTO(enrollment);
   }
 
+  /**
+   * STORY-64: true when the student has at least one usable enrollment — an
+   * ACTIVE enrollment in a non-deleted chapter. Bounded existence check (no row
+   * payload fetched). Reuses the same "usable enrollment" rule as the rest of
+   * the app (status ACTIVE + chapter not deleted).
+   */
+  public async hasActiveEnrollment(studentId: string): Promise<boolean> {
+    const found = await prisma.enrollment.findFirst({
+      where: { studentId, status: "ACTIVE", chapter: { deletedAt: null } },
+      select: { id: true },
+    });
+    return found !== null;
+  }
+
   /** SCRUM-504: a student's own active enrollments, newest first. */
   public async getMyEnrollments(
     studentId: string,

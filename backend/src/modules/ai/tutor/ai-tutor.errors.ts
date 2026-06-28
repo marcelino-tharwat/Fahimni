@@ -58,3 +58,24 @@ export class TutorUnavailableError extends TutorError {
     Object.setPrototypeOf(this, TutorUnavailableError.prototype);
   }
 }
+
+/**
+ * STORY-64: the authenticated student has no active enrollment in any chapter.
+ * The Story's acceptance criteria explicitly mandate 401 for this case.
+ */
+export class TutorNotEnrolledError extends TutorError {
+  constructor(message = "يجب الاشتراك في فصل دراسي واحد على الأقل لاستخدام المساعد الذكي.") {
+    super(message, 401, "NOT_ENROLLED");
+    this.name = "TutorNotEnrolledError";
+    Object.setPrototypeOf(this, TutorNotEnrolledError.prototype);
+  }
+}
+
+/** STORY-64: the student exceeded the daily AI-tutor query limit. */
+export class TutorDailyLimitError extends TutorError {
+  constructor(message = "لقد تجاوزت الحد اليومي المسموح به من أسئلة المساعد الذكي. حاول غداً.") {
+    super(message, 429, "DAILY_LIMIT_EXCEEDED");
+    this.name = "TutorDailyLimitError";
+    Object.setPrototypeOf(this, TutorDailyLimitError.prototype);
+  }
+}

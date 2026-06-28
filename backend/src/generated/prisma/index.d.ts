@@ -74,6 +74,13 @@ export type LessonMaterial = $Result.DefaultSelection<Prisma.$LessonMaterialPayl
  */
 export type ContentChunk = $Result.DefaultSelection<Prisma.$ContentChunkPayload>
 /**
+ * Model AiTutorUsage
+ * STORY-64: per-student daily AI-tutor query accounting. One row per student
+ * per UTC calendar day; the unique constraint enables an atomic claim/refund so
+ * concurrent requests cannot exceed AI_TUTOR_DAILY_QUERY_LIMIT.
+ */
+export type AiTutorUsage = $Result.DefaultSelection<Prisma.$AiTutorUsagePayload>
+/**
  * Model AuditLog
  * 
  */
@@ -465,6 +472,16 @@ export class PrismaClient<
     * ```
     */
   get contentChunk(): Prisma.ContentChunkDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.aiTutorUsage`: Exposes CRUD operations for the **AiTutorUsage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AiTutorUsages
+    * const aiTutorUsages = await prisma.aiTutorUsage.findMany()
+    * ```
+    */
+  get aiTutorUsage(): Prisma.AiTutorUsageDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
@@ -971,6 +988,7 @@ export namespace Prisma {
     LessonProgress: 'LessonProgress',
     LessonMaterial: 'LessonMaterial',
     ContentChunk: 'ContentChunk',
+    AiTutorUsage: 'AiTutorUsage',
     AuditLog: 'AuditLog',
     RefreshToken: 'RefreshToken',
     Quiz: 'Quiz',
@@ -992,7 +1010,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "contentChunk" | "auditLog" | "refreshToken" | "quiz" | "question" | "quizAttempt" | "promoCode"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "question" | "quizAttempt" | "promoCode"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1884,6 +1902,80 @@ export namespace Prisma {
           }
         }
       }
+      AiTutorUsage: {
+        payload: Prisma.$AiTutorUsagePayload<ExtArgs>
+        fields: Prisma.AiTutorUsageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AiTutorUsageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AiTutorUsageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>
+          }
+          findFirst: {
+            args: Prisma.AiTutorUsageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AiTutorUsageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>
+          }
+          findMany: {
+            args: Prisma.AiTutorUsageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>[]
+          }
+          create: {
+            args: Prisma.AiTutorUsageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>
+          }
+          createMany: {
+            args: Prisma.AiTutorUsageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AiTutorUsageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>[]
+          }
+          delete: {
+            args: Prisma.AiTutorUsageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>
+          }
+          update: {
+            args: Prisma.AiTutorUsageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>
+          }
+          deleteMany: {
+            args: Prisma.AiTutorUsageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AiTutorUsageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AiTutorUsageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>[]
+          }
+          upsert: {
+            args: Prisma.AiTutorUsageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiTutorUsagePayload>
+          }
+          aggregate: {
+            args: Prisma.AiTutorUsageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAiTutorUsage>
+          }
+          groupBy: {
+            args: Prisma.AiTutorUsageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AiTutorUsageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AiTutorUsageCountArgs<ExtArgs>
+            result: $Utils.Optional<AiTutorUsageCountAggregateOutputType> | number
+          }
+        }
+      }
       AuditLog: {
         payload: Prisma.$AuditLogPayload<ExtArgs>
         fields: Prisma.AuditLogFieldRefs
@@ -2448,6 +2540,7 @@ export namespace Prisma {
     lessonProgress?: LessonProgressOmit
     lessonMaterial?: LessonMaterialOmit
     contentChunk?: ContentChunkOmit
+    aiTutorUsage?: AiTutorUsageOmit
     auditLog?: AuditLogOmit
     refreshToken?: RefreshTokenOmit
     quiz?: QuizOmit
@@ -2545,6 +2638,7 @@ export namespace Prisma {
     refreshTokens: number
     stages: number
     paymentTransactions: number
+    aiTutorUsage: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2559,6 +2653,7 @@ export namespace Prisma {
     refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
     stages?: boolean | UserCountOutputTypeCountStagesArgs
     paymentTransactions?: boolean | UserCountOutputTypeCountPaymentTransactionsArgs
+    aiTutorUsage?: boolean | UserCountOutputTypeCountAiTutorUsageArgs
   }
 
   // Custom InputTypes
@@ -2647,6 +2742,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountPaymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PaymentTransactionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAiTutorUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiTutorUsageWhereInput
   }
 
 
@@ -3041,6 +3143,7 @@ export namespace Prisma {
     studentProfile?: boolean | User$studentProfileArgs<ExtArgs>
     teacherProfile?: boolean | User$teacherProfileArgs<ExtArgs>
     paymentTransactions?: boolean | User$paymentTransactionsArgs<ExtArgs>
+    aiTutorUsage?: boolean | User$aiTutorUsageArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3095,6 +3198,7 @@ export namespace Prisma {
     studentProfile?: boolean | User$studentProfileArgs<ExtArgs>
     teacherProfile?: boolean | User$teacherProfileArgs<ExtArgs>
     paymentTransactions?: boolean | User$paymentTransactionsArgs<ExtArgs>
+    aiTutorUsage?: boolean | User$aiTutorUsageArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3116,6 +3220,7 @@ export namespace Prisma {
       studentProfile: Prisma.$StudentProfilePayload<ExtArgs> | null
       teacherProfile: Prisma.$TeacherProfilePayload<ExtArgs> | null
       paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
+      aiTutorUsage: Prisma.$AiTutorUsagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3534,6 +3639,7 @@ export namespace Prisma {
     studentProfile<T extends User$studentProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$studentProfileArgs<ExtArgs>>): Prisma__StudentProfileClient<$Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     teacherProfile<T extends User$teacherProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherProfileArgs<ExtArgs>>): Prisma__TeacherProfileClient<$Result.GetResult<Prisma.$TeacherProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     paymentTransactions<T extends User$paymentTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    aiTutorUsage<T extends User$aiTutorUsageArgs<ExtArgs> = {}>(args?: Subset<T, User$aiTutorUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4264,6 +4370,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * User.aiTutorUsage
+   */
+  export type User$aiTutorUsageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    where?: AiTutorUsageWhereInput
+    orderBy?: AiTutorUsageOrderByWithRelationInput | AiTutorUsageOrderByWithRelationInput[]
+    cursor?: AiTutorUsageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AiTutorUsageScalarFieldEnum | AiTutorUsageScalarFieldEnum[]
   }
 
   /**
@@ -16905,6 +17035,1116 @@ export namespace Prisma {
 
 
   /**
+   * Model AiTutorUsage
+   */
+
+  export type AggregateAiTutorUsage = {
+    _count: AiTutorUsageCountAggregateOutputType | null
+    _avg: AiTutorUsageAvgAggregateOutputType | null
+    _sum: AiTutorUsageSumAggregateOutputType | null
+    _min: AiTutorUsageMinAggregateOutputType | null
+    _max: AiTutorUsageMaxAggregateOutputType | null
+  }
+
+  export type AiTutorUsageAvgAggregateOutputType = {
+    count: number | null
+  }
+
+  export type AiTutorUsageSumAggregateOutputType = {
+    count: number | null
+  }
+
+  export type AiTutorUsageMinAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    usageDate: Date | null
+    count: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AiTutorUsageMaxAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    usageDate: Date | null
+    count: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AiTutorUsageCountAggregateOutputType = {
+    id: number
+    studentId: number
+    usageDate: number
+    count: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AiTutorUsageAvgAggregateInputType = {
+    count?: true
+  }
+
+  export type AiTutorUsageSumAggregateInputType = {
+    count?: true
+  }
+
+  export type AiTutorUsageMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    usageDate?: true
+    count?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AiTutorUsageMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    usageDate?: true
+    count?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AiTutorUsageCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    usageDate?: true
+    count?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AiTutorUsageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiTutorUsage to aggregate.
+     */
+    where?: AiTutorUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiTutorUsages to fetch.
+     */
+    orderBy?: AiTutorUsageOrderByWithRelationInput | AiTutorUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AiTutorUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiTutorUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiTutorUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AiTutorUsages
+    **/
+    _count?: true | AiTutorUsageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AiTutorUsageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AiTutorUsageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AiTutorUsageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AiTutorUsageMaxAggregateInputType
+  }
+
+  export type GetAiTutorUsageAggregateType<T extends AiTutorUsageAggregateArgs> = {
+        [P in keyof T & keyof AggregateAiTutorUsage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAiTutorUsage[P]>
+      : GetScalarType<T[P], AggregateAiTutorUsage[P]>
+  }
+
+
+
+
+  export type AiTutorUsageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiTutorUsageWhereInput
+    orderBy?: AiTutorUsageOrderByWithAggregationInput | AiTutorUsageOrderByWithAggregationInput[]
+    by: AiTutorUsageScalarFieldEnum[] | AiTutorUsageScalarFieldEnum
+    having?: AiTutorUsageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AiTutorUsageCountAggregateInputType | true
+    _avg?: AiTutorUsageAvgAggregateInputType
+    _sum?: AiTutorUsageSumAggregateInputType
+    _min?: AiTutorUsageMinAggregateInputType
+    _max?: AiTutorUsageMaxAggregateInputType
+  }
+
+  export type AiTutorUsageGroupByOutputType = {
+    id: string
+    studentId: string
+    usageDate: Date
+    count: number
+    createdAt: Date
+    updatedAt: Date
+    _count: AiTutorUsageCountAggregateOutputType | null
+    _avg: AiTutorUsageAvgAggregateOutputType | null
+    _sum: AiTutorUsageSumAggregateOutputType | null
+    _min: AiTutorUsageMinAggregateOutputType | null
+    _max: AiTutorUsageMaxAggregateOutputType | null
+  }
+
+  type GetAiTutorUsageGroupByPayload<T extends AiTutorUsageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AiTutorUsageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AiTutorUsageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AiTutorUsageGroupByOutputType[P]>
+            : GetScalarType<T[P], AiTutorUsageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AiTutorUsageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    usageDate?: boolean
+    count?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aiTutorUsage"]>
+
+  export type AiTutorUsageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    usageDate?: boolean
+    count?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aiTutorUsage"]>
+
+  export type AiTutorUsageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    usageDate?: boolean
+    count?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aiTutorUsage"]>
+
+  export type AiTutorUsageSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    usageDate?: boolean
+    count?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AiTutorUsageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "usageDate" | "count" | "createdAt" | "updatedAt", ExtArgs["result"]["aiTutorUsage"]>
+  export type AiTutorUsageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AiTutorUsageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AiTutorUsageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AiTutorUsagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AiTutorUsage"
+    objects: {
+      student: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      studentId: string
+      usageDate: Date
+      count: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["aiTutorUsage"]>
+    composites: {}
+  }
+
+  type AiTutorUsageGetPayload<S extends boolean | null | undefined | AiTutorUsageDefaultArgs> = $Result.GetResult<Prisma.$AiTutorUsagePayload, S>
+
+  type AiTutorUsageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AiTutorUsageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AiTutorUsageCountAggregateInputType | true
+    }
+
+  export interface AiTutorUsageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AiTutorUsage'], meta: { name: 'AiTutorUsage' } }
+    /**
+     * Find zero or one AiTutorUsage that matches the filter.
+     * @param {AiTutorUsageFindUniqueArgs} args - Arguments to find a AiTutorUsage
+     * @example
+     * // Get one AiTutorUsage
+     * const aiTutorUsage = await prisma.aiTutorUsage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AiTutorUsageFindUniqueArgs>(args: SelectSubset<T, AiTutorUsageFindUniqueArgs<ExtArgs>>): Prisma__AiTutorUsageClient<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AiTutorUsage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AiTutorUsageFindUniqueOrThrowArgs} args - Arguments to find a AiTutorUsage
+     * @example
+     * // Get one AiTutorUsage
+     * const aiTutorUsage = await prisma.aiTutorUsage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AiTutorUsageFindUniqueOrThrowArgs>(args: SelectSubset<T, AiTutorUsageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AiTutorUsageClient<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AiTutorUsage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiTutorUsageFindFirstArgs} args - Arguments to find a AiTutorUsage
+     * @example
+     * // Get one AiTutorUsage
+     * const aiTutorUsage = await prisma.aiTutorUsage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AiTutorUsageFindFirstArgs>(args?: SelectSubset<T, AiTutorUsageFindFirstArgs<ExtArgs>>): Prisma__AiTutorUsageClient<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AiTutorUsage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiTutorUsageFindFirstOrThrowArgs} args - Arguments to find a AiTutorUsage
+     * @example
+     * // Get one AiTutorUsage
+     * const aiTutorUsage = await prisma.aiTutorUsage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AiTutorUsageFindFirstOrThrowArgs>(args?: SelectSubset<T, AiTutorUsageFindFirstOrThrowArgs<ExtArgs>>): Prisma__AiTutorUsageClient<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AiTutorUsages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiTutorUsageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AiTutorUsages
+     * const aiTutorUsages = await prisma.aiTutorUsage.findMany()
+     * 
+     * // Get first 10 AiTutorUsages
+     * const aiTutorUsages = await prisma.aiTutorUsage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aiTutorUsageWithIdOnly = await prisma.aiTutorUsage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AiTutorUsageFindManyArgs>(args?: SelectSubset<T, AiTutorUsageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AiTutorUsage.
+     * @param {AiTutorUsageCreateArgs} args - Arguments to create a AiTutorUsage.
+     * @example
+     * // Create one AiTutorUsage
+     * const AiTutorUsage = await prisma.aiTutorUsage.create({
+     *   data: {
+     *     // ... data to create a AiTutorUsage
+     *   }
+     * })
+     * 
+     */
+    create<T extends AiTutorUsageCreateArgs>(args: SelectSubset<T, AiTutorUsageCreateArgs<ExtArgs>>): Prisma__AiTutorUsageClient<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AiTutorUsages.
+     * @param {AiTutorUsageCreateManyArgs} args - Arguments to create many AiTutorUsages.
+     * @example
+     * // Create many AiTutorUsages
+     * const aiTutorUsage = await prisma.aiTutorUsage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AiTutorUsageCreateManyArgs>(args?: SelectSubset<T, AiTutorUsageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AiTutorUsages and returns the data saved in the database.
+     * @param {AiTutorUsageCreateManyAndReturnArgs} args - Arguments to create many AiTutorUsages.
+     * @example
+     * // Create many AiTutorUsages
+     * const aiTutorUsage = await prisma.aiTutorUsage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AiTutorUsages and only return the `id`
+     * const aiTutorUsageWithIdOnly = await prisma.aiTutorUsage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AiTutorUsageCreateManyAndReturnArgs>(args?: SelectSubset<T, AiTutorUsageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AiTutorUsage.
+     * @param {AiTutorUsageDeleteArgs} args - Arguments to delete one AiTutorUsage.
+     * @example
+     * // Delete one AiTutorUsage
+     * const AiTutorUsage = await prisma.aiTutorUsage.delete({
+     *   where: {
+     *     // ... filter to delete one AiTutorUsage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AiTutorUsageDeleteArgs>(args: SelectSubset<T, AiTutorUsageDeleteArgs<ExtArgs>>): Prisma__AiTutorUsageClient<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AiTutorUsage.
+     * @param {AiTutorUsageUpdateArgs} args - Arguments to update one AiTutorUsage.
+     * @example
+     * // Update one AiTutorUsage
+     * const aiTutorUsage = await prisma.aiTutorUsage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AiTutorUsageUpdateArgs>(args: SelectSubset<T, AiTutorUsageUpdateArgs<ExtArgs>>): Prisma__AiTutorUsageClient<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AiTutorUsages.
+     * @param {AiTutorUsageDeleteManyArgs} args - Arguments to filter AiTutorUsages to delete.
+     * @example
+     * // Delete a few AiTutorUsages
+     * const { count } = await prisma.aiTutorUsage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AiTutorUsageDeleteManyArgs>(args?: SelectSubset<T, AiTutorUsageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiTutorUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiTutorUsageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AiTutorUsages
+     * const aiTutorUsage = await prisma.aiTutorUsage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AiTutorUsageUpdateManyArgs>(args: SelectSubset<T, AiTutorUsageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiTutorUsages and returns the data updated in the database.
+     * @param {AiTutorUsageUpdateManyAndReturnArgs} args - Arguments to update many AiTutorUsages.
+     * @example
+     * // Update many AiTutorUsages
+     * const aiTutorUsage = await prisma.aiTutorUsage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AiTutorUsages and only return the `id`
+     * const aiTutorUsageWithIdOnly = await prisma.aiTutorUsage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AiTutorUsageUpdateManyAndReturnArgs>(args: SelectSubset<T, AiTutorUsageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AiTutorUsage.
+     * @param {AiTutorUsageUpsertArgs} args - Arguments to update or create a AiTutorUsage.
+     * @example
+     * // Update or create a AiTutorUsage
+     * const aiTutorUsage = await prisma.aiTutorUsage.upsert({
+     *   create: {
+     *     // ... data to create a AiTutorUsage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AiTutorUsage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AiTutorUsageUpsertArgs>(args: SelectSubset<T, AiTutorUsageUpsertArgs<ExtArgs>>): Prisma__AiTutorUsageClient<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AiTutorUsages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiTutorUsageCountArgs} args - Arguments to filter AiTutorUsages to count.
+     * @example
+     * // Count the number of AiTutorUsages
+     * const count = await prisma.aiTutorUsage.count({
+     *   where: {
+     *     // ... the filter for the AiTutorUsages we want to count
+     *   }
+     * })
+    **/
+    count<T extends AiTutorUsageCountArgs>(
+      args?: Subset<T, AiTutorUsageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AiTutorUsageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AiTutorUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiTutorUsageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AiTutorUsageAggregateArgs>(args: Subset<T, AiTutorUsageAggregateArgs>): Prisma.PrismaPromise<GetAiTutorUsageAggregateType<T>>
+
+    /**
+     * Group by AiTutorUsage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiTutorUsageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AiTutorUsageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AiTutorUsageGroupByArgs['orderBy'] }
+        : { orderBy?: AiTutorUsageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AiTutorUsageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAiTutorUsageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AiTutorUsage model
+   */
+  readonly fields: AiTutorUsageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AiTutorUsage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AiTutorUsageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AiTutorUsage model
+   */
+  interface AiTutorUsageFieldRefs {
+    readonly id: FieldRef<"AiTutorUsage", 'String'>
+    readonly studentId: FieldRef<"AiTutorUsage", 'String'>
+    readonly usageDate: FieldRef<"AiTutorUsage", 'DateTime'>
+    readonly count: FieldRef<"AiTutorUsage", 'Int'>
+    readonly createdAt: FieldRef<"AiTutorUsage", 'DateTime'>
+    readonly updatedAt: FieldRef<"AiTutorUsage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AiTutorUsage findUnique
+   */
+  export type AiTutorUsageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which AiTutorUsage to fetch.
+     */
+    where: AiTutorUsageWhereUniqueInput
+  }
+
+  /**
+   * AiTutorUsage findUniqueOrThrow
+   */
+  export type AiTutorUsageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which AiTutorUsage to fetch.
+     */
+    where: AiTutorUsageWhereUniqueInput
+  }
+
+  /**
+   * AiTutorUsage findFirst
+   */
+  export type AiTutorUsageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which AiTutorUsage to fetch.
+     */
+    where?: AiTutorUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiTutorUsages to fetch.
+     */
+    orderBy?: AiTutorUsageOrderByWithRelationInput | AiTutorUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiTutorUsages.
+     */
+    cursor?: AiTutorUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiTutorUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiTutorUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiTutorUsages.
+     */
+    distinct?: AiTutorUsageScalarFieldEnum | AiTutorUsageScalarFieldEnum[]
+  }
+
+  /**
+   * AiTutorUsage findFirstOrThrow
+   */
+  export type AiTutorUsageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which AiTutorUsage to fetch.
+     */
+    where?: AiTutorUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiTutorUsages to fetch.
+     */
+    orderBy?: AiTutorUsageOrderByWithRelationInput | AiTutorUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiTutorUsages.
+     */
+    cursor?: AiTutorUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiTutorUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiTutorUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiTutorUsages.
+     */
+    distinct?: AiTutorUsageScalarFieldEnum | AiTutorUsageScalarFieldEnum[]
+  }
+
+  /**
+   * AiTutorUsage findMany
+   */
+  export type AiTutorUsageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * Filter, which AiTutorUsages to fetch.
+     */
+    where?: AiTutorUsageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiTutorUsages to fetch.
+     */
+    orderBy?: AiTutorUsageOrderByWithRelationInput | AiTutorUsageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AiTutorUsages.
+     */
+    cursor?: AiTutorUsageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiTutorUsages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiTutorUsages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiTutorUsages.
+     */
+    distinct?: AiTutorUsageScalarFieldEnum | AiTutorUsageScalarFieldEnum[]
+  }
+
+  /**
+   * AiTutorUsage create
+   */
+  export type AiTutorUsageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AiTutorUsage.
+     */
+    data: XOR<AiTutorUsageCreateInput, AiTutorUsageUncheckedCreateInput>
+  }
+
+  /**
+   * AiTutorUsage createMany
+   */
+  export type AiTutorUsageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AiTutorUsages.
+     */
+    data: AiTutorUsageCreateManyInput | AiTutorUsageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AiTutorUsage createManyAndReturn
+   */
+  export type AiTutorUsageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * The data used to create many AiTutorUsages.
+     */
+    data: AiTutorUsageCreateManyInput | AiTutorUsageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiTutorUsage update
+   */
+  export type AiTutorUsageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AiTutorUsage.
+     */
+    data: XOR<AiTutorUsageUpdateInput, AiTutorUsageUncheckedUpdateInput>
+    /**
+     * Choose, which AiTutorUsage to update.
+     */
+    where: AiTutorUsageWhereUniqueInput
+  }
+
+  /**
+   * AiTutorUsage updateMany
+   */
+  export type AiTutorUsageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AiTutorUsages.
+     */
+    data: XOR<AiTutorUsageUpdateManyMutationInput, AiTutorUsageUncheckedUpdateManyInput>
+    /**
+     * Filter which AiTutorUsages to update
+     */
+    where?: AiTutorUsageWhereInput
+    /**
+     * Limit how many AiTutorUsages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AiTutorUsage updateManyAndReturn
+   */
+  export type AiTutorUsageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * The data used to update AiTutorUsages.
+     */
+    data: XOR<AiTutorUsageUpdateManyMutationInput, AiTutorUsageUncheckedUpdateManyInput>
+    /**
+     * Filter which AiTutorUsages to update
+     */
+    where?: AiTutorUsageWhereInput
+    /**
+     * Limit how many AiTutorUsages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiTutorUsage upsert
+   */
+  export type AiTutorUsageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AiTutorUsage to update in case it exists.
+     */
+    where: AiTutorUsageWhereUniqueInput
+    /**
+     * In case the AiTutorUsage found by the `where` argument doesn't exist, create a new AiTutorUsage with this data.
+     */
+    create: XOR<AiTutorUsageCreateInput, AiTutorUsageUncheckedCreateInput>
+    /**
+     * In case the AiTutorUsage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AiTutorUsageUpdateInput, AiTutorUsageUncheckedUpdateInput>
+  }
+
+  /**
+   * AiTutorUsage delete
+   */
+  export type AiTutorUsageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+    /**
+     * Filter which AiTutorUsage to delete.
+     */
+    where: AiTutorUsageWhereUniqueInput
+  }
+
+  /**
+   * AiTutorUsage deleteMany
+   */
+  export type AiTutorUsageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiTutorUsages to delete
+     */
+    where?: AiTutorUsageWhereInput
+    /**
+     * Limit how many AiTutorUsages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AiTutorUsage without action
+   */
+  export type AiTutorUsageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiTutorUsage
+     */
+    select?: AiTutorUsageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiTutorUsage
+     */
+    omit?: AiTutorUsageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiTutorUsageInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model AuditLog
    */
 
@@ -24032,6 +25272,18 @@ export namespace Prisma {
   export type ContentChunkScalarFieldEnum = (typeof ContentChunkScalarFieldEnum)[keyof typeof ContentChunkScalarFieldEnum]
 
 
+  export const AiTutorUsageScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    usageDate: 'usageDate',
+    count: 'count',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AiTutorUsageScalarFieldEnum = (typeof AiTutorUsageScalarFieldEnum)[keyof typeof AiTutorUsageScalarFieldEnum]
+
+
   export const AuditLogScalarFieldEnum: {
     id: 'id',
     action: 'action',
@@ -24423,6 +25675,7 @@ export namespace Prisma {
     studentProfile?: XOR<StudentProfileNullableScalarRelationFilter, StudentProfileWhereInput> | null
     teacherProfile?: XOR<TeacherProfileNullableScalarRelationFilter, TeacherProfileWhereInput> | null
     paymentTransactions?: PaymentTransactionListRelationFilter
+    aiTutorUsage?: AiTutorUsageListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -24448,6 +25701,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileOrderByWithRelationInput
     teacherProfile?: TeacherProfileOrderByWithRelationInput
     paymentTransactions?: PaymentTransactionOrderByRelationAggregateInput
+    aiTutorUsage?: AiTutorUsageOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -24476,6 +25730,7 @@ export namespace Prisma {
     studentProfile?: XOR<StudentProfileNullableScalarRelationFilter, StudentProfileWhereInput> | null
     teacherProfile?: XOR<TeacherProfileNullableScalarRelationFilter, TeacherProfileWhereInput> | null
     paymentTransactions?: PaymentTransactionListRelationFilter
+    aiTutorUsage?: AiTutorUsageListRelationFilter
   }, "id" | "email" | "mobile">
 
   export type UserOrderByWithAggregationInput = {
@@ -25340,6 +26595,69 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ContentChunk"> | Date | string
   }
 
+  export type AiTutorUsageWhereInput = {
+    AND?: AiTutorUsageWhereInput | AiTutorUsageWhereInput[]
+    OR?: AiTutorUsageWhereInput[]
+    NOT?: AiTutorUsageWhereInput | AiTutorUsageWhereInput[]
+    id?: StringFilter<"AiTutorUsage"> | string
+    studentId?: StringFilter<"AiTutorUsage"> | string
+    usageDate?: DateTimeFilter<"AiTutorUsage"> | Date | string
+    count?: IntFilter<"AiTutorUsage"> | number
+    createdAt?: DateTimeFilter<"AiTutorUsage"> | Date | string
+    updatedAt?: DateTimeFilter<"AiTutorUsage"> | Date | string
+    student?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type AiTutorUsageOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    usageDate?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    student?: UserOrderByWithRelationInput
+  }
+
+  export type AiTutorUsageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    studentId_usageDate?: AiTutorUsageStudentIdUsageDateCompoundUniqueInput
+    AND?: AiTutorUsageWhereInput | AiTutorUsageWhereInput[]
+    OR?: AiTutorUsageWhereInput[]
+    NOT?: AiTutorUsageWhereInput | AiTutorUsageWhereInput[]
+    studentId?: StringFilter<"AiTutorUsage"> | string
+    usageDate?: DateTimeFilter<"AiTutorUsage"> | Date | string
+    count?: IntFilter<"AiTutorUsage"> | number
+    createdAt?: DateTimeFilter<"AiTutorUsage"> | Date | string
+    updatedAt?: DateTimeFilter<"AiTutorUsage"> | Date | string
+    student?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "studentId_usageDate">
+
+  export type AiTutorUsageOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    usageDate?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AiTutorUsageCountOrderByAggregateInput
+    _avg?: AiTutorUsageAvgOrderByAggregateInput
+    _max?: AiTutorUsageMaxOrderByAggregateInput
+    _min?: AiTutorUsageMinOrderByAggregateInput
+    _sum?: AiTutorUsageSumOrderByAggregateInput
+  }
+
+  export type AiTutorUsageScalarWhereWithAggregatesInput = {
+    AND?: AiTutorUsageScalarWhereWithAggregatesInput | AiTutorUsageScalarWhereWithAggregatesInput[]
+    OR?: AiTutorUsageScalarWhereWithAggregatesInput[]
+    NOT?: AiTutorUsageScalarWhereWithAggregatesInput | AiTutorUsageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AiTutorUsage"> | string
+    studentId?: StringWithAggregatesFilter<"AiTutorUsage"> | string
+    usageDate?: DateTimeWithAggregatesFilter<"AiTutorUsage"> | Date | string
+    count?: IntWithAggregatesFilter<"AiTutorUsage"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"AiTutorUsage"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AiTutorUsage"> | Date | string
+  }
+
   export type AuditLogWhereInput = {
     AND?: AuditLogWhereInput | AuditLogWhereInput[]
     OR?: AuditLogWhereInput[]
@@ -25846,6 +27164,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -25871,6 +27190,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserUpdateInput = {
@@ -25896,6 +27216,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -25921,6 +27242,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -26845,6 +28167,68 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AiTutorUsageCreateInput = {
+    id?: string
+    usageDate: Date | string
+    count?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    student: UserCreateNestedOneWithoutAiTutorUsageInput
+  }
+
+  export type AiTutorUsageUncheckedCreateInput = {
+    id?: string
+    studentId: string
+    usageDate: Date | string
+    count?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiTutorUsageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usageDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutAiTutorUsageNestedInput
+  }
+
+  export type AiTutorUsageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    usageDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiTutorUsageCreateManyInput = {
+    id?: string
+    studentId: string
+    usageDate: Date | string
+    count?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiTutorUsageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usageDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiTutorUsageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    usageDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AuditLogCreateInput = {
     id?: string
     action: string
@@ -27472,6 +28856,12 @@ export namespace Prisma {
     none?: PaymentTransactionWhereInput
   }
 
+  export type AiTutorUsageListRelationFilter = {
+    every?: AiTutorUsageWhereInput
+    some?: AiTutorUsageWhereInput
+    none?: AiTutorUsageWhereInput
+  }
+
   export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -27509,6 +28899,10 @@ export namespace Prisma {
   }
 
   export type PaymentTransactionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AiTutorUsageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -28413,6 +29807,46 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
+  export type AiTutorUsageStudentIdUsageDateCompoundUniqueInput = {
+    studentId: string
+    usageDate: Date | string
+  }
+
+  export type AiTutorUsageCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    usageDate?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiTutorUsageAvgOrderByAggregateInput = {
+    count?: SortOrder
+  }
+
+  export type AiTutorUsageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    usageDate?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiTutorUsageMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    usageDate?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiTutorUsageSumOrderByAggregateInput = {
+    count?: SortOrder
+  }
+
   export type AuditLogCountOrderByAggregateInput = {
     id?: SortOrder
     action?: SortOrder
@@ -28890,6 +30324,13 @@ export namespace Prisma {
     connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
   }
 
+  export type AiTutorUsageCreateNestedManyWithoutStudentInput = {
+    create?: XOR<AiTutorUsageCreateWithoutStudentInput, AiTutorUsageUncheckedCreateWithoutStudentInput> | AiTutorUsageCreateWithoutStudentInput[] | AiTutorUsageUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AiTutorUsageCreateOrConnectWithoutStudentInput | AiTutorUsageCreateOrConnectWithoutStudentInput[]
+    createMany?: AiTutorUsageCreateManyStudentInputEnvelope
+    connect?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+  }
+
   export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -28977,6 +30418,13 @@ export namespace Prisma {
     connectOrCreate?: PaymentTransactionCreateOrConnectWithoutStudentInput | PaymentTransactionCreateOrConnectWithoutStudentInput[]
     createMany?: PaymentTransactionCreateManyStudentInputEnvelope
     connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+  }
+
+  export type AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<AiTutorUsageCreateWithoutStudentInput, AiTutorUsageUncheckedCreateWithoutStudentInput> | AiTutorUsageCreateWithoutStudentInput[] | AiTutorUsageUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AiTutorUsageCreateOrConnectWithoutStudentInput | AiTutorUsageCreateOrConnectWithoutStudentInput[]
+    createMany?: AiTutorUsageCreateManyStudentInputEnvelope
+    connect?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -29169,6 +30617,20 @@ export namespace Prisma {
     deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
   }
 
+  export type AiTutorUsageUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<AiTutorUsageCreateWithoutStudentInput, AiTutorUsageUncheckedCreateWithoutStudentInput> | AiTutorUsageCreateWithoutStudentInput[] | AiTutorUsageUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AiTutorUsageCreateOrConnectWithoutStudentInput | AiTutorUsageCreateOrConnectWithoutStudentInput[]
+    upsert?: AiTutorUsageUpsertWithWhereUniqueWithoutStudentInput | AiTutorUsageUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: AiTutorUsageCreateManyStudentInputEnvelope
+    set?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+    disconnect?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+    delete?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+    connect?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+    update?: AiTutorUsageUpdateWithWhereUniqueWithoutStudentInput | AiTutorUsageUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: AiTutorUsageUpdateManyWithWhereWithoutStudentInput | AiTutorUsageUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: AiTutorUsageScalarWhereInput | AiTutorUsageScalarWhereInput[]
+  }
+
   export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -29341,6 +30803,20 @@ export namespace Prisma {
     update?: PaymentTransactionUpdateWithWhereUniqueWithoutStudentInput | PaymentTransactionUpdateWithWhereUniqueWithoutStudentInput[]
     updateMany?: PaymentTransactionUpdateManyWithWhereWithoutStudentInput | PaymentTransactionUpdateManyWithWhereWithoutStudentInput[]
     deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+  }
+
+  export type AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<AiTutorUsageCreateWithoutStudentInput, AiTutorUsageUncheckedCreateWithoutStudentInput> | AiTutorUsageCreateWithoutStudentInput[] | AiTutorUsageUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AiTutorUsageCreateOrConnectWithoutStudentInput | AiTutorUsageCreateOrConnectWithoutStudentInput[]
+    upsert?: AiTutorUsageUpsertWithWhereUniqueWithoutStudentInput | AiTutorUsageUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: AiTutorUsageCreateManyStudentInputEnvelope
+    set?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+    disconnect?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+    delete?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+    connect?: AiTutorUsageWhereUniqueInput | AiTutorUsageWhereUniqueInput[]
+    update?: AiTutorUsageUpdateWithWhereUniqueWithoutStudentInput | AiTutorUsageUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: AiTutorUsageUpdateManyWithWhereWithoutStudentInput | AiTutorUsageUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: AiTutorUsageScalarWhereInput | AiTutorUsageScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutStudentProfileInput = {
@@ -29925,6 +31401,20 @@ export namespace Prisma {
     upsert?: LessonUpsertWithoutContentChunksInput
     connect?: LessonWhereUniqueInput
     update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutContentChunksInput, LessonUpdateWithoutContentChunksInput>, LessonUncheckedUpdateWithoutContentChunksInput>
+  }
+
+  export type UserCreateNestedOneWithoutAiTutorUsageInput = {
+    create?: XOR<UserCreateWithoutAiTutorUsageInput, UserUncheckedCreateWithoutAiTutorUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAiTutorUsageInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutAiTutorUsageNestedInput = {
+    create?: XOR<UserCreateWithoutAiTutorUsageInput, UserUncheckedCreateWithoutAiTutorUsageInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAiTutorUsageInput
+    upsert?: UserUpsertWithoutAiTutorUsageInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAiTutorUsageInput, UserUpdateWithoutAiTutorUsageInput>, UserUncheckedUpdateWithoutAiTutorUsageInput>
   }
 
   export type UserCreateNestedOneWithoutAuditLogsInput = {
@@ -31026,6 +32516,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AiTutorUsageCreateWithoutStudentInput = {
+    id?: string
+    usageDate: Date | string
+    count?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiTutorUsageUncheckedCreateWithoutStudentInput = {
+    id?: string
+    usageDate: Date | string
+    count?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiTutorUsageCreateOrConnectWithoutStudentInput = {
+    where: AiTutorUsageWhereUniqueInput
+    create: XOR<AiTutorUsageCreateWithoutStudentInput, AiTutorUsageUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AiTutorUsageCreateManyStudentInputEnvelope = {
+    data: AiTutorUsageCreateManyStudentInput | AiTutorUsageCreateManyStudentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AuditLogUpsertWithWhereUniqueWithoutUserInput = {
     where: AuditLogWhereUniqueInput
     update: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
@@ -31406,6 +32922,34 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
   }
 
+  export type AiTutorUsageUpsertWithWhereUniqueWithoutStudentInput = {
+    where: AiTutorUsageWhereUniqueInput
+    update: XOR<AiTutorUsageUpdateWithoutStudentInput, AiTutorUsageUncheckedUpdateWithoutStudentInput>
+    create: XOR<AiTutorUsageCreateWithoutStudentInput, AiTutorUsageUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AiTutorUsageUpdateWithWhereUniqueWithoutStudentInput = {
+    where: AiTutorUsageWhereUniqueInput
+    data: XOR<AiTutorUsageUpdateWithoutStudentInput, AiTutorUsageUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type AiTutorUsageUpdateManyWithWhereWithoutStudentInput = {
+    where: AiTutorUsageScalarWhereInput
+    data: XOR<AiTutorUsageUpdateManyMutationInput, AiTutorUsageUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type AiTutorUsageScalarWhereInput = {
+    AND?: AiTutorUsageScalarWhereInput | AiTutorUsageScalarWhereInput[]
+    OR?: AiTutorUsageScalarWhereInput[]
+    NOT?: AiTutorUsageScalarWhereInput | AiTutorUsageScalarWhereInput[]
+    id?: StringFilter<"AiTutorUsage"> | string
+    studentId?: StringFilter<"AiTutorUsage"> | string
+    usageDate?: DateTimeFilter<"AiTutorUsage"> | Date | string
+    count?: IntFilter<"AiTutorUsage"> | number
+    createdAt?: DateTimeFilter<"AiTutorUsage"> | Date | string
+    updatedAt?: DateTimeFilter<"AiTutorUsage"> | Date | string
+  }
+
   export type UserCreateWithoutStudentProfileInput = {
     id?: string
     fullName: string
@@ -31428,6 +32972,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -31452,6 +32997,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -31492,6 +33038,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -31516,6 +33063,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutTeacherProfileInput = {
@@ -31540,6 +33088,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutTeacherProfileInput = {
@@ -31564,6 +33113,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutTeacherProfileInput = {
@@ -31604,6 +33154,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherProfileInput = {
@@ -31628,6 +33179,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterCreateWithoutStageInput = {
@@ -31692,6 +33244,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutStagesInput = {
@@ -31716,6 +33269,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutStagesInput = {
@@ -31787,6 +33341,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStagesInput = {
@@ -31811,6 +33366,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StageCreateWithoutChaptersInput = {
@@ -32367,6 +33923,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutOtpsInput = {
@@ -32391,6 +33948,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutOtpsInput = {
@@ -32431,6 +33989,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOtpsInput = {
@@ -32455,6 +34014,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterCreateWithoutEnrollmentsInput = {
@@ -32514,6 +34074,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -32538,6 +34099,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -32619,6 +34181,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -32643,6 +34206,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutPaymentTransactionsInput = {
@@ -32667,6 +34231,7 @@ export namespace Prisma {
     stages?: StageCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
@@ -32691,6 +34256,7 @@ export namespace Prisma {
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutPaymentTransactionsInput = {
@@ -32766,6 +34332,7 @@ export namespace Prisma {
     stages?: StageUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
@@ -32790,6 +34357,7 @@ export namespace Prisma {
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterUpsertWithoutPaymentTransactionsInput = {
@@ -32894,6 +34462,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -32918,6 +34487,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -33003,6 +34573,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -33027,6 +34598,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type LessonCreateWithoutLessonMaterialsInput = {
@@ -33197,6 +34769,122 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
   }
 
+  export type UserCreateWithoutAiTutorUsageInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserUncheckedCreateWithoutAiTutorUsageInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserCreateOrConnectWithoutAiTutorUsageInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAiTutorUsageInput, UserUncheckedCreateWithoutAiTutorUsageInput>
+  }
+
+  export type UserUpsertWithoutAiTutorUsageInput = {
+    update: XOR<UserUpdateWithoutAiTutorUsageInput, UserUncheckedUpdateWithoutAiTutorUsageInput>
+    create: XOR<UserCreateWithoutAiTutorUsageInput, UserUncheckedCreateWithoutAiTutorUsageInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAiTutorUsageInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAiTutorUsageInput, UserUncheckedUpdateWithoutAiTutorUsageInput>
+  }
+
+  export type UserUpdateWithoutAiTutorUsageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAiTutorUsageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
   export type UserCreateWithoutAuditLogsInput = {
     id?: string
     fullName: string
@@ -33219,6 +34907,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -33243,6 +34932,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -33283,6 +34973,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -33307,6 +34998,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutRefreshTokensInput = {
@@ -33331,6 +35023,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -33355,6 +35048,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -33395,6 +35089,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -33419,6 +35114,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type QuestionCreateWithoutQuizInput = {
@@ -33548,6 +35244,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutQuizzesInput = {
@@ -33572,6 +35269,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutQuizzesInput = {
@@ -33701,6 +35399,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizzesInput = {
@@ -33725,6 +35424,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type QuizCreateWithoutQuestionsInput = {
@@ -33866,6 +35566,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -33890,6 +35591,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -33973,6 +35675,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -33997,6 +35700,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutUsedPromoCodesInput = {
@@ -34021,6 +35725,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutUsedPromoCodesInput = {
@@ -34045,6 +35750,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutUsedPromoCodesInput = {
@@ -34074,6 +35780,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutCreatedPromoCodesInput = {
@@ -34098,6 +35805,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutCreatedPromoCodesInput = {
@@ -34138,6 +35846,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsedPromoCodesInput = {
@@ -34162,6 +35871,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutCreatedPromoCodesInput = {
@@ -34197,6 +35907,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedPromoCodesInput = {
@@ -34221,6 +35932,7 @@ export namespace Prisma {
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type AuditLogCreateManyUserInput = {
@@ -34339,6 +36051,14 @@ export namespace Prisma {
     status?: $Enums.PaymentStatus
     errorMessage?: string | null
     rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiTutorUsageCreateManyStudentInput = {
+    id?: string
+    usageDate: Date | string
+    count?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -34705,6 +36425,30 @@ export namespace Prisma {
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiTutorUsageUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usageDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiTutorUsageUncheckedUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usageDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiTutorUsageUncheckedUpdateManyWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usageDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    count?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

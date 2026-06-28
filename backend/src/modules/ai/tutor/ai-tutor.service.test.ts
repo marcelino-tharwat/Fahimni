@@ -201,6 +201,25 @@ describe("AiTutorService.ask", () => {
     expect(m.gemini.generateContent).not.toHaveBeenCalled();
   });
 
+  it("honors a per-call total-timeout option (STORY-64 endpoint budget) over the instance default", async () => {
+    m.prisma.lesson.findMany.mockResolvedValue(accessibleLessons());
+    m.rag.similaritySearchInLessons.mockResolvedValue(chunks());
+    m.gemini.generateContent.mockReturnValue(
+      new Promise((resolve) => setTimeout(() => resolve(geminiJson("x", [])), 300)),
+    );
+    // Instance default total is 25s; the per-call option must win.
+    const service = makeService(m);
+    await expect(
+      service.ask("سؤال", STUDENT, { totalTimeoutMs: 50 }),
+    ).rejects.toBeInstanceOf(TutorTimeoutError);
+  });
+
+  it("passes the per-call gemini timeout to the client", async () => {
+    primeHappyPath(m);
+    await makeService(m).ask("سؤال", STUDENT, { geminiTimeoutMs: 7_000 });
+    expect(m.gemini.generateContent.mock.calls[0]![2]).toMatchObject({ timeoutMs: 7_000 });
+  });
+
   it("enforces the total timeout budget", async () => {
     m.prisma.lesson.findMany.mockResolvedValue(accessibleLessons());
     m.rag.similaritySearchInLessons.mockResolvedValue(chunks());

@@ -30,6 +30,7 @@ model User {
   studentProfile      StudentProfile?
   teacherProfile      TeacherProfile?
   paymentTransactions PaymentTransaction[]
+  aiTutorUsage        AiTutorUsage[]
 }
 
 model StudentProfile {
@@ -212,6 +213,23 @@ model ContentChunk {
 
   @@index([lessonId])
   @@map("content_chunks")
+}
+
+/// STORY-64: per-student daily AI-tutor query accounting. One row per student
+/// per UTC calendar day; the unique constraint enables an atomic claim/refund so
+/// concurrent requests cannot exceed AI_TUTOR_DAILY_QUERY_LIMIT.
+model AiTutorUsage {
+  id        String   @id @default(uuid())
+  studentId String
+  usageDate DateTime @db.Date
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, usageDate])
+  @@index([studentId])
+  @@map("ai_tutor_usage")
 }
 
 model AuditLog {

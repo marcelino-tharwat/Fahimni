@@ -16,6 +16,7 @@ import filesRoutes from "./modules/files/index.js";
 import contentRoutes from "./modules/content/content.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import aiRouter from "./modules/ai/ai.routes.js";
+import tutorRouter from "./modules/ai/tutor/tutor.routes.js";
 import enrollmentRoutes from "./modules/enrollment/enrollment.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
 import promoCodeRoutes from "./modules/promo-code/promo-code.routes.js";
@@ -53,6 +54,7 @@ export function createApp(): Application {
   app.use("/api/content", contentRoutes);
   app.use("/api/dashboard", dashboardRoutes);
   app.use("/api/ai", aiRouter);
+  app.use("/api/tutor", tutorRouter);
 
   app.use("/api/enrollments", enrollmentRoutes);
   app.use("/api/promo-codes", promoCodeRoutes);
