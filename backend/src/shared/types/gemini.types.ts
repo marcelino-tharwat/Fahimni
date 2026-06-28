@@ -21,6 +21,13 @@ export interface GenerateContentOptions {
    * STORY-45 uses this to cap the quiz-generation Gemini call at 20s.
    */
   timeoutMs?: number;
+  /**
+   * Overrides the default system instruction for this single call. When omitted
+   * the client keeps its default ("Always respond in Arabic"), so existing
+   * callers are unaffected. STORY-63 (AI tutor) supplies a grounded, bilingual
+   * tutor instruction here.
+   */
+  systemInstruction?: string;
 }
 
 export interface GeminiErrorBody {
