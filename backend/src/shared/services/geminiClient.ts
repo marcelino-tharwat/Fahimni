@@ -68,7 +68,11 @@ export class GeminiClient {
   ): Promise<string> {
     await this._enqueueIfNeeded();
 
-    const body = this._buildGenerateRequestBody(prompt, config);
+    const body = this._buildGenerateRequestBody(
+      prompt,
+      config,
+      options?.systemInstruction,
+    );
     const timeoutMs = options?.timeoutMs ?? GENERATION_TIMEOUT_MS;
 
     const response = await this._withRetry(() =>
@@ -132,10 +136,15 @@ export class GeminiClient {
   private _buildGenerateRequestBody(
     prompt: string,
     config?: GenerationConfig,
+    systemInstructionText?: string,
   ): unknown {
     const systemInstruction: SystemInstruction = {
       parts: [
-        { text: "You are a helpful assistant. Always respond in Arabic." },
+        {
+          text:
+            systemInstructionText ??
+            "You are a helpful assistant. Always respond in Arabic.",
+        },
       ],
     };
 

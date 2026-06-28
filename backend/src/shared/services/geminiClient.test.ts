@@ -87,6 +87,23 @@ describe('GeminiClient', () => {
       );
     });
 
+    it('overrides the system instruction when one is supplied (default unchanged for others)', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockGenerateContentResponse('ok')),
+      });
+
+      await client.generateContent('Hello', undefined, {
+        systemInstruction: 'You are a grounded tutor. Respond only in English.',
+      });
+
+      const body = JSON.parse(mockFetch.mock.calls[0]![1]!.body as string);
+      expect(body.systemInstruction.parts[0].text).toBe(
+        'You are a grounded tutor. Respond only in English.',
+      );
+    });
+
     it('sends the user prompt in the contents array', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
