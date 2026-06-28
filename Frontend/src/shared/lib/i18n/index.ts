@@ -8,6 +8,7 @@ import studentAr from './ar/student.json';
 import teacherAr from './ar/teacher.json';
 import landingAr from './ar/landing.json';
 import quizAr from './ar/quiz.json';
+import profileAr from './ar/profile.json';
 
 import commonEn from './en/common.json';
 import authEn from './en/auth.json';
@@ -15,6 +16,7 @@ import studentEn from './en/student.json';
 import teacherEn from './en/teacher.json';
 import landingEn from './en/landing.json';
 import quizEn from './en/quiz.json';
+import profileEn from './en/profile.json';
 
 export const defaultNS = 'common';
 
@@ -26,6 +28,7 @@ export const resources = {
     teacher: teacherAr,
     landing: landingAr,
     quiz: quizAr,
+    profile: profileAr,
   },
   en: {
     common: commonEn,
@@ -34,6 +37,7 @@ export const resources = {
     teacher: teacherEn,
     landing: landingEn,
     quiz: quizEn,
+    profile: profileEn,
   },
 } as const;
 
@@ -44,7 +48,7 @@ i18n
     resources,
     fallbackLng: 'en',
     defaultNS,
-    ns: ['common', 'auth', 'student', 'teacher', 'landing', 'quiz'],
+    ns: ['common', 'auth', 'student', 'teacher', 'landing', 'quiz', 'profile'],
     supportedLngs: ['ar', 'en'],
     // index.html sets <html lang="ar">, so on first visit the htmlTag detector
     // yields Arabic — keeping 'ar' as the effective default language.

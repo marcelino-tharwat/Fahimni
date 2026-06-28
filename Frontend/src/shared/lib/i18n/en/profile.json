@@ -1,0 +1,82 @@
+{
+  "pageTitle": "Profile",
+  "showStates": "Show States",
+  "tabs": {
+    "complete": "Complete Data",
+    "loading": "Loading",
+    "empty": "Empty"
+  },
+  "teachingStats": {
+    "title": "Teaching Statistics",
+    "stages": "Stages",
+    "chapters": "Chapters",
+    "students": "Students",
+    "lessons": "Lessons",
+    "completionRate": "Student Completion Rate",
+    "completionSub": "{{completed}} out of {{total}} students completed a full course"
+  },
+  "recentActivity": {
+    "title": "Recent Activity",
+    "viewAll": "View All",
+    "empty": {
+      "title": "No recent activity",
+      "subtitle": "Your latest updates and changes will appear here"
+    },
+    "items": {
+      "upload": "New lesson uploaded: Introduction to Organic Chemistry",
+      "enrollment": "5 new students joined Grade 1 Secondary",
+      "edit": "Quiz edited: Chemical Bonds — Chapter 2",
+      "pdf": "PDF note uploaded: Periodic Table & Applications",
+      "delete": "Duplicate lesson removed from Unit 3"
+    },
+    "timestamps": {
+      "upload": "2 hours ago",
+      "enrollment": "4 hours ago",
+      "edit": "Yesterday",
+      "pdf": "2 days ago",
+      "delete": "3 days ago"
+    }
+  },
+  "studentEngagement": {
+    "title": "Student Engagement",
+    "totalStudents": "Total Enrolled Students",
+    "trend": "↑20%",
+    "grades": {
+      "first": "Grade 1 Secondary",
+      "second": "Grade 2 Secondary",
+      "third": "Grade 3 Secondary"
+    },
+    "student": "student",
+    "students": "students"
+  },
+  "profileInfo": {
+    "subject": "Chemistry",
+    "status": "Active",
+    "rating": "Rating",
+    "reviews": "({{count}} reviews)",
+    "email": "Email",
+    "phone": "Phone",
+    "joinDate": "Joined",
+    "september2025": "September 2025",
+    "bio": "Bio",
+    "bioText": "Chemistry teacher with over 10 years of experience teaching secondary level. Specializes in simplifying complex chemical concepts using multimedia and practical applications.",
+    "editButton": "Edit Profile"
+  },
+  "editModal": {
+    "title": "Edit Profile",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Mohamed Ahmed Mahmoud",
+    "bioLabel": "Bio",
+    "bioPlaceholder": "Write a bio about yourself...",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "01012345678",
+    "saving": "Saving..."
+  },
+  "academicIdentity": {
+    "title": "Academic Identity",
+    "academyName": "Chemistry Academy — Mr. Mohamed",
+    "editLink": "Edit Identity",
+    "fontLabel": "Cairo",
+    "colorsLabel": "Academy Colors"
+  }
+}
