@@ -45,6 +45,35 @@
   "takeQuiz": "Take Quiz",
   "quizResults": "Quiz Results",
   "score": "Score: {{score}} out of {{total}}",
+  "quizzes": {
+    "pageTitle": "My Quizzes",
+    "pageSubtitle": "Review your quiz results and start new quizzes",
+    "stats": {
+      "total": "Total Quizzes",
+      "completed": "Completed",
+      "new": "New Quizzes"
+    },
+    "chapter": {
+      "quizCount": "{{count}} quizzes",
+      "progress": "{{done}}/{{total}} completed",
+      "noQuizzes": "No quizzes published yet for this chapter"
+    },
+    "quiz": {
+      "questions": "{{count}} questions",
+      "points": "{{count}} points",
+      "minutes": "{{count}} minutes"
+    },
+    "empty": {
+      "title": "No quizzes available",
+      "description": "You don't have any quizzes yet. Quizzes will appear here once they are assigned to your enrolled chapters.",
+      "cta": "Browse Content"
+    },
+    "error": {
+      "title": "Failed to load quizzes",
+      "description": "Something went wrong while loading your quizzes. Please try again.",
+      "retry": "Retry"
+    }
+  },
   "aiTutor": { "title": "AI Tutor", "placeholder": "Type your question here...", "send": "Send", "remainingQuestions": "{{count}} questions remaining today", "source": "Source: {{lesson}}" },
   "payment": {
     "title": "Complete Subscription",

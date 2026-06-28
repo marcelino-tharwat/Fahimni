@@ -26,6 +26,7 @@ import { MyCoursesPage } from '@/features/student/pages/MyCoursesPage';
 import { AllContentPage } from '@/features/student/pages/AllContentPage';
 import { LessonPage } from '@/features/student/pages/LessonPage';
 import { QuizPage } from '@/features/student/pages/QuizPage';
+import { StudentQuizListPage } from '@/features/student/pages/StudentQuizListPage';
 import { QuizResultsPage } from '@/features/student/pages/QuizResultsPage';
 import { AiTutorPage } from '@/features/student/pages/AiTutorPage';
 import { PaymentPage } from '@/features/student/pages/PaymentPage';
@@ -84,6 +85,7 @@ const router = createBrowserRouter([
               { path: '/student/ai-tutor', element: <AiTutorPage /> },
               { path: '/student/pay/:chapterId', element: <PaymentPage /> },
               { path: '/student/profile', element: <StudentProfilePage /> },
+              { path: '/student/quizzes', element: <StudentQuizListPage /> },
             ],
           },
           // Quiz taking page — no sidebar, no bottom tab bar (distraction-free)

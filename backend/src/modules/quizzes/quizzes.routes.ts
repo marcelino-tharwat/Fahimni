@@ -48,7 +48,14 @@ quizStandaloneRouter.post(
 );
 
 // ── Student quiz-taking (STORY-48) ─────────────────────────────────────
-// Static /assigned must be registered before parameterized /:id routes.
+// Static routes must be registered before parameterized /:id routes.
+quizStandaloneRouter.get(
+  "/student",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  attemptsController.getStudentQuizList,
+);
+
 quizStandaloneRouter.get(
   "/assigned",
   authenticateMiddleware,

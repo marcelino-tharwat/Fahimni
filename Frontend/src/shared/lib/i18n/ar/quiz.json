@@ -36,5 +36,24 @@
   "totalQuestions": "عدد الأسئلة",
   "totalPoints": "إجمالي الدرجات",
   "duration": "المدة",
-  "attempt": "محاولة"
+  "attempt": "محاولة",
+  "difficulty": {
+    "easy": "سهل",
+    "medium": "متوسط",
+    "hard": "صعب"
+  },
+  "quiz": {
+    "status": {
+      "new": "جديد",
+      "passed": "نجاح {{score}}%",
+      "failed": "رسوب {{score}}%",
+      "pending": "قيد الانتظار"
+    },
+    "action": {
+      "start": "ابدأ الاختبار",
+      "viewResult": "عرض النتيجة",
+      "viewAnswers": "عرض الإجابات",
+      "retake": "إعادة المحاولة"
+    }
+  }
 }
