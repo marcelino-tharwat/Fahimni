@@ -45,12 +45,13 @@ import { StageDetailPage } from '@/features/teacher/pages/StageDetailPage';
 import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
 
 // Support pages
-import { PromoCodesPage } from '@/features/support/pages/PromoCodesPage';
 import { StudentLookupPage } from '@/features/support/pages/StudentLookupPage';
 
 // Admin pages
+import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage';
 import { TenantsPage } from '@/features/admin/pages/TenantsPage';
 import { TenantDetailsPage } from '@/features/admin/pages/TenantDetailsPage';
+import { PromoCodesPage as AdminPromoCodesPage } from '@/features/admin/pages/PromoCodesPage';
 
 const router = createBrowserRouter([
   // Public routes
@@ -128,7 +129,6 @@ const router = createBrowserRouter([
           {
             element: <SupportLayout />,
             children: [
-              { path: '/support/promo-codes', element: <PromoCodesPage /> },
               { path: '/support/students', element: <StudentLookupPage /> },
             ],
           },
@@ -141,8 +141,10 @@ const router = createBrowserRouter([
           {
             element: <AdminLayout />,
             children: [
+              { path: '/admin/dashboard', element: <AdminDashboardPage /> },
               { path: '/admin/tenants', element: <TenantsPage /> },
               { path: '/admin/tenants/:tenantId', element: <TenantDetailsPage /> },
+              { path: '/admin/promo-codes', element: <AdminPromoCodesPage /> },
             ],
           },
         ],

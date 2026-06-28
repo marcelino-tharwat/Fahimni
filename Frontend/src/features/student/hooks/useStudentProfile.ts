@@ -6,7 +6,7 @@ import { studentProfileApi } from '@/features/student/api/profile';
 import type { UpdateStudentProfileInput, ChangePasswordInput } from '@/features/student/types/student';
 
 const STUDENT_PROFILE_KEY = ['student', 'profile'];
-const STUDENT_ENROLLMENTS_KEY = ['student', 'enrollments'];
+export const STUDENT_ENROLLMENTS_KEY = ['student', 'enrollments'] as const;
 
 export function useStudentProfile() {
   const dispatch = useAppDispatch();
@@ -54,14 +54,10 @@ export function useChangePassword() {
 }
 
 export function useStudentEnrollments() {
+  // No try/catch swallow here: a failed request must surface as `isError` so the
+  // UI shows its error state, not a misleading "no enrollments" empty state.
   return useQuery({
     queryKey: STUDENT_ENROLLMENTS_KEY,
-    queryFn: async () => {
-      try {
-        return await studentProfileApi.getEnrollments();
-      } catch {
-        return [];
-      }
-    },
+    queryFn: () => studentProfileApi.getEnrollments(),
   });
 }

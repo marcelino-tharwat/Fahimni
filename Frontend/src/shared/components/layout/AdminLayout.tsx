@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { Building2 } from 'lucide-react';
+import { LayoutDashboard, Building2, Ticket } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Topbar } from './Topbar';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -8,7 +8,9 @@ export function AdminLayout() {
   const { t } = useTranslation();
 
   const items: SidebarItem[] = [
+    { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/admin/dashboard' },
     { label: t('nav.tenants'), icon: Building2, path: '/admin/tenants' },
+    { label: t('nav.promoCodes'), icon: Ticket, path: '/admin/promo-codes' },
   ];
 
   return (

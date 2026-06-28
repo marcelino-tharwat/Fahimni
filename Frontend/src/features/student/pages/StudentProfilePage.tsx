@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   Mail,
   Phone,
@@ -15,6 +16,7 @@ import {
   useStudentEnrollments,
   useUpdateStudentProfile,
 } from '@/features/student/hooks/useStudentProfile';
+import { useMyCourses } from '@/features/student/hooks/useStudentContent';
 import { Skeleton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils/cn';
 import { addToast } from '@/shared/store/slices/toastSlice';
@@ -154,8 +156,11 @@ function AcademicProgressCard() {
 }
 
 function MyCoursesCard() {
-  const { t, i18n } = useTranslation('student');
-  const { data: enrollments, isLoading, isError } = useStudentEnrollments();
+  const { t } = useTranslation('student');
+  const navigate = useNavigate();
+  // Real enrolled courses — same source as /student/courses (GET
+  // /content/student/my-courses), already invalidated on promo redeem.
+  const { data: courses, isLoading, isError } = useMyCourses();
 
   if (isLoading) {
     return (
@@ -194,17 +199,7 @@ function MyCoursesCard() {
     );
   }
 
-  const items = (enrollments ?? []).map((enr) => {
-    const e = enr as Record<string, unknown>;
-    return {
-      name: enr.chapterName,
-      percent: Number(e.progress ?? 0),
-      completed: Number(e.lessonsCompleted ?? 0),
-      total: Number(e.totalLessons ?? 0),
-    };
-  });
-
-  if (items.length === 0) {
+  if (!courses || courses.length === 0) {
     return (
       <div className="rounded-card bg-white p-4 shadow-card md:p-5">
         <div className="mb-4 flex items-center justify-between">
@@ -222,10 +217,17 @@ function MyCoursesCard() {
     );
   }
 
+  // Compact preview — first 3, full list lives on /student/courses.
+  const preview = courses.slice(0, 3);
+
   return (
     <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <div className="mb-4 flex items-center justify-between">
-        <button type="button" className="text-small text-cyan-600 underline underline-offset-2">
+        <button
+          type="button"
+          onClick={() => navigate('/student/courses')}
+          className="text-small text-cyan-600 underline underline-offset-2"
+        >
           {t('profile.viewAll')}
         </button>
         <h2 className="font-cairo text-h3 font-bold text-navy-900">
@@ -234,20 +236,25 @@ function MyCoursesCard() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {items.map((course) => (
-          <div key={course.name} className="flex gap-3 rounded-md border-r-4 border-cyan-500 p-3">
+        {preview.map((course) => (
+          <div key={course.id} className="flex gap-3 rounded-md border-r-4 border-cyan-500 p-3">
             <div className="flex shrink-0 items-start pt-1">
-              <CircularProgress percent={course.percent} />
+              <CircularProgress percent={course.completionProgress} />
             </div>
             <div className="flex min-w-0 flex-1 flex-col">
-              <p className="truncate font-cairo text-body font-semibold text-navy-900">
-                {course.name}
-              </p>
-              <p className="font-cairo text-caption text-gray-600">
-                {t('profile.chaptersCompleted', { done: course.completed, total: course.total })}
-              </p>
+              <div className="flex items-center justify-between gap-2">
+                <p className="truncate font-cairo text-body font-semibold text-navy-900">
+                  {course.name}
+                </p>
+                <span className="shrink-0 rounded-badge bg-success-50 px-2.5 py-0.5 text-caption text-success-600">
+                  {t('content.badges.subscribed')}
+                </span>
+              </div>
+              {course.stageName && (
+                <p className="truncate font-cairo text-caption text-gray-600">{course.stageName}</p>
+              )}
               <div className="mt-1.5">
-                <ProgressBar percent={course.percent} />
+                <ProgressBar percent={course.completionProgress} />
               </div>
             </div>
           </div>
@@ -257,9 +264,35 @@ function MyCoursesCard() {
   );
 }
 
+function PaymentMethodBadge({ method }: { method: string }) {
+  const { t } = useTranslation('student');
+  // PROMO → "كود خصم" (purple); CASH → "كاش" (neutral); CARD/VISA/other → "بايموب" (cyan).
+  if (method === 'PROMO') {
+    return (
+      <span className="rounded-badge bg-purple-50 px-2.5 py-0.5 text-caption text-purple-600">
+        {t('profile.paymentMethod.PROMO')}
+      </span>
+    );
+  }
+  if (method === 'CASH') {
+    return (
+      <span className="rounded-badge bg-gray-200 px-2.5 py-0.5 text-caption text-gray-700">
+        {t('profile.paymentMethod.CASH')}
+      </span>
+    );
+  }
+  return (
+    <span className="rounded-badge bg-cyan-50 px-2.5 py-0.5 text-caption text-cyan-700">
+      {t('profile.paymentMethod.PAYMOB')}
+    </span>
+  );
+}
+
 function SubscriptionHistoryCard() {
   const { t, i18n } = useTranslation('student');
+  const navigate = useNavigate();
   const { data: enrollments, isLoading, isError } = useStudentEnrollments();
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en';
 
   if (isLoading) {
     return (
@@ -289,23 +322,18 @@ function SubscriptionHistoryCard() {
     );
   }
 
-  const items = (enrollments ?? []).length > 0
-    ? (enrollments ?? []).map((enr) => {
-        const monthNames = i18n.language === 'ar'
-          ? ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
-          : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        return {
-          courseName: enr.chapterName,
-          date: `${monthNames[parseInt(enr.month) - 1] || enr.month} ${enr.year}`,
-          status: enr.status === 'Active' ? 'active' as const : 'ended' as const,
-        };
-      })
-    : [];
+  const all = enrollments ?? [];
+  // Compact preview — first 3; full list lives on /student/courses.
+  const preview = all.slice(0, 3);
 
   return (
     <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <div className="mb-4 flex items-center justify-between">
-        <button type="button" className="text-small text-cyan-600 underline underline-offset-2">
+        <button
+          type="button"
+          onClick={() => navigate('/student/courses')}
+          className="text-small text-cyan-600 underline underline-offset-2"
+        >
           {t('profile.viewAll')}
         </button>
         <h2 className="font-cairo text-h3 font-bold text-navy-900">
@@ -313,26 +341,51 @@ function SubscriptionHistoryCard() {
         </h2>
       </div>
 
-      {items.length === 0 ? (
+      {all.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-6 text-center">
           <BookOpen size={32} className="text-gray-400" />
           <p className="font-cairo text-body text-gray-600">{t('profile.noEnrollments')}</p>
           <p className="font-cairo text-caption text-gray-500">{t('profile.noEnrollmentsDesc')}</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {items.map((sub) => (
-            <div key={`${sub.courseName}-${sub.date}`} className="flex items-center justify-between gap-2">
-              <StatusBadge status={sub.status} />
-              <div className="text-end">
-                <p className="font-cairo text-body text-navy-900">{sub.courseName}</p>
-                <div className="flex items-center justify-end gap-1 font-cairo text-caption text-gray-600">
-                  <Calendar size={12} />
-                  <span>{sub.date}</span>
+        <div className="flex flex-col gap-4">
+          {preview.map((enr) => {
+            const dateLabel = new Date(enr.enrolledAt ?? enr.createdAt).toLocaleDateString(locale, {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            });
+            const isFree = enr.price <= 0;
+            const priceLabel = isFree
+              ? t('payment.promo.free')
+              : t('content.badges.price', { price: enr.price.toLocaleString(locale) });
+            return (
+              <div key={enr.id} className="flex items-center justify-between gap-2">
+                <div className="flex flex-col items-start gap-1.5">
+                  <StatusBadge status={enr.status === 'ACTIVE' ? 'active' : 'ended'} />
+                  <div className="flex items-center gap-1.5">
+                    <PaymentMethodBadge method={enr.paymentMethod} />
+                    <span
+                      className={cn(
+                        'font-cairo text-caption font-semibold',
+                        isFree ? 'text-success-600' : 'text-gray-700',
+                      )}
+                      dir="ltr"
+                    >
+                      {priceLabel}
+                    </span>
+                  </div>
+                </div>
+                <div className="min-w-0 text-end">
+                  <p className="truncate font-cairo text-body text-navy-900">{enr.chapter.name}</p>
+                  <div className="flex items-center justify-end gap-1 font-cairo text-caption text-gray-600">
+                    <Calendar size={12} />
+                    <span>{dateLabel}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

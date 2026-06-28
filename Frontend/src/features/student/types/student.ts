@@ -29,12 +29,30 @@ export interface ChangePasswordInput {
   confirmPassword: string;
 }
 
+export type EnrollmentPaymentMethod = 'CASH' | 'VISA' | 'PROMO';
+export type EnrollmentRecordStatus = 'ACTIVE' | 'DEACTIVATED';
+
+/**
+ * A student's own enrollment as returned by `GET /enrollments/my`
+ * (backend `EnrollmentListItemDTO`). Dates are ISO strings over the wire.
+ */
 export interface EnrollmentRecord {
   id: string;
-  chapterName: string;
-  month: string;
-  year: number;
-  status: 'Active' | 'Inactive';
+  studentId: string;
+  chapterId: string;
+  status: EnrollmentRecordStatus;
+  price: number;
+  paymentMethod: EnrollmentPaymentMethod;
+  promoCodeId: string | null;
+  enrolledAt: string;
+  createdAt: string;
+  updatedAt: string;
+  chapter: {
+    id: string;
+    name: string;
+    price: number | null;
+    stage: { id: string; name: string };
+  };
 }
 
 export interface StudentApiResponse<T> {

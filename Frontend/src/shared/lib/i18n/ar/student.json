@@ -46,7 +46,55 @@
   "quizResults": "نتيجة الاختبار",
   "score": "الدرجة: {{score}} من {{total}}",
   "aiTutor": { "title": "المساعد الذكي", "placeholder": "اكتب سؤالك هنا...", "send": "إرسال", "remainingQuestions": "{{count}} أسئلة متبقية اليوم", "source": "المصدر: {{lesson}}" },
-  "payment": { "title": "الاشتراك في {{chapter}}", "payWithCard": "الدفع بالبطاقة", "usePromoCode": "عندي كود خصم", "enterCode": "ادخل الكود", "apply": "تطبيق", "success": "تم الاشتراك بنجاح!", "error": "حصل مشكلة في الدفع، حاول تاني" },
+  "payment": {
+    "title": "إتمام الاشتراك",
+    "backToContent": "الرجوع لكل المحتوى",
+    "chooseMethod": "اختر طريقة الاشتراك",
+    "loadError": "تعذّر تحميل بيانات الفصل",
+    "retry": "إعادة المحاولة",
+    "successToast": "تم تفعيل الاشتراك بنجاح",
+    "notFound": {
+      "title": "الفصل غير موجود",
+      "description": "قد يكون الرابط غير صحيح أو تم حذف الفصل."
+    },
+    "chapterInfo": {
+      "lessons": "{{count}} دروس",
+      "quizzes": "{{count}} اختبارات",
+      "lifetime": "اشتراك دائم",
+      "currency": "ج.م",
+      "oneTime": "دفعة واحدة",
+      "lifetimeBadge": "اشتراك دائم"
+    },
+    "promo": {
+      "title": "كود خصم",
+      "subtitle": "أدخل كود التفعيل الذي حصلت عليه من الدعم الفني",
+      "free": "مجاناً",
+      "placeholder": "XXXXXXXX",
+      "apply": "تأكيد",
+      "validating": "جارٍ التحقق...",
+      "successTitle": "تم تفعيل الكود بنجاح!",
+      "successRedirect": "ستنتقل للكورس تلقائياً...",
+      "errorUsed": "هذا الكود تم استخدامه بالفعل",
+      "errorExpired": "كود منتهي الصلاحية",
+      "errorInvalid": "كود غير صحيح، تأكد وحاول مرة أخرى",
+      "errorEmpty": "برجاء إدخال الكود"
+    },
+    "paymob": {
+      "title": "الدفع عبر بايموب",
+      "subtitle": "ادفع ببطاقة بنكية أو محفظة إلكترونية أو فوري",
+      "subscribe": "اشترك الآن",
+      "preparing": "جارٍ تجهيز الدفع..."
+    },
+    "secure": {
+      "text": "جميع المدفوعات آمنة ومشفرة",
+      "powered": "Powered by Paymob"
+    },
+    "alreadyEnrolled": {
+      "title": "أنت مشترك في هذا الفصل بالفعل ✓",
+      "subtitle": "يمكنك الوصول لكل الدروس والاختبارات",
+      "goToCourse": "اذهب إلى الكورس"
+    }
+  },
   "profile": {
     "pageTitle": "الملف الشخصي",
     "fullName": "الاسم الكامل",
@@ -81,6 +129,7 @@
     "subscriptionHistory": "سجل الاشتراكات",
     "active": "نشط",
     "ended": "منتهي",
+    "paymentMethod": { "PROMO": "كود خصم", "CASH": "كاش", "PAYMOB": "بايموب" },
     "achievements": "الإنجازات",
     "firstLesson": "أول درس",
     "tenLessons": "١٠ دروس",
