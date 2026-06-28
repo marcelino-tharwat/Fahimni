@@ -1,5 +1,116 @@
 {
-  "dashboard": "لوحة المعلم",
+    "quizList": {
+      "pageTitle": "اختباراتي",
+      "pageSubtitle": "إدارة ومراجعة جميع الاختبارات التي أنشأتها",
+      "newQuiz": "إنشاء اختبار جديد",
+      "tabs": {
+        "all": "الكل ({{count}})",
+        "published": "منشور ({{count}})",
+        "draft": "مسودة ({{count}})"
+      },
+      "columns": {
+        "title": "العنوان",
+        "chapter": "الفصل",
+        "questions": "الأسئلة",
+        "points": "النقاط",
+        "status": "الحالة",
+        "publishedAt": "تاريخ النشر",
+        "actions": "الإجراءات"
+      },
+      "statusBadge": {
+        "published": "منشور",
+        "draft": "مسودة"
+      },
+      "dropdown": {
+        "view": "عرض",
+        "unpublish": "إلغاء النشر",
+        "edit": "تعديل",
+        "delete": "حذف"
+      },
+      "deleteConfirm": {
+        "title": "حذف الاختبار",
+        "message": "هل أنت متأكد من حذف \"{{title}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+        "confirm": "حذف",
+        "cancel": "إلغاء"
+      },
+      "unpublishConfirm": {
+        "title": "إلغاء نشر الاختبار",
+        "message": "سيؤدي هذا إلى إعادة \"{{title}}\" إلى المسودة. لن يتمكن الطلاب من رؤيته بعد الآن.",
+        "confirm": "إلغاء النشر",
+        "cancel": "إلغاء"
+      },
+      "empty": {
+        "title": "لا توجد اختبارات بعد",
+        "subtitle": "أنشئ اختبارك الأول للبدء",
+        "action": "إنشاء اختبار ✨"
+      },
+      "pagination": {
+        "page": "صفحة {{current}} من {{total}}",
+        "previous": "السابق",
+        "next": "التالي"
+      }
+    },
+    "publish": {
+      "pageTitle": "نشر الاختبار",
+      "pageSubtitle": "تعيين الاختبار لفصل، مراجعة الإعدادات، والنشر",
+      "chapterAssignment": "تعيين الفصل",
+      "stage": "المرحلة الدراسية",
+      "stagePlaceholder": "اختر المرحلة...",
+      "chapter": "الفصل",
+      "chapterPlaceholder": "اختر الفصل...",
+      "chapterRequired": "يرجى اختيار الفصل قبل النشر",
+      "quizSettings": "إعدادات الاختبار",
+      "titleLabel": "عنوان الاختبار",
+      "titlePlaceholder": "أدخل عنوان الاختبار",
+      "timeLimit": "المدة الزمنية (بالدقائق)",
+      "timeLimitHint": "الحد الأدنى ٥، الحد الأقصى ١٨٠ دقيقة",
+      "attemptsAllowed": "عدد المحاولات المسموح بها",
+      "attemptOne": "محاولة واحدة",
+      "attemptTwo": "محاولتان",
+      "attemptUnlimited": "غير محدود",
+      "passingScore": "درجة النجاح (%)",
+      "passingScoreHint": "الحد الأدنى المئوي المطلوب للنجاح",
+      "shuffleQuestions": "خلط الأسئلة",
+      "shuffleAnswers": "خلط الإجابات",
+      "showResultImmediately": "عرض النتيجة فوراً",
+      "showCorrectAnswers": "عرض الإجابات الصحيحة بعد التسليم",
+      "summaryCard": "ملخص الاختبار",
+      "totalQuestions": "عدد الأسئلة",
+      "totalPoints": "إجمالي النقاط",
+      "duration": "المدة",
+      "difficulty": "الصعوبة",
+      "questionType": {
+        "mcq": "اختيار من متعدد",
+        "tf": "صح أم خطأ",
+        "short": "إجابة قصيرة"
+      },
+      "difficultyEasy": "سهل",
+      "difficultyMedium": "متوسط",
+      "difficultyHard": "صعب",
+      "backToReview": "← مراجعة الأسئلة",
+      "bottomBack": "← الرجوع للخطوة الثانية",
+      "publishBtn": "نشر الاختبار 🚀",
+      "publishing": "جارٍ النشر...",
+      "confirmModal": {
+        "title": "نشر الاختبار",
+        "message": "أنت على وشك نشر هذا الاختبار في الفصل \"{{chapter}}\".",
+        "chapterLabel": "الفصل",
+        "questionsCount": "{{count}} سؤال",
+        "pointsCount": "{{count}} نقطة",
+        "warning": "بمجرد النشر، سيتمكن الطلاب من رؤية هذا الاختبار وأدائه. لا يمكن تعديل الأسئلة بعد النشر.",
+        "confirmBtn": "نشر الآن",
+        "reviewBtn": "مراجعة مرة أخرى",
+        "loading": "جارٍ النشر..."
+      },
+      "success": {
+        "title": "تم نشر الاختبار!",
+        "quizName": "اسم الاختبار",
+        "message": "تم نشر اختبارك بنجاح وأصبح متاحاً للطلاب.",
+        "viewQuizzes": "عرض الاختبارات",
+        "newQuiz": "إنشاء اختبار جديد"
+      }
+    },
+    "dashboard": "لوحة المعلم",
   "dashboardView": {
     "title": "لوحة التحكم",
     "welcome": "مرحبًا بعودتك! إليك ما يحدث في أكاديميتك.",

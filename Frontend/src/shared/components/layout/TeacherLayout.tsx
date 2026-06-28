@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, Brain, Users, User } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, Brain, ClipboardList, Users, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Topbar } from './Topbar';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -10,6 +10,7 @@ export function TeacherLayout() {
   const items: SidebarItem[] = [
     { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/teacher/dashboard' },
     { label: t('nav.contentManagement'), icon: FolderOpen, path: '/teacher/content' },
+    { label: t('nav.quizzes'), icon: ClipboardList, path: '/teacher/quizzes', end: true },
     { label: t('nav.quizGenerator'), icon: Brain, path: '/teacher/quizzes/generator' },
     { label: t('nav.students'), icon: Users, path: '/teacher/students' },
     { label: t('nav.profile'), icon: User, path: '/teacher/profile' },

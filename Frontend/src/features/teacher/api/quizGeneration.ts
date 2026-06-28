@@ -3,6 +3,7 @@ import type { ApiResponse } from '@/shared/types/api';
 import type { Stage, Chapter } from '@/shared/types/content';
 import type { Lesson } from '@/features/teacher/types/lesson';
 import type { GenerateQuizPayload, GenerateQuizResponse } from '@/features/teacher/types/quizGeneration';
+import type { Chapter as TeacherChapter } from '@/features/teacher/types/chapter';
 
 export const quizGenerationApi = {
   getStages: async (): Promise<Stage[]> => {
@@ -73,6 +74,38 @@ export const quizGenerationApi = {
   reorderQuestions: async (quizId: string, orderedIds: string[]): Promise<void> => {
     await apiClient.patch(`/quizzes/${quizId}/questions/reorder`, orderedIds);
   },
+
+  // ── STORY-56: publish & list ─────────────────────────────────────────────
+
+  /** GET /quizzes — list quizzes owned by the current teacher. */
+  listQuizzes: async (status?: string): Promise<QuizListItem[]> => {
+    const params = status ? `?status=${status}` : '';
+    const { data } = await apiClient.get<ApiResponse<QuizListItem[]>>(`/quizzes${params}`);
+    return data.data;
+  },
+
+  /** PATCH /quizzes/:id/publish — publish a draft quiz. */
+  publishQuiz: async (quizId: string): Promise<QuizListItem> => {
+    const { data } = await apiClient.patch<ApiResponse<QuizListItem>>(`/quizzes/${quizId}/publish`);
+    return data.data;
+  },
+
+  /** POST /quizzes/:id/assign — assign quiz to a chapter. */
+  assignQuiz: async (quizId: string, chapterId: string): Promise<QuizListItem> => {
+    const { data } = await apiClient.post<ApiResponse<QuizListItem>>(`/quizzes/${quizId}/assign`, { chapterId });
+    return data.data;
+  },
+
+  /** PUT /quizzes/:id — update quiz metadata. */
+  updateQuiz: async (quizId: string, body: UpdateQuizBody): Promise<QuizListItem> => {
+    const { data } = await apiClient.put<ApiResponse<QuizListItem>>(`/quizzes/${quizId}`, body);
+    return data.data;
+  },
+
+  /** DELETE /quizzes/:id — delete a draft quiz. */
+  deleteQuiz: async (quizId: string): Promise<void> => {
+    await apiClient.delete(`/quizzes/${quizId}`);
+  },
 };
 
 export interface DraftQuestion {
@@ -93,10 +126,32 @@ export interface DraftQuizResponse {
   chapterId: string | null;
   status: string;
   questionCount: number;
+  totalPoints: number;
+  durationMinutes: number | null;
   createdAt: string;
   updatedAt: string;
   publishedAt?: string | null;
   questions: DraftQuestion[];
+}
+
+export interface QuizListItem {
+  id: string;
+  title: string;
+  description: string | null;
+  chapterId: string | null;
+  status: 'DRAFT' | 'PUBLISHED';
+  durationMinutes: number | null;
+  questionCount: number;
+  totalPoints: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string | null;
+}
+
+export interface UpdateQuizBody {
+  title?: string;
+  description?: string | null;
+  durationMinutes?: number | null;
 }
 
 export interface QuestionWriteBody {
