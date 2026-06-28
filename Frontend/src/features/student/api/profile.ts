@@ -73,8 +73,9 @@ export const studentProfileApi = {
   },
 
   getEnrollments: async (): Promise<EnrollmentRecord[]> => {
+    // Backend route is `/enrollments/my` (STUDENT, own active enrollments).
     const { data } = await apiClient.get<StudentApiResponse<EnrollmentRecord[]>>(
-      '/enrollments/me',
+      '/enrollments/my',
     );
     return data.data;
   },
