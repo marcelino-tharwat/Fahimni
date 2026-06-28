@@ -1,5 +1,116 @@
 {
-  "dashboard": "Teacher Dashboard",
+    "quizList": {
+      "pageTitle": "My Quizzes",
+      "pageSubtitle": "Manage and review all your created quizzes",
+      "newQuiz": "Create New Quiz",
+      "tabs": {
+        "all": "All ({{count}})",
+        "published": "Published ({{count}})",
+        "draft": "Drafts ({{count}})"
+      },
+      "columns": {
+        "title": "Title",
+        "chapter": "Chapter",
+        "questions": "Questions",
+        "points": "Points",
+        "status": "Status",
+        "publishedAt": "Published Date",
+        "actions": "Actions"
+      },
+      "statusBadge": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "dropdown": {
+        "view": "View",
+        "unpublish": "Unpublish",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "deleteConfirm": {
+        "title": "Delete Quiz",
+        "message": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      },
+      "unpublishConfirm": {
+        "title": "Unpublish Quiz",
+        "message": "This will make \"{{title}}\" a draft again. Students will no longer see it.",
+        "confirm": "Unpublish",
+        "cancel": "Cancel"
+      },
+      "empty": {
+        "title": "No quizzes yet",
+        "subtitle": "Create your first quiz to get started",
+        "action": "Create Quiz ✨"
+      },
+      "pagination": {
+        "page": "Page {{current}} of {{total}}",
+        "previous": "Previous",
+        "next": "Next"
+      }
+    },
+    "publish": {
+      "pageTitle": "Publish Quiz",
+      "pageSubtitle": "Assign to a chapter, review settings, and publish",
+      "chapterAssignment": "Chapter Assignment",
+      "stage": "Stage",
+      "stagePlaceholder": "Select stage...",
+      "chapter": "Chapter",
+      "chapterPlaceholder": "Select chapter...",
+      "chapterRequired": "Please select a chapter before publishing",
+      "quizSettings": "Quiz Settings",
+      "titleLabel": "Quiz Title",
+      "titlePlaceholder": "Enter quiz title",
+      "timeLimit": "Time Limit (minutes)",
+      "timeLimitHint": "Min 5, max 180 minutes",
+      "attemptsAllowed": "Attempts Allowed",
+      "attemptOne": "One",
+      "attemptTwo": "Two",
+      "attemptUnlimited": "Unlimited",
+      "passingScore": "Passing Score (%)",
+      "passingScoreHint": "Minimum percentage required to pass",
+      "shuffleQuestions": "Shuffle questions",
+      "shuffleAnswers": "Shuffle answers",
+      "showResultImmediately": "Show result immediately",
+      "showCorrectAnswers": "Show correct answers after submission",
+      "summaryCard": "Quiz Summary",
+      "totalQuestions": "Total questions",
+      "totalPoints": "Total points",
+      "duration": "Duration",
+      "difficulty": "Difficulty",
+      "questionType": {
+        "mcq": "Multiple Choice",
+        "tf": "True / False",
+        "short": "Short Answer"
+      },
+      "difficultyEasy": "Easy",
+      "difficultyMedium": "Medium",
+      "difficultyHard": "Hard",
+      "backToReview": "← Back to review",
+      "bottomBack": "← Back to Step 2",
+      "publishBtn": "Publish Quiz 🚀",
+      "publishing": "Publishing...",
+      "confirmModal": {
+        "title": "Publish Quiz",
+        "message": "You are about to publish this quiz to chapter \"{{chapter}}\".",
+        "chapterLabel": "Chapter",
+        "questionsCount": "{{count}} questions",
+        "pointsCount": "{{count}} points",
+        "warning": "Once published, students will be able to see and take this quiz. Questions cannot be edited after publishing.",
+        "confirmBtn": "Publish Now",
+        "reviewBtn": "Review Again",
+        "loading": "Publishing..."
+      },
+      "success": {
+        "title": "Quiz Published!",
+        "quizName": "Quiz name",
+        "message": "Your quiz has been published successfully and is now available to students.",
+        "viewQuizzes": "View Quizzes",
+        "newQuiz": "Create New Quiz"
+      }
+    },
+    "dashboard": "Teacher Dashboard",
   "dashboardView": {
     "title": "Dashboard",
     "welcome": "Welcome back! Here's what's happening in your academy.",

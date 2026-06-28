@@ -11,6 +11,7 @@ export interface SidebarItem {
   label: string;
   icon: LucideIcon;
   path: string;
+  end?: boolean;
 }
 
 interface SidebarProps {
@@ -43,10 +44,11 @@ function SidebarContent({ items, onNavigate }: { items: SidebarItem[]; onNavigat
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
-        {items.map(({ label, icon: Icon, path }) => (
+        {items.map(({ label, icon: Icon, path, end }) => (
           <NavLink
             key={path}
             to={path}
+            end={end}
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
