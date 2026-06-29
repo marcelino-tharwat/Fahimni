@@ -8,6 +8,11 @@ import {
 } from "./auth.validation.js";
 import { AuthService } from "./auth.service.js";
 import { loginSchema } from "./auth.validation.js";
+import {
+  REFRESH_COOKIE,
+  setAuthCookies,
+  clearAuthCookies,
+} from "./auth.cookies.js";
 
 const authService = new AuthService();
 
@@ -31,18 +36,13 @@ export class AuthController {
 
       const result = await authService.loginUser(parsed.data);
 
-      res.cookie("access_token", result.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 15 * 60 * 1000,
-      });
+      // Both tokens are HttpOnly cookies — the refresh token is never in JSON.
+      setAuthCookies(res, result.accessToken, result.refreshToken);
 
       res.status(200).json({
         message: "Login successful",
         data: {
           user: result.user,
-          refreshToken: result.refreshToken,
         },
       });
     } catch (error) {
@@ -70,18 +70,12 @@ export class AuthController {
 
       const result = await authService.registerUser(parsed.data);
 
-      res.cookie("access_token", result.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 15 * 60 * 1000,
-      });
+      setAuthCookies(res, result.accessToken, result.refreshToken);
 
       res.status(201).json({
         message: "Registration successful",
         data: {
           user: result.user,
-          refreshToken: result.refreshToken,
         },
       });
     } catch (error) {
@@ -185,26 +179,26 @@ export class AuthController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { refreshToken } = req.body;
+      // Refresh token comes from the HttpOnly cookie. A legacy body token is
+      // still accepted as a transitional fallback (does not block the fix).
+      const refreshToken: string | undefined =
+        (req.cookies?.[REFRESH_COOKIE] as string | undefined) ??
+        (typeof req.body?.refreshToken === "string" ? req.body.refreshToken : undefined);
+
       if (!refreshToken) {
-        res.status(400).json({ success: false, message: "Refresh token required" });
+        res.status(401).json({ success: false, message: "Refresh token required" });
         return;
       }
 
       const result = await authService.refreshAccessToken(refreshToken);
 
-      res.cookie("access_token", result.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 15 * 60 * 1000,
-      });
+      // Rotate both cookies; refresh token never appears in JSON.
+      setAuthCookies(res, result.accessToken, result.refreshToken);
 
       res.status(200).json({
         message: "Token refreshed",
         data: {
           user: result.user,
-          refreshToken: result.refreshToken,
         },
       });
     } catch (err) {
@@ -218,11 +212,11 @@ export class AuthController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      res.clearCookie("access_token", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      });
+      // Revoke the DB refresh session (idempotent), then clear both cookies
+      // with options matching how they were set.
+      const refreshToken = req.cookies?.[REFRESH_COOKIE] as string | undefined;
+      await authService.logout(refreshToken);
+      clearAuthCookies(res);
 
       res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
