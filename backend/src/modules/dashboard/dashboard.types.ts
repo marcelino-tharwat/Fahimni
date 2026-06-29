@@ -30,3 +30,27 @@ export interface TeacherDashboardStatsDTO {
   totalQuizzes: number;
   recentActivity: RecentActivityDTO[];
 }
+
+/** STORY-66 — a single student's engagement record. */
+export interface StudentEngagementDTO {
+  studentId: string;
+  studentName: string;
+  studentPhone: string | null;
+  status: "active" | "inactive";
+  enrolledChapterCount: number;
+  totalLessonsWatched: number;
+  averageQuizScore: number | null;
+  lastActivityAt: string | null;
+  enrollmentMonths: number;
+}
+
+/** STORY-66 — paginated engagement page. */
+export interface StudentEngagementPageDTO {
+  students: StudentEngagementDTO[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+}

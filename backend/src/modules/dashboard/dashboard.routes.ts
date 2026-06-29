@@ -15,4 +15,12 @@ router.get(
   controller.getTeacherStats,
 );
 
+// STORY-66 — teacher student engagement stats.
+router.get(
+  "/teacher/students",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  controller.getTeacherStudents,
+);
+
 export default router;
