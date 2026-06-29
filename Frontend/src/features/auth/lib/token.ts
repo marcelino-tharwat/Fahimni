@@ -1,5 +1,3 @@
-import type { User } from "@/shared/types/user";
-
 const USER_KEY = "auth_user";
 
 const guard = <T>(fn: () => T): T | null => {
@@ -19,7 +17,7 @@ export const clearUser = (): void => {
   guard(() => localStorage.removeItem(USER_KEY));
 };
 
-// Refresh token helpers — will be migrated to httpOnly cookie in SEC-004
-export const saveRefreshToken = (token: string) => guard(() => localStorage.setItem("refreshToken", token));
-export const getRefreshToken = () => guard(() => localStorage.getItem("refreshToken"));
+// Refresh tokens now live ONLY in an HttpOnly cookie set by the backend — never
+// in browser storage. This remains solely to purge any legacy value written by
+// older builds (called on logout); there is intentionally no setter/getter.
 export const removeRefreshToken = () => guard(() => localStorage.removeItem("refreshToken"));

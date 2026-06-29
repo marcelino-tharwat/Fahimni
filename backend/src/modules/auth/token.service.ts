@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env.js";
 import type { Role } from "../../generated/prisma/client.js";
@@ -25,6 +26,9 @@ export class TokenService {
       env.JWT_REFRESH_SECRET as never,
       {
         expiresIn: env.JWT_REFRESH_EXPIRES_IN as never,
+        // Unique per issuance so two tokens minted in the same second are
+        // distinct — required for correct rotation & replay detection.
+        jwtid: crypto.randomUUID(),
       } as never,
     );
   }

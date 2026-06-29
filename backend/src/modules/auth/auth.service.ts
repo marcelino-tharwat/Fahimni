@@ -1,9 +1,12 @@
 import crypto from "node:crypto";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { OtpType, Role, Status } from "../../generated/prisma/index.js";
 import { prisma } from "../../config/database.js";
+import { env } from "../../config/env.js";
 import { userPublicFields } from "../users/user.types.js";
 import { TokenService } from "./token.service.js";
+import { hashRefreshToken } from "./auth.cookies.js";
 import type {
   RegisterInput,
   LoginInput,
@@ -52,8 +55,9 @@ export class AuthService {
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
+    // Persist only the SHA-256 hash — never the raw refresh token.
     await prisma.refreshToken.create({
-      data: { token: refreshToken, userId: user.id, expiresAt },
+      data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
     });
 
     const { password: _, ...safeUser } = user;
@@ -132,7 +136,7 @@ export class AuthService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
     await prisma.refreshToken.create({
-      data: { token: refreshToken, userId: user.id, expiresAt },
+      data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
     });
 
     // Return user WITHOUT password + accessToken
@@ -285,32 +289,67 @@ export class AuthService {
   }
 
   public async refreshAccessToken(incomingRefreshToken: string) {
-    const stored = await prisma.refreshToken.findUnique({
-      where: { token: incomingRefreshToken },
-      include: { user: true },
-    });
-
-    if (!stored) throw new AppError("Invalid refresh token", 401);
-
-    if (stored.expiresAt < new Date()) {
-      await prisma.refreshToken.delete({ where: { id: stored.id } });
-      throw new AppError("Refresh token expired", 401);
+    // 1. Verify signature/expiry of the refresh JWT (defense in depth).
+    let payload: jwt.JwtPayload;
+    try {
+      payload = jwt.verify(
+        incomingRefreshToken,
+        env.JWT_REFRESH_SECRET,
+      ) as jwt.JwtPayload;
+    } catch {
+      throw new AppError("Invalid refresh token", 401);
     }
+    const userId = typeof payload.sub === "string" ? payload.sub : undefined;
+    if (!userId) throw new AppError("Invalid refresh token", 401);
 
-    await prisma.refreshToken.delete({ where: { id: stored.id } });
-
-    const newAccessToken = this.tokenService.generateAccessToken(stored.user.id);
-    const newRefreshToken = this.tokenService.generateRefreshToken(stored.user.id);
-
+    // 2. Rotate atomically IN PLACE — preserves the row id and createdAt so the
+    //    STORY-66 last-login proxy keeps reflecting the original login, not each
+    //    refresh. A replayed/already-rotated/expired token matches zero rows, so
+    //    concurrent reuse yields exactly one valid successor.
+    const oldHash = hashRefreshToken(incomingRefreshToken);
+    const newRefreshToken = this.tokenService.generateRefreshToken(userId);
+    const newHash = hashRefreshToken(newRefreshToken);
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
-    await prisma.refreshToken.create({
-      data: { token: newRefreshToken, userId: stored.user.id, expiresAt },
+
+    const rotated = await prisma.refreshToken.updateMany({
+      where: { token: oldHash, userId, expiresAt: { gt: new Date() } },
+      data: { token: newHash, expiresAt },
     });
+    if (rotated.count !== 1) {
+      throw new AppError("Invalid refresh token", 401);
+    }
 
-    const { password: _, ...safeUser } = stored.user;
+    // 3. The user must still exist and be allowed to authenticate.
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: userPublicFields,
+    });
+    if (!user) {
+      await prisma.refreshToken.deleteMany({ where: { token: newHash } });
+      throw new AppError("Invalid refresh token", 401);
+    }
+    if (user.status === "INACTIVE" || user.status === "BANNED") {
+      await prisma.refreshToken.deleteMany({ where: { token: newHash } });
+      const error = new Error("Account is inactive. Contact support.") as ApiError;
+      error.status = 403;
+      throw error;
+    }
 
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken, user: safeUser };
+    const newAccessToken = this.tokenService.generateAccessToken(userId);
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken, user };
+  }
+
+  /**
+   * Revoke the refresh session for the supplied raw refresh token. Idempotent:
+   * a missing/invalid/already-revoked token is a no-op (never throws), so logout
+   * always succeeds and clears cookies.
+   */
+  public async logout(incomingRefreshToken: string | undefined): Promise<void> {
+    if (!incomingRefreshToken) return;
+    await prisma.refreshToken.deleteMany({
+      where: { token: hashRefreshToken(incomingRefreshToken) },
+    });
   }
 
   public async getMe(userId: string) {

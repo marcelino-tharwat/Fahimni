@@ -8,9 +8,7 @@ import { apiClient, type ApiError } from '@/shared/lib/api/client';
 import { authApi } from '@/features/auth/api/auth';
 import {
   saveUser,
-  getUser,
   clearUser,
-  saveRefreshToken,
   removeRefreshToken,
 } from '@/features/auth/lib/token';
 import type { User, UserRole } from '@/shared/types/user';
@@ -60,10 +58,10 @@ export const login = createAsyncThunk<
   try {
     const { data } = await apiClient.post<{
       message: string;
-      data: { user: User; refreshToken: string };
+      data: { user: User };
     }>('/v1/auth/login', credentials);
+    // Tokens live only in HttpOnly cookies; we cache the user object for UX.
     saveUser(data.data.user);
-    saveRefreshToken(data.data.refreshToken);
     return { user: data.data.user };
   } catch (err) {
     const apiErr = err as ApiError;
@@ -93,17 +91,15 @@ export const initAuth = createAsyncThunk<
   void,
   { rejectValue: string }
 >('auth/initAuth', async (_, { rejectWithValue }) => {
-  const storedUser = getUser<User>();
-
-  if (!storedUser) {
-    return rejectWithValue('No stored user');
-  }
-
+  // The backend session cookies are the source of truth — not localStorage.
+  // /auth/me confirms the session; the interceptor transparently performs one
+  // cookie-based refresh if the access token has expired.
   try {
     const { data } = await apiClient.get<{
       message: string;
       data: { user: User };
     }>('/v1/auth/me');
+    saveUser(data.data.user);
     return { user: data.data.user };
   } catch {
     clearUser();
@@ -120,10 +116,9 @@ export const register = createAsyncThunk<
   try {
     const { data } = await apiClient.post<{
       message: string;
-      data: { user: User; refreshToken: string };
+      data: { user: User };
     }>('/v1/auth/register', { ...payload, role: payload.role ?? 'STUDENT' });
     saveUser(data.data.user);
-    saveRefreshToken(data.data.refreshToken);
     return { user: data.data.user };
   } catch (err) {
     const apiErr = err as ApiError;
