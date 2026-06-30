@@ -35,4 +35,13 @@ const gradeEssaysChain = [
 attemptsRouter.post("/:attemptId/grade-essays", ...gradeEssaysChain);
 attemptsRouter.patch("/:attemptId/grade-essays", ...gradeEssaysChain);
 
+// Student re-fetches their own submitted attempt results. Registered AFTER the
+// more specific /:attemptId/* routes above so it never shadows them.
+attemptsRouter.get(
+  "/:attemptId",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.getAttemptResults,
+);
+
 export default attemptsRouter;

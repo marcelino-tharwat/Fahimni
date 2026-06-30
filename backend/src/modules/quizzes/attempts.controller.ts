@@ -75,6 +75,24 @@ export class AttemptsController {
     },
   );
 
+  /** GET /api/attempts/:attemptId (student) — re-fetch own attempt results. */
+  public getAttemptResults = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const attemptId = req.params.attemptId;
+      if (typeof attemptId !== "string") {
+        throw new AppError("Invalid attempt ID", 400);
+      }
+
+      const data = await attemptsService.getAttemptResults(
+        attemptId,
+        req.user!.id,
+      );
+      res
+        .status(200)
+        .json(okResponse("Attempt results retrieved successfully", data));
+    },
+  );
+
   /** GET /api/quizzes/:quizId/results (teacher) — all attempts + breakdown. */
   public getResults = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {

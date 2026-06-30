@@ -21687,6 +21687,7 @@ export namespace Prisma {
     type: $Enums.QuestionType | null
     text: string | null
     correctAnswer: string | null
+    explanation: string | null
     sortOrder: number | null
     points: number | null
     createdAt: Date | null
@@ -21699,6 +21700,7 @@ export namespace Prisma {
     type: $Enums.QuestionType | null
     text: string | null
     correctAnswer: string | null
+    explanation: string | null
     sortOrder: number | null
     points: number | null
     createdAt: Date | null
@@ -21712,6 +21714,7 @@ export namespace Prisma {
     text: number
     options: number
     correctAnswer: number
+    explanation: number
     sortOrder: number
     points: number
     createdAt: number
@@ -21736,6 +21739,7 @@ export namespace Prisma {
     type?: true
     text?: true
     correctAnswer?: true
+    explanation?: true
     sortOrder?: true
     points?: true
     createdAt?: true
@@ -21748,6 +21752,7 @@ export namespace Prisma {
     type?: true
     text?: true
     correctAnswer?: true
+    explanation?: true
     sortOrder?: true
     points?: true
     createdAt?: true
@@ -21761,6 +21766,7 @@ export namespace Prisma {
     text?: true
     options?: true
     correctAnswer?: true
+    explanation?: true
     sortOrder?: true
     points?: true
     createdAt?: true
@@ -21861,6 +21867,7 @@ export namespace Prisma {
     text: string
     options: JsonValue
     correctAnswer: string | null
+    explanation: string | null
     sortOrder: number
     points: number
     createdAt: Date
@@ -21893,6 +21900,7 @@ export namespace Prisma {
     text?: boolean
     options?: boolean
     correctAnswer?: boolean
+    explanation?: boolean
     sortOrder?: boolean
     points?: boolean
     createdAt?: boolean
@@ -21907,6 +21915,7 @@ export namespace Prisma {
     text?: boolean
     options?: boolean
     correctAnswer?: boolean
+    explanation?: boolean
     sortOrder?: boolean
     points?: boolean
     createdAt?: boolean
@@ -21921,6 +21930,7 @@ export namespace Prisma {
     text?: boolean
     options?: boolean
     correctAnswer?: boolean
+    explanation?: boolean
     sortOrder?: boolean
     points?: boolean
     createdAt?: boolean
@@ -21935,13 +21945,14 @@ export namespace Prisma {
     text?: boolean
     options?: boolean
     correctAnswer?: boolean
+    explanation?: boolean
     sortOrder?: boolean
     points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type QuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "type" | "text" | "options" | "correctAnswer" | "sortOrder" | "points" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
+  export type QuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "type" | "text" | "options" | "correctAnswer" | "explanation" | "sortOrder" | "points" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
   export type QuestionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
   }
@@ -21964,6 +21975,7 @@ export namespace Prisma {
       text: string
       options: Prisma.JsonValue
       correctAnswer: string | null
+      explanation: string | null
       sortOrder: number
       points: number
       createdAt: Date
@@ -22398,6 +22410,7 @@ export namespace Prisma {
     readonly text: FieldRef<"Question", 'String'>
     readonly options: FieldRef<"Question", 'Json'>
     readonly correctAnswer: FieldRef<"Question", 'String'>
+    readonly explanation: FieldRef<"Question", 'String'>
     readonly sortOrder: FieldRef<"Question", 'Int'>
     readonly points: FieldRef<"Question", 'Int'>
     readonly createdAt: FieldRef<"Question", 'DateTime'>
@@ -25384,6 +25397,7 @@ export namespace Prisma {
     text: 'text',
     options: 'options',
     correctAnswer: 'correctAnswer',
+    explanation: 'explanation',
     sortOrder: 'sortOrder',
     points: 'points',
     createdAt: 'createdAt',
@@ -26959,6 +26973,7 @@ export namespace Prisma {
     text?: StringFilter<"Question"> | string
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
+    explanation?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
     points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
@@ -26973,6 +26988,7 @@ export namespace Prisma {
     text?: SortOrder
     options?: SortOrder
     correctAnswer?: SortOrderInput | SortOrder
+    explanation?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
     points?: SortOrder
     createdAt?: SortOrder
@@ -26991,6 +27007,7 @@ export namespace Prisma {
     text?: StringFilter<"Question"> | string
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
+    explanation?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
     points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
@@ -27005,6 +27022,7 @@ export namespace Prisma {
     text?: SortOrder
     options?: SortOrder
     correctAnswer?: SortOrderInput | SortOrder
+    explanation?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
     points?: SortOrder
     createdAt?: SortOrder
@@ -27026,6 +27044,7 @@ export namespace Prisma {
     text?: StringWithAggregatesFilter<"Question"> | string
     options?: JsonWithAggregatesFilter<"Question">
     correctAnswer?: StringNullableWithAggregatesFilter<"Question"> | string | null
+    explanation?: StringNullableWithAggregatesFilter<"Question"> | string | null
     sortOrder?: IntWithAggregatesFilter<"Question"> | number
     points?: IntWithAggregatesFilter<"Question"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
@@ -28553,6 +28572,7 @@ export namespace Prisma {
     text: string
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
+    explanation?: string | null
     sortOrder?: number
     points?: number
     createdAt?: Date | string
@@ -28567,6 +28587,7 @@ export namespace Prisma {
     text: string
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
+    explanation?: string | null
     sortOrder?: number
     points?: number
     createdAt?: Date | string
@@ -28579,6 +28600,7 @@ export namespace Prisma {
     text?: StringFieldUpdateOperationsInput | string
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28593,6 +28615,7 @@ export namespace Prisma {
     text?: StringFieldUpdateOperationsInput | string
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28606,6 +28629,7 @@ export namespace Prisma {
     text: string
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
+    explanation?: string | null
     sortOrder?: number
     points?: number
     createdAt?: Date | string
@@ -28618,6 +28642,7 @@ export namespace Prisma {
     text?: StringFieldUpdateOperationsInput | string
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28631,6 +28656,7 @@ export namespace Prisma {
     text?: StringFieldUpdateOperationsInput | string
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30121,6 +30147,7 @@ export namespace Prisma {
     text?: SortOrder
     options?: SortOrder
     correctAnswer?: SortOrder
+    explanation?: SortOrder
     sortOrder?: SortOrder
     points?: SortOrder
     createdAt?: SortOrder
@@ -30138,6 +30165,7 @@ export namespace Prisma {
     type?: SortOrder
     text?: SortOrder
     correctAnswer?: SortOrder
+    explanation?: SortOrder
     sortOrder?: SortOrder
     points?: SortOrder
     createdAt?: SortOrder
@@ -30150,6 +30178,7 @@ export namespace Prisma {
     type?: SortOrder
     text?: SortOrder
     correctAnswer?: SortOrder
+    explanation?: SortOrder
     sortOrder?: SortOrder
     points?: SortOrder
     createdAt?: SortOrder
@@ -35200,6 +35229,7 @@ export namespace Prisma {
     text: string
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
+    explanation?: string | null
     sortOrder?: number
     points?: number
     createdAt?: Date | string
@@ -35212,6 +35242,7 @@ export namespace Prisma {
     text: string
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
+    explanation?: string | null
     sortOrder?: number
     points?: number
     createdAt?: Date | string
@@ -35380,6 +35411,7 @@ export namespace Prisma {
     text?: StringFilter<"Question"> | string
     options?: JsonFilter<"Question">
     correctAnswer?: StringNullableFilter<"Question"> | string | null
+    explanation?: StringNullableFilter<"Question"> | string | null
     sortOrder?: IntFilter<"Question"> | number
     points?: IntFilter<"Question"> | number
     createdAt?: DateTimeFilter<"Question"> | Date | string
@@ -36918,6 +36950,7 @@ export namespace Prisma {
     text: string
     options: JsonNullValueInput | InputJsonValue
     correctAnswer?: string | null
+    explanation?: string | null
     sortOrder?: number
     points?: number
     createdAt?: Date | string
@@ -36943,6 +36976,7 @@ export namespace Prisma {
     text?: StringFieldUpdateOperationsInput | string
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36955,6 +36989,7 @@ export namespace Prisma {
     text?: StringFieldUpdateOperationsInput | string
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36967,6 +37002,7 @@ export namespace Prisma {
     text?: StringFieldUpdateOperationsInput | string
     options?: JsonNullValueInput | InputJsonValue
     correctAnswer?: NullableStringFieldUpdateOperationsInput | string | null
+    explanation?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

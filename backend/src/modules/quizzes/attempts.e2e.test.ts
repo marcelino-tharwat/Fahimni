@@ -296,12 +296,23 @@ describe("STORY-48 — full HTTP + DB journey", () => {
     expect(submit.status).toBe(200);
     const sub = submit.json?.data as {
       status: string;
+      quizTitle: string;
       score: number;
       totalPoints: number;
       percentage: number;
       pendingEssayCount: number;
       isFinal: boolean;
-      results: Array<{ questionId: string; result: string; awardedPoints: number | null; maxPoints: number }>;
+      results: Array<{
+        questionId: string;
+        type: string;
+        questionText: string;
+        options: string[] | null;
+        studentAnswer: string;
+        correctAnswer: string | null;
+        result: string;
+        awardedPoints: number | null;
+        maxPoints: number;
+      }>;
     };
     expect(sub.status).toBe("COMPLETED");
     expect(sub.score).toBe(1);
@@ -309,12 +320,21 @@ describe("STORY-48 — full HTTP + DB journey", () => {
     expect(sub.percentage).toBe(14.29);
     expect(sub.pendingEssayCount).toBe(1);
     expect(sub.isFinal).toBe(false);
+    expect(typeof sub.quizTitle).toBe("string");
+    expect(sub.quizTitle.length).toBeGreaterThan(0);
     const byId = new Map(sub.results.map((r) => [r.questionId, r]));
     expect(byId.get(fx.mcqId)!.result).toBe("correct");
     expect(byId.get(fx.tfId)!.result).toBe("incorrect");
     expect(byId.get(fx.essayId)!.result).toBe("pending");
     expect(byId.get(fx.essayId)!.awardedPoints).toBeNull();
-    expect(JSON.stringify(submit.json)).not.toContain("correctAnswer");
+    // SCRUM-423: the post-submission response now enriches each result with the
+    // question text, options, the student's answer and the correct answer.
+    expect(byId.get(fx.mcqId)!.questionText).toBe("اختر الإجابة الصحيحة");
+    expect(byId.get(fx.mcqId)!.studentAnswer).toBe("ب");
+    expect(byId.get(fx.mcqId)!.correctAnswer).toBe("ب");
+    expect(byId.get(fx.mcqId)!.options).toEqual(["أ", "ب", "ج", "د"]);
+    expect(byId.get(fx.tfId)!.correctAnswer).toBe("صح");
+    expect(byId.get(fx.essayId)!.correctAnswer).toBeNull();
     const afterSubmit = await prisma.quizAttempt.findUniqueOrThrow({ where: { id: attemptId } });
     expect(afterSubmit.completedAt).not.toBeNull();
 

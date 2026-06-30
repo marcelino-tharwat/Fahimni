@@ -309,6 +309,7 @@ exports.Prisma.QuestionScalarFieldEnum = {
   text: 'text',
   options: 'options',
   correctAnswer: 'correctAnswer',
+  explanation: 'explanation',
   sortOrder: 'sortOrder',
   points: 'points',
   createdAt: 'createdAt',

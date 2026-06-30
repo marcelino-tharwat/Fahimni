@@ -62,6 +62,7 @@ export const addQuestionSchema = z.object({
     .max(5000, "Question content must not exceed 5000 characters"),
   options: z.record(z.string(), z.string()),
   correctAnswer: z.string().optional().nullable(),
+  explanation: z.string().trim().max(2000).optional(),
   sortOrder: z
     .number()
     .int("Sort order must be an integer")
@@ -80,6 +81,7 @@ export const updateQuestionSchema = z
       .optional(),
     options: z.record(z.string(), z.string()).optional(),
     correctAnswer: z.string().optional().nullable(),
+    explanation: z.string().trim().max(2000).optional(),
     sortOrder: z
       .number()
       .int("Sort order must be an integer")

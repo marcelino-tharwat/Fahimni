@@ -307,7 +307,10 @@ export function StudentQuizListPage() {
   );
 
   const handleViewResult = useCallback(
-    (quizId: string) => navigate(`/student/quizzes/${quizId}/results`),
+    // TODO: needs attemptId from quiz list API. The results route now requires an
+    // attemptId; the quiz list does not yet expose one, so we pass a placeholder
+    // that the GET endpoint will 404 on, surfacing the results error fallback.
+    (quizId: string) => navigate(`/student/quizzes/${quizId}/results/unknown`),
     [navigate],
   );
 

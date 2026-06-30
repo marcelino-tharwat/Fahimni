@@ -14,7 +14,7 @@ import {
   MobileStickySubmitBar,
   SubmitModal,
 } from '@/features/student/components/quiz';
-import { quizApi, mapApiQuestion, mapMetaFromAttempt } from '@/features/student/api/quiz';
+import { quizApi, mapApiQuestion, mapMetaFromAttempt, buildQuizResults } from '@/features/student/api/quiz';
 import type { PageStatus, QuizQuestion, QuizMeta } from '@/shared/types';
 import type { ApiError } from '@/shared/lib/api/client';
 
@@ -39,6 +39,7 @@ export function QuizPage() {
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const hasAutoSubmitted = useRef(false);
 
   const timerWarning = timerSeconds < 300;
 
@@ -101,7 +102,10 @@ export function QuizPage() {
       })
       .catch((err: ApiError) => {
         if (err.statusCode === 409) {
-          navigate(`/student/quizzes/${quizId}/results`, { replace: true });
+          // Already submitted. The results route now requires an attemptId, which
+          // the 409 error does not carry, so send the student back to the quiz
+          // list where they can re-open the attempt's results.
+          navigate('/student/quizzes', { replace: true });
         } else {
           setStatus('error-403');
         }
@@ -127,8 +131,16 @@ export function QuizPage() {
   }, [status]);
 
   useEffect(() => {
-    if (timerSeconds === 0 && status === 'active') {
-      if (attemptId) handleAutoSubmit();
+    // The timer hitting 0 re-renders repeatedly; the ref guard ensures the
+    // auto-submit fires exactly once (avoids duplicate 400 requests).
+    if (
+      timerSeconds === 0 &&
+      status === 'active' &&
+      attemptId &&
+      !hasAutoSubmitted.current
+    ) {
+      hasAutoSubmitted.current = true;
+      handleAutoSubmit();
     }
   }, [timerSeconds, status, attemptId]);
 
@@ -158,20 +170,51 @@ export function QuizPage() {
   const submitAnswers = useCallback(() => {
     if (!attemptId || !quizId) return;
 
-    const answerArray = Object.entries(answers)
-      .filter(([, value]) => value !== undefined && value !== '')
-      .map(([questionId, answer]) => ({ questionId, answer }));
+    // The backend requires every quiz question to be answered exactly once, and
+    // validates each answer's format (MCQ → must be one of the option texts,
+    // TRUE_FALSE → a recognized true/false token, ESSAY → non-empty). So send an
+    // entry for every question — including a safe fallback for any left blank.
+    const answerArray = questions.map((q) => {
+      const raw = answers[q.id];
+      const hasAnswer = raw !== undefined && raw !== '';
+
+      let answer: string;
+      if (q.type === 'mcq' && q.options?.length) {
+        // The student selects an option by id ('a'..'d'), but the backend
+        // grades against the option *text* — resolve to the selected option's
+        // text (matching by id, or by text defensively), else the first option.
+        const byId = hasAnswer ? q.options.find((o) => o.id === raw) : undefined;
+        const byText = hasAnswer ? q.options.find((o) => o.text === raw) : undefined;
+        answer = (byId ?? byText ?? q.options[0]).text;
+      } else if (q.type === 'tf') {
+        answer = hasAnswer ? raw : 'خطأ';
+      } else {
+        // essay / fill — must be non-empty after trim.
+        answer = hasAnswer ? raw : 'لا إجابة';
+      }
+
+      return { questionId: q.id, answer };
+    });
 
     quizApi
       .submitAttempt(attemptId, answerArray)
-      .then(() => {
-        navigate(`/student/quizzes/${quizId}/results`, { replace: true });
+      .then((res) => {
+        // The backend returns every field needed, so build the results shape
+        // directly from the submit response. It is carried via navigation state
+        // for an instant render; the attemptId in the URL lets the results page
+        // re-fetch on refresh / direct visit (SCRUM-423 §9).
+        const submitResponse = res.data.data;
+        const resultsData = buildQuizResults(submitResponse);
+        navigate(`/student/quizzes/${quizId}/results/${submitResponse.attemptId}`, {
+          replace: true,
+          state: resultsData,
+        });
       })
       .catch(() => {
         setIsSubmitting(false);
         dispatch(addToast({ type: 'error', message: t('common:error', { defaultValue: 'حدث خطأ، حاول مرة أخرى' }) }));
       });
-  }, [attemptId, quizId, answers, navigate, dispatch, t]);
+  }, [attemptId, quizId, answers, questions, navigate, dispatch, t]);
 
   const handleAutoSubmit = useCallback(() => {
     setIsSubmitting(true);
@@ -270,7 +313,7 @@ export function QuizPage() {
           <p className="mt-2 text-body text-gray-600">{t('quiz:err400Msg')}</p>
           <button
             type="button"
-            onClick={() => navigate(`/student/quizzes/${quizId}/results`)}
+            onClick={() => navigate('/student/quizzes')}
             className="h-11 rounded-btn bg-cyan-gradient px-8 text-sm font-bold text-white"
           >
             {t('quiz:viewResults')}
