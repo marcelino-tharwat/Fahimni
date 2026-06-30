@@ -8,7 +8,9 @@
     "support": "Support",
     "subscribe": "Start Now",
     "content": "Content",
-    "testimonials": "Reviews"
+    "testimonials": "Reviews",
+    "login": "Log In",
+    "dashboard": "Dashboard"
   },
   "hero": {
     "breadcrumb": "Chemistry • Secondary Section",
