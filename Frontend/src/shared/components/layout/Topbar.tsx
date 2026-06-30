@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Menu, Bell, ChevronDown, Globe, Settings, LogOut } from 'lucide-react';
+import { Menu, Bell, ChevronDown, Globe, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { logoutUser } from '@/features/auth/store/authSlice';
-import type { UserRole } from '@/shared/types/user';
 import { toggleSidebar } from '@/shared/store/slices/uiSlice';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { useTeacherProfile } from '@/features/teacher/hooks/useTeacherProfile';
@@ -14,12 +13,6 @@ interface TopbarProps {
   showMenu?: boolean;
 }
 
-/** Settings route per role. Roles without a settings route omit the dropdown item.
- *  "OPERATION" is the teacher role on the backend; the UI calls it a teacher. */
-const settingsPathByRole: Partial<Record<UserRole, string>> = {
-  OPERATION: '/teacher/settings',
-};
-
 /** Route → i18n key for the current-page title. Matched exactly, then by prefix
  *  (so param routes like /admin/tenants/:id resolve to their section title). */
 const pageTitleByPath: Record<string, string> = {
@@ -28,7 +21,7 @@ const pageTitleByPath: Record<string, string> = {
   '/teacher/quizzes/generator': 'nav.quizGenerator',
   '/teacher/students': 'nav.students',
   '/teacher/profile': 'nav.profile',
-  '/teacher/settings': 'nav.settings',
+
   '/teacher/branding': 'nav.branding',
   '/student/dashboard': 'nav.dashboard',
   '/student/courses': 'nav.courses',
@@ -88,8 +81,6 @@ export function Topbar({ showMenu = true }: TopbarProps) {
   };
   // Label shows the TARGET language (what clicking switches TO).
   const languageLabel = i18n.language === 'ar' ? 'English' : 'العربية';
-
-  const settingsPath = user ? settingsPathByRole[user.role] : undefined;
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4">
@@ -163,19 +154,6 @@ export function Topbar({ showMenu = true }: TopbarProps) {
                   <Globe size={18} className="text-navy-600" />
                   <span>{languageLabel}</span>
                 </button>
-
-                {/* Settings (only for roles with a settings route) */}
-                {settingsPath && (
-                  <Link
-                    to={settingsPath}
-                    role="menuitem"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex w-full items-center gap-3 px-4 py-2 font-cairo text-sm text-navy-900 transition-colors hover:bg-gray-50"
-                  >
-                    <Settings size={18} className="text-navy-600" />
-                    <span>{t('nav.settings')}</span>
-                  </Link>
-                )}
 
                 <div className="my-1 border-t border-gray-200" />
 
