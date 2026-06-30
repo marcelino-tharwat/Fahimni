@@ -82,7 +82,7 @@ const router = createBrowserRouter([
               { path: '/student/courses', element: <MyCoursesPage /> },
               { path: '/student/content', element: <AllContentPage /> },
               { path: '/student/lessons/:lessonId', element: <LessonPage /> },
-              { path: '/student/quizzes/:quizId/results', element: <QuizResultsPage /> },
+              { path: '/student/quizzes/:quizId/results/:attemptId', element: <QuizResultsPage /> },
               { path: '/student/ai-tutor', element: <AiTutorPage /> },
               { path: '/student/pay/:chapterId', element: <PaymentPage /> },
               { path: '/student/profile', element: <StudentProfilePage /> },

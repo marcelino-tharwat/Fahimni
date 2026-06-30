@@ -31,6 +31,7 @@ function toQuestionResponseDTO(
     content: row.text as string,
     options: row.options as Record<string, string>,
     correctAnswer: (row.correctAnswer as string | null) ?? null,
+    explanation: (row.explanation as string | null) ?? null,
     sortOrder: row.sortOrder as number,
     createdAt: row.createdAt as Date,
     updatedAt: row.updatedAt as Date,
@@ -230,6 +231,7 @@ export class QuizService {
         text: input.content,
         options: input.options as Prisma.InputJsonValue,
         correctAnswer: input.correctAnswer ?? null,
+        explanation: input.explanation ?? null,
         sortOrder: input.sortOrder ?? (maxQuestion._max.sortOrder ?? 0) + 1,
       },
       select: questionPublicFields,
@@ -278,6 +280,9 @@ export class QuizService {
     }
     if (input.correctAnswer !== undefined) {
       data.correctAnswer = input.correctAnswer;
+    }
+    if (input.explanation !== undefined) {
+      data.explanation = input.explanation;
     }
     if (input.sortOrder !== undefined) {
       data.sortOrder = input.sortOrder;

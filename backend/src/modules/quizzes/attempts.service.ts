@@ -3,6 +3,7 @@ import { AppError } from "../../shared/utils/AppError.js";
 import {
   finalizeOutcome,
   gradeAttempt,
+  optionsToArray,
   roundPercentage,
   validateAnswerFormat,
   type GradableQuestion,
@@ -13,7 +14,17 @@ import type {
   ResultsQueryInput,
   SubmitAttemptInput,
 } from "./attempts.validation.js";
-import type { Prisma } from "../../generated/prisma/client.js";
+import type { Prisma, QuestionType } from "../../generated/prisma/client.js";
+
+/** Full question data needed to enrich a submission/results response. */
+interface ResultQuestion {
+  id: string;
+  type: QuestionType;
+  text: string;
+  options: unknown;
+  correctAnswer: string | null;
+  explanation: string | null;
+}
 
 interface SafeQuestion {
   id: string;
@@ -288,7 +299,7 @@ export class AttemptsService {
         studentId: true,
         status: true,
         quizId: true,
-        quiz: { select: { status: true, chapterId: true } },
+        quiz: { select: { status: true, chapterId: true, title: true } },
       },
     });
 
@@ -318,7 +329,16 @@ export class AttemptsService {
 
     const questions = await prisma.question.findMany({
       where: { quizId: attempt.quizId },
-      select: { id: true, type: true, options: true, correctAnswer: true, points: true, sortOrder: true },
+      select: {
+        id: true,
+        type: true,
+        text: true,
+        options: true,
+        correctAnswer: true,
+        points: true,
+        sortOrder: true,
+        explanation: true,
+      },
     });
 
     // Exact set-equality: every quiz question answered, nothing extra/unknown.
@@ -359,7 +379,14 @@ export class AttemptsService {
       throw new AppError("Attempt has already been submitted", 409);
     }
 
-    return this.toSubmissionResponse(attemptId, attempt.quizId, status, outcome.results);
+    return this.toSubmissionResponse(
+      attemptId,
+      attempt.quizId,
+      attempt.quiz.title,
+      status,
+      outcome.results,
+      questions,
+    );
   }
 
   /** POST /api/attempts/:attemptId/grade-essays — teacher grades pending essays. */
@@ -375,7 +402,7 @@ export class AttemptsService {
         status: true,
         quizId: true,
         answers: true,
-        quiz: { select: { createdBy: true } },
+        quiz: { select: { createdBy: true, title: true } },
       },
     });
 
@@ -392,7 +419,15 @@ export class AttemptsService {
 
     const questions = await prisma.question.findMany({
       where: { quizId: attempt.quizId },
-      select: { id: true, type: true, points: true },
+      select: {
+        id: true,
+        type: true,
+        text: true,
+        options: true,
+        correctAnswer: true,
+        points: true,
+        explanation: true,
+      },
     });
     const qMap = new Map(questions.map((q) => [q.id, q]));
 
@@ -452,7 +487,67 @@ export class AttemptsService {
       throw new AppError("Attempt has already been graded", 409);
     }
 
-    return this.toSubmissionResponse(attemptId, attempt.quizId, "GRADED", newResults);
+    return this.toSubmissionResponse(
+      attemptId,
+      attempt.quizId,
+      attempt.quiz.title,
+      "GRADED",
+      newResults,
+      questions,
+    );
+  }
+
+  /**
+   * GET /api/attempts/:attemptId — a student re-fetches their own submitted
+   * attempt results. Returns the same enriched shape as the submit response so
+   * the results page uses one type for both flows (SCRUM-423).
+   */
+  public async getAttemptResults(attemptId: string, studentId: string) {
+    const attempt = await prisma.quizAttempt.findUnique({
+      where: { id: attemptId },
+      select: {
+        id: true,
+        studentId: true,
+        quizId: true,
+        status: true,
+        answers: true,
+        quiz: { select: { title: true } },
+      },
+    });
+
+    if (!attempt) throw new AppError("Attempt not found", 404);
+    if (attempt.studentId !== studentId) {
+      throw new AppError("This attempt belongs to another student", 403);
+    }
+    if (attempt.status === "IN_PROGRESS") {
+      throw new AppError("Attempt has not been submitted yet", 409);
+    }
+
+    const questions = await prisma.question.findMany({
+      where: { quizId: attempt.quizId },
+      select: {
+        id: true,
+        type: true,
+        text: true,
+        options: true,
+        correctAnswer: true,
+        points: true,
+        sortOrder: true,
+        explanation: true,
+      },
+      orderBy: { sortOrder: "asc" },
+    });
+
+    const storedResults = (attempt.answers as unknown as QuestionResult[]) ?? [];
+
+    return this.toSubmissionResponse(
+      attempt.id,
+      attempt.quizId,
+      attempt.quiz.title,
+      attempt.status,
+      storedResults,
+      questions,
+    );
   }
 
   // ── STORY-68: teacher results & CSV export ───────────────────────────────
@@ -631,30 +726,50 @@ export class AttemptsService {
     return v;
   }
 
-  /** Safe submission/grading response — never exposes correctAnswer. */
+  /**
+   * Submission / grading / results response. Enriched with the question text,
+   * options, the student's answer and the correct answer so the student results
+   * page can render a full review (SCRUM-423). This is shown only AFTER
+   * submission — `correctAnswer` is never exposed during an in-progress attempt
+   * (see startAttempt / studentQuestionPublicFields).
+   */
   private toSubmissionResponse(
     attemptId: string,
     quizId: string,
+    quizTitle: string,
     status: string,
     results: QuestionResult[],
+    questions: ResultQuestion[],
   ) {
     const outcome = finalizeOutcome(results);
+    const questionMap = new Map(questions.map((q) => [q.id, q]));
+
     return {
       attemptId,
       quizId,
+      quizTitle,
       status,
       score: outcome.score,
       totalPoints: outcome.totalPoints,
       percentage: outcome.percentage,
       pendingEssayCount: outcome.pendingEssayCount,
       isFinal: outcome.isFinal,
-      results: results.map((r) => ({
-        questionId: r.questionId,
-        result: r.result,
-        awardedPoints: r.awardedPoints,
-        maxPoints: r.maxPoints,
-        ...(r.feedback ? { feedback: r.feedback } : {}),
-      })),
+      results: results.map((r) => {
+        const question = questionMap.get(r.questionId);
+        return {
+          questionId: r.questionId,
+          type: r.type,
+          questionText: question?.text ?? "",
+          options: question ? optionsToArray(question.options) : null,
+          studentAnswer: r.answer,
+          correctAnswer: question?.correctAnswer ?? null,
+          result: r.result,
+          awardedPoints: r.awardedPoints,
+          maxPoints: r.maxPoints,
+          ...(r.feedback ? { feedback: r.feedback } : {}),
+          ...(question?.explanation ? { explanation: question.explanation } : {}),
+        };
+      }),
     };
   }
 }
