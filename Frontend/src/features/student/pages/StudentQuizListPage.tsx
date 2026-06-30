@@ -82,7 +82,7 @@ function QuizRow({
 }: {
   quiz: QuizItem;
   onStart: (id: string) => void;
-  onViewResult: (id: string) => void;
+  onViewResult: (quizId: string, attemptId: string) => void;
 }) {
   const { t } = useTranslation();
   const cfg = statusConfig[quiz.status];
@@ -162,20 +162,10 @@ function QuizRow({
             {t('quiz:quiz.action.start')}
           </button>
         )}
-        {quiz.status === 'passed' && (
+        {(quiz.status === 'passed' || quiz.status === 'failed') && quiz.attemptId && (
           <button
             type="button"
-            onClick={() => onViewResult(quiz.id)}
-            className="inline-flex items-center gap-1.5 rounded-btn border-2 border-cyan-500 px-4 py-2 font-cairo text-small font-bold text-cyan-500 transition-colors hover:bg-cyan-50"
-          >
-            <Eye size={14} />
-            {t('quiz:quiz.action.viewResult')}
-          </button>
-        )}
-        {quiz.status === 'failed' && (
-          <button
-            type="button"
-            onClick={() => onViewResult(quiz.id)}
+            onClick={() => onViewResult(quiz.id, quiz.attemptId!)}
             className="inline-flex items-center gap-1.5 rounded-btn border-2 border-cyan-500 px-4 py-2 font-cairo text-small font-bold text-cyan-500 transition-colors hover:bg-cyan-50"
           >
             <Eye size={14} />
@@ -217,7 +207,7 @@ function ChapterAccordion({
   isOpen: boolean;
   onToggle: () => void;
   onStart: (id: string) => void;
-  onViewResult: (id: string) => void;
+  onViewResult: (quizId: string, attemptId: string) => void;
 }) {
   const { t } = useTranslation();
   const done = chapter.quizzes.filter(
@@ -307,10 +297,8 @@ export function StudentQuizListPage() {
   );
 
   const handleViewResult = useCallback(
-    // TODO: needs attemptId from quiz list API. The results route now requires an
-    // attemptId; the quiz list does not yet expose one, so we pass a placeholder
-    // that the GET endpoint will 404 on, surfacing the results error fallback.
-    (quizId: string) => navigate(`/student/quizzes/${quizId}/results/unknown`),
+    (quizId: string, attemptId: string) =>
+      navigate(`/student/quizzes/${quizId}/results/${attemptId}`),
     [navigate],
   );
 
