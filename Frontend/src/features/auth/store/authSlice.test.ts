@@ -47,11 +47,13 @@ describe('authSlice bootstrap states', () => {
     expect(s.status).toBe('succeeded');
   });
 
-  it('logout clears the session', () => {
+  it('logout clears the session into a settled (non-idle) state so the guard redirects', () => {
     const authed = reducer(initial, login.fulfilled({ user }, 'r', { email: '', password: '' }));
     const s = reducer(authed, logout());
     expect(s.user).toBeNull();
     expect(s.isAuthenticated).toBe(false);
-    expect(s.status).toBe('idle');
+    // Must NOT be 'idle'/'loading' — those keep AuthGuard on the spinner.
+    expect(s.status).not.toBe('idle');
+    expect(s.status).not.toBe('loading');
   });
 });

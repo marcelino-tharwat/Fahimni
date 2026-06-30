@@ -167,7 +167,11 @@ const authSlice = createSlice({
     logout(state) {
       state.user = null;
       state.isAuthenticated = false;
-      state.status = 'idle';
+      // Settled-unauthenticated (NOT 'idle'): 'idle'/'loading' mean "bootstrap
+      // still unknown" and make the guard show a spinner. After logout the guard
+      // must redirect to /auth, so use the same settled state as a failed
+      // bootstrap.
+      state.status = 'failed';
       state.error = null;
       clearUser();
       removeRefreshToken();
