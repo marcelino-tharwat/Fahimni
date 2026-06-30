@@ -10,7 +10,7 @@
   --color-danger: #ef4444;
   --color-warning: #f59e0b;
   --color-info: #7c3aed;
-  --color-background: #f4f4f4fa;
+  --color-background: #fafafa;
   --color-surface: #ffffff;
   --color-text-primary: #1a103d;
   --color-text-secondary: #6b7280;
@@ -23,7 +23,7 @@
 
 /* Non-utility vars (tenant theming + base font) stay plain CSS variables. */
 :root {
-  --font-family: "Cairo", sans-serif;
+  --font-family: 'Cairo', sans-serif;
   --tenant-primary: var(--color-primary);
   --tenant-secondary: var(--color-secondary);
   --tenant-accent: var(--color-accent);

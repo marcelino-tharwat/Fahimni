@@ -129,7 +129,7 @@ export function AiQuizGeneratorPage() {
   }, [form, validate, generateQuiz, navigate]);
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 bg-[#F4F4FA] min-h-screen py-8 px-4">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 bg-background min-h-screen py-8 px-4">
       <div className="flex items-start gap-3">
         <span className="flex w-11 h-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 text-white">
           <BrainCircuit size={22} />

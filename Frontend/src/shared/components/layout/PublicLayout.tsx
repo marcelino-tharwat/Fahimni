@@ -22,7 +22,7 @@ export function PublicLayout() {
 
   if (isLandingRoute(pathname) || isAuthRoute(pathname)) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen" style={{ backgroundColor: '#f4f4f4fa' }}>
         <Outlet />
       </div>
     );
