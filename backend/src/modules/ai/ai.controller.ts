@@ -30,6 +30,18 @@ export class AiController {
     },
   );
 
+  reindexLesson = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const lessonId = String(req.params.lessonId);
+
+      await aiService.reindexLesson(lessonId);
+
+      res
+        .status(200)
+        .json(okResponse("Lesson re-indexed successfully", { lessonId, status: "ready" }));
+    },
+  );
+
   similaritySearch = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const { query, lessonId, k } = req.body;

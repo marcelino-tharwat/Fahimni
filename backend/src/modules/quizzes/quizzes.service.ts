@@ -454,6 +454,44 @@ export class QuizService {
     } as unknown as QuizResponseDTO;
   }
 
+  public async unpublishQuiz(
+    quizId: string,
+    teacherId: string,
+  ): Promise<QuizResponseDTO> {
+    const existing = await this.assertQuizOwned(quizId, teacherId);
+
+    if (existing.status !== "PUBLISHED") {
+      throw new AppError("Only published quizzes can be unpublished", 400);
+    }
+
+    const updated = await prisma.quiz.update({
+      where: { id: quizId },
+      data: {
+        status: "DRAFT",
+        publishedAt: null,
+      },
+      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+    });
+
+    const { _count: count, ...quizFields } =
+      updated as unknown as { _count: { questions: number } } & Record<string, unknown>;
+
+    await auditLogService.record({
+      action: "QUIZ_UNPUBLISHED",
+      resourceType: "QUIZ",
+      resourceId: quizId,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { title: existing.title, chapterId: existing.chapterId },
+    });
+
+    return {
+      ...quizFields,
+      questionCount: count.questions,
+    } as unknown as QuizResponseDTO;
+  }
+
   public async assignQuiz(
     quizId: string,
     teacherId: string,

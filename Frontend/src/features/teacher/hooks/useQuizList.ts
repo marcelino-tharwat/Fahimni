@@ -28,6 +28,14 @@ export function useAssignQuiz() {
   });
 }
 
+export function useUnpublishQuiz() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (quizId: string) => quizGenerationApi.unpublishQuiz(quizId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: QUIZ_LIST_KEY }),
+  });
+}
+
 export function useDeleteQuiz() {
   const qc = useQueryClient();
   return useMutation({

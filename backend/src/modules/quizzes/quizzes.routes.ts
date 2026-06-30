@@ -142,6 +142,13 @@ quizStandaloneRouter.patch(
 );
 
 quizStandaloneRouter.post(
+  "/:id/unpublish",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  quizController.unpublishQuiz,
+);
+
+quizStandaloneRouter.post(
   "/:id/assign",
   authenticateMiddleware,
   authorizeMiddleware("OPERATION"),

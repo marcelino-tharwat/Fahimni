@@ -1,6 +1,8 @@
 import { prisma } from "../../config/database.js";
 import { logger } from "../../config/logger.js";
 import { geminiClient } from "../../shared/services/geminiClient.js";
+import { supabase } from "../../config/supabase.js";
+import { PDFParse } from "pdf-parse";
 import { AppError } from "../../shared/utils/AppError.js";
 import type { IndexingStatus, TextChunk, SimilarChunk } from "./ai.types.js";
 
@@ -109,6 +111,63 @@ export class AiService {
       );
       throw error;
     }
+  }
+
+  /**
+   * Re-indexes a lesson by downloading all its uploaded PDF files from storage,
+   * extracting their text, and running the full chunking + embedding pipeline.
+   * This gives teachers a one-click "re-index" without manually providing text.
+   * Throws if no PDF files exist or no text can be extracted.
+   */
+  async reindexLesson(lessonId: string): Promise<void> {
+    const materials = await prisma.lessonMaterial.findMany({
+      where: { lessonId, deletedAt: null },
+      select: { filePath: true, displayName: true },
+    });
+
+    if (materials.length === 0) {
+      throw new AppError("لم يتم العثور على ملفات مرفوعة لهذا الدرس.", 400);
+    }
+
+    const bucket = process.env.SUPABASE_BUCKET_NAME!;
+    const texts: string[] = [];
+
+    for (const material of materials) {
+      try {
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .download(material.filePath);
+
+        if (error || !data) {
+          logger.warn(`[AiService] Failed to download ${material.filePath}: ${error?.message}`);
+          continue;
+        }
+
+        const arrayBuffer = await data.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const parser = new PDFParse({ data: new Uint8Array(buffer) });
+        const textResult = await parser.getText();
+        const text = textResult.text.trim();
+
+        if (text.length > 0) {
+          texts.push(text);
+          logger.info(`[AiService] Extracted ${text.length} chars from ${material.displayName}`);
+        }
+      } catch (err) {
+        logger.warn(`[AiService] PDF extraction failed for ${material.filePath}: ${err}`);
+      }
+    }
+
+    if (texts.length === 0) {
+      throw new AppError("تعذّر استخراج نص من الملفات المرفوعة.", 400);
+    }
+
+    const mergedText = texts.join("\n\n");
+    await this.indexLesson(lessonId, mergedText, {
+      reindexedFrom: "storage",
+      fileCount: materials.length,
+      extractedCount: texts.length,
+    });
   }
 
   async getStatus(

@@ -40,7 +40,7 @@ const defaultForm = (overrides?: Partial<PublishFormState>): PublishFormState =>
   stageId: '',
   chapterId: '',
   quizTitle: '',
-  timeLimitMinutes: 30,
+  timeLimitMinutes: 0,
   attemptsAllowed: 'one' as AttemptsOption,
   passingScore: 50,
   shuffleQuestions: false,
@@ -132,7 +132,7 @@ export function AiQuizPublishPage() {
   useEffect(() => {
     if (!draftQuiz) return;
     dispatch({ type: 'SET_FIELD', field: 'quizTitle', value: draftQuiz.title });
-    if (draftQuiz.durationMinutes) {
+    if (draftQuiz.durationMinutes != null) {
       dispatch({ type: 'SET_FIELD', field: 'timeLimitMinutes', value: draftQuiz.durationMinutes });
     }
   }, [draftQuiz]);
@@ -331,17 +331,17 @@ export function AiQuizPublishPage() {
                   <div className="relative">
                     <input
                       type="number"
-                      min={5}
+                      min={0}
                       max={180}
-                      value={form.timeLimitMinutes}
-                      onChange={(e) => dispatch({
-                        type: 'SET_FIELD',
-                        field: 'timeLimitMinutes',
-                        value: Math.max(5, Math.min(180, Number(e.target.value) || 5)),
-                      })}
+                      value={form.timeLimitMinutes || ''}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const value = raw === '' ? 0 : Math.max(0, Math.min(180, Number(raw)));
+                        dispatch({ type: 'SET_FIELD', field: 'timeLimitMinutes', value });
+                      }}
                       className="h-12 w-full rounded-input border border-gray-300 bg-gray-50 px-4 text-start text-sm outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <span className="absolute inset-y-0 start-0 flex items-center ps-4 text-sm text-gray-500 pointer-events-none">
+                    <span className="absolute inset-y-0 end-0 flex items-center pe-4 text-sm text-gray-500 pointer-events-none">
                       {t('teacher:contentTree.editor.durationUnit')}
                     </span>
                   </div>
@@ -364,7 +364,7 @@ export function AiQuizPublishPage() {
                       })}
                       className="h-12 w-full rounded-input border border-gray-300 bg-gray-50 px-4 text-start text-sm outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <span className="absolute inset-y-0 start-0 flex items-center ps-4 text-sm text-gray-500 pointer-events-none">%</span>
+                    <span className="absolute inset-y-0 end-0 flex items-center pe-4 text-sm text-gray-500 pointer-events-none">%</span>
                   </div>
                   <p className="text-[11px] text-gray-500">{t('teacher:publish.passingScoreHint')}</p>
                 </div>
