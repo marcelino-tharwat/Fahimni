@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Card, Skeleton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils/cn';
+import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { useStudentTree } from '@/features/student/hooks/useStudentContent';
 import type {
   StudentChapterNode,
@@ -28,12 +29,16 @@ import {
 } from '@/features/student/lib/chapterStatus';
 import { LockedChapterModal } from './LockedChapterModal';
 
-/** Gradient tile + icon cycled per stage, echoing the reference's colored stage badges. */
+/**
+ * Gradient tile + icon cycled per stage. The gradients are our design-token
+ * background utilities (tailwind.config.ts), not arbitrary palette stops, so
+ * stage theming stays on-brand without inventing colors.
+ */
 const STAGE_VISUALS: Array<{ gradient: string; icon: LucideIcon }> = [
-  { gradient: 'from-violet-500 to-purple-600', icon: FlaskConical },
-  { gradient: 'from-sky-400 to-blue-600', icon: Network },
-  { gradient: 'from-teal-400 to-emerald-500', icon: Atom },
-  { gradient: 'from-amber-400 to-orange-500', icon: BookOpen },
+  { gradient: 'bg-cyan-gradient', icon: FlaskConical },
+  { gradient: 'bg-purple-gradient', icon: Network },
+  { gradient: 'bg-green-gradient', icon: Atom },
+  { gradient: 'bg-cta-gradient', icon: BookOpen },
 ];
 
 export function AllContentTree() {
@@ -115,7 +120,11 @@ export function AllContentTree() {
       ))}
 
       <p className="px-1 pt-1 font-cairo text-sm text-gray-500">
-        {t('student:content.summary', summary)}
+        {t('student:content.summary', {
+          stages: toLocalNum(summary.stages),
+          chapters: toLocalNum(summary.chapters),
+          lessons: toLocalNum(summary.lessons),
+        })}
       </p>
 
       <LockedChapterModal
@@ -165,14 +174,14 @@ function StageCard({
       >
         <span
           className={cn(
-            'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br shadow-sm',
+            'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-sm',
             visual.gradient,
           )}
         >
           <StageIcon size={20} className="text-white" />
         </span>
         <span className="min-w-0 flex-1 truncate font-cairo text-base font-bold text-navy-900">
-          {t('student:content.stage', { order: index + 1, name: item.stage.name })}
+          {t('student:content.stage', { order: toLocalNum(index + 1), name: item.stage.name })}
         </span>
         <ChevronDown
           size={20}
@@ -236,7 +245,7 @@ function ChapterRow({
 
         <div className="min-w-0 flex-1">
           <p className="truncate font-cairo text-sm font-semibold text-navy-900">
-            {t('student:content.chapter', { order: index + 1, name: chapter.name })}
+            {t('student:content.chapter', { order: toLocalNum(index + 1), name: chapter.name })}
           </p>
           {chapter.description && (
             <p className="truncate font-cairo text-xs text-gray-400">{chapter.description}</p>
@@ -269,7 +278,10 @@ function ChapterRow({
               >
                 <FileText size={15} className="shrink-0 text-gray-400" />
                 <span className="min-w-0 flex-1 truncate font-cairo text-sm text-navy-700">
-                  {t('student:content.lesson', { order: lessonIndex + 1, title: lesson.title })}
+                  {t('student:content.lesson', {
+                    order: toLocalNum(lessonIndex + 1),
+                    title: lesson.title,
+                  })}
                 </span>
               </Link>
             </li>
@@ -305,14 +317,14 @@ function ChapterBadges({
                 className="inline-flex items-center rounded-full border border-purple-100 bg-purple-50 px-2.5 py-0.5 font-cairo text-xs font-medium text-purple-600"
                 dir="ltr"
               >
-                {t('student:content.badges.price', { price: chapter.price })}
+                {t('student:content.badges.price', { price: toLocalNum(chapter.price) })}
               </span>
             ) : null;
           case 'free':
             return (
               <span
                 key="free"
-                className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 font-cairo text-xs font-medium text-emerald-600"
+                className="inline-flex items-center rounded-full border border-success-500/30 bg-success-50 px-2.5 py-0.5 font-cairo text-xs font-medium text-success-600"
               >
                 {t('student:content.badges.free')}
               </span>
@@ -321,7 +333,7 @@ function ChapterBadges({
             return (
               <span
                 key="subscribed"
-                className="inline-flex items-center rounded-full bg-teal-500 px-3 py-0.5 font-cairo text-xs font-medium text-white"
+                className="inline-flex items-center rounded-full bg-cyan-500 px-3 py-0.5 font-cairo text-xs font-medium text-white"
               >
                 {t('student:content.badges.subscribed')}
               </span>
@@ -330,7 +342,7 @@ function ChapterBadges({
             return (
               <span
                 key="locked"
-                className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2.5 py-0.5 font-cairo text-xs font-medium text-gray-500"
+                className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-white px-2.5 py-0.5 font-cairo text-xs font-medium text-gray-500"
               >
                 <Lock size={12} />
                 {t('student:content.badges.locked')}
@@ -380,7 +392,7 @@ function TreeEmpty({ onExplore }: { onExplore: () => void }) {
     <Card padding="lg" className="border border-gray-200">
       <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
         <span className="flex h-20 w-20 items-center justify-center rounded-full bg-purple-50">
-          <FolderOpen size={40} className="text-purple-400" />
+          <FolderOpen size={40} className="text-purple-500" />
         </span>
         <h3 className="font-cairo text-lg font-bold text-navy-900">
           {t('student:content.empty.title')}
@@ -388,7 +400,7 @@ function TreeEmpty({ onExplore }: { onExplore: () => void }) {
         <button
           type="button"
           onClick={onExplore}
-          className="mt-2 flex min-h-[44px] items-center justify-center rounded-button bg-teal-500 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-teal-600"
+          className="mt-2 flex min-h-[44px] items-center justify-center rounded-button bg-cyan-500 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-cyan-600"
         >
           {t('student:content.empty.cta')}
         </button>

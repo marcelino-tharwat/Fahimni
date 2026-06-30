@@ -14,6 +14,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { Badge, Button, Card, Skeleton } from '@/shared/components/ui';
+import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { useLesson, useStudentTree } from '@/features/student/hooks/useStudentContent';
 import { contentApi } from '@/features/student/api/content';
 import { quizApi } from '@/features/student/api/quiz';
@@ -65,16 +66,40 @@ interface FlatLesson {
   title: string;
 }
 
+/**
+ * Flattens lessons across the whole tree in stage -> chapter -> lesson order so
+ * prev/next can walk across chapter and stage boundaries. Locked chapters are
+ * skipped: their lessons aren't viewable, so navigating into one would only
+ * bounce the student to the enrollment screen.
+ */
 function flattenLessons(tree: StudentContentTreeItem[]): FlatLesson[] {
   const result: FlatLesson[] = [];
   for (const item of tree) {
     for (const ch of item.chapters) {
+      if (ch.chapter.enrollmentStatus === 'locked') continue;
       for (const lesson of ch.lessons) {
         result.push({ id: lesson.id, title: lesson.title });
       }
     }
   }
   return result;
+}
+
+/** Other lessons in the same chapter as `lessonId` (excluding it), for "related". */
+function siblingLessons(
+  tree: StudentContentTreeItem[],
+  lessonId: string,
+): FlatLesson[] {
+  for (const item of tree) {
+    for (const ch of item.chapters) {
+      if (ch.lessons.some((l) => l.id === lessonId)) {
+        return ch.lessons
+          .filter((l) => l.id !== lessonId)
+          .map((l) => ({ id: l.id, title: l.title }));
+      }
+    }
+  }
+  return [];
 }
 
 export function LessonPage() {
@@ -118,6 +143,11 @@ export function LessonPage() {
     return flattenLessons(tree);
   }, [tree]);
 
+  const relatedLessons = useMemo(() => {
+    if (!tree) return [];
+    return siblingLessons(tree, lessonId ?? '');
+  }, [tree, lessonId]);
+
   const currentIndex = useMemo(() => {
     return allLessons.findIndex((l) => l.id === lessonId);
   }, [allLessons, lessonId]);
@@ -135,8 +165,8 @@ export function LessonPage() {
     if (apiError?.statusCode === 403 || apiError?.code === 'NOT_ENROLLED') {
       return (
         <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 py-20 text-center">
-          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-50">
-            <Lock size={40} className="text-amber-500" />
+          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-warning-50">
+            <Lock size={40} className="text-warning-500" />
           </span>
           <h2 className="font-cairo text-xl font-bold text-navy-900">
             {t('student:lesson.enrollmentRequired.title')}
@@ -225,7 +255,7 @@ export function LessonPage() {
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="flex flex-col gap-1">
             <Badge variant="default" className="w-fit">
-              {t('student:lesson.lessonLabel', { order: lesson.sortOrder })}
+              {t('student:lesson.lessonLabel', { order: toLocalNum(lesson.sortOrder) })}
             </Badge>
             <h1 className="font-cairo text-2xl font-bold text-navy-900">{lesson.title}</h1>
           </div>
@@ -238,7 +268,7 @@ export function LessonPage() {
         <div className="flex flex-wrap items-center gap-4 font-cairo text-sm text-gray-500">
           <span className="inline-flex items-center gap-1.5">
             <Clock size={16} />
-            {lesson.durationMinutes} {t('student:lesson.minutes')}
+            {toLocalNum(lesson.durationMinutes)} {t('student:lesson.minutes')}
           </span>
           {parentInfo && (
             <>
@@ -255,7 +285,7 @@ export function LessonPage() {
           {lesson.progress && (
             <span className="inline-flex items-center gap-1.5">
               <Eye size={16} />
-              {lesson.progress.percentWatched}%
+              {toLocalNum(lesson.progress.percentWatched)}%
             </span>
           )}
         </div>
@@ -295,7 +325,7 @@ export function LessonPage() {
             </div>
           ))}
           <div className="border-t border-border pt-3 font-cairo text-xs text-gray-500">
-            {t('student:lesson.totalFiles', { count: lesson.attachments?.length ?? 0 })}
+            {t('student:lesson.totalFiles', { n: toLocalNum(lesson.attachments?.length ?? 0) })}
           </div>
         </Card>
       )}
@@ -320,6 +350,31 @@ export function LessonPage() {
         </Card>
       )}
 
+      {/* Other lessons in this chapter */}
+      {relatedLessons.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="font-cairo text-base font-semibold text-navy-900">
+            {t('student:lesson.related.title')}
+          </h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {relatedLessons.map((related) => (
+              <Link
+                key={related.id}
+                to={`/student/lessons/${related.id}`}
+                className="flex items-center gap-3 rounded-card border border-border bg-surface p-3 transition-colors hover:bg-gray-100"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-input bg-cyan-50 text-accent">
+                  <BookOpen size={18} />
+                </span>
+                <span className="line-clamp-2 min-w-0 flex-1 font-cairo text-sm font-medium text-navy-900">
+                  {related.title}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Previous / Next navigation */}
       <div className="grid grid-cols-2 gap-4">
         {prevLesson ? (
@@ -329,7 +384,7 @@ export function LessonPage() {
             className="flex-col items-start gap-1"
           >
             <span className="inline-flex items-center gap-1 text-xs text-gray-500">
-              <ChevronLeft size={14} />
+              <ChevronLeft size={14} className="rtl:rotate-180" />
               {t('student:lesson.previousLesson')}
             </span>
             <span className="line-clamp-1 text-start font-cairo text-sm font-medium">
@@ -348,7 +403,7 @@ export function LessonPage() {
           >
             <span className="inline-flex items-center gap-1 text-xs text-white/70">
               {t('student:lesson.nextLesson')}
-              <ChevronRight size={14} />
+              <ChevronRight size={14} className="rtl:rotate-180" />
             </span>
             <span className="line-clamp-1 text-end font-cairo text-sm font-medium">
               {nextLesson.title}

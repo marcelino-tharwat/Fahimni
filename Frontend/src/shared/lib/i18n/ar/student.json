@@ -2,6 +2,13 @@
   "dashboard": "لوحة الطالب",
   "myCourses": "دوراتي",
   "allContent": "كل المحتوى",
+  "hero": {
+    "greeting": "أهلاً بعودتك، {{name}}",
+    "subtitleActive": "أنت مشترك في {{n}} دورة — واصل التقدّم!",
+    "subtitleEmpty": "ابدأ رحلة تعلّمك اليوم",
+    "overallProgress": "التقدّم العام",
+    "enrolled": "الدورات المشترك بها"
+  },
   "content": {
     "title": "كل المحتوى",
     "subtitle": "استكشف جميع المراحل والفصول والدروس",
@@ -11,6 +18,11 @@
     "chapter": "الفصل {{order}}: {{name}}",
     "lesson": "الدرس {{order}}: {{title}}",
     "summary": "عرض {{stages}} مراحل · {{chapters}} فصول · {{lessons}} درس",
+    "explore": {
+      "title": "استكشف المزيد",
+      "subtitle": "فصول لم تشترك بها بعد",
+      "enroll": "اشترك الآن"
+    },
     "empty": { "title": "لم يتم إضافة أي محتوى بعد", "cta": "استكشف الدورات" },
     "error": {
       "title": "تعذّر تحميل المحتوى",
@@ -24,7 +36,7 @@
       "cancel": "إلغاء"
     },
     "myCoursesTab": {
-      "lessons": "{{count}} درس",
+      "lessons": "{{n}} درس",
       "progress": "التقدم",
       "continue": "متابعة",
       "empty": {
@@ -183,12 +195,13 @@
     "videoUnavailable": "الفيديو غير متاح حالياً",
     "lessonLabel": "الدرس {{order}}",
     "minutes": "دقيقة",
-    "pdfMaterials": "الملفات المرفقة",
+    "pdfMaterials": "ملفات الدرس",
     "download": "تحميل",
-    "totalFiles": "{{count}} ملف",
+    "totalFiles": "{{n}} ملف",
     "totalSize": "{{size}} إجمالي",
     "previousLesson": "الدرس السابق",
     "nextLesson": "الدرس التالي",
+    "related": { "title": "دروس أخرى في هذا الفصل" },
     "enrollmentRequired": {
       "title": "الاشتراك مطلوب",
       "description": "يجب الاشتراك في هذا الفصل للوصول إلى هذا الدرس. اشترك الآن لإلغاء قفل جميع الدروس وابدأ التعلم.",
