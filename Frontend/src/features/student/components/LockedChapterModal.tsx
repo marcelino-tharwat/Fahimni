@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { LockKeyhole } from 'lucide-react';
 import { Modal } from '@/shared/components/ui';
+import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import type { StudentChapterNode } from '@/features/student/types/studentContent';
 
 interface LockedChapterModalProps {
@@ -34,7 +35,7 @@ export function LockedChapterModal({ chapter, onClose, onSubscribe }: LockedChap
 
           {chapter.price != null && (
             <p className="font-cairo text-2xl font-extrabold text-purple-600" dir="ltr">
-              {t('student:content.badges.price', { price: chapter.price })}
+              {t('student:content.badges.price', { price: toLocalNum(chapter.price) })}
             </p>
           )}
 

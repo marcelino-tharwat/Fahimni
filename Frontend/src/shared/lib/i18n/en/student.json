@@ -2,6 +2,13 @@
   "dashboard": "Student Dashboard",
   "myCourses": "My Courses",
   "allContent": "All Content",
+  "hero": {
+    "greeting": "Welcome back, {{name}}",
+    "subtitleActive": "You're enrolled in {{n}} course(s) — keep it up!",
+    "subtitleEmpty": "Start your learning journey today",
+    "overallProgress": "Overall progress",
+    "enrolled": "Enrolled courses"
+  },
   "content": {
     "title": "All Content",
     "subtitle": "Explore all stages, chapters, and lessons",
@@ -11,6 +18,11 @@
     "chapter": "Chapter {{order}}: {{name}}",
     "lesson": "Lesson {{order}}: {{title}}",
     "summary": "Showing {{stages}} stages · {{chapters}} chapters · {{lessons}} lessons",
+    "explore": {
+      "title": "Explore more",
+      "subtitle": "Chapters you haven't joined yet",
+      "enroll": "Enroll now"
+    },
     "empty": { "title": "No content added yet", "cta": "Explore Courses" },
     "error": {
       "title": "Failed to load content",
@@ -24,7 +36,7 @@
       "cancel": "Cancel"
     },
     "myCoursesTab": {
-      "lessons": "{{count}} lessons",
+      "lessons": "{{n}} lessons",
       "progress": "Progress",
       "continue": "Continue",
       "empty": {
@@ -179,12 +191,13 @@
     "videoUnavailable": "Video currently unavailable",
     "lessonLabel": "Lesson {{order}}",
     "minutes": "minutes",
-    "pdfMaterials": "PDF Materials",
+    "pdfMaterials": "Lesson files",
     "download": "Download",
-    "totalFiles": "{{count}} file(s)",
+    "totalFiles": "{{n}} files",
     "totalSize": "{{size}} total",
     "previousLesson": "Previous Lesson",
     "nextLesson": "Next Lesson",
+    "related": { "title": "Other lessons in this chapter" },
     "enrollmentRequired": {
       "title": "Enrollment Required",
       "description": "You need to enroll in this chapter to access this lesson. Subscribe now to unlock all lessons and start learning.",

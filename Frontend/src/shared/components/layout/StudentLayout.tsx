@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, Bot, User, Library, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, Bot, User, ClipboardList } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Topbar } from './Topbar';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -10,8 +10,6 @@ export function StudentLayout() {
 
   const items: SidebarItem[] = [
     { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/student/dashboard' },
-    { label: t('student:content.tabs.allContent'), icon: Library, path: '/student/content' },
-    { label: t('nav.courses'), icon: BookOpen, path: '/student/courses' },
     { label: t('nav.quizzes'), icon: ClipboardList, path: '/student/quizzes' },
     { label: t('nav.aiTutor'), icon: Bot, path: '/student/ai-tutor' },
     { label: t('nav.profile'), icon: User, path: '/student/profile' },
