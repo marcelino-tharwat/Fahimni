@@ -26,6 +26,21 @@ import {
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useDirection } from '@/shared/hooks/useDirection';
 import { cn } from '@/shared/lib/utils/cn';
+import { useAppSelector } from '@/shared/store/hooks';
+import { dashboardPathByRole, normalizeRole } from '@/features/auth/store/authSlice';
+
+/**
+ * Landing CTAs must be auth-aware: a logged-in visitor who returns to the landing
+ * page should be sent to their dashboard, not back to /auth (which felt like being
+ * asked to log in again). Anonymous visitors still go to /auth.
+ */
+function useLandingCta() {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const target =
+    isAuthenticated && user ? dashboardPathByRole[normalizeRole(user.role)] : '/auth';
+  return { isAuthenticated, ctaPath: target, goCta: () => navigate(target) };
+}
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -104,7 +119,7 @@ function NavLanguageToggle({ className }: { className?: string }) {
 
 function LandingNavbar() {
   const { t } = useTranslation('landing');
-  const navigate = useNavigate();
+  const { isAuthenticated, goCta } = useLandingCta();
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState('hero');
 
@@ -168,10 +183,10 @@ function LandingNavbar() {
           </div>
           <button
             type="button"
-            onClick={() => navigate('/auth')}
+            onClick={goCta}
             className="rounded-btn font-cairo text-navy-800 bg-cyan-500 px-6 py-2 text-sm font-semibold transition-colors hover:bg-cyan-400"
           >
-            {t('nav.subscribe')}
+            {isAuthenticated ? t('nav.dashboard') : t('nav.subscribe')}
           </button>
         </div>
       </nav>
@@ -194,11 +209,11 @@ function LandingNavbar() {
               type="button"
               onClick={() => {
                 setMenuOpen(false);
-                navigate('/auth');
+                goCta();
               }}
               className="rounded-btn font-cairo hover:bg-navy-700 px-2 py-2 text-start text-sm font-medium text-white/80 transition-colors hover:text-white"
             >
-              {t('nav.login')}
+              {isAuthenticated ? t('nav.dashboard') : t('nav.login')}
             </button>
             <div className="pt-2">
               <NavLanguageToggle className="self-start" />
@@ -216,9 +231,8 @@ function LandingNavbar() {
 
 function HeroSection() {
   const { t } = useTranslation('landing');
-  const navigate = useNavigate();
   const isRtl = useDirection() === 'rtl';
-  const goRegister = () => navigate('/auth');
+  const { goCta: goRegister } = useLandingCta();
 
   const heroStats = [
     {
@@ -483,7 +497,7 @@ const cardDelays = ['anim-d1', 'anim-d2', 'anim-d3'];
 
 function ChaptersSection() {
   const { t } = useTranslation('landing');
-  const navigate = useNavigate();
+  const { goCta } = useLandingCta();
   const isRtl = useDirection() === 'rtl';
 
   return (
@@ -563,7 +577,7 @@ function ChaptersSection() {
                     {chapter.status === 'available' && (
                       <button
                         type="button"
-                        onClick={() => navigate('/auth')}
+                        onClick={goCta}
                         className="rounded-btn font-cairo text-navy-900 bg-cyan-500 px-4 py-2 text-sm font-semibold transition-all duration-200 hover:scale-105 hover:bg-cyan-400"
                       >
                         {t('chapters.enrollNow')}
@@ -1178,7 +1192,7 @@ function FAQSection() {
 
 function CTASection({ isDesktop }: { isDesktop: boolean }) {
   const { t } = useTranslation('landing');
-  const navigate = useNavigate();
+  const { goCta } = useLandingCta();
 
   return (
     <section className="bg-cta-gradient relative overflow-hidden px-4 py-16 md:py-20">
@@ -1197,7 +1211,7 @@ function CTASection({ isDesktop }: { isDesktop: boolean }) {
         </p>
         <button
           type="button"
-          onClick={() => navigate('/auth')}
+          onClick={goCta}
           className={cn(
             'rounded-btn font-cairo text-navy-900 shadow-glow mt-8 bg-cyan-500 px-10 py-4 text-lg font-bold transition-all duration-300 hover:scale-105 hover:bg-cyan-400 hover:shadow-[0_0_30px_rgba(0,201,219,0.4)]',
             !isDesktop && 'w-full',
