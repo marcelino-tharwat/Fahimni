@@ -14,7 +14,8 @@ import type {
   ResultsQueryInput,
   SubmitAttemptInput,
 } from "./attempts.validation.js";
-import type { Prisma, QuestionType } from "../../generated/prisma/client.js";
+import { Prisma } from "../../generated/prisma/client.js";
+import type { QuestionType } from "../../generated/prisma/client.js";
 
 /** Full question data needed to enrich a submission/results response. */
 interface ResultQuestion {
@@ -243,26 +244,49 @@ export class AttemptsService {
     if (existing) {
       attempt = existing;
     } else {
-      // COMPLETED attempt blocks a new one
-      const completed = await prisma.quizAttempt.findFirst({
-        where: { quizId, studentId, status: "COMPLETED" },
+      // A finished attempt (COMPLETED awaiting essays, or fully GRADED) blocks a
+      // new one — "no retakes in MVP" (STORY-48).
+      const finished = await prisma.quizAttempt.findFirst({
+        where: { quizId, studentId, status: { in: ["COMPLETED", "GRADED"] } },
       });
-      if (completed) {
+      if (finished) {
         throw new AppError("You have already attempted this quiz", 409);
       }
 
-      attempt = await prisma.quizAttempt.create({
-        data: {
-          quizId,
-          studentId,
-          answers: [] as unknown as Prisma.InputJsonValue,
-          status: "IN_PROGRESS",
-          score: null,
-          totalPoints,
-          startedAt: new Date(),
-        },
-        select: { id: true, status: true, startedAt: true, totalPoints: true },
-      });
+      try {
+        attempt = await prisma.quizAttempt.create({
+          data: {
+            quizId,
+            studentId,
+            answers: [] as unknown as Prisma.InputJsonValue,
+            status: "IN_PROGRESS",
+            score: null,
+            totalPoints,
+            startedAt: new Date(),
+          },
+          select: { id: true, status: true, startedAt: true, totalPoints: true },
+        });
+      } catch (err) {
+        // Concurrency: a simultaneous start won the @@unique([quizId,studentId])
+        // race. Recover idempotently instead of leaking a P2002/500: return the
+        // racing in-progress attempt (resume), or 409 if it was already finished.
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        ) {
+          const raced = await prisma.quizAttempt.findFirst({
+            where: { quizId, studentId },
+            select: { id: true, status: true, startedAt: true, totalPoints: true },
+          });
+          if (raced && raced.status === "IN_PROGRESS") {
+            attempt = raced;
+          } else {
+            throw new AppError("You have already attempted this quiz", 409);
+          }
+        } else {
+          throw err;
+        }
+      }
     }
 
     const safeQuestions: SafeQuestion[] = questions.map((q) => ({

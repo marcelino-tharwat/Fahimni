@@ -267,8 +267,12 @@ describe("STORY-48 — full HTTP + DB journey", () => {
     expect(JSON.stringify(start.json)).not.toContain("correctAnswer");
     const attemptId = startData.attemptId;
 
+    // Re-starting an IN_PROGRESS attempt RESUMES it (idempotent 201 with the same
+    // attempt) — the frontend QuizPage relies on this for refresh/double-mount.
+    // It must never create a second row. (A finished attempt would return 409.)
     const startAgain = await http("POST", `/api/quizzes/${fx.quizId}/attempt`, { cookie: s1Cookie });
-    expect(startAgain.status).toBe(409);
+    expect(startAgain.status).toBe(201);
+    expect((startAgain.json?.data as { attemptId: string }).attemptId).toBe(attemptId);
     expect(await prisma.quizAttempt.count({ where: { quizId: fx.quizId, studentId: s1.id } })).toBe(1);
 
     // ── Partial submit rejected, nothing persisted ──
@@ -433,8 +437,13 @@ describe("STORY-48 — concurrency", () => {
       http("POST", `/api/quizzes/${fx.quizId}/attempt`, { cookie: s1Cookie }),
       http("POST", `/api/quizzes/${fx.quizId}/attempt`, { cookie: s1Cookie }),
     ]);
-    const statuses = [a.status, b.status].sort();
-    expect(statuses).toEqual([201, 409]);
+    // Both requests succeed idempotently (P2002 recovery) and resolve to the SAME
+    // single attempt — never a duplicate row, never a 500.
+    expect(a.status).toBe(201);
+    expect(b.status).toBe(201);
+    expect((a.json?.data as { attemptId: string }).attemptId).toBe(
+      (b.json?.data as { attemptId: string }).attemptId,
+    );
     expect(await prisma.quizAttempt.count({ where: { quizId: fx.quizId, studentId: s1.id } })).toBe(1);
   });
 

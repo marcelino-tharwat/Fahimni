@@ -7,6 +7,7 @@ const mockPrisma = vi.hoisted(() => ({
   stage: { count: vi.fn() },
   chapter: { count: vi.fn() },
   lesson: { count: vi.fn() },
+  quiz: { count: vi.fn() },
   auditLog: { findMany: vi.fn() },
   $queryRaw: vi.fn(),
 }));
@@ -21,6 +22,7 @@ function primeHappyPath() {
   mockPrisma.stage.count.mockResolvedValue(12);
   mockPrisma.chapter.count.mockResolvedValue(48);
   mockPrisma.lesson.count.mockResolvedValue(156);
+  mockPrisma.quiz.count.mockResolvedValue(7);
   mockPrisma.$queryRaw.mockResolvedValue([{ count: 342 }]);
   mockPrisma.auditLog.findMany.mockResolvedValue([]);
 }
@@ -164,6 +166,7 @@ describe("DashboardService.getTeacherStats", () => {
     mockPrisma.stage.count.mockResolvedValue(0);
     mockPrisma.chapter.count.mockResolvedValue(0);
     mockPrisma.lesson.count.mockResolvedValue(0);
+    mockPrisma.quiz.count.mockResolvedValue(0);
     mockPrisma.$queryRaw.mockResolvedValue([]); // no enrollment rows at all
     mockPrisma.auditLog.findMany.mockResolvedValue([]);
 
@@ -181,9 +184,12 @@ describe("DashboardService.getTeacherStats", () => {
     expect(result.totalStudents).not.toBeNull();
   });
 
-  it("always returns totalQuizzes as 0 (no Quiz model in the schema yet)", async () => {
+  it("counts the teacher's own quizzes (scoped by createdBy)", async () => {
     primeHappyPath();
     const result = await service.getTeacherStats(TEACHER_A);
-    expect(result.totalQuizzes).toBe(0);
+    expect(result.totalQuizzes).toBe(7);
+    expect(mockPrisma.quiz.count).toHaveBeenCalledWith({
+      where: { createdBy: TEACHER_A },
+    });
   });
 });
