@@ -111,6 +111,7 @@ const router = createBrowserRouter([
               { path: '/teacher/quizzes/generator/publish/:quizId', element: <AiQuizPublishPage /> },
               { path: '/teacher/students', element: <StudentEngagementPage /> },
               { path: '/teacher/branding', element: <TeacherBrandingPage /> },
+              { path: '/teacher/promo-codes', element: <AdminPromoCodesPage /> },
               { path: '/teacher/profile', element: <ProfilePage /> },
             ],
           },

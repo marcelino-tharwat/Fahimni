@@ -12,8 +12,8 @@ import { redeemDtoSchema } from "./dto/redeem.dto.js";
 /**
  * Promo Code Routes — Authorization Matrix
  * ─────────────────────────────────────────
- * POST   /                 → ADMIN only   (support agent creates a code)
- * GET    /                 → ADMIN only   (list / audit, paginated)
+ * POST   /                 → ADMIN, OPERATION   (support agent creates a code)
+ * GET    /                 → ADMIN, OPERATION   (list / audit, paginated)
  * POST   /:code/validate   → STUDENT only (pre-redeem check)
  * POST   /:code/redeem      → STUDENT only (self-redeem → free PROMO enrollment)
  *
@@ -28,7 +28,7 @@ const controller = new PromoCodeController();
 router.post(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("ADMIN"),
+  authorizeMiddleware("ADMIN", "OPERATION"),
   controller.createPromoCode,
 );
 
@@ -37,7 +37,7 @@ router.post(
 router.get(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("ADMIN"),
+  authorizeMiddleware("ADMIN", "OPERATION"),
   controller.getAllPromoCodes,
 );
 

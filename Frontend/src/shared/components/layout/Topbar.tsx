@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Menu, Bell, ChevronDown, Globe, LogOut } from 'lucide-react';
+import { Menu, ChevronDown, Globe, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { logoutUser } from '@/features/auth/store/authSlice';
@@ -31,9 +31,6 @@ const pageTitleByPath: Record<string, string> = {
   '/admin/promo-codes': 'nav.promoCodes',
   '/support/students': 'nav.studentLookup',
 };
-
-// Hardcoded for now — wired to real notification data later.
-const NOTIFICATION_COUNT = 3;
 
 export function Topbar({ showMenu = true }: TopbarProps) {
   const { t, i18n } = useTranslation();
@@ -103,22 +100,8 @@ export function Topbar({ showMenu = true }: TopbarProps) {
         )}
       </div>
 
-      {/* Trailing edge: notifications + user. */}
+      {/* Trailing edge: user. */}
       <div className="flex items-center gap-2">
-        {/* Notification bell with count badge (placeholder, no action). */}
-        <button
-          type="button"
-          aria-label={t('status.empty')}
-          className="relative rounded-btn p-2 text-navy-600 transition-colors hover:bg-gray-100"
-        >
-          <Bell size={22} />
-          {NOTIFICATION_COUNT > 0 && (
-            <span className="absolute -end-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-white">
-              {NOTIFICATION_COUNT}
-            </span>
-          )}
-        </button>
-
         {/* User profile + dropdown. */}
         {user && (
           <div className="relative" ref={menuRef}>
