@@ -16,6 +16,13 @@ router.post(
   controller.indexLesson,
 );
 
+router.post(
+  "/reindex/:lessonId",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  controller.reindexLesson,
+);
+
 router.get(
   "/status/:lessonId",
   authenticateMiddleware,

@@ -125,6 +125,22 @@ export class QuizzesController {
     },
   );
 
+  public unpublishQuiz = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const id = req.params.id;
+      if (typeof id !== "string") {
+        throw new AppError("Invalid quiz ID", 400);
+      }
+
+      const quiz = await quizService.unpublishQuiz(id, req.user!.id);
+
+      res.status(200).json(okResponse<QuizResponseDTO>(
+        "Quiz unpublished successfully",
+        quiz,
+      ));
+    },
+  );
+
   public assignQuiz = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const id = req.params.id;

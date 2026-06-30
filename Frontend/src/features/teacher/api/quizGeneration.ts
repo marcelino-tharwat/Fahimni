@@ -90,6 +90,12 @@ export const quizGenerationApi = {
     return data.data;
   },
 
+  /** POST /quizzes/:id/unpublish — unpublish a quiz back to draft. */
+  unpublishQuiz: async (quizId: string): Promise<QuizListItem> => {
+    const { data } = await apiClient.post<ApiResponse<QuizListItem>>(`/quizzes/${quizId}/unpublish`);
+    return data.data;
+  },
+
   /** POST /quizzes/:id/assign — assign quiz to a chapter. */
   assignQuiz: async (quizId: string, chapterId: string): Promise<QuizListItem> => {
     const { data } = await apiClient.post<ApiResponse<QuizListItem>>(`/quizzes/${quizId}/assign`, { chapterId });

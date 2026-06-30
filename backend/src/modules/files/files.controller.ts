@@ -17,21 +17,21 @@ export class FilesController {
         return;
       }
 
-      const { teacherId, lessonId } = req.body;
-      if (!teacherId || !lessonId) {
+      const { lessonId } = req.body;
+      if (!lessonId) {
         res
           .status(400)
-          .json({ success: false, message: "teacherId and lessonId are required" });
+          .json({ success: false, message: "lessonId is required" });
         return;
       }
 
-      const record = await filesService.uploadAndSave(
+      const { record, indexingStatus } = await filesService.uploadAndSave(
         file,
-        teacherId,
+        req.user!.id,
         lessonId,
       );
 
-      res.status(201).json({ success: true, filePath: record.filePath });
+      res.status(201).json({ success: true, filePath: record.filePath, indexingStatus });
     } catch (error) {
       next(error);
     }
@@ -73,23 +73,23 @@ export class FilesController {
         return;
       }
 
-      const { teacherId, lessonId } = req.body;
-      if (!teacherId || !lessonId) {
+      const { lessonId } = req.body;
+      if (!lessonId) {
         res
           .status(400)
-          .json({ success: false, message: "teacherId and lessonId are required" });
+          .json({ success: false, message: "lessonId is required" });
         return;
       }
 
-      const records = await Promise.all(
-        files.map((f) => filesService.uploadAndSave(f, teacherId, lessonId)),
+      const results = await Promise.all(
+        files.map((f) => filesService.uploadAndSave(f, req.user!.id, lessonId)),
       );
 
       res
         .status(201)
         .json({
           success: true,
-          files: records.map((r) => r.filePath),
+          files: results.map((r) => ({ filePath: r.record.filePath, indexingStatus: r.indexingStatus })),
         });
     } catch (error) {
       next(error);

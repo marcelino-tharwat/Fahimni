@@ -10,9 +10,21 @@ import { authorizeMiddleware } from "../../shared/middlewares/authorize.middlewa
 const router = Router();
 const controller = new FilesController();
 
-router.post("/upload/pdf", uploadSingle, controller.uploadSingle);
+router.post(
+  "/upload/pdf",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  uploadSingle,
+  controller.uploadSingle,
+);
 router.get("/signed-url", controller.getSignedUrl);
-router.post("/upload/pdf/batch", uploadBatch, controller.uploadBatch);
+router.post(
+  "/upload/pdf/batch",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  uploadBatch,
+  controller.uploadBatch,
+);
 router.delete(
   "/files",
   authenticateMiddleware,

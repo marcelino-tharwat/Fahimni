@@ -68,6 +68,7 @@ export class DashboardService {
       totalChapters,
       totalLessons,
       totalStudents,
+      totalQuizzes,
       recentRows,
     ] = await Promise.all([
       prisma.stage.count({
@@ -83,6 +84,9 @@ export class DashboardService {
         },
       }),
       this.countDistinctStudents(teacherId),
+      prisma.quiz.count({
+        where: { createdBy: teacherId },
+      }),
       prisma.auditLog.findMany({
         where: { scopeTeacherId: teacherId },
         orderBy: { createdAt: "desc" },
@@ -96,10 +100,7 @@ export class DashboardService {
       totalChapters,
       totalLessons,
       totalStudents,
-      // No Quiz model exists in the schema yet (the quizzes module is a stub),
-      // so there are no teacher-owned quizzes to count. Returned as 0 — never
-      // null — and ready to switch to a real count once a Quiz model lands.
-      totalQuizzes: 0,
+      totalQuizzes,
       recentActivity: (recentRows as ActivityRow[]).map(toActivityDTO),
     };
   }

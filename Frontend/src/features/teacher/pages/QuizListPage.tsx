@@ -9,7 +9,7 @@ import { Button } from '@/shared/components/ui';
 import { Badge } from '@/shared/components/ui/Badge';
 import { Modal } from '@/shared/components/ui/Modal';
 import { cn } from '@/shared/lib/utils/cn';
-import { useQuizList, useDeleteQuiz } from '@/features/teacher/hooks/useQuizList';
+import { useQuizList, useDeleteQuiz, useUnpublishQuiz } from '@/features/teacher/hooks/useQuizList';
 import { useStagesList, useChaptersByStage } from '@/features/teacher/hooks/useQuizGeneration';
 import type { QuizListItem } from '@/features/teacher/api/quizGeneration';
 
@@ -28,6 +28,7 @@ export function QuizListPage() {
 
   const { data: quizzes = [], isLoading } = useQuizList();
   const deleteQuiz = useDeleteQuiz();
+  const unpublishQuiz = useUnpublishQuiz();
 
   const [activeTab, setActiveTab] = useState<TabKey>('all');
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -191,7 +192,6 @@ export function QuizListPage() {
                     >
                       <td className="px-4 py-3">
                         <p className="text-sm font-semibold text-navy-900">{quiz.title}</p>
-                        <p className="text-[11px] text-gray-500">{quiz.id.slice(0, 8)}...</p>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {chapterMap.get(quiz.chapterId ?? '') ?? quiz.chapterId?.slice(0, 8) ?? '—'}
@@ -252,16 +252,20 @@ export function QuizListPage() {
                                 }}
                               />
                             )}
-                            <hr className="my-1 border-gray-200" />
-                            <DropdownItem
-                              icon={<Trash2 size={16} />}
-                              label={t('teacher:quizList.dropdown.delete')}
-                              className="text-danger-500 hover:bg-danger-50"
-                              onClick={() => {
-                                setOpenMenuId(null);
-                                setDeleteTargetId(quiz.id);
-                              }}
-                            />
+                            {quiz.status === 'DRAFT' && (
+                              <>
+                                <hr className="my-1 border-gray-200" />
+                                <DropdownItem
+                                  icon={<Trash2 size={16} />}
+                                  label={t('teacher:quizList.dropdown.delete')}
+                                  className="text-danger-500 hover:bg-danger-50"
+                                  onClick={() => {
+                                    setOpenMenuId(null);
+                                    setDeleteTargetId(quiz.id);
+                                  }}
+                                />
+                              </>
+                            )}
                           </div>
                         )}
                       </td>
@@ -360,11 +364,12 @@ export function QuizListPage() {
           <Button
             onClick={() => {
               if (!unpublishTargetId) return;
-              // Unpublish is currently not implemented as a separate backend endpoint
-              // For now, just close the modal
-              setUnpublishTargetId(null);
+              unpublishQuiz.mutate(unpublishTargetId, {
+                onSettled: () => setUnpublishTargetId(null),
+              });
             }}
             className="flex-1 bg-warning-500 text-white hover:bg-warning-600"
+            loading={unpublishQuiz.isPending}
           >
             {t('teacher:quizList.unpublishConfirm.confirm')}
           </Button>
