@@ -1,4 +1,5 @@
 import { prisma as defaultPrisma } from "../../config/database.js";
+import { env } from "../../config/env.js";
 import { logger } from "../../config/logger.js";
 import { geminiClient } from "../../shared/services/geminiClient.js";
 import { aiService } from "../ai/ai.service.js";
@@ -26,8 +27,10 @@ import type { GenerateQuizInput } from "./dto/generate-quiz.dto.js";
 import type { QuestionType, QuizStatus } from "../../generated/prisma/client.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 
-const DEFAULT_TOTAL_TIMEOUT_MS = 60_000;
-const DEFAULT_GEMINI_TIMEOUT_MS = 55_000;
+// Canonical STORY-45 budgets, env-configurable (defaults: total 25s, Gemini 20s;
+// the Gemini call timeout must remain < the total endpoint deadline).
+const DEFAULT_TOTAL_TIMEOUT_MS = env.QUIZ_GENERATION_TIMEOUT_MS;
+const DEFAULT_GEMINI_TIMEOUT_MS = env.QUIZ_GENERATION_GEMINI_TIMEOUT_MS;
 const DEFAULT_TOP_K = 8;
 const DEFAULT_MAX_PROMPT_CHARS = 12_000;
 const MAX_TITLE_LENGTH = 200;

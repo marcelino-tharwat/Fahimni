@@ -34,6 +34,10 @@ const envSchema = z.object({
   GEMINI_EMBEDDING_MODEL: z.string().default("text-embedding-004"),
   // STORY-64: max accepted AI-tutor questions per student per UTC calendar day.
   AI_TUTOR_DAILY_QUERY_LIMIT: z.coerce.number().int().positive().default(20),
+  // STORY-45 canonical quiz-generation budgets: total 25s, Gemini call 20s
+  // (Gemini timeout must stay < total). Configurable for ops tuning.
+  QUIZ_GENERATION_TIMEOUT_MS: z.coerce.number().int().positive().default(25_000),
+  QUIZ_GENERATION_GEMINI_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
   PAYMOB_API_KEY: z.string().min(1),
   PAYMOB_INTEGRATION_ID: z.coerce.number().positive(),
   PAYMOB_IFRAME_ID: z.string().min(1),
