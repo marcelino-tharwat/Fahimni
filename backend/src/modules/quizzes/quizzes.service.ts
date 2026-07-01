@@ -417,6 +417,18 @@ export class QuizService {
       );
     }
 
+    if (
+      existing.durationMinutes == null ||
+      !Number.isInteger(existing.durationMinutes) ||
+      existing.durationMinutes <= 0
+    ) {
+      throw new AppError(
+        "Quiz must have a valid duration before publishing",
+        400,
+        "QUIZ_DURATION_NOT_CONFIGURED",
+      );
+    }
+
     const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
 
     // Atomic publish: only transitions a still-DRAFT quiz; concurrent publishes

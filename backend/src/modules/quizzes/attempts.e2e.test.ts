@@ -24,7 +24,7 @@ const owned = {
 
 interface HttpResult {
   status: number;
-  json: { success?: boolean; message?: string; data?: unknown } | null;
+  json: { success?: boolean; message?: string; code?: string; attemptId?: string; data?: unknown } | null;
   setCookie: string[];
 }
 
@@ -439,6 +439,100 @@ describe("STORY-48 — full HTTP + DB journey", () => {
 
     const unenrolled = await http("POST", `/api/quizzes/${fx.quizId}/attempt`, { cookie: s2Cookie });
     expect(unenrolled.status).toBe(403);
+    expect(unenrolled.json?.code).toBe("ENROLLMENT_REQUIRED");
+  });
+});
+
+describe("Quiz access — structured error codes", () => {
+  it("rejects draft quiz with QUIZ_NOT_PUBLISHED", async () => {
+    const fx = await createDraftQuiz(t1.id);
+    const assign = await http("POST", `/api/quizzes/${fx.quizId}/assign`, {
+      cookie: t1Cookie,
+      body: { chapterId },
+    });
+    expect(assign.status).toBe(200);
+
+    const start = await http("POST", `/api/quizzes/${fx.quizId}/attempt`, { cookie: s1Cookie });
+    expect(start.status).toBe(403);
+    expect(start.json?.code).toBe("QUIZ_NOT_PUBLISHED");
+  });
+
+  it("rejects publish without duration", async () => {
+    const fx = await createDraftQuiz(t1.id);
+    await prisma.quiz.update({
+      where: { id: fx.quizId },
+      data: { durationMinutes: null },
+    });
+    const assign = await http("POST", `/api/quizzes/${fx.quizId}/assign`, {
+      cookie: t1Cookie,
+      body: { chapterId },
+    });
+    expect(assign.status).toBe(200);
+
+    const pub = await http("PATCH", `/api/quizzes/${fx.quizId}/publish`, { cookie: t1Cookie });
+    expect(pub.status).toBe(400);
+    expect(pub.json?.code).toBe("QUIZ_DURATION_NOT_CONFIGURED");
+  });
+
+  it("rejects start on published quiz missing duration", async () => {
+    const quizId = randomUUID();
+    await prisma.quiz.create({
+      data: {
+        id: quizId,
+        title: uniq("quiz-no-dur"),
+        createdBy: t1.id,
+        status: "PUBLISHED",
+        chapterId,
+        durationMinutes: null,
+        questionCount: 1,
+        totalPoints: 1,
+        publishedAt: new Date(),
+      },
+    });
+    owned.quizIds.push(quizId);
+    const qId = randomUUID();
+    await prisma.question.create({
+      data: {
+        id: qId,
+        quizId,
+        type: "MCQ",
+        text: "س",
+        options: ["أ", "ب"],
+        correctAnswer: "أ",
+        points: 1,
+        sortOrder: 1,
+      },
+    });
+
+    const start = await http("POST", `/api/quizzes/${quizId}/attempt`, { cookie: s1Cookie });
+    expect(start.status).toBe(400);
+    expect(start.json?.code).toBe("QUIZ_DURATION_NOT_CONFIGURED");
+  });
+
+  it("returns ATTEMPT_ALREADY_SUBMITTED with attemptId for finished attempt", async () => {
+    const fx = await createDraftQuiz(t1.id);
+    await publishViaApi(fx.quizId, chapterId, t1Cookie);
+
+    const start = await http("POST", `/api/quizzes/${fx.quizId}/attempt`, { cookie: s1Cookie });
+    expect(start.status).toBe(201);
+    const attemptId = (start.json?.data as { attemptId: string }).attemptId;
+
+    const submit = await http("POST", `/api/attempts/${attemptId}/submit`, {
+      cookie: s1Cookie,
+      body: {
+        answers: [
+          { questionId: fx.mcqId, answer: "ب" },
+          { questionId: fx.tfId, answer: "صح" },
+          { questionId: fx.essayId, answer: "نص" },
+        ],
+      },
+    });
+    expect(submit.status).toBe(200);
+
+    const retry = await http("POST", `/api/quizzes/${fx.quizId}/attempt`, { cookie: s1Cookie });
+    expect(retry.status).toBe(409);
+    expect(retry.json?.code).toBe("ATTEMPT_ALREADY_SUBMITTED");
+    expect(retry.json?.attemptId).toBe(attemptId);
   });
 });
 

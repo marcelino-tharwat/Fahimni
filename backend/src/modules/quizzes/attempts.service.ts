@@ -207,6 +207,9 @@ export class AttemptsService {
 
   /** POST /api/quizzes/:id/attempt — start a single attempt. */
   public async startAttempt(quizId: string, studentId: string) {
+    const accessLog = { studentId, quizId };
+    logger.info("quiz_access_check_started", accessLog);
+
     const quiz = await prisma.quiz.findUnique({
       where: { id: quizId },
       select: {
@@ -221,26 +224,84 @@ export class AttemptsService {
       },
     });
 
-    // Drafts / unassigned / deleted-chapter quizzes are hidden from students.
-    if (
-      !quiz ||
-      quiz.status !== "PUBLISHED" ||
-      !quiz.chapterId ||
-      quiz.chapter?.deletedAt
-    ) {
-      throw new AppError("Quiz not found", 404);
+    if (!quiz) {
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        safeReasonCode: "QUIZ_NOT_FOUND",
+      });
+      throw new AppError("Quiz not found", 404, "QUIZ_NOT_FOUND");
+    }
+
+    if (!quiz.chapterId) {
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        safeReasonCode: "QUIZ_NOT_FOUND",
+      });
+      throw new AppError("Quiz not found", 404, "QUIZ_NOT_FOUND");
+    }
+
+    if (quiz.chapter?.deletedAt) {
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        chapterId: quiz.chapterId,
+        safeReasonCode: "QUIZ_PARENT_UNAVAILABLE",
+      });
+      throw new AppError(
+        "Quiz not found",
+        404,
+        "QUIZ_PARENT_UNAVAILABLE",
+      );
+    }
+
+    if (quiz.status !== "PUBLISHED") {
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        chapterId: quiz.chapterId,
+        quizPublished: false,
+        safeReasonCode: "QUIZ_NOT_PUBLISHED",
+      });
+      throw new AppError("Quiz is not published", 403, "QUIZ_NOT_PUBLISHED");
     }
 
     const enrollment = await prisma.enrollment.findUnique({
       where: { studentId_chapterId: { studentId, chapterId: quiz.chapterId } },
       select: { status: true },
     });
-    if (!enrollment || enrollment.status !== "ACTIVE") {
-      throw new AppError("You are not enrolled in this chapter", 403);
+    if (!enrollment) {
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        chapterId: quiz.chapterId,
+        enrollmentFound: false,
+        safeReasonCode: "ENROLLMENT_REQUIRED",
+      });
+      throw new AppError(
+        "You are not enrolled in this chapter",
+        403,
+        "ENROLLMENT_REQUIRED",
+      );
+    }
+    if (enrollment.status !== "ACTIVE") {
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        chapterId: quiz.chapterId,
+        enrollmentFound: true,
+        enrollmentStatus: enrollment.status,
+        safeReasonCode: "ENROLLMENT_INACTIVE",
+      });
+      throw new AppError(
+        "Your enrollment in this chapter is not active",
+        403,
+        "ENROLLMENT_INACTIVE",
+      );
     }
 
     if (quiz._count.questions === 0) {
-      throw new AppError("Quiz has no questions", 400);
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        chapterId: quiz.chapterId,
+        safeReasonCode: "QUIZ_NO_QUESTIONS",
+      });
+      throw new AppError("Quiz has no questions", 400, "QUIZ_NO_QUESTIONS");
     }
 
     const questions = await prisma.question.findMany({
@@ -250,10 +311,24 @@ export class AttemptsService {
     });
     const totalPoints = questions.reduce((s, q) => s + q.points, 0);
 
-    const durationSnapshot = resolveQuizDurationMinutes(quiz.durationMinutes);
+    let durationSnapshot: number;
+    try {
+      durationSnapshot = resolveQuizDurationMinutes(quiz.durationMinutes);
+    } catch (err) {
+      if (err instanceof AppError && err.code === "QUIZ_DURATION_NOT_CONFIGURED") {
+        logger.warn("quiz_access_check_denied", {
+          ...accessLog,
+          chapterId: quiz.chapterId,
+          safeReasonCode: "QUIZ_DURATION_NOT_CONFIGURED",
+        });
+      }
+      throw err;
+    }
+
     const serverNow = new Date();
 
     let attempt;
+    let resumed = false;
     const existing = await prisma.quizAttempt.findFirst({
       where: { quizId, studentId, status: "IN_PROGRESS" },
       select: {
@@ -285,10 +360,15 @@ export class AttemptsService {
               null,
               "TIME_EXPIRED",
             );
+            logger.info("quiz_attempt_expired", {
+              ...accessLog,
+              attemptId: existing.id,
+            });
             throw new AppError(
               "Attempt has already been submitted",
               409,
               "ATTEMPT_ALREADY_SUBMITTED",
+              { attemptId: existing.id },
             );
           }
         } else if (isAttemptExpired(existing.expiresAt, serverNow)) {
@@ -298,10 +378,15 @@ export class AttemptsService {
             null,
             "TIME_EXPIRED",
           );
+          logger.info("quiz_attempt_expired", {
+            ...accessLog,
+            attemptId: existing.id,
+          });
           throw new AppError(
             "Attempt has already been submitted",
             409,
             "ATTEMPT_ALREADY_SUBMITTED",
+            { attemptId: existing.id },
           );
         }
       }
@@ -322,14 +407,27 @@ export class AttemptsService {
         durationMinutesSnapshot: snap,
         expiresAt: exp,
       };
+      resumed = true;
     } else {
       // A finished attempt (COMPLETED awaiting essays, or fully GRADED) blocks a
       // new one — "no retakes in MVP" (STORY-48).
       const finished = await prisma.quizAttempt.findFirst({
         where: { quizId, studentId, status: { in: ["COMPLETED", "GRADED"] } },
+        select: { id: true },
       });
       if (finished) {
-        throw new AppError("You have already attempted this quiz", 409);
+        logger.warn("quiz_access_check_denied", {
+          ...accessLog,
+          chapterId: quiz.chapterId,
+          attemptId: finished.id,
+          safeReasonCode: "ATTEMPT_ALREADY_SUBMITTED",
+        });
+        throw new AppError(
+          "You have already attempted this quiz",
+          409,
+          "ATTEMPT_ALREADY_SUBMITTED",
+          { attemptId: finished.id },
+        );
       }
 
       try {
@@ -358,9 +456,8 @@ export class AttemptsService {
             lastSavedAt: true,
           },
         });
-        logger.info("quiz_attempt_started", {
-          studentId,
-          quizId,
+        logger.info("quiz_attempt_created", {
+          ...accessLog,
           attemptId: attempt.id,
           configuredDurationMinutes: quiz.durationMinutes,
           durationMinutesSnapshot: durationSnapshot,
@@ -393,8 +490,16 @@ export class AttemptsService {
                 lastSavedAt: true,
               },
             });
+            resumed = true;
+          } else if (raced) {
+            throw new AppError(
+              "You have already attempted this quiz",
+              409,
+              "ATTEMPT_ALREADY_SUBMITTED",
+              { attemptId: raced.id },
+            );
           } else {
-            throw new AppError("You have already attempted this quiz", 409);
+            throw new AppError("You have already attempted this quiz", 409, "ATTEMPT_ALREADY_SUBMITTED");
           }
         } else {
           throw err;
@@ -404,6 +509,20 @@ export class AttemptsService {
 
     if (!attempt) {
       throw new AppError("Failed to start attempt", 500);
+    }
+
+    logger.info("quiz_access_check_allowed", {
+      ...accessLog,
+      chapterId: quiz.chapterId,
+      attemptId: attempt.id,
+      enrollmentFound: true,
+      enrollmentStatus: "ACTIVE",
+    });
+    if (resumed) {
+      logger.info("quiz_attempt_resumed", {
+        ...accessLog,
+        attemptId: attempt.id,
+      });
     }
 
     const safeQuestions: SafeQuestion[] = questions.map((q) => ({

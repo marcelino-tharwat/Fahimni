@@ -72,6 +72,7 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     statusCode: status,
     message,
     ...safeExtras,
+    ...(err instanceof AppError && err.meta ? err.meta : {}),
     ...(env.NODE_ENV === "development" &&
     status >= 500 &&
     err instanceof Error &&
