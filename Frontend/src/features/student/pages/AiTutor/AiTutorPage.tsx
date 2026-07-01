@@ -27,7 +27,24 @@ function toUiMessage(m: TutorMessage): AiTutorChatMessage {
     status: m.status,
     citations: m.citations,
     createdAt: m.createdAt,
+    ...(m.errorCode ? { errorCode: m.errorCode } : {}),
   };
+}
+
+function tutorErrorMessageKey(errorCode?: string): string {
+  switch (errorCode) {
+    case 'TUTOR_RATE_LIMITED':
+    case 'TUTOR_UNAVAILABLE':
+      return 'aiTutor.errorRateLimited';
+    case 'TUTOR_TIMEOUT':
+      return 'aiTutor.errorTimeout';
+    case 'DAILY_LIMIT_EXCEEDED':
+      return 'aiTutor.quotaExhausted';
+    case 'QUESTION_INVALID':
+      return 'aiTutor.errorInvalidQuestion';
+    default:
+      return 'aiTutor.errorTitle';
+  }
 }
 
 function withErrorBubbles(messages: AiTutorChatMessage[]): AiTutorChatMessage[] {
@@ -43,6 +60,7 @@ function withErrorBubbles(messages: AiTutorChatMessage[]): AiTutorChatMessage[] 
           role: 'assistant',
           content: '',
           failed: true,
+          errorCode: m.errorCode,
         });
       }
     }
@@ -367,6 +385,11 @@ export function AiTutorPage() {
                   <ChatMessage
                     key={m.id}
                     message={m}
+                    errorMessageKey={
+                      m.id.startsWith(ERROR_BUBBLE_ID)
+                        ? tutorErrorMessageKey(m.errorCode)
+                        : undefined
+                    }
                     onRetry={
                       m.id.startsWith(ERROR_BUBBLE_ID) ? () => void handleRetry(m.id) : undefined
                     }

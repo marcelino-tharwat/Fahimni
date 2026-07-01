@@ -25,7 +25,7 @@ export interface QuizMeta {
   attemptLabel: string;
 }
 
-export type PageStatus = 'loading' | 'active' | 'error-403' | 'error-400';
+export type PageStatus = 'loading' | 'active' | 'error-403' | 'error-400' | 'error-access';
 
 export interface Quiz {
   id: string;

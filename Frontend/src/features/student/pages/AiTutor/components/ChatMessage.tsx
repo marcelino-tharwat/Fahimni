@@ -7,10 +7,11 @@ import styles from './ChatMessage.module.css';
 
 interface ChatMessageProps {
   message: AiTutorChatMessage;
+  errorMessageKey?: string;
   onRetry?: (messageId: string) => void;
 }
 
-export function ChatMessage({ message, onRetry }: ChatMessageProps) {
+export function ChatMessage({ message, errorMessageKey, onRetry }: ChatMessageProps) {
   const { t } = useTranslation('student');
   const direction = useDirection();
   const isStudent = message.role === 'student';
@@ -37,7 +38,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
             <div className={`${styles.assistantBubble} ${styles.errorBubble}`}>
               <div className={styles.errorHeader}>
                 <AlertCircle size={16} aria-hidden />
-                <span>{t('aiTutor.errorTitle')}</span>
+                <span>{t(errorMessageKey ?? 'aiTutor.errorTitle')}</span>
               </div>
               {onRetry && (
                 <button

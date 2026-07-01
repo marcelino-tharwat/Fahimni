@@ -26,6 +26,7 @@ export interface TutorMessage {
   status: TutorMessageStatus;
   citations: TutorCitation[];
   createdAt: string;
+  errorCode?: string;
 }
 
 export interface TutorConversationSummary {
@@ -64,5 +65,6 @@ export interface AiTutorChatMessage {
   citations?: TutorCitation[];
   createdAt?: string;
   failed?: boolean;
+  errorCode?: string;
   clientMessageId?: string;
 }

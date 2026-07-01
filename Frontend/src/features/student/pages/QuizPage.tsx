@@ -24,6 +24,10 @@ import {
   getAttemptResults,
 } from '@/features/student/api/quiz';
 import { useQuizAttemptTimer } from '@/features/student/hooks/useQuizAttemptTimer';
+import {
+  resolveQuizAccessError,
+  type QuizAccessErrorView,
+} from '@/features/student/lib/quizAccessErrors';
 import type { PageStatus, QuizQuestion, QuizMeta } from '@/shared/types';
 import type { ApiError } from '@/shared/lib/api/client';
 
@@ -48,6 +52,7 @@ export function QuizPage() {
   const [currentId, setCurrentId] = useState<string | null>(null);
   const [meta, setMeta] = useState<QuizMeta | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [accessError, setAccessError] = useState<QuizAccessErrorView | null>(null);
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [serverTime, setServerTime] = useState<string | null>(null);
@@ -229,11 +234,19 @@ export function QuizPage() {
         setStatus('active');
       })
       .catch((err: ApiError) => {
-        if (err.statusCode === 409) {
-          navigate('/student/quizzes', { replace: true });
-        } else {
-          setStatus('error-403');
+        const resolved = resolveQuizAccessError(err);
+        if (
+          resolved.primaryAction === 'viewResults' &&
+          resolved.attemptId &&
+          quizId
+        ) {
+          navigate(`/student/quizzes/${quizId}/results/${resolved.attemptId}`, {
+            replace: true,
+          });
+          return;
         }
+        setAccessError(resolved);
+        setStatus('error-access');
       });
   }, [quizId, i18n.language, navigate]);
 
@@ -342,6 +355,47 @@ export function QuizPage() {
           <Skeleton className="h-40 w-full rounded-card" />
           <Skeleton className="h-40 w-full rounded-card" />
           <Skeleton className="h-40 w-full rounded-card" />
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'error-access' && accessError) {
+    const primaryLabel =
+      accessError.primaryAction === 'browseCourses'
+        ? t('quiz:browseCourses')
+        : accessError.primaryAction === 'viewResults'
+          ? t('quiz:viewResults')
+          : t('quiz:results.backToQuizzes', { defaultValue: 'العودة للاختبارات' });
+
+    const handlePrimary = () => {
+      if (accessError.primaryAction === 'browseCourses') {
+        navigate('/student/content');
+        return;
+      }
+      if (accessError.primaryAction === 'viewResults' && accessError.attemptId && quizId) {
+        navigate(`/student/quizzes/${quizId}/results/${accessError.attemptId}`);
+        return;
+      }
+      navigate('/student/quizzes');
+    };
+
+    return (
+      <div dir={i18n.dir()} className="min-h-screen bg-navy-50 font-cairo">
+        <ExamTopbar timerSeconds={0} timerWarning={false} onEndExam={() => {}} />
+        <div className="flex flex-col items-center justify-center gap-5 px-6 py-20 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gray-200">
+            <Lock size={36} className="text-gray-500" />
+          </div>
+          <h1 className="text-h3 text-navy-800">{t(accessError.titleKey)}</h1>
+          <p className="mt-2 max-w-xs text-body text-gray-600">{t(accessError.messageKey)}</p>
+          <button
+            type="button"
+            onClick={handlePrimary}
+            className="h-11 rounded-btn bg-cyan-gradient px-8 text-sm font-bold text-white"
+          >
+            {primaryLabel}
+          </button>
         </div>
       </div>
     );
