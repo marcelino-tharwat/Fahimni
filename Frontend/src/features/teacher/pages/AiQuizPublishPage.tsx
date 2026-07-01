@@ -3,26 +3,23 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Link, Settings, FileText, AlertTriangle, CheckCircle,
-  Loader2, Rocket, ArrowLeft, ClipboardList,
+  Loader2, ArrowLeft, ArrowRight,
 } from 'lucide-react';
 import { Button, Modal } from '@/shared/components/ui';
-import { Badge } from '@/shared/components/ui/Badge';
 import { cn } from '@/shared/lib/utils/cn';
 import { QuizStepper } from '@/features/teacher/components/quiz-generator';
 import { useDraftQuiz } from '@/features/teacher/hooks/useQuizReview';
 import { useStagesList, useChaptersByStage } from '@/features/teacher/hooks/useQuizGeneration';
-import { useAssignQuiz, usePublishQuiz } from '@/features/teacher/hooks/useQuizList';
+import { useAssignQuiz, usePublishQuiz, useUpdateQuiz } from '@/features/teacher/hooks/useQuizList';
 import type { DraftQuestion } from '@/features/teacher/api/quizGeneration';
 
 type PublishUIState = 'idle' | 'confirm-modal' | 'loading' | 'success';
-type AttemptsOption = 'one' | 'two' | 'unlimited';
 
 interface PublishFormState {
   stageId: string;
   chapterId: string;
   quizTitle: string;
   timeLimitMinutes: number;
-  attemptsAllowed: AttemptsOption;
   passingScore: number;
   shuffleQuestions: boolean;
   shuffleAnswers: boolean;
@@ -41,7 +38,6 @@ const defaultForm = (overrides?: Partial<PublishFormState>): PublishFormState =>
   chapterId: '',
   quizTitle: '',
   timeLimitMinutes: 0,
-  attemptsAllowed: 'one' as AttemptsOption,
   passingScore: 50,
   shuffleQuestions: false,
   shuffleAnswers: false,
@@ -77,12 +73,6 @@ function computeTotalPoints(questions: DraftQuestion[]) {
   return questions.reduce((sum, q) => sum + (q.points ?? 1), 0);
 }
 
-const ATTEMPTS_OPTIONS: { value: AttemptsOption; labelKey: string }[] = [
-  { value: 'one', labelKey: 'teacher:publish.attemptOne' },
-  { value: 'two', labelKey: 'teacher:publish.attemptTwo' },
-  { value: 'unlimited', labelKey: 'teacher:publish.attemptUnlimited' },
-];
-
 function SectionHead({ icon, title }: { icon: React.ReactNode; title: string }) {
   return (
     <div className="mb-4 flex items-center gap-2.5">
@@ -94,23 +84,20 @@ function SectionHead({ icon, title }: { icon: React.ReactNode; title: string }) 
 
 export function AiQuizPublishPage() {
   const { quizId } = useParams<{ quizId: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const BackArrow = i18n.language === 'ar' ? ArrowRight : ArrowLeft;
   const navigate = useNavigate();
 
   const { data: draftQuiz, isLoading: draftLoading } = useDraftQuiz(quizId);
   const assignQuiz = useAssignQuiz();
   const publishQuiz = usePublishQuiz();
+  const updateQuiz = useUpdateQuiz();
 
   const [form, dispatch] = useReducer(formReducer, defaultForm());
   const [validationError, setValidationError] = useState('');
 
   const { data: stages = [] } = useStagesList();
   const { data: chapters = [] } = useChaptersByStage(form.stageId);
-
-  const selectedStageName = useMemo(
-    () => stages.find((s) => s.id === form.stageId)?.name ?? '',
-    [stages, form.stageId],
-  );
 
   const selectedChapter = useMemo(
     () => chapters.find((c) => c.id === form.chapterId),
@@ -134,6 +121,16 @@ export function AiQuizPublishPage() {
     dispatch({ type: 'SET_FIELD', field: 'quizTitle', value: draftQuiz.title });
     if (draftQuiz.durationMinutes != null) {
       dispatch({ type: 'SET_FIELD', field: 'timeLimitMinutes', value: draftQuiz.durationMinutes });
+    } else {
+      try {
+        const saved = sessionStorage.getItem('quizGeneratorFormState_v2');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.timeLimit > 0) {
+            dispatch({ type: 'SET_FIELD', field: 'timeLimitMinutes', value: parsed.timeLimit });
+          }
+        }
+      } catch { /* ignore */ }
     }
   }, [draftQuiz]);
 
@@ -192,6 +189,13 @@ export function AiQuizPublishPage() {
     dispatch({ type: 'SET_UI_STATE', value: 'loading' });
 
     try {
+      await updateQuiz.mutateAsync({
+        quizId,
+        body: {
+          title: form.quizTitle,
+          durationMinutes: form.timeLimitMinutes > 0 ? form.timeLimitMinutes : null,
+        },
+      });
       if (form.chapterId && form.chapterId !== draftQuiz?.chapterId) {
         await assignQuiz.mutateAsync({ quizId, chapterId: form.chapterId });
       }
@@ -202,7 +206,7 @@ export function AiQuizPublishPage() {
     } catch {
       dispatch({ type: 'SET_UI_STATE', value: 'idle' });
     }
-  }, [quizId, form.chapterId, form.quizTitle, draftQuiz, assignQuiz, publishQuiz]);
+  }, [quizId, form.chapterId, form.quizTitle, form.timeLimitMinutes, draftQuiz, updateQuiz, assignQuiz, publishQuiz]);
 
   if (draftLoading) {
     return (
@@ -370,29 +374,6 @@ export function AiQuizPublishPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-navy-900">
-                  {t('teacher:publish.attemptsAllowed')}
-                </label>
-                <div className="flex gap-2">
-                  {ATTEMPTS_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => dispatch({ type: 'SET_FIELD', field: 'attemptsAllowed', value: opt.value })}
-                      className={cn(
-                        'rounded-full px-4 py-2 text-sm font-medium transition-all',
-                        form.attemptsAllowed === opt.value
-                          ? 'bg-cyan-500 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-                      )}
-                    >
-                      {t(opt.labelKey)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="flex flex-col gap-3">
                 <ToggleRow
                   checked={form.shuffleQuestions}
@@ -518,13 +499,12 @@ export function AiQuizPublishPage() {
       </div>
 
       {/* ── Bottom navigation bar ── */}
-      <div className="sticky bottom-0 z-20 -mx-4 mt-4 flex items-center justify-between border-t border-gray-300 bg-white px-4 py-3">
+      <div className="sticky bottom-0 z-20 -mx-1 mt-4 flex items-center justify-between gap-3 border-t border-border bg-surface/95 px-1 py-3 backdrop-blur">
         <Button
           variant="ghost"
           onClick={() => navigate(`/teacher/quizzes/generator/review/${quizId}`)}
-          className="text-gray-600"
         >
-          <ArrowLeft size={18} />
+          <BackArrow size={18} />
           {t('teacher:publish.bottomBack')}
         </Button>
         <Button
@@ -535,7 +515,6 @@ export function AiQuizPublishPage() {
             isPublishDisabled && 'opacity-50 cursor-not-allowed',
           )}
         >
-          <Rocket size={18} />
           {t('teacher:publish.publishBtn')}
         </Button>
       </div>
@@ -554,9 +533,7 @@ export function AiQuizPublishPage() {
         ) : (
           <>
             <div className="flex flex-col items-center gap-4">
-              <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-cyan-gradient">
-                <Rocket size={32} className="text-white" />
-              </div>
+              <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-cyan-gradient" />
               <div className="flex flex-col items-center gap-1 text-center">
                 <h3 className="text-lg font-bold text-navy-900">
                   {t('teacher:publish.confirmModal.title')}

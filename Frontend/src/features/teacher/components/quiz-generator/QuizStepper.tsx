@@ -7,11 +7,13 @@ interface QuizStepperProps {
 }
 
 export function QuizStepper({ activeStep }: QuizStepperProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const stepNum = (i: number) =>
+    i18n.language === 'ar' ? ['١', '٢', '٣'][i] : String(i + 1);
   const STEPS = [
-    { num: '١', key: t('teacher:quizGenerator.step1') },
-    { num: '٢', key: t('teacher:quizGenerator.step2') },
-    { num: '٣', key: t('teacher:quizGenerator.step3') },
+    { num: stepNum(0), key: t('teacher:quizGenerator.step1') },
+    { num: stepNum(1), key: t('teacher:quizGenerator.step2') },
+    { num: stepNum(2), key: t('teacher:quizGenerator.step3') },
   ];
 
   return (
@@ -27,7 +29,7 @@ export function QuizStepper({ activeStep }: QuizStepperProps) {
                   'flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-all duration-300',
                   isPast && 'bg-accent/90 text-white',
                   isActive && 'bg-accent text-white shadow-lg shadow-accent/30',
-                  !isPast && !isActive && 'bg-gray-100 text-gray-400',
+                  !isPast && !isActive && 'border-2 border-gray-300 bg-transparent text-gray-400',
                 )}
               >
                 {isPast ? <Check size={14} /> : step.num}
