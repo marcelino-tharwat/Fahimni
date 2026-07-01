@@ -11,9 +11,18 @@ interface QuestionCardProps {
   onAnswer: (id: string, value: string) => void;
   hasError: boolean;
   isPulsing: boolean;
+  disabled?: boolean;
 }
 
-export function QuestionCard({ question, index, answer, onAnswer, hasError, isPulsing }: QuestionCardProps) {
+export function QuestionCard({
+  question,
+  index,
+  answer,
+  onAnswer,
+  hasError,
+  isPulsing,
+  disabled = false,
+}: QuestionCardProps) {
   const { t } = useTranslation();
   const answered = answer !== undefined && answer !== '';
 
@@ -40,6 +49,7 @@ export function QuestionCard({ question, index, answer, onAnswer, hasError, isPu
         'rounded-card border-2 bg-white p-6 shadow-card transition-all duration-300',
         borderClass,
         isPulsing && 'animate-pulse',
+        disabled && 'pointer-events-none opacity-60',
       )}
       style={hasError ? { boxShadow: '0 0 0 2px rgba(239,68,68,0.12)' } : undefined}
     >

@@ -5,6 +5,8 @@
   "submitAnyway": "Submit Anyway",
   "returnAndAnswer": "Return and Answer",
   "submitting": "Submitting your answers...",
+  "autoSubmitting": "Submitting your quiz automatically...",
+  "autoSubmitRetry": "Time is up — retrying to submit your answers",
   "dontClose": "Please don't close this page",
   "confirmSubmit": "Are you sure you want to submit?",
   "confirmSubmitAllMsg": "You've answered all {{total}} questions. Your answers will be graded upon submission.",

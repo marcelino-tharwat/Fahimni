@@ -6,6 +6,7 @@ import { attemptsService } from "./attempts.service.js";
 import { resultsQuerySchema } from "./attempts.validation.js";
 import type {
   GradeEssaysInput,
+  SaveDraftAnswersInput,
   SubmitAttemptInput,
 } from "./attempts.validation.js";
 
@@ -36,6 +37,24 @@ export class AttemptsController {
 
       const data = await attemptsService.startAttempt(id, req.user!.id);
       res.status(201).json(okResponse("Attempt started successfully", data));
+    },
+  );
+
+  /** PATCH /api/attempts/:attemptId/answers (student) — save draft answers. */
+  public saveDraftAnswers = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const attemptId = req.params.attemptId;
+      if (typeof attemptId !== "string") {
+        throw new AppError("Invalid attempt ID", 400);
+      }
+
+      const input = req.body as SaveDraftAnswersInput;
+      const data = await attemptsService.saveDraftAnswers(
+        attemptId,
+        req.user!.id,
+        input,
+      );
+      res.status(200).json(okResponse("Draft answers saved successfully", data));
     },
   );
 

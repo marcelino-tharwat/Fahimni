@@ -1,4 +1,5 @@
 import { prisma } from "../../config/database.js";
+import { logger } from "../../config/logger.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import {
   finalizeOutcome,
@@ -9,13 +10,27 @@ import {
   type GradableQuestion,
   type QuestionResult,
 } from "./auto-grade.js";
+import {
+  draftItemsToArray,
+  emptyDraftPayload,
+  mergeDraftItems,
+  parseDraftAnswers,
+  type DraftAnswerItem,
+} from "./attempt-draft.js";
+import {
+  buildAttemptTimingResponse,
+  computeExpiresAt,
+  isAttemptExpired,
+  resolveQuizDurationMinutes,
+} from "./attempt-timing.js";
 import type {
   GradeEssaysInput,
   ResultsQueryInput,
+  SaveDraftAnswersInput,
   SubmitAttemptInput,
 } from "./attempts.validation.js";
 import { Prisma } from "../../generated/prisma/client.js";
-import type { QuestionType } from "../../generated/prisma/client.js";
+import type { QuestionType, AttemptSubmissionReason } from "../../generated/prisma/client.js";
 
 /** Full question data needed to enrich a submission/results response. */
 interface ResultQuestion {
@@ -235,15 +250,78 @@ export class AttemptsService {
     });
     const totalPoints = questions.reduce((s, q) => s + q.points, 0);
 
+    const durationSnapshot = resolveQuizDurationMinutes(quiz.durationMinutes);
+    const serverNow = new Date();
+
     let attempt;
-    // If there's already an IN_PROGRESS attempt, return it (handles Strict Mode
-    // double-mount, page refresh, and accidental re-entry).
     const existing = await prisma.quizAttempt.findFirst({
       where: { quizId, studentId, status: "IN_PROGRESS" },
-      select: { id: true, status: true, startedAt: true, totalPoints: true },
+      select: {
+        id: true,
+        status: true,
+        startedAt: true,
+        totalPoints: true,
+        answers: true,
+        durationMinutesSnapshot: true,
+        expiresAt: true,
+        lastSavedAt: true,
+      },
     });
+
     if (existing) {
-      attempt = existing;
+      if (
+        isAttemptExpired(existing.expiresAt, serverNow) ||
+        (existing.expiresAt == null && existing.durationMinutesSnapshot != null)
+      ) {
+        if (existing.expiresAt == null && existing.durationMinutesSnapshot != null) {
+          const backfillExpires = computeExpiresAt(
+            existing.startedAt,
+            existing.durationMinutesSnapshot,
+          );
+          if (isAttemptExpired(backfillExpires, serverNow)) {
+            await this.finalizeInProgressAttempt(
+              existing.id,
+              studentId,
+              null,
+              "TIME_EXPIRED",
+            );
+            throw new AppError(
+              "Attempt has already been submitted",
+              409,
+              "ATTEMPT_ALREADY_SUBMITTED",
+            );
+          }
+        } else if (isAttemptExpired(existing.expiresAt, serverNow)) {
+          await this.finalizeInProgressAttempt(
+            existing.id,
+            studentId,
+            null,
+            "TIME_EXPIRED",
+          );
+          throw new AppError(
+            "Attempt has already been submitted",
+            409,
+            "ATTEMPT_ALREADY_SUBMITTED",
+          );
+        }
+      }
+      const snap = existing.durationMinutesSnapshot ?? durationSnapshot;
+      const exp =
+        existing.expiresAt ?? computeExpiresAt(existing.startedAt, snap);
+      if (
+        existing.durationMinutesSnapshot == null ||
+        existing.expiresAt == null
+      ) {
+        await prisma.quizAttempt.update({
+          where: { id: existing.id },
+          data: { durationMinutesSnapshot: snap, expiresAt: exp },
+        });
+      }
+      attempt = {
+        ...existing,
+        durationMinutesSnapshot: snap,
+        expiresAt: exp,
+      };
     } else {
       // A finished attempt (COMPLETED awaiting essays, or fully GRADED) blocks a
       // new one — "no retakes in MVP" (STORY-48).
@@ -255,17 +333,39 @@ export class AttemptsService {
       }
 
       try {
+        const startedAt = serverNow;
+        const expiresAt = computeExpiresAt(startedAt, durationSnapshot);
         attempt = await prisma.quizAttempt.create({
           data: {
             quizId,
             studentId,
-            answers: [] as unknown as Prisma.InputJsonValue,
+            answers: emptyDraftPayload() as unknown as Prisma.InputJsonValue,
             status: "IN_PROGRESS",
             score: null,
             totalPoints,
-            startedAt: new Date(),
+            startedAt,
+            durationMinutesSnapshot: durationSnapshot,
+            expiresAt,
           },
-          select: { id: true, status: true, startedAt: true, totalPoints: true },
+          select: {
+            id: true,
+            status: true,
+            startedAt: true,
+            totalPoints: true,
+            answers: true,
+            durationMinutesSnapshot: true,
+            expiresAt: true,
+            lastSavedAt: true,
+          },
+        });
+        logger.info("quiz_attempt_started", {
+          studentId,
+          quizId,
+          attemptId: attempt.id,
+          configuredDurationMinutes: quiz.durationMinutes,
+          durationMinutesSnapshot: durationSnapshot,
+          startedAt: startedAt.toISOString(),
+          expiresAt: expiresAt.toISOString(),
         });
       } catch (err) {
         // Concurrency: a simultaneous start won the @@unique([quizId,studentId])
@@ -280,7 +380,19 @@ export class AttemptsService {
             select: { id: true, status: true, startedAt: true, totalPoints: true },
           });
           if (raced && raced.status === "IN_PROGRESS") {
-            attempt = raced;
+            attempt = await prisma.quizAttempt.findFirst({
+              where: { id: raced.id },
+              select: {
+                id: true,
+                status: true,
+                startedAt: true,
+                totalPoints: true,
+                answers: true,
+                durationMinutesSnapshot: true,
+                expiresAt: true,
+                lastSavedAt: true,
+              },
+            });
           } else {
             throw new AppError("You have already attempted this quiz", 409);
           }
@@ -288,6 +400,10 @@ export class AttemptsService {
           throw err;
         }
       }
+    }
+
+    if (!attempt) {
+      throw new AppError("Failed to start attempt", 500);
     }
 
     const safeQuestions: SafeQuestion[] = questions.map((q) => ({
@@ -299,16 +415,71 @@ export class AttemptsService {
       sortOrder: q.sortOrder,
     }));
 
+    const snapshot =
+      attempt.durationMinutesSnapshot ?? durationSnapshot;
+    const expiresAt =
+      attempt.expiresAt ?? computeExpiresAt(attempt.startedAt, snapshot);
+    const savedAnswers = draftItemsToArray(attempt.answers);
+
     return {
       attemptId: attempt.id,
       quizId: quiz.id,
       status: attempt.status,
-      startedAt: attempt.startedAt,
       totalPoints: attempt.totalPoints,
-      durationMinutes: quiz.durationMinutes,
+      ...buildAttemptTimingResponse(attempt.startedAt, snapshot, expiresAt),
+      savedAnswers,
+      lastSavedAt: attempt.lastSavedAt?.toISOString() ?? null,
       quiz: { id: quiz.id, title: quiz.title, description: quiz.description },
       questions: safeQuestions,
     };
+  }
+
+  /** PATCH /api/attempts/:attemptId/answers — persist draft answers before submit. */
+  public async saveDraftAnswers(
+    attemptId: string,
+    studentId: string,
+    input: SaveDraftAnswersInput,
+  ) {
+    const attempt = await this.loadOwnedInProgressAttempt(attemptId, studentId);
+
+    if (isAttemptExpired(attempt.expiresAt)) {
+      throw new AppError("Attempt time has expired", 409, "ATTEMPT_EXPIRED");
+    }
+
+    const questions = await prisma.question.findMany({
+      where: { quizId: attempt.quizId },
+      select: { id: true, type: true, options: true, points: true, sortOrder: true },
+    });
+    const questionIds = new Set(questions.map((q) => q.id));
+
+    for (const item of input.answers) {
+      if (!questionIds.has(item.questionId)) {
+        throw new AppError("Question does not belong to this quiz", 400, "INVALID_QUESTION");
+      }
+      const q = questions.find((x) => x.id === item.questionId)!;
+      if (item.answer.trim().length > 0) {
+        validateAnswerFormat(q as GradableQuestion, item.answer);
+      }
+    }
+
+    const merged = mergeDraftItems(attempt.answers, input.answers);
+    const lastSavedAt = new Date();
+    await prisma.quizAttempt.update({
+      where: { id: attemptId },
+      data: {
+        answers: merged as unknown as Prisma.InputJsonValue,
+        lastSavedAt,
+      },
+    });
+
+    logger.info("quiz_answer_draft_saved", {
+      studentId,
+      quizId: attempt.quizId,
+      attemptId,
+      answeredQuestionCount: merged.items.length,
+    });
+
+    return { lastSavedAt: lastSavedAt.toISOString(), savedCount: merged.items.length };
   }
 
   /** POST /api/attempts/:attemptId/submit — submit all answers, auto-grade. */
@@ -317,6 +488,38 @@ export class AttemptsService {
     studentId: string,
     input: SubmitAttemptInput,
   ) {
+    const finished = await prisma.quizAttempt.findUnique({
+      where: { id: attemptId },
+      select: { id: true, studentId: true, status: true },
+    });
+    if (!finished) {
+      throw new AppError("Attempt not found", 404, "ATTEMPT_NOT_FOUND");
+    }
+    if (finished.studentId !== studentId) {
+      throw new AppError("This attempt belongs to another student", 403);
+    }
+    if (finished.status !== "IN_PROGRESS") {
+      logger.info("quiz_attempt_already_finalized", {
+        studentId,
+        attemptId,
+        status: finished.status,
+      });
+      return this.getAttemptResults(attemptId, studentId);
+    }
+
+    const attempt = await this.loadOwnedInProgressAttempt(attemptId, studentId);
+    const timedOut = isAttemptExpired(attempt.expiresAt);
+    const reason: AttemptSubmissionReason = timedOut ? "TIME_EXPIRED" : "MANUAL";
+
+    return this.finalizeInProgressAttempt(
+      attemptId,
+      studentId,
+      input,
+      reason,
+    );
+  }
+
+  private async loadOwnedInProgressAttempt(attemptId: string, studentId: string) {
     const attempt = await prisma.quizAttempt.findUnique({
       where: { id: attemptId },
       select: {
@@ -324,21 +527,22 @@ export class AttemptsService {
         studentId: true,
         status: true,
         quizId: true,
+        answers: true,
+        expiresAt: true,
         quiz: { select: { status: true, chapterId: true, title: true } },
       },
     });
 
-    if (!attempt) throw new AppError("Attempt not found", 404);
+    if (!attempt) {
+      throw new AppError("Attempt not found", 404, "ATTEMPT_NOT_FOUND");
+    }
     if (attempt.studentId !== studentId) {
       throw new AppError("This attempt belongs to another student", 403);
     }
     if (attempt.status !== "IN_PROGRESS") {
-      throw new AppError("Attempt has already been submitted", 409);
+      throw new AppError("Attempt has already been submitted", 409, "ATTEMPT_ALREADY_SUBMITTED");
     }
-    if (attempt.quiz.status !== "PUBLISHED") {
-      throw new AppError("Quiz is no longer available", 409);
-    }
-    if (!attempt.quiz.chapterId) {
+    if (attempt.quiz.status !== "PUBLISHED" || !attempt.quiz.chapterId) {
       throw new AppError("Quiz is no longer available", 409);
     }
 
@@ -350,6 +554,55 @@ export class AttemptsService {
     });
     if (!enrollment || enrollment.status !== "ACTIVE") {
       throw new AppError("You are not enrolled in this chapter", 403);
+    }
+
+    return attempt;
+  }
+
+  private async finalizeInProgressAttempt(
+    attemptId: string,
+    studentId: string,
+    input: SubmitAttemptInput | null,
+    submissionReason: AttemptSubmissionReason,
+  ) {
+    const attempt = await prisma.quizAttempt.findUnique({
+      where: { id: attemptId },
+      select: {
+        id: true,
+        studentId: true,
+        status: true,
+        quizId: true,
+        answers: true,
+        expiresAt: true,
+        quiz: { select: { status: true, chapterId: true, title: true } },
+      },
+    });
+
+    if (!attempt) {
+      throw new AppError("Attempt not found", 404, "ATTEMPT_NOT_FOUND");
+    }
+    if (attempt.studentId !== studentId) {
+      throw new AppError("This attempt belongs to another student", 403);
+    }
+    if (attempt.status !== "IN_PROGRESS") {
+      logger.info("quiz_attempt_already_finalized", {
+        studentId,
+        attemptId,
+        status: attempt.status,
+      });
+      return this.getAttemptResults(attemptId, studentId);
+    }
+
+    const timedOut =
+      submissionReason === "TIME_EXPIRED" ||
+      isAttemptExpired(attempt.expiresAt);
+    const effectiveReason: AttemptSubmissionReason = timedOut
+      ? "TIME_EXPIRED"
+      : "MANUAL";
+
+    if (effectiveReason === "TIME_EXPIRED") {
+      logger.info("quiz_timer_expired", { studentId, attemptId, quizId: attempt.quizId });
+      logger.info("quiz_auto_submit_started", { studentId, attemptId, quizId: attempt.quizId });
     }
 
     const questions = await prisma.question.findMany({
@@ -366,30 +619,46 @@ export class AttemptsService {
       },
     });
 
-    // Exact set-equality: every quiz question answered, nothing extra/unknown.
-    const questionIds = new Set(questions.map((q) => q.id));
-    const submittedIds = new Set(input.answers.map((a) => a.questionId));
-    if (
-      submittedIds.size !== questionIds.size ||
-      [...submittedIds].some((id) => !questionIds.has(id))
-    ) {
-      throw new AppError(
-        "All quiz questions must be answered exactly once",
-        400,
-      );
+    const draftMap = parseDraftAnswers(attempt.answers);
+    const submittedMap = new Map(
+      (input?.answers ?? []).map((a) => [a.questionId, a.answer]),
+    );
+    const answerById = new Map<string, string>();
+
+    for (const q of questions) {
+      const fromSubmit = submittedMap.get(q.id);
+      const fromDraft = draftMap.get(q.id);
+      const raw = fromSubmit ?? fromDraft ?? "";
+      answerById.set(q.id, raw);
     }
 
-    const answerById = new Map(input.answers.map((a) => [a.questionId, a.answer]));
-
-    // Per-answer format validation (throws 400 on invalid MCQ option / TF value).
-    for (const q of questions) {
-      validateAnswerFormat(q as GradableQuestion, answerById.get(q.id) ?? "");
+    if (effectiveReason === "MANUAL") {
+      const questionIds = new Set(questions.map((q) => q.id));
+      const submittedIds = new Set((input?.answers ?? []).map((a) => a.questionId));
+      if (
+        submittedIds.size !== questionIds.size ||
+        [...submittedIds].some((id) => !questionIds.has(id))
+      ) {
+        throw new AppError(
+          "All quiz questions must be answered exactly once",
+          400,
+        );
+      }
+      for (const q of questions) {
+        validateAnswerFormat(q as GradableQuestion, answerById.get(q.id) ?? "");
+      }
+    } else {
+      for (const q of questions) {
+        const ans = (answerById.get(q.id) ?? "").trim();
+        if (ans.length > 0) {
+          validateAnswerFormat(q as GradableQuestion, ans);
+        }
+      }
     }
 
     const outcome = gradeAttempt(questions as GradableQuestion[], answerById);
     const status = outcome.isFinal ? "GRADED" : "COMPLETED";
 
-    // Atomic, conditional update — only a still-IN_PROGRESS attempt is written.
     const updated = await prisma.quizAttempt.updateMany({
       where: { id: attemptId, status: "IN_PROGRESS" },
       data: {
@@ -398,11 +667,32 @@ export class AttemptsService {
         totalPoints: outcome.totalPoints,
         status,
         completedAt: new Date(),
+        submissionReason: effectiveReason,
       },
     });
     if (updated.count === 0) {
-      throw new AppError("Attempt has already been submitted", 409);
+      logger.info("quiz_attempt_already_finalized", { studentId, attemptId });
+      return this.getAttemptResults(attemptId, studentId);
     }
+
+    if (effectiveReason === "TIME_EXPIRED") {
+      logger.info("quiz_auto_submit_completed", {
+        studentId,
+        attemptId,
+        quizId: attempt.quizId,
+        answeredQuestionCount: [...answerById.values()].filter((a) => a.trim()).length,
+        unansweredQuestionCount: questions.length - [...answerById.values()].filter((a) => a.trim()).length,
+      });
+    } else {
+      logger.info("quiz_manual_submit_completed", { studentId, attemptId, quizId: attempt.quizId });
+    }
+    logger.info("quiz_attempt_finalized", {
+      studentId,
+      attemptId,
+      quizId: attempt.quizId,
+      submissionReason: effectiveReason,
+      status,
+    });
 
     return this.toSubmissionResponse(
       attemptId,
@@ -528,7 +818,7 @@ export class AttemptsService {
    * the results page uses one type for both flows (SCRUM-423).
    */
   public async getAttemptResults(attemptId: string, studentId: string) {
-    const attempt = await prisma.quizAttempt.findUnique({
+    let attempt = await prisma.quizAttempt.findUnique({
       where: { id: attemptId },
       select: {
         id: true,
@@ -545,7 +835,34 @@ export class AttemptsService {
       throw new AppError("This attempt belongs to another student", 403);
     }
     if (attempt.status === "IN_PROGRESS") {
-      throw new AppError("Attempt has not been submitted yet", 409);
+      const row = await prisma.quizAttempt.findUnique({
+        where: { id: attemptId },
+        select: { expiresAt: true },
+      });
+      if (isAttemptExpired(row?.expiresAt)) {
+        await this.finalizeInProgressAttempt(
+          attemptId,
+          studentId,
+          null,
+          "TIME_EXPIRED",
+        );
+        attempt = await prisma.quizAttempt.findUnique({
+          where: { id: attemptId },
+          select: {
+            id: true,
+            studentId: true,
+            quizId: true,
+            status: true,
+            answers: true,
+            quiz: { select: { title: true } },
+          },
+        });
+        if (!attempt || attempt.status === "IN_PROGRESS") {
+          throw new AppError("Attempt has not been submitted yet", 409);
+        }
+      } else {
+        throw new AppError("Attempt has not been submitted yet", 409, "ATTEMPT_NOT_STARTED");
+      }
     }
 
     const questions = await prisma.question.findMany({

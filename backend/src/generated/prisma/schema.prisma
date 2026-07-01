@@ -308,19 +308,23 @@ model Question {
 }
 
 model QuizAttempt {
-  id          String        @id @default(uuid())
-  quizId      String
-  studentId   String
-  answers     Json
-  score       Float?
-  totalPoints Int           @default(0)
-  status      AttemptStatus @default(IN_PROGRESS)
-  startedAt   DateTime      @default(now())
-  completedAt DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  quiz        Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  student     User          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id                      String                   @id @default(uuid())
+  quizId                  String
+  studentId               String
+  answers                 Json
+  score                   Float?
+  totalPoints             Int                      @default(0)
+  status                  AttemptStatus            @default(IN_PROGRESS)
+  startedAt               DateTime                 @default(now())
+  completedAt             DateTime?
+  durationMinutesSnapshot Int?                     @map("duration_minutes_snapshot")
+  expiresAt               DateTime?                @map("expires_at")
+  submissionReason        AttemptSubmissionReason? @map("submission_reason")
+  lastSavedAt             DateTime?                @map("last_saved_at")
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  quiz                    Quiz                     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student                 User                     @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([quizId, studentId])
   @@index([studentId])
@@ -375,6 +379,11 @@ enum AttemptStatus {
   IN_PROGRESS
   COMPLETED
   GRADED
+}
+
+enum AttemptSubmissionReason {
+  MANUAL
+  TIME_EXPIRED
 }
 
 enum OtpType {

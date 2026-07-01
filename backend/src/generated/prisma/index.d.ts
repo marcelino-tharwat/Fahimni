@@ -169,6 +169,14 @@ export const AttemptStatus: {
 export type AttemptStatus = (typeof AttemptStatus)[keyof typeof AttemptStatus]
 
 
+export const AttemptSubmissionReason: {
+  MANUAL: 'MANUAL',
+  TIME_EXPIRED: 'TIME_EXPIRED'
+};
+
+export type AttemptSubmissionReason = (typeof AttemptSubmissionReason)[keyof typeof AttemptSubmissionReason]
+
+
 export const OtpType: {
   EMAIL_VERIFICATION: 'EMAIL_VERIFICATION',
   PASSWORD_RESET: 'PASSWORD_RESET'
@@ -242,6 +250,10 @@ export const QuizStatus: typeof $Enums.QuizStatus
 export type AttemptStatus = $Enums.AttemptStatus
 
 export const AttemptStatus: typeof $Enums.AttemptStatus
+
+export type AttemptSubmissionReason = $Enums.AttemptSubmissionReason
+
+export const AttemptSubmissionReason: typeof $Enums.AttemptSubmissionReason
 
 export type OtpType = $Enums.OtpType
 
@@ -23161,11 +23173,13 @@ export namespace Prisma {
   export type QuizAttemptAvgAggregateOutputType = {
     score: number | null
     totalPoints: number | null
+    durationMinutesSnapshot: number | null
   }
 
   export type QuizAttemptSumAggregateOutputType = {
     score: number | null
     totalPoints: number | null
+    durationMinutesSnapshot: number | null
   }
 
   export type QuizAttemptMinAggregateOutputType = {
@@ -23177,6 +23191,10 @@ export namespace Prisma {
     status: $Enums.AttemptStatus | null
     startedAt: Date | null
     completedAt: Date | null
+    durationMinutesSnapshot: number | null
+    expiresAt: Date | null
+    submissionReason: $Enums.AttemptSubmissionReason | null
+    lastSavedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -23190,6 +23208,10 @@ export namespace Prisma {
     status: $Enums.AttemptStatus | null
     startedAt: Date | null
     completedAt: Date | null
+    durationMinutesSnapshot: number | null
+    expiresAt: Date | null
+    submissionReason: $Enums.AttemptSubmissionReason | null
+    lastSavedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -23204,6 +23226,10 @@ export namespace Prisma {
     status: number
     startedAt: number
     completedAt: number
+    durationMinutesSnapshot: number
+    expiresAt: number
+    submissionReason: number
+    lastSavedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -23213,11 +23239,13 @@ export namespace Prisma {
   export type QuizAttemptAvgAggregateInputType = {
     score?: true
     totalPoints?: true
+    durationMinutesSnapshot?: true
   }
 
   export type QuizAttemptSumAggregateInputType = {
     score?: true
     totalPoints?: true
+    durationMinutesSnapshot?: true
   }
 
   export type QuizAttemptMinAggregateInputType = {
@@ -23229,6 +23257,10 @@ export namespace Prisma {
     status?: true
     startedAt?: true
     completedAt?: true
+    durationMinutesSnapshot?: true
+    expiresAt?: true
+    submissionReason?: true
+    lastSavedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -23242,6 +23274,10 @@ export namespace Prisma {
     status?: true
     startedAt?: true
     completedAt?: true
+    durationMinutesSnapshot?: true
+    expiresAt?: true
+    submissionReason?: true
+    lastSavedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -23256,6 +23292,10 @@ export namespace Prisma {
     status?: true
     startedAt?: true
     completedAt?: true
+    durationMinutesSnapshot?: true
+    expiresAt?: true
+    submissionReason?: true
+    lastSavedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -23357,6 +23397,10 @@ export namespace Prisma {
     status: $Enums.AttemptStatus
     startedAt: Date
     completedAt: Date | null
+    durationMinutesSnapshot: number | null
+    expiresAt: Date | null
+    submissionReason: $Enums.AttemptSubmissionReason | null
+    lastSavedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: QuizAttemptCountAggregateOutputType | null
@@ -23390,6 +23434,10 @@ export namespace Prisma {
     status?: boolean
     startedAt?: boolean
     completedAt?: boolean
+    durationMinutesSnapshot?: boolean
+    expiresAt?: boolean
+    submissionReason?: boolean
+    lastSavedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -23406,6 +23454,10 @@ export namespace Prisma {
     status?: boolean
     startedAt?: boolean
     completedAt?: boolean
+    durationMinutesSnapshot?: boolean
+    expiresAt?: boolean
+    submissionReason?: boolean
+    lastSavedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -23422,6 +23474,10 @@ export namespace Prisma {
     status?: boolean
     startedAt?: boolean
     completedAt?: boolean
+    durationMinutesSnapshot?: boolean
+    expiresAt?: boolean
+    submissionReason?: boolean
+    lastSavedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
@@ -23438,11 +23494,15 @@ export namespace Prisma {
     status?: boolean
     startedAt?: boolean
     completedAt?: boolean
+    durationMinutesSnapshot?: boolean
+    expiresAt?: boolean
+    submissionReason?: boolean
+    lastSavedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type QuizAttemptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "studentId" | "answers" | "score" | "totalPoints" | "status" | "startedAt" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["quizAttempt"]>
+  export type QuizAttemptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "quizId" | "studentId" | "answers" | "score" | "totalPoints" | "status" | "startedAt" | "completedAt" | "durationMinutesSnapshot" | "expiresAt" | "submissionReason" | "lastSavedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["quizAttempt"]>
   export type QuizAttemptInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quiz?: boolean | QuizDefaultArgs<ExtArgs>
     student?: boolean | UserDefaultArgs<ExtArgs>
@@ -23472,6 +23532,10 @@ export namespace Prisma {
       status: $Enums.AttemptStatus
       startedAt: Date
       completedAt: Date | null
+      durationMinutesSnapshot: number | null
+      expiresAt: Date | null
+      submissionReason: $Enums.AttemptSubmissionReason | null
+      lastSavedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["quizAttempt"]>
@@ -23908,6 +23972,10 @@ export namespace Prisma {
     readonly status: FieldRef<"QuizAttempt", 'AttemptStatus'>
     readonly startedAt: FieldRef<"QuizAttempt", 'DateTime'>
     readonly completedAt: FieldRef<"QuizAttempt", 'DateTime'>
+    readonly durationMinutesSnapshot: FieldRef<"QuizAttempt", 'Int'>
+    readonly expiresAt: FieldRef<"QuizAttempt", 'DateTime'>
+    readonly submissionReason: FieldRef<"QuizAttempt", 'AttemptSubmissionReason'>
+    readonly lastSavedAt: FieldRef<"QuizAttempt", 'DateTime'>
     readonly createdAt: FieldRef<"QuizAttempt", 'DateTime'>
     readonly updatedAt: FieldRef<"QuizAttempt", 'DateTime'>
   }
@@ -27993,6 +28061,10 @@ export namespace Prisma {
     status: 'status',
     startedAt: 'startedAt',
     completedAt: 'completedAt',
+    durationMinutesSnapshot: 'durationMinutesSnapshot',
+    expiresAt: 'expiresAt',
+    submissionReason: 'submissionReason',
+    lastSavedAt: 'lastSavedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -28311,6 +28383,20 @@ export namespace Prisma {
    * Reference to a field of type 'AttemptStatus[]'
    */
   export type ListEnumAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttemptStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'AttemptSubmissionReason'
+   */
+  export type EnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttemptSubmissionReason'>
+    
+
+
+  /**
+   * Reference to a field of type 'AttemptSubmissionReason[]'
+   */
+  export type ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttemptSubmissionReason[]'>
     
 
 
@@ -29704,6 +29790,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
     startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
+    durationMinutesSnapshot?: IntNullableFilter<"QuizAttempt"> | number | null
+    expiresAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
+    submissionReason?: EnumAttemptSubmissionReasonNullableFilter<"QuizAttempt"> | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
@@ -29720,6 +29810,10 @@ export namespace Prisma {
     status?: SortOrder
     startedAt?: SortOrder
     completedAt?: SortOrderInput | SortOrder
+    durationMinutesSnapshot?: SortOrderInput | SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    submissionReason?: SortOrderInput | SortOrder
+    lastSavedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quiz?: QuizOrderByWithRelationInput
@@ -29740,6 +29834,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
     startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
+    durationMinutesSnapshot?: IntNullableFilter<"QuizAttempt"> | number | null
+    expiresAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
+    submissionReason?: EnumAttemptSubmissionReasonNullableFilter<"QuizAttempt"> | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     quiz?: XOR<QuizScalarRelationFilter, QuizWhereInput>
@@ -29756,6 +29854,10 @@ export namespace Prisma {
     status?: SortOrder
     startedAt?: SortOrder
     completedAt?: SortOrderInput | SortOrder
+    durationMinutesSnapshot?: SortOrderInput | SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    submissionReason?: SortOrderInput | SortOrder
+    lastSavedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: QuizAttemptCountOrderByAggregateInput
@@ -29778,6 +29880,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusWithAggregatesFilter<"QuizAttempt"> | $Enums.AttemptStatus
     startedAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
     completedAt?: DateTimeNullableWithAggregatesFilter<"QuizAttempt"> | Date | string | null
+    durationMinutesSnapshot?: IntNullableWithAggregatesFilter<"QuizAttempt"> | number | null
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"QuizAttempt"> | Date | string | null
+    submissionReason?: EnumAttemptSubmissionReasonNullableWithAggregatesFilter<"QuizAttempt"> | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: DateTimeNullableWithAggregatesFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"QuizAttempt"> | Date | string
   }
@@ -31476,6 +31582,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quiz: QuizCreateNestedOneWithoutAttemptsInput
@@ -31492,6 +31602,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31504,6 +31618,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quiz?: QuizUpdateOneRequiredWithoutAttemptsNestedInput
@@ -31520,6 +31638,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31534,6 +31656,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31546,6 +31672,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31560,6 +31690,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -33202,6 +33336,13 @@ export namespace Prisma {
     not?: NestedEnumAttemptStatusFilter<$PrismaModel> | $Enums.AttemptStatus
   }
 
+  export type EnumAttemptSubmissionReasonNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptSubmissionReason | EnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    in?: $Enums.AttemptSubmissionReason[] | ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.AttemptSubmissionReason[] | ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel> | $Enums.AttemptSubmissionReason | null
+  }
+
   export type QuizAttemptQuizIdStudentIdCompoundUniqueInput = {
     quizId: string
     studentId: string
@@ -33217,6 +33358,10 @@ export namespace Prisma {
     status?: SortOrder
     startedAt?: SortOrder
     completedAt?: SortOrder
+    durationMinutesSnapshot?: SortOrder
+    expiresAt?: SortOrder
+    submissionReason?: SortOrder
+    lastSavedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -33224,6 +33369,7 @@ export namespace Prisma {
   export type QuizAttemptAvgOrderByAggregateInput = {
     score?: SortOrder
     totalPoints?: SortOrder
+    durationMinutesSnapshot?: SortOrder
   }
 
   export type QuizAttemptMaxOrderByAggregateInput = {
@@ -33235,6 +33381,10 @@ export namespace Prisma {
     status?: SortOrder
     startedAt?: SortOrder
     completedAt?: SortOrder
+    durationMinutesSnapshot?: SortOrder
+    expiresAt?: SortOrder
+    submissionReason?: SortOrder
+    lastSavedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -33248,6 +33398,10 @@ export namespace Prisma {
     status?: SortOrder
     startedAt?: SortOrder
     completedAt?: SortOrder
+    durationMinutesSnapshot?: SortOrder
+    expiresAt?: SortOrder
+    submissionReason?: SortOrder
+    lastSavedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -33255,6 +33409,7 @@ export namespace Prisma {
   export type QuizAttemptSumOrderByAggregateInput = {
     score?: SortOrder
     totalPoints?: SortOrder
+    durationMinutesSnapshot?: SortOrder
   }
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -33281,6 +33436,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAttemptStatusFilter<$PrismaModel>
     _max?: NestedEnumAttemptStatusFilter<$PrismaModel>
+  }
+
+  export type EnumAttemptSubmissionReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptSubmissionReason | EnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    in?: $Enums.AttemptSubmissionReason[] | ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.AttemptSubmissionReason[] | ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumAttemptSubmissionReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.AttemptSubmissionReason | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
+    _max?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
   }
 
   export type UserNullableScalarRelationFilter = {
@@ -34907,6 +35072,10 @@ export namespace Prisma {
     set?: $Enums.AttemptStatus
   }
 
+  export type NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput = {
+    set?: $Enums.AttemptSubmissionReason | null
+  }
+
   export type QuizUpdateOneRequiredWithoutAttemptsNestedInput = {
     create?: XOR<QuizCreateWithoutAttemptsInput, QuizUncheckedCreateWithoutAttemptsInput>
     connectOrCreate?: QuizCreateOrConnectWithoutAttemptsInput
@@ -35478,6 +35647,13 @@ export namespace Prisma {
     not?: NestedEnumAttemptStatusFilter<$PrismaModel> | $Enums.AttemptStatus
   }
 
+  export type NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptSubmissionReason | EnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    in?: $Enums.AttemptSubmissionReason[] | ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.AttemptSubmissionReason[] | ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel> | $Enums.AttemptSubmissionReason | null
+  }
+
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -35502,6 +35678,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAttemptStatusFilter<$PrismaModel>
     _max?: NestedEnumAttemptStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAttemptSubmissionReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AttemptSubmissionReason | EnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    in?: $Enums.AttemptSubmissionReason[] | ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.AttemptSubmissionReason[] | ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumAttemptSubmissionReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.AttemptSubmissionReason | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
+    _max?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumAiMessageRoleFilter<$PrismaModel = never> = {
@@ -35734,6 +35920,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quiz: QuizCreateNestedOneWithoutAttemptsInput
@@ -35748,6 +35938,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -36196,6 +36390,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFilter<"QuizAttempt"> | $Enums.AttemptStatus
     startedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     completedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
+    durationMinutesSnapshot?: IntNullableFilter<"QuizAttempt"> | number | null
+    expiresAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
+    submissionReason?: EnumAttemptSubmissionReasonNullableFilter<"QuizAttempt"> | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: DateTimeNullableFilter<"QuizAttempt"> | Date | string | null
     createdAt?: DateTimeFilter<"QuizAttempt"> | Date | string
     updatedAt?: DateTimeFilter<"QuizAttempt"> | Date | string
   }
@@ -38751,6 +38949,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: UserCreateNestedOneWithoutQuizAttemptsInput
@@ -38765,6 +38967,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -39943,6 +40149,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -40209,6 +40419,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quiz?: QuizUpdateOneRequiredWithoutAttemptsNestedInput
@@ -40223,6 +40437,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -40236,6 +40454,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -40884,6 +41106,10 @@ export namespace Prisma {
     status?: $Enums.AttemptStatus
     startedAt?: Date | string
     completedAt?: Date | string | null
+    durationMinutesSnapshot?: number | null
+    expiresAt?: Date | string | null
+    submissionReason?: $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -40935,6 +41161,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: UserUpdateOneRequiredWithoutQuizAttemptsNestedInput
@@ -40949,6 +41179,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -40962,6 +41196,10 @@ export namespace Prisma {
     status?: EnumAttemptStatusFieldUpdateOperationsInput | $Enums.AttemptStatus
     startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMinutesSnapshot?: NullableIntFieldUpdateOperationsInput | number | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionReason?: NullableEnumAttemptSubmissionReasonFieldUpdateOperationsInput | $Enums.AttemptSubmissionReason | null
+    lastSavedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

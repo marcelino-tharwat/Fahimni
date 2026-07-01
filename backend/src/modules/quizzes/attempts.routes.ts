@@ -5,6 +5,7 @@ import { authorizeMiddleware } from "../../shared/middlewares/authorize.middlewa
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import {
   submitAttemptSchema,
+  saveDraftAnswersSchema,
   gradeEssaysSchema,
 } from "./attempts.validation.js";
 
@@ -12,6 +13,15 @@ const controller = new AttemptsController();
 
 // Mounted at /api/attempts
 const attemptsRouter = Router();
+
+// Student persists draft answers while the attempt is in progress.
+attemptsRouter.patch(
+  "/:attemptId/answers",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  validateRequest(saveDraftAnswersSchema),
+  controller.saveDraftAnswers,
+);
 
 // Student submits all answers for their own attempt.
 attemptsRouter.post(

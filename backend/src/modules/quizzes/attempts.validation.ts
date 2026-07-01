@@ -10,22 +10,43 @@ const uuid = z
 const MAX_ANSWER_LENGTH = 5000;
 const MAX_FEEDBACK_LENGTH = 2000;
 
+const answerEntrySchema = z
+  .object({
+    questionId: uuid,
+    answer: z
+      .string()
+      .trim()
+      .min(1, "Answer must not be blank")
+      .max(MAX_ANSWER_LENGTH, "Answer is too long"),
+  })
+  .strict();
+
+const draftAnswerEntrySchema = z
+  .object({
+    questionId: uuid,
+    answer: z.string().max(MAX_ANSWER_LENGTH, "Answer is too long"),
+  })
+  .strict();
+
 /** POST /api/attempts/:attemptId/submit */
 export const submitAttemptSchema = z
   .object({
     answers: z
-      .array(
-        z
-          .object({
-            questionId: uuid,
-            answer: z
-              .string()
-              .trim()
-              .min(1, "Answer must not be blank")
-              .max(MAX_ANSWER_LENGTH, "Answer is too long"),
-          })
-          .strict(),
-      )
+      .array(answerEntrySchema)
+      .default([])
+      .refine(
+        (arr) => new Set(arr.map((a) => a.questionId)).size === arr.length,
+        "Duplicate question IDs are not allowed",
+      ),
+    submissionReason: z.enum(["MANUAL", "TIME_EXPIRED"]).optional(),
+  })
+  .strict();
+
+/** PATCH /api/attempts/:attemptId/answers — persist draft answers while in progress. */
+export const saveDraftAnswersSchema = z
+  .object({
+    answers: z
+      .array(draftAnswerEntrySchema)
       .nonempty("answers must contain at least one entry")
       .refine(
         (arr) => new Set(arr.map((a) => a.questionId)).size === arr.length,
@@ -71,5 +92,6 @@ export const resultsQuerySchema = z
   .strip();
 
 export type SubmitAttemptInput = z.infer<typeof submitAttemptSchema>;
+export type SaveDraftAnswersInput = z.infer<typeof saveDraftAnswersSchema>;
 export type GradeEssaysInput = z.infer<typeof gradeEssaysSchema>;
 export type ResultsQueryInput = z.infer<typeof resultsQuerySchema>;

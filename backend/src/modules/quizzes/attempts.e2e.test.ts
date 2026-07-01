@@ -70,7 +70,7 @@ async function createUser(role: Role): Promise<{ id: string; email: string }> {
   const id = randomUUID();
   const email = `${uniq("user")}@e2e.test`;
   mobileSeq += 1;
-  const mobile = `019${String(mobileSeq).padStart(8, "0")}`;
+  const mobile = `019${randomUUID().replace(/-/g, "").slice(0, 8)}`;
   await prisma.user.create({
     data: { id, email, fullName: `E2E ${role}`, mobile, password: pwHash, role, status: "ACTIVE" },
   });
@@ -106,10 +106,16 @@ interface QuizFixture {
   essayId: string;
 }
 
-async function createDraftQuiz(teacherId: string): Promise<QuizFixture> {
+async function createDraftQuiz(teacherId: string, durationMinutes = 30): Promise<QuizFixture> {
   const quizId = randomUUID();
   await prisma.quiz.create({
-    data: { id: quizId, title: uniq("quiz"), createdBy: teacherId, status: "DRAFT" },
+    data: {
+      id: quizId,
+      title: uniq("quiz"),
+      createdBy: teacherId,
+      status: "DRAFT",
+      durationMinutes,
+    },
   });
   owned.quizIds.push(quizId);
 
@@ -260,9 +266,16 @@ describe("STORY-48 — full HTTP + DB journey", () => {
     const startData = start.json?.data as {
       attemptId: string;
       status: string;
+      durationMinutes: number;
+      startedAt: string;
+      expiresAt: string;
+      serverTime: string;
       questions: Array<{ id: string }>;
     };
     expect(startData.status).toBe("IN_PROGRESS");
+    expect(startData.durationMinutes).toBe(30);
+    expect(startData.expiresAt).toBeTruthy();
+    expect(startData.serverTime).toBeTruthy();
     expect(startData.questions).toHaveLength(3);
     expect(JSON.stringify(start.json)).not.toContain("correctAnswer");
     const attemptId = startData.attemptId;
@@ -284,7 +297,7 @@ describe("STORY-48 — full HTTP + DB journey", () => {
     const afterPartial = await prisma.quizAttempt.findUniqueOrThrow({ where: { id: attemptId } });
     expect(afterPartial.status).toBe("IN_PROGRESS");
     expect(afterPartial.score).toBeNull();
-    expect(Array.isArray(afterPartial.answers) ? (afterPartial.answers as unknown[]).length : -1).toBe(0);
+    expect((afterPartial.answers as { kind?: string }).kind).toBe("draft");
 
     // ── Complete submit (correct MCQ, incorrect TF, essay) ──
     const submit = await http("POST", `/api/attempts/${attemptId}/submit`, {
@@ -342,7 +355,7 @@ describe("STORY-48 — full HTTP + DB journey", () => {
     const afterSubmit = await prisma.quizAttempt.findUniqueOrThrow({ where: { id: attemptId } });
     expect(afterSubmit.completedAt).not.toBeNull();
 
-    // ── Duplicate submit ──
+    // ── Duplicate submit is idempotent (returns existing result) ──
     const dup = await http("POST", `/api/attempts/${attemptId}/submit`, {
       cookie: s1Cookie,
       body: {
@@ -353,7 +366,8 @@ describe("STORY-48 — full HTTP + DB journey", () => {
         ],
       },
     });
-    expect(dup.status).toBe(409);
+    expect(dup.status).toBe(200);
+    expect((dup.json?.data as { score: number }).score).toBe(1);
     const unchanged = await prisma.quizAttempt.findUniqueOrThrow({ where: { id: attemptId } });
     expect(unchanged.score).toBe(1); // not overwritten
 
@@ -467,7 +481,7 @@ describe("STORY-48 — concurrency", () => {
       http("POST", `/api/attempts/${attemptId}/submit`, { cookie: s1Cookie, body }),
     ]);
     const statuses = [a.status, b.status].sort();
-    expect(statuses).toEqual([200, 409]);
+    expect(statuses).toEqual([200, 200]);
 
     const attempt = await prisma.quizAttempt.findUniqueOrThrow({ where: { id: attemptId } });
     expect(["COMPLETED", "GRADED"]).toContain(attempt.status);
