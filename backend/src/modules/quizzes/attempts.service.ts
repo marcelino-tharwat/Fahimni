@@ -83,7 +83,7 @@ export class AttemptsService {
 
     const attempts = await prisma.quizAttempt.findMany({
       where: { studentId, quizId: { in: allQuizIds } },
-      select: { quizId: true, status: true, score: true, totalPoints: true },
+      select: { id: true, quizId: true, status: true, score: true, totalPoints: true },
     });
     const attemptByQuiz = new Map(attempts.map((a) => [a.quizId, a]));
 
@@ -129,6 +129,7 @@ export class AttemptsService {
           durationMinutes: q.durationMinutes ?? 30,
           difficulty: "medium" as const,
           status,
+          attemptId: attempt?.id ?? null,
           ...(score !== undefined ? { score } : {}),
           ...(retakeAllowed !== undefined ? { retakeAllowed } : {}),
         };

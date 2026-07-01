@@ -11,6 +11,7 @@ export interface QuizItem {
   status: QuizStatus;
   score?: number;
   retakeAllowed?: boolean;
+  attemptId?: string | null;
 }
 
 export interface ChapterGroup {
