@@ -25,7 +25,7 @@ export function usePromoCodes(params: ListPromoCodesParams) {
 export function useGeneratePromoCode() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => promoCodesApi.generate(),
+    mutationFn: (chapterId: string) => promoCodesApi.generate(chapterId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROMO_CODES_QUERY_KEY });
     },

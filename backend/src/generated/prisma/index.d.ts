@@ -2792,6 +2792,7 @@ export namespace Prisma {
     lessons: number
     quizzes: number
     paymentTransactions: number
+    promoCodes: number
   }
 
   export type ChapterCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2799,6 +2800,7 @@ export namespace Prisma {
     lessons?: boolean | ChapterCountOutputTypeCountLessonsArgs
     quizzes?: boolean | ChapterCountOutputTypeCountQuizzesArgs
     paymentTransactions?: boolean | ChapterCountOutputTypeCountPaymentTransactionsArgs
+    promoCodes?: boolean | ChapterCountOutputTypeCountPromoCodesArgs
   }
 
   // Custom InputTypes
@@ -2838,6 +2840,13 @@ export namespace Prisma {
    */
   export type ChapterCountOutputTypeCountPaymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PaymentTransactionWhereInput
+  }
+
+  /**
+   * ChapterCountOutputType without action
+   */
+  export type ChapterCountOutputTypeCountPromoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PromoCodeWhereInput
   }
 
 
@@ -8019,6 +8028,7 @@ export namespace Prisma {
     lessons?: boolean | Chapter$lessonsArgs<ExtArgs>
     quizzes?: boolean | Chapter$quizzesArgs<ExtArgs>
     paymentTransactions?: boolean | Chapter$paymentTransactionsArgs<ExtArgs>
+    promoCodes?: boolean | Chapter$promoCodesArgs<ExtArgs>
     _count?: boolean | ChapterCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["chapter"]>
 
@@ -8067,6 +8077,7 @@ export namespace Prisma {
     lessons?: boolean | Chapter$lessonsArgs<ExtArgs>
     quizzes?: boolean | Chapter$quizzesArgs<ExtArgs>
     paymentTransactions?: boolean | Chapter$paymentTransactionsArgs<ExtArgs>
+    promoCodes?: boolean | Chapter$promoCodesArgs<ExtArgs>
     _count?: boolean | ChapterCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ChapterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8084,6 +8095,7 @@ export namespace Prisma {
       lessons: Prisma.$LessonPayload<ExtArgs>[]
       quizzes: Prisma.$QuizPayload<ExtArgs>[]
       paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
+      promoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8494,6 +8506,7 @@ export namespace Prisma {
     lessons<T extends Chapter$lessonsArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$lessonsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     quizzes<T extends Chapter$quizzesArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$quizzesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuizPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     paymentTransactions<T extends Chapter$paymentTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    promoCodes<T extends Chapter$promoCodesArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$promoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9026,6 +9039,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * Chapter.promoCodes
+   */
+  export type Chapter$promoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PromoCode
+     */
+    select?: PromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PromoCode
+     */
+    omit?: PromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PromoCodeInclude<ExtArgs> | null
+    where?: PromoCodeWhereInput
+    orderBy?: PromoCodeOrderByWithRelationInput | PromoCodeOrderByWithRelationInput[]
+    cursor?: PromoCodeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PromoCodeScalarFieldEnum | PromoCodeScalarFieldEnum[]
   }
 
   /**
@@ -24034,6 +24071,7 @@ export namespace Prisma {
     usedByStudentId: string | null
     usedAt: Date | null
     createdById: string | null
+    chapterId: string | null
     createdAt: Date | null
     expiresAt: Date | null
   }
@@ -24045,6 +24083,7 @@ export namespace Prisma {
     usedByStudentId: string | null
     usedAt: Date | null
     createdById: string | null
+    chapterId: string | null
     createdAt: Date | null
     expiresAt: Date | null
   }
@@ -24056,6 +24095,7 @@ export namespace Prisma {
     usedByStudentId: number
     usedAt: number
     createdById: number
+    chapterId: number
     createdAt: number
     expiresAt: number
     _all: number
@@ -24069,6 +24109,7 @@ export namespace Prisma {
     usedByStudentId?: true
     usedAt?: true
     createdById?: true
+    chapterId?: true
     createdAt?: true
     expiresAt?: true
   }
@@ -24080,6 +24121,7 @@ export namespace Prisma {
     usedByStudentId?: true
     usedAt?: true
     createdById?: true
+    chapterId?: true
     createdAt?: true
     expiresAt?: true
   }
@@ -24091,6 +24133,7 @@ export namespace Prisma {
     usedByStudentId?: true
     usedAt?: true
     createdById?: true
+    chapterId?: true
     createdAt?: true
     expiresAt?: true
     _all?: true
@@ -24175,6 +24218,7 @@ export namespace Prisma {
     usedByStudentId: string | null
     usedAt: Date | null
     createdById: string
+    chapterId: string
     createdAt: Date
     expiresAt: Date | null
     _count: PromoCodeCountAggregateOutputType | null
@@ -24203,10 +24247,12 @@ export namespace Prisma {
     usedByStudentId?: boolean
     usedAt?: boolean
     createdById?: boolean
+    chapterId?: boolean
     createdAt?: boolean
     expiresAt?: boolean
     usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["promoCode"]>
 
   export type PromoCodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -24216,10 +24262,12 @@ export namespace Prisma {
     usedByStudentId?: boolean
     usedAt?: boolean
     createdById?: boolean
+    chapterId?: boolean
     createdAt?: boolean
     expiresAt?: boolean
     usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["promoCode"]>
 
   export type PromoCodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -24229,10 +24277,12 @@ export namespace Prisma {
     usedByStudentId?: boolean
     usedAt?: boolean
     createdById?: boolean
+    chapterId?: boolean
     createdAt?: boolean
     expiresAt?: boolean
     usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["promoCode"]>
 
   export type PromoCodeSelectScalar = {
@@ -24242,22 +24292,26 @@ export namespace Prisma {
     usedByStudentId?: boolean
     usedAt?: boolean
     createdById?: boolean
+    chapterId?: boolean
     createdAt?: boolean
     expiresAt?: boolean
   }
 
-  export type PromoCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "isUsed" | "usedByStudentId" | "usedAt" | "createdById" | "createdAt" | "expiresAt", ExtArgs["result"]["promoCode"]>
+  export type PromoCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "isUsed" | "usedByStudentId" | "usedAt" | "createdById" | "chapterId" | "createdAt" | "expiresAt", ExtArgs["result"]["promoCode"]>
   export type PromoCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
   }
   export type PromoCodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
   }
   export type PromoCodeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     usedByStudent?: boolean | PromoCode$usedByStudentArgs<ExtArgs>
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    chapter?: boolean | ChapterDefaultArgs<ExtArgs>
   }
 
   export type $PromoCodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24265,6 +24319,7 @@ export namespace Prisma {
     objects: {
       usedByStudent: Prisma.$UserPayload<ExtArgs> | null
       createdBy: Prisma.$UserPayload<ExtArgs>
+      chapter: Prisma.$ChapterPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -24273,6 +24328,7 @@ export namespace Prisma {
       usedByStudentId: string | null
       usedAt: Date | null
       createdById: string
+      chapterId: string
       createdAt: Date
       expiresAt: Date | null
     }, ExtArgs["result"]["promoCode"]>
@@ -24671,6 +24727,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     usedByStudent<T extends PromoCode$usedByStudentArgs<ExtArgs> = {}>(args?: Subset<T, PromoCode$usedByStudentArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    chapter<T extends ChapterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChapterDefaultArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24706,6 +24763,7 @@ export namespace Prisma {
     readonly usedByStudentId: FieldRef<"PromoCode", 'String'>
     readonly usedAt: FieldRef<"PromoCode", 'DateTime'>
     readonly createdById: FieldRef<"PromoCode", 'String'>
+    readonly chapterId: FieldRef<"PromoCode", 'String'>
     readonly createdAt: FieldRef<"PromoCode", 'DateTime'>
     readonly expiresAt: FieldRef<"PromoCode", 'DateTime'>
   }
@@ -25431,6 +25489,7 @@ export namespace Prisma {
     usedByStudentId: 'usedByStudentId',
     usedAt: 'usedAt',
     createdById: 'createdById',
+    chapterId: 'chapterId',
     createdAt: 'createdAt',
     expiresAt: 'expiresAt'
   };
@@ -26045,6 +26104,7 @@ export namespace Prisma {
     lessons?: LessonListRelationFilter
     quizzes?: QuizListRelationFilter
     paymentTransactions?: PaymentTransactionListRelationFilter
+    promoCodes?: PromoCodeListRelationFilter
   }
 
   export type ChapterOrderByWithRelationInput = {
@@ -26062,6 +26122,7 @@ export namespace Prisma {
     lessons?: LessonOrderByRelationAggregateInput
     quizzes?: QuizOrderByRelationAggregateInput
     paymentTransactions?: PaymentTransactionOrderByRelationAggregateInput
+    promoCodes?: PromoCodeOrderByRelationAggregateInput
   }
 
   export type ChapterWhereUniqueInput = Prisma.AtLeast<{
@@ -26082,6 +26143,7 @@ export namespace Prisma {
     lessons?: LessonListRelationFilter
     quizzes?: QuizListRelationFilter
     paymentTransactions?: PaymentTransactionListRelationFilter
+    promoCodes?: PromoCodeListRelationFilter
   }, "id">
 
   export type ChapterOrderByWithAggregationInput = {
@@ -27152,10 +27214,12 @@ export namespace Prisma {
     usedByStudentId?: StringNullableFilter<"PromoCode"> | string | null
     usedAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
     createdById?: StringFilter<"PromoCode"> | string
+    chapterId?: StringFilter<"PromoCode"> | string
     createdAt?: DateTimeFilter<"PromoCode"> | Date | string
     expiresAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
     usedByStudent?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
   }
 
   export type PromoCodeOrderByWithRelationInput = {
@@ -27165,10 +27229,12 @@ export namespace Prisma {
     usedByStudentId?: SortOrderInput | SortOrder
     usedAt?: SortOrderInput | SortOrder
     createdById?: SortOrder
+    chapterId?: SortOrder
     createdAt?: SortOrder
     expiresAt?: SortOrderInput | SortOrder
     usedByStudent?: UserOrderByWithRelationInput
     createdBy?: UserOrderByWithRelationInput
+    chapter?: ChapterOrderByWithRelationInput
   }
 
   export type PromoCodeWhereUniqueInput = Prisma.AtLeast<{
@@ -27181,10 +27247,12 @@ export namespace Prisma {
     usedByStudentId?: StringNullableFilter<"PromoCode"> | string | null
     usedAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
     createdById?: StringFilter<"PromoCode"> | string
+    chapterId?: StringFilter<"PromoCode"> | string
     createdAt?: DateTimeFilter<"PromoCode"> | Date | string
     expiresAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
     usedByStudent?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    chapter?: XOR<ChapterScalarRelationFilter, ChapterWhereInput>
   }, "id" | "code">
 
   export type PromoCodeOrderByWithAggregationInput = {
@@ -27194,6 +27262,7 @@ export namespace Prisma {
     usedByStudentId?: SortOrderInput | SortOrder
     usedAt?: SortOrderInput | SortOrder
     createdById?: SortOrder
+    chapterId?: SortOrder
     createdAt?: SortOrder
     expiresAt?: SortOrderInput | SortOrder
     _count?: PromoCodeCountOrderByAggregateInput
@@ -27211,6 +27280,7 @@ export namespace Prisma {
     usedByStudentId?: StringNullableWithAggregatesFilter<"PromoCode"> | string | null
     usedAt?: DateTimeNullableWithAggregatesFilter<"PromoCode"> | Date | string | null
     createdById?: StringWithAggregatesFilter<"PromoCode"> | string
+    chapterId?: StringWithAggregatesFilter<"PromoCode"> | string
     createdAt?: DateTimeWithAggregatesFilter<"PromoCode"> | Date | string
     expiresAt?: DateTimeNullableWithAggregatesFilter<"PromoCode"> | Date | string | null
   }
@@ -27580,6 +27650,7 @@ export namespace Prisma {
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateInput = {
@@ -27596,6 +27667,7 @@ export namespace Prisma {
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUpdateInput = {
@@ -27612,6 +27684,7 @@ export namespace Prisma {
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateInput = {
@@ -27628,6 +27701,7 @@ export namespace Prisma {
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterCreateManyInput = {
@@ -28768,6 +28842,7 @@ export namespace Prisma {
     expiresAt?: Date | string | null
     usedByStudent?: UserCreateNestedOneWithoutUsedPromoCodesInput
     createdBy: UserCreateNestedOneWithoutCreatedPromoCodesInput
+    chapter: ChapterCreateNestedOneWithoutPromoCodesInput
   }
 
   export type PromoCodeUncheckedCreateInput = {
@@ -28777,6 +28852,7 @@ export namespace Prisma {
     usedByStudentId?: string | null
     usedAt?: Date | string | null
     createdById: string
+    chapterId: string
     createdAt?: Date | string
     expiresAt?: Date | string | null
   }
@@ -28790,6 +28866,7 @@ export namespace Prisma {
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedByStudent?: UserUpdateOneWithoutUsedPromoCodesNestedInput
     createdBy?: UserUpdateOneRequiredWithoutCreatedPromoCodesNestedInput
+    chapter?: ChapterUpdateOneRequiredWithoutPromoCodesNestedInput
   }
 
   export type PromoCodeUncheckedUpdateInput = {
@@ -28799,6 +28876,7 @@ export namespace Prisma {
     usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdById?: StringFieldUpdateOperationsInput | string
+    chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -28810,6 +28888,7 @@ export namespace Prisma {
     usedByStudentId?: string | null
     usedAt?: Date | string | null
     createdById: string
+    chapterId: string
     createdAt?: Date | string
     expiresAt?: Date | string | null
   }
@@ -28830,6 +28909,7 @@ export namespace Prisma {
     usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdById?: StringFieldUpdateOperationsInput | string
+    chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -30311,6 +30391,7 @@ export namespace Prisma {
     usedByStudentId?: SortOrder
     usedAt?: SortOrder
     createdById?: SortOrder
+    chapterId?: SortOrder
     createdAt?: SortOrder
     expiresAt?: SortOrder
   }
@@ -30322,6 +30403,7 @@ export namespace Prisma {
     usedByStudentId?: SortOrder
     usedAt?: SortOrder
     createdById?: SortOrder
+    chapterId?: SortOrder
     createdAt?: SortOrder
     expiresAt?: SortOrder
   }
@@ -30333,6 +30415,7 @@ export namespace Prisma {
     usedByStudentId?: SortOrder
     usedAt?: SortOrder
     createdById?: SortOrder
+    chapterId?: SortOrder
     createdAt?: SortOrder
     expiresAt?: SortOrder
   }
@@ -31055,6 +31138,13 @@ export namespace Prisma {
     connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
   }
 
+  export type PromoCodeCreateNestedManyWithoutChapterInput = {
+    create?: XOR<PromoCodeCreateWithoutChapterInput, PromoCodeUncheckedCreateWithoutChapterInput> | PromoCodeCreateWithoutChapterInput[] | PromoCodeUncheckedCreateWithoutChapterInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutChapterInput | PromoCodeCreateOrConnectWithoutChapterInput[]
+    createMany?: PromoCodeCreateManyChapterInputEnvelope
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+  }
+
   export type EnrollmentUncheckedCreateNestedManyWithoutChapterInput = {
     create?: XOR<EnrollmentCreateWithoutChapterInput, EnrollmentUncheckedCreateWithoutChapterInput> | EnrollmentCreateWithoutChapterInput[] | EnrollmentUncheckedCreateWithoutChapterInput[]
     connectOrCreate?: EnrollmentCreateOrConnectWithoutChapterInput | EnrollmentCreateOrConnectWithoutChapterInput[]
@@ -31081,6 +31171,13 @@ export namespace Prisma {
     connectOrCreate?: PaymentTransactionCreateOrConnectWithoutChapterInput | PaymentTransactionCreateOrConnectWithoutChapterInput[]
     createMany?: PaymentTransactionCreateManyChapterInputEnvelope
     connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+  }
+
+  export type PromoCodeUncheckedCreateNestedManyWithoutChapterInput = {
+    create?: XOR<PromoCodeCreateWithoutChapterInput, PromoCodeUncheckedCreateWithoutChapterInput> | PromoCodeCreateWithoutChapterInput[] | PromoCodeUncheckedCreateWithoutChapterInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutChapterInput | PromoCodeCreateOrConnectWithoutChapterInput[]
+    createMany?: PromoCodeCreateManyChapterInputEnvelope
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
   }
 
   export type NullableDecimalFieldUpdateOperationsInput = {
@@ -31155,6 +31252,20 @@ export namespace Prisma {
     deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
   }
 
+  export type PromoCodeUpdateManyWithoutChapterNestedInput = {
+    create?: XOR<PromoCodeCreateWithoutChapterInput, PromoCodeUncheckedCreateWithoutChapterInput> | PromoCodeCreateWithoutChapterInput[] | PromoCodeUncheckedCreateWithoutChapterInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutChapterInput | PromoCodeCreateOrConnectWithoutChapterInput[]
+    upsert?: PromoCodeUpsertWithWhereUniqueWithoutChapterInput | PromoCodeUpsertWithWhereUniqueWithoutChapterInput[]
+    createMany?: PromoCodeCreateManyChapterInputEnvelope
+    set?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    disconnect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    delete?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    update?: PromoCodeUpdateWithWhereUniqueWithoutChapterInput | PromoCodeUpdateWithWhereUniqueWithoutChapterInput[]
+    updateMany?: PromoCodeUpdateManyWithWhereWithoutChapterInput | PromoCodeUpdateManyWithWhereWithoutChapterInput[]
+    deleteMany?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
+  }
+
   export type EnrollmentUncheckedUpdateManyWithoutChapterNestedInput = {
     create?: XOR<EnrollmentCreateWithoutChapterInput, EnrollmentUncheckedCreateWithoutChapterInput> | EnrollmentCreateWithoutChapterInput[] | EnrollmentUncheckedCreateWithoutChapterInput[]
     connectOrCreate?: EnrollmentCreateOrConnectWithoutChapterInput | EnrollmentCreateOrConnectWithoutChapterInput[]
@@ -31209,6 +31320,20 @@ export namespace Prisma {
     update?: PaymentTransactionUpdateWithWhereUniqueWithoutChapterInput | PaymentTransactionUpdateWithWhereUniqueWithoutChapterInput[]
     updateMany?: PaymentTransactionUpdateManyWithWhereWithoutChapterInput | PaymentTransactionUpdateManyWithWhereWithoutChapterInput[]
     deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+  }
+
+  export type PromoCodeUncheckedUpdateManyWithoutChapterNestedInput = {
+    create?: XOR<PromoCodeCreateWithoutChapterInput, PromoCodeUncheckedCreateWithoutChapterInput> | PromoCodeCreateWithoutChapterInput[] | PromoCodeUncheckedCreateWithoutChapterInput[]
+    connectOrCreate?: PromoCodeCreateOrConnectWithoutChapterInput | PromoCodeCreateOrConnectWithoutChapterInput[]
+    upsert?: PromoCodeUpsertWithWhereUniqueWithoutChapterInput | PromoCodeUpsertWithWhereUniqueWithoutChapterInput[]
+    createMany?: PromoCodeCreateManyChapterInputEnvelope
+    set?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    disconnect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    delete?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+    update?: PromoCodeUpdateWithWhereUniqueWithoutChapterInput | PromoCodeUpdateWithWhereUniqueWithoutChapterInput[]
+    updateMany?: PromoCodeUpdateManyWithWhereWithoutChapterInput | PromoCodeUpdateManyWithWhereWithoutChapterInput[]
+    deleteMany?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
   }
 
   export type LessonMaterialCreateNestedManyWithoutLessonInput = {
@@ -31743,6 +31868,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type ChapterCreateNestedOneWithoutPromoCodesInput = {
+    create?: XOR<ChapterCreateWithoutPromoCodesInput, ChapterUncheckedCreateWithoutPromoCodesInput>
+    connectOrCreate?: ChapterCreateOrConnectWithoutPromoCodesInput
+    connect?: ChapterWhereUniqueInput
+  }
+
   export type UserUpdateOneWithoutUsedPromoCodesNestedInput = {
     create?: XOR<UserCreateWithoutUsedPromoCodesInput, UserUncheckedCreateWithoutUsedPromoCodesInput>
     connectOrCreate?: UserCreateOrConnectWithoutUsedPromoCodesInput
@@ -31759,6 +31890,14 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutCreatedPromoCodesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedPromoCodesInput, UserUpdateWithoutCreatedPromoCodesInput>, UserUncheckedUpdateWithoutCreatedPromoCodesInput>
+  }
+
+  export type ChapterUpdateOneRequiredWithoutPromoCodesNestedInput = {
+    create?: XOR<ChapterCreateWithoutPromoCodesInput, ChapterUncheckedCreateWithoutPromoCodesInput>
+    connectOrCreate?: ChapterCreateOrConnectWithoutPromoCodesInput
+    upsert?: ChapterUpsertWithoutPromoCodesInput
+    connect?: ChapterWhereUniqueInput
+    update?: XOR<XOR<ChapterUpdateToOneWithWhereWithoutPromoCodesInput, ChapterUpdateWithoutPromoCodesInput>, ChapterUncheckedUpdateWithoutPromoCodesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -32262,6 +32401,7 @@ export namespace Prisma {
     createdAt?: Date | string
     expiresAt?: Date | string | null
     usedByStudent?: UserCreateNestedOneWithoutUsedPromoCodesInput
+    chapter: ChapterCreateNestedOneWithoutPromoCodesInput
   }
 
   export type PromoCodeUncheckedCreateWithoutCreatedByInput = {
@@ -32270,6 +32410,7 @@ export namespace Prisma {
     isUsed?: boolean
     usedByStudentId?: string | null
     usedAt?: Date | string | null
+    chapterId: string
     createdAt?: Date | string
     expiresAt?: Date | string | null
   }
@@ -32292,6 +32433,7 @@ export namespace Prisma {
     createdAt?: Date | string
     expiresAt?: Date | string | null
     createdBy: UserCreateNestedOneWithoutCreatedPromoCodesInput
+    chapter: ChapterCreateNestedOneWithoutPromoCodesInput
   }
 
   export type PromoCodeUncheckedCreateWithoutUsedByStudentInput = {
@@ -32300,6 +32442,7 @@ export namespace Prisma {
     isUsed?: boolean
     usedAt?: Date | string | null
     createdById: string
+    chapterId: string
     createdAt?: Date | string
     expiresAt?: Date | string | null
   }
@@ -32704,6 +32847,7 @@ export namespace Prisma {
     usedByStudentId?: StringNullableFilter<"PromoCode"> | string | null
     usedAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
     createdById?: StringFilter<"PromoCode"> | string
+    chapterId?: StringFilter<"PromoCode"> | string
     createdAt?: DateTimeFilter<"PromoCode"> | Date | string
     expiresAt?: DateTimeNullableFilter<"PromoCode"> | Date | string | null
   }
@@ -33301,6 +33445,7 @@ export namespace Prisma {
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutStageInput = {
@@ -33316,6 +33461,7 @@ export namespace Prisma {
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutStageInput = {
@@ -33660,6 +33806,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PromoCodeCreateWithoutChapterInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+    usedByStudent?: UserCreateNestedOneWithoutUsedPromoCodesInput
+    createdBy: UserCreateNestedOneWithoutCreatedPromoCodesInput
+  }
+
+  export type PromoCodeUncheckedCreateWithoutChapterInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedByStudentId?: string | null
+    usedAt?: Date | string | null
+    createdById: string
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type PromoCodeCreateOrConnectWithoutChapterInput = {
+    where: PromoCodeWhereUniqueInput
+    create: XOR<PromoCodeCreateWithoutChapterInput, PromoCodeUncheckedCreateWithoutChapterInput>
+  }
+
+  export type PromoCodeCreateManyChapterInputEnvelope = {
+    data: PromoCodeCreateManyChapterInput | PromoCodeCreateManyChapterInput[]
+    skipDuplicates?: boolean
+  }
+
   export type StageUpsertWithoutChaptersInput = {
     update: XOR<StageUpdateWithoutChaptersInput, StageUncheckedUpdateWithoutChaptersInput>
     create: XOR<StageCreateWithoutChaptersInput, StageUncheckedCreateWithoutChaptersInput>
@@ -33775,6 +33953,22 @@ export namespace Prisma {
     data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyWithoutChapterInput>
   }
 
+  export type PromoCodeUpsertWithWhereUniqueWithoutChapterInput = {
+    where: PromoCodeWhereUniqueInput
+    update: XOR<PromoCodeUpdateWithoutChapterInput, PromoCodeUncheckedUpdateWithoutChapterInput>
+    create: XOR<PromoCodeCreateWithoutChapterInput, PromoCodeUncheckedCreateWithoutChapterInput>
+  }
+
+  export type PromoCodeUpdateWithWhereUniqueWithoutChapterInput = {
+    where: PromoCodeWhereUniqueInput
+    data: XOR<PromoCodeUpdateWithoutChapterInput, PromoCodeUncheckedUpdateWithoutChapterInput>
+  }
+
+  export type PromoCodeUpdateManyWithWhereWithoutChapterInput = {
+    where: PromoCodeScalarWhereInput
+    data: XOR<PromoCodeUpdateManyMutationInput, PromoCodeUncheckedUpdateManyWithoutChapterInput>
+  }
+
   export type LessonMaterialCreateWithoutLessonInput = {
     id?: string
     filePath: string
@@ -33870,6 +34064,7 @@ export namespace Prisma {
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutLessonsInput = {
@@ -33885,6 +34080,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutLessonsInput = {
@@ -33990,6 +34186,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutLessonsInput = {
@@ -34005,6 +34202,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type UserCreateWithoutOtpsInput = {
@@ -34136,6 +34334,7 @@ export namespace Prisma {
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutEnrollmentsInput = {
@@ -34151,6 +34350,7 @@ export namespace Prisma {
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutEnrollmentsInput = {
@@ -34237,6 +34437,7 @@ export namespace Prisma {
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutEnrollmentsInput = {
@@ -34252,6 +34453,7 @@ export namespace Prisma {
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type UserUpsertWithoutEnrollmentsInput = {
@@ -34383,6 +34585,7 @@ export namespace Prisma {
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutPaymentTransactionsInput = {
@@ -34398,6 +34601,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutPaymentTransactionsInput = {
@@ -34490,6 +34694,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutPaymentTransactionsInput = {
@@ -34505,6 +34710,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type LessonCreateWithoutLessonProgressInput = {
@@ -35308,6 +35514,7 @@ export namespace Prisma {
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterUncheckedCreateWithoutQuizzesInput = {
@@ -35323,6 +35530,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
     lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeUncheckedCreateNestedManyWithoutChapterInput
   }
 
   export type ChapterCreateOrConnectWithoutQuizzesInput = {
@@ -35458,6 +35666,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutQuizzesInput = {
@@ -35473,6 +35682,7 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type UserUpsertWithoutQuizzesInput = {
@@ -35922,6 +36132,43 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutCreatedPromoCodesInput, UserUncheckedCreateWithoutCreatedPromoCodesInput>
   }
 
+  export type ChapterCreateWithoutPromoCodesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    price?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    stage: StageCreateNestedOneWithoutChaptersInput
+    enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
+    lessons?: LessonCreateNestedManyWithoutChapterInput
+    quizzes?: QuizCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
+  }
+
+  export type ChapterUncheckedCreateWithoutPromoCodesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    price?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    stageId: string
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
+    lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
+  }
+
+  export type ChapterCreateOrConnectWithoutPromoCodesInput = {
+    where: ChapterWhereUniqueInput
+    create: XOR<ChapterCreateWithoutPromoCodesInput, ChapterUncheckedCreateWithoutPromoCodesInput>
+  }
+
   export type UserUpsertWithoutUsedPromoCodesInput = {
     update: XOR<UserUpdateWithoutUsedPromoCodesInput, UserUncheckedUpdateWithoutUsedPromoCodesInput>
     create: XOR<UserCreateWithoutUsedPromoCodesInput, UserUncheckedCreateWithoutUsedPromoCodesInput>
@@ -36044,6 +36291,49 @@ export namespace Prisma {
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
   }
 
+  export type ChapterUpsertWithoutPromoCodesInput = {
+    update: XOR<ChapterUpdateWithoutPromoCodesInput, ChapterUncheckedUpdateWithoutPromoCodesInput>
+    create: XOR<ChapterCreateWithoutPromoCodesInput, ChapterUncheckedCreateWithoutPromoCodesInput>
+    where?: ChapterWhereInput
+  }
+
+  export type ChapterUpdateToOneWithWhereWithoutPromoCodesInput = {
+    where?: ChapterWhereInput
+    data: XOR<ChapterUpdateWithoutPromoCodesInput, ChapterUncheckedUpdateWithoutPromoCodesInput>
+  }
+
+  export type ChapterUpdateWithoutPromoCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
+    lessons?: LessonUpdateManyWithoutChapterNestedInput
+    quizzes?: QuizUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
+  }
+
+  export type ChapterUncheckedUpdateWithoutPromoCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stageId?: StringFieldUpdateOperationsInput | string
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
+    lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
+  }
+
   export type AuditLogCreateManyUserInput = {
     id?: string
     action: string
@@ -36062,6 +36352,7 @@ export namespace Prisma {
     isUsed?: boolean
     usedByStudentId?: string | null
     usedAt?: Date | string | null
+    chapterId: string
     createdAt?: Date | string
     expiresAt?: Date | string | null
   }
@@ -36072,6 +36363,7 @@ export namespace Prisma {
     isUsed?: boolean
     usedAt?: Date | string | null
     createdById: string
+    chapterId: string
     createdAt?: Date | string
     expiresAt?: Date | string | null
   }
@@ -36216,6 +36508,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     usedByStudent?: UserUpdateOneWithoutUsedPromoCodesNestedInput
+    chapter?: ChapterUpdateOneRequiredWithoutPromoCodesNestedInput
   }
 
   export type PromoCodeUncheckedUpdateWithoutCreatedByInput = {
@@ -36224,6 +36517,7 @@ export namespace Prisma {
     isUsed?: BoolFieldUpdateOperationsInput | boolean
     usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -36234,6 +36528,7 @@ export namespace Prisma {
     isUsed?: BoolFieldUpdateOperationsInput | boolean
     usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -36246,6 +36541,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdBy?: UserUpdateOneRequiredWithoutCreatedPromoCodesNestedInput
+    chapter?: ChapterUpdateOneRequiredWithoutPromoCodesNestedInput
   }
 
   export type PromoCodeUncheckedUpdateWithoutUsedByStudentInput = {
@@ -36254,6 +36550,7 @@ export namespace Prisma {
     isUsed?: BoolFieldUpdateOperationsInput | boolean
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdById?: StringFieldUpdateOperationsInput | string
+    chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -36264,6 +36561,7 @@ export namespace Prisma {
     isUsed?: BoolFieldUpdateOperationsInput | boolean
     usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdById?: StringFieldUpdateOperationsInput | string
+    chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -36586,6 +36884,7 @@ export namespace Prisma {
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateWithoutStageInput = {
@@ -36601,6 +36900,7 @@ export namespace Prisma {
     lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUncheckedUpdateManyWithoutChapterNestedInput
   }
 
   export type ChapterUncheckedUpdateManyWithoutStageInput = {
@@ -36666,6 +36966,17 @@ export namespace Prisma {
     rawCallback?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type PromoCodeCreateManyChapterInput = {
+    id?: string
+    code: string
+    isUsed?: boolean
+    usedByStudentId?: string | null
+    usedAt?: Date | string | null
+    createdById: string
+    createdAt?: Date | string
+    expiresAt?: Date | string | null
   }
 
   export type EnrollmentUpdateWithoutChapterInput = {
@@ -36838,6 +37149,39 @@ export namespace Prisma {
     rawCallback?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PromoCodeUpdateWithoutChapterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usedByStudent?: UserUpdateOneWithoutUsedPromoCodesNestedInput
+    createdBy?: UserUpdateOneRequiredWithoutCreatedPromoCodesNestedInput
+  }
+
+  export type PromoCodeUncheckedUpdateWithoutChapterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PromoCodeUncheckedUpdateManyWithoutChapterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    isUsed?: BoolFieldUpdateOperationsInput | boolean
+    usedByStudentId?: NullableStringFieldUpdateOperationsInput | string | null
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type LessonMaterialCreateManyLessonInput = {

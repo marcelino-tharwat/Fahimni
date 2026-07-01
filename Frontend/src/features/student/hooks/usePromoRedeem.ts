@@ -12,7 +12,8 @@ import { STUDENT_ENROLLMENTS_KEY } from '@/features/student/hooks/useStudentProf
  */
 export function useValidatePromo() {
   return useMutation({
-    mutationFn: (code: string) => studentPromoApi.validate(code),
+    mutationFn: ({ code, chapterId }: { code: string; chapterId?: string }) =>
+      studentPromoApi.validate(code, chapterId),
   });
 }
 

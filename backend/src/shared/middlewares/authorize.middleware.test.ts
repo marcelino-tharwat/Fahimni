@@ -18,7 +18,7 @@ describe("authorizeMiddleware (dashboard access control)", () => {
     expect(err.statusCode).toBe(403);
   });
 
-  it("rejects a non-teacher role (e.g. STUDENT)", () => {
+  it("rejects a non-teacher role (e.g. STUDENT) when only OPERATION is allowed", () => {
     const next = run({ role: "STUDENT" }, "OPERATION");
     const err = next.mock.calls[0][0] as AppError;
     expect(err).toBeInstanceOf(AppError);
@@ -28,5 +28,22 @@ describe("authorizeMiddleware (dashboard access control)", () => {
   it("allows the teacher role (OPERATION)", () => {
     const next = run({ role: "OPERATION" }, "OPERATION");
     expect(next.mock.calls[0][0]).toBeUndefined();
+  });
+
+  it("allows STUDENT when both OPERATION and STUDENT are allowed", () => {
+    const next = run({ role: "STUDENT" }, "OPERATION", "STUDENT");
+    expect(next.mock.calls[0][0]).toBeUndefined();
+  });
+
+  it("allows OPERATION when both OPERATION and STUDENT are allowed", () => {
+    const next = run({ role: "OPERATION" }, "OPERATION", "STUDENT");
+    expect(next.mock.calls[0][0]).toBeUndefined();
+  });
+
+  it("rejects ADMIN when only OPERATION and STUDENT are allowed", () => {
+    const next = run({ role: "ADMIN" }, "OPERATION", "STUDENT");
+    const err = next.mock.calls[0][0] as AppError;
+    expect(err).toBeInstanceOf(AppError);
+    expect(err.statusCode).toBe(403);
   });
 });

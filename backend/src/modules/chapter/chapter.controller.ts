@@ -4,7 +4,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { ChapterService } from "./chapter.service.js";
 import { QuizService } from "../quizzes/quizzes.service.js";
-import type { ChapterResponseDTO } from "./chapter.types.js";
+import type { ChapterResponseDTO, StudentChapterResponseDTO } from "./chapter.types.js";
 import type { QuizDetailResponseDTO } from "../quizzes/quizzes.types.js";
 import type { CreateChapterInput, UpdateChapterInput, ReorderInput } from "./chapter.validation.js";
 
@@ -56,14 +56,23 @@ export class ChapterController {
         throw new AppError("Invalid chapter ID", 400);
       }
 
-      const chapter = await chapterService.getById(id, req.user!.id);
-
-      res
-        .status(200)
-        .json(okResponse<ChapterResponseDTO>(
-          "Chapter fetched successfully",
-          chapter,
-        ));
+      if (req.user!.role === "STUDENT") {
+        const chapter = await chapterService.getByIdForStudent(id);
+        res
+          .status(200)
+          .json(okResponse<StudentChapterResponseDTO>(
+            "Chapter fetched successfully",
+            chapter,
+          ));
+      } else {
+        const chapter = await chapterService.getById(id, req.user!.id);
+        res
+          .status(200)
+          .json(okResponse<ChapterResponseDTO>(
+            "Chapter fetched successfully",
+            chapter,
+          ));
+      }
     },
   );
 

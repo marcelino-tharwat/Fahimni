@@ -4,7 +4,7 @@ import { logger } from "../../config/logger.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
 import { FilesService } from "../files/files.service.js";
 import { chapterPublicFields } from "./chapter.types.js";
-import type { ChapterResponseDTO } from "./chapter.types.js";
+import type { ChapterResponseDTO, StudentChapterResponseDTO } from "./chapter.types.js";
 import type { CreateChapterInput, UpdateChapterInput } from "./chapter.validation.js";
 
 const filesService = new FilesService();
@@ -117,6 +117,43 @@ export class ChapterService {
       chapter as unknown as Record<string, unknown>,
       await this.countLessons(chapter.id),
     );
+  }
+
+  /**
+   * Student-facing variant of getById. Does NOT filter by stage.teacherId
+   * (students have no teacher relationship), but still excludes soft-deleted
+   * chapters. Returns a lighter DTO with stageName instead of internal fields.
+   */
+  public async getByIdForStudent(
+    id: string,
+  ): Promise<StudentChapterResponseDTO> {
+    const chapter = await prisma.chapter.findFirst({
+      where: { id, deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        stageId: true,
+        stage: {
+          select: { name: true },
+        },
+      },
+    });
+
+    if (!chapter) {
+      throw new AppError("Chapter not found", 404);
+    }
+
+    return {
+      id: chapter.id,
+      name: chapter.name,
+      description: chapter.description,
+      price: chapter.price !== null ? Number(chapter.price) : null,
+      stageId: chapter.stageId,
+      stageName: chapter.stage.name,
+      lessonsCount: await this.countLessons(chapter.id),
+    };
   }
 
   public async update(

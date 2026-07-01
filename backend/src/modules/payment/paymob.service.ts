@@ -123,8 +123,13 @@ export class PaymobService {
     paymobOrderId: string,
     amountInEGP: number,
     billingData: BillingData,
+    chapterId?: string,
   ): Promise<string> {
     const amountCents = Math.round(amountInEGP * 100);
+
+    const redirectionUrl = chapterId
+      ? `${env.FRONTEND_BASE_URL}/student/dashboard?orderId=${paymobOrderId}&chapterId=${chapterId}`
+      : `${env.FRONTEND_BASE_URL}/student/dashboard?orderId=${paymobOrderId}`;
 
     const response = await this.fetchWithTimeout(
       "/api/acceptance/payment_keys",
@@ -139,6 +144,7 @@ export class PaymobService {
           currency: env.PAYMOB_CURRENCY,
           integration_id: env.PAYMOB_INTEGRATION_ID,
           billing_data: billingData,
+          redirection_url: redirectionUrl,
         }),
       },
     );

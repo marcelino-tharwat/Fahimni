@@ -62,8 +62,8 @@ export function PromoCodesPage() {
 
   const openConfirmModal = () => setShowConfirmModal(true);
 
-  const handleConfirmGenerate = () => {
-    generateMutation.mutate(undefined, {
+  const handleConfirmGenerate = (chapterId: string) => {
+    generateMutation.mutate(chapterId, {
       onSuccess: (code) => {
         setShowConfirmModal(false);
         setGeneratedCode(code);

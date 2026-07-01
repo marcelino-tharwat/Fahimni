@@ -15,9 +15,9 @@ import type {
  * envelope, so we unwrap with `data.data` (axios `.data` → envelope `.data`).
  */
 export const promoCodesApi = {
-  // POST /promo-codes — empty body; server mints the 8-char code.
-  generate: async (): Promise<PromoCode> => {
-    const { data } = await apiClient.post<ApiResponse<PromoCode>>('/promo-codes');
+  // POST /promo-codes — requires chapterId; server mints the 8-char code.
+  generate: async (chapterId: string): Promise<PromoCode> => {
+    const { data } = await apiClient.post<ApiResponse<PromoCode>>('/promo-codes', { chapterId });
     return data.data;
   },
 

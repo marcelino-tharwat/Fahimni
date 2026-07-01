@@ -16,23 +16,16 @@ import type { EnrollmentResponseDTO } from "../enrollment/enrollment.types.js";
 import type { ListPromoCodesQuery } from "./promo-code.validation.js";
 import { REDEEM_MESSAGES, type Locale } from "./promo-code.i18n.js";
 
-/** Result of a successful redemption: the new enrollment + safe promo summary. */
 export interface RedeemResult {
   enrollment: EnrollmentResponseDTO;
   promoCode: { code: string; isUsed: boolean; usedAt: Date };
 }
 
-// Uppercase alphanumeric, minus visually ambiguous characters (0/O, 1/I/L).
-// Exported so the redeem DTO validates against the exact same alphabet/length.
 export const CODE_CHARSET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 export const CODE_LENGTH = 8;
 const MAX_CODE_ATTEMPTS = 10;
 
 export class PromoCodeService {
-  /**
-   * Generate a cryptographically random 8-char code from the unambiguous
-   * charset, retrying on the (extremely unlikely) event of a DB collision.
-   */
   private async generateCode(): Promise<string> {
     for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS; attempt++) {
       const code = this.randomCode();
@@ -51,12 +44,6 @@ export class PromoCodeService {
     );
   }
 
-  /**
-   * Draw CODE_LENGTH characters from CODE_CHARSET using random bytes. Bytes are
-   * rejection-sampled (values in the final, non-whole block are discarded) so
-   * every character is uniformly distributed — no modulo bias toward the start
-   * of the charset.
-   */
   private randomCode(): string {
     const limit = 256 - (256 % CODE_CHARSET.length);
     let code = "";
@@ -77,22 +64,28 @@ export class PromoCodeService {
     return code;
   }
 
-  /** Create a promo code on behalf of a support agent; expires 1 year from now. */
-  public async create(createdById: string): Promise<PromoCodeResponseDTO> {
+  public async create(createdById: string, chapterId: string): Promise<PromoCodeResponseDTO> {
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+      select: { id: true, deletedAt: true },
+    });
+    if (!chapter || chapter.deletedAt) {
+      throw new AppError("Chapter not found", 404, "CHAPTER_NOT_FOUND");
+    }
+
     const code = await this.generateCode();
 
     const expiresAt = new Date();
     expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
     const promoCode = await prisma.promoCode.create({
-      data: { code, createdById, expiresAt },
+      data: { code, createdById, chapterId, expiresAt },
       select: promoCodePublicFields,
     });
 
     return promoCode as PromoCodeResponseDTO;
   }
 
-  /** Paginated list of promo codes, newest first, optionally filtered by usage. */
   public async findAll(
     params: ListPromoCodesQuery,
   ): Promise<PaginatedPromoCodes> {
@@ -118,11 +111,10 @@ export class PromoCodeService {
     };
   }
 
-  /** Check whether a code exists, is unused, and is not expired. */
-  public async validate(code: string): Promise<PromoCodeValidationResult> {
+  public async validate(code: string, chapterId?: string): Promise<PromoCodeValidationResult> {
     const promoCode = await prisma.promoCode.findUnique({
       where: { code },
-      select: { isUsed: true, expiresAt: true },
+      select: { isUsed: true, expiresAt: true, chapterId: true },
     });
 
     if (!promoCode) {
@@ -134,26 +126,13 @@ export class PromoCodeService {
     if (promoCode.expiresAt && promoCode.expiresAt.getTime() < Date.now()) {
       return { valid: false, reason: "CODE_EXPIRED" };
     }
+    if (chapterId && promoCode.chapterId !== chapterId) {
+      return { valid: false, reason: "CODE_NOT_FOR_THIS_CHAPTER" };
+    }
 
     return { valid: true };
   }
 
-  /**
-   * STORY-53 — Redeem a promo code for a chapter as the authenticated student.
-   *
-   * Checks are ordered so an invalid chapter or an already-enrolled student is
-   * rejected BEFORE any code is consumed. The code is then claimed and the
-   * enrollment created inside a single transaction so they succeed or fail
-   * together:
-   *  - the claim's `isUsed: false` + expiry guard means a concurrent redeem of
-   *    the SAME code updates 0 rows → safe "already used" (Case A);
-   *  - the enrollment's unique (studentId, chapterId) constraint means a
-   *    concurrent redeem of TWO codes for the SAME chapter throws on create →
-   *    we map it to "already enrolled" and the transaction rolls back the claim,
-   *    so the losing code stays unused (Case B).
-   *
-   * Domain failures return 400 with locale-aware messages.
-   */
   public async redeem(
     code: string,
     studentId: string,
@@ -167,7 +146,7 @@ export class PromoCodeService {
       select: { id: true, deletedAt: true },
     });
     if (!chapter || chapter.deletedAt) {
-      throw new AppError(m.chapterNotFound, 404);
+      throw new AppError(m.chapterNotFound, 404, "CHAPTER_NOT_FOUND");
     }
 
     const existingEnrollment = await prisma.enrollment.findUnique({
@@ -175,17 +154,17 @@ export class PromoCodeService {
       select: { id: true },
     });
     if (existingEnrollment) {
-      throw new AppError(m.alreadyEnrolled, 400);
+      throw new AppError(m.alreadyEnrolled, 400, "ALREADY_ENROLLED");
     }
 
-    const validation = await this.validate(code);
+    const validation = await this.validate(code, chapterId);
     if (!validation.valid) {
-      throw new AppError(
-        validation.reason === "CODE_ALREADY_USED"
-          ? m.alreadyUsed
-          : m.invalidCode,
-        400,
-      );
+      const reasonMap: Record<string, { msg: string; code: string }> = {
+        CODE_ALREADY_USED: { msg: m.alreadyUsed, code: "CODE_ALREADY_USED" },
+        CODE_NOT_FOR_THIS_CHAPTER: { msg: m.notForThisChapter, code: "CODE_NOT_FOR_THIS_CHAPTER" },
+      };
+      const entry = reasonMap[validation.reason!] ?? { msg: m.invalidCode, code: "INVALID_CODE" };
+      throw new AppError(entry.msg, 400, entry.code);
     }
 
     const promoCode = await prisma.promoCode.findUnique({
@@ -193,14 +172,12 @@ export class PromoCodeService {
       select: { id: true },
     });
     if (!promoCode) {
-      throw new AppError(m.invalidCode, 400);
+      throw new AppError(m.invalidCode, 400, "INVALID_CODE");
     }
 
     const usedAt = new Date();
 
     const enrollment = await prisma.$transaction(async (tx) => {
-      // Atomically claim the code (unused + not expired). A concurrent redeem of
-      // the same code updates 0 rows and is rejected as already used.
       const claimed = await tx.promoCode.updateMany({
         where: {
           id: promoCode.id,
@@ -211,7 +188,7 @@ export class PromoCodeService {
       });
 
       if (claimed.count === 0) {
-        throw new AppError(m.alreadyUsed, 400);
+        throw new AppError(m.alreadyUsed, 400, "CODE_ALREADY_USED");
       }
 
       try {
@@ -226,10 +203,8 @@ export class PromoCodeService {
           select: enrollmentPublicFields,
         });
       } catch (e) {
-        // Unique (studentId, chapterId) violation → already enrolled. Throwing
-        // here rolls back the code claim above, so the code remains unused.
         if ((e as { code?: string } | null)?.code === "P2002") {
-          throw new AppError(m.alreadyEnrolled, 400);
+          throw new AppError(m.alreadyEnrolled, 400, "ALREADY_ENROLLED");
         }
         throw e;
       }
@@ -241,7 +216,6 @@ export class PromoCodeService {
     };
   }
 
-  /** Normalize Decimal/Float prices to numbers for the enrollment response shape. */
   private toEnrollmentResponseDTO(
     enrollment: {
       price: unknown;

@@ -11,13 +11,15 @@ type PromoState =
   | 'valid'
   | 'error-used'
   | 'error-expired'
-  | 'error-invalid';
+  | 'error-invalid'
+  | 'error-not-for-chapter';
 
 /** i18n key per error state — mirrors the backend reasons. */
 const ERROR_KEY: Record<string, string> = {
   'error-used': 'student:payment.promo.errorUsed',
   'error-expired': 'student:payment.promo.errorExpired',
   'error-invalid': 'student:payment.promo.errorInvalid',
+  'error-not-for-chapter': 'student:payment.promo.errorNotForChapter',
 };
 
 const PROMO_CODE_LENGTH = 8;
@@ -34,6 +36,8 @@ function reasonToState(reason?: string): PromoState {
       return 'error-used';
     case 'CODE_EXPIRED':
       return 'error-expired';
+    case 'CODE_NOT_FOR_THIS_CHAPTER':
+      return 'error-not-for-chapter';
     case 'CODE_NOT_FOUND':
     default:
       return 'error-invalid';
@@ -90,7 +94,7 @@ export function PromoCodeCard({ chapterId, onSuccess }: PromoCodeCardProps) {
     }
 
     setState('validating');
-    validateMutation.mutate(cleaned, {
+    validateMutation.mutate({ code: cleaned, chapterId }, {
       onSuccess: (result) => {
         if (!result.valid) {
           setState(reasonToState(result.reason));

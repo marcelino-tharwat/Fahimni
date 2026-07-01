@@ -97,6 +97,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err).toBeInstanceOf(AppError);
     expect(err.statusCode).toBe(400);
+    expect(err.code).toBe("INVALID_CODE");
     expect(err.message).toBe(REDEEM_MESSAGES.en.invalidCode);
     expect(mockPrisma.$transaction).not.toHaveBeenCalled();
   });
@@ -107,6 +108,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
     mockPrisma.promoCode.findUnique.mockResolvedValue({ id: "pc-1", isUsed: false, expiresAt: past });
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err.statusCode).toBe(400);
+    expect(err.code).toBe("INVALID_CODE");
     expect(err.message).toBe(REDEEM_MESSAGES.en.invalidCode);
     expect(mockPrisma.$transaction).not.toHaveBeenCalled();
   });
@@ -117,6 +119,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
     mockPrisma.promoCode.findUnique.mockResolvedValue({ id: "pc-1", isUsed: true, expiresAt: future });
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err.statusCode).toBe(400);
+    expect(err.code).toBe("CODE_ALREADY_USED");
     expect(err.message).toBe(REDEEM_MESSAGES.en.alreadyUsed);
     expect(mockPrisma.$transaction).not.toHaveBeenCalled();
   });
@@ -126,6 +129,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
     mockPrisma.enrollment.findUnique.mockResolvedValue({ id: "enr-existing" });
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err.statusCode).toBe(400);
+    expect(err.code).toBe("ALREADY_ENROLLED");
     expect(err.message).toBe(REDEEM_MESSAGES.en.alreadyEnrolled);
     expect(mockPrisma.promoCode.findUnique).not.toHaveBeenCalled();
     expect(mockPrisma.$transaction).not.toHaveBeenCalled();
@@ -135,6 +139,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
     mockPrisma.chapter.findUnique.mockResolvedValue(null);
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err.statusCode).toBe(404);
+    expect(err.code).toBe("CHAPTER_NOT_FOUND");
     expect(err.message).toBe(REDEEM_MESSAGES.en.chapterNotFound);
   });
 
@@ -149,6 +154,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
     mockPrisma._tx.promoCode.updateMany.mockResolvedValue({ count: 0 });
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err.statusCode).toBe(400);
+    expect(err.code).toBe("CODE_ALREADY_USED");
     expect(err.message).toBe(REDEEM_MESSAGES.en.alreadyUsed);
     expect(mockPrisma._tx.enrollment.create).not.toHaveBeenCalled();
   });
@@ -159,6 +165,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err).toBeInstanceOf(AppError);
     expect(err.statusCode).toBe(400);
+    expect(err.code).toBe("ALREADY_ENROLLED");
     expect(err.message).toBe(REDEEM_MESSAGES.en.alreadyEnrolled);
     // The claim ran but the surrounding transaction rolls it back in real Postgres.
     expect(mockPrisma._tx.promoCode.updateMany).toHaveBeenCalled();

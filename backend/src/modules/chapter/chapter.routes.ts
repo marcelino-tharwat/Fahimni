@@ -59,7 +59,7 @@ chapterStandaloneRouter.patch(
 chapterStandaloneRouter.get(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION", "STUDENT"),
   controller.getById,
 );
 
