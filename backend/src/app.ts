@@ -5,6 +5,8 @@ import helmet from "helmet";
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/users/user.routes.js";
 import { rateLimiter } from "./shared/middlewares/rateLimiter.middleware.js";
+import { requestIdMiddleware } from "./shared/middlewares/request-id.middleware.js";
+import { requestLoggerMiddleware } from "./shared/middlewares/request-logger.middleware.js";
 import { errorHandler } from "./shared/middlewares/errorHandler.middleware.js";
 import { notFoundHandler } from "./shared/middlewares/notFound.middleware.js";
 import studentRoutes from "./modules/students/student.routes.js";
@@ -36,6 +38,8 @@ export function createApp(): Application {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
+  app.use(requestIdMiddleware);
+  app.use(requestLoggerMiddleware);
   app.use(rateLimiter);
   ``;
 

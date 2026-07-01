@@ -45,7 +45,12 @@ function enrollmentRow() {
 function primeHappyPath() {
   mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
   mockPrisma.enrollment.findUnique.mockResolvedValue(null);
-  mockPrisma.promoCode.findUnique.mockResolvedValue({ id: "pc-1", isUsed: false, expiresAt: future });
+  mockPrisma.promoCode.findUnique.mockResolvedValue({
+    id: "pc-1",
+    isUsed: false,
+    expiresAt: future,
+    chapterId: CHAPTER,
+  });
   mockPrisma._tx.promoCode.updateMany.mockResolvedValue({ count: 1 });
   mockPrisma._tx.enrollment.create.mockResolvedValue(enrollmentRow());
 }
@@ -105,7 +110,12 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
   it("rejects an expired code with 400 invalid and never claims it", async () => {
     mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
     mockPrisma.enrollment.findUnique.mockResolvedValue(null);
-    mockPrisma.promoCode.findUnique.mockResolvedValue({ id: "pc-1", isUsed: false, expiresAt: past });
+    mockPrisma.promoCode.findUnique.mockResolvedValue({
+      id: "pc-1",
+      isUsed: false,
+      expiresAt: past,
+      chapterId: CHAPTER,
+    });
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err.statusCode).toBe(400);
     expect(err.code).toBe("INVALID_CODE");
@@ -116,7 +126,12 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
   it("rejects an already-used code with 400 already-used", async () => {
     mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
     mockPrisma.enrollment.findUnique.mockResolvedValue(null);
-    mockPrisma.promoCode.findUnique.mockResolvedValue({ id: "pc-1", isUsed: true, expiresAt: future });
+    mockPrisma.promoCode.findUnique.mockResolvedValue({
+      id: "pc-1",
+      isUsed: true,
+      expiresAt: future,
+      chapterId: CHAPTER,
+    });
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err.statusCode).toBe(400);
     expect(err.code).toBe("CODE_ALREADY_USED");

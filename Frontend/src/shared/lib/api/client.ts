@@ -5,6 +5,7 @@ import axios, {
 } from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000/api";
+const REFRESH_TIMEOUT_MS = 10_000;
 
 /** Per-request retry flag (single retry after a refresh). */
 type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
@@ -67,7 +68,15 @@ apiClient.interceptors.response.use(
 
       try {
         // The refresh token rides as an HttpOnly cookie — no body, no storage.
-        await apiClient.post("/v1/auth/refresh");
+        await Promise.race([
+          apiClient.post("/v1/auth/refresh"),
+          new Promise<never>((_, reject) => {
+            setTimeout(
+              () => reject(new Error("refresh_timeout")),
+              REFRESH_TIMEOUT_MS,
+            );
+          }),
+        ]);
         processQueue(null);
         return apiClient(originalRequest);
       } catch (refreshError) {

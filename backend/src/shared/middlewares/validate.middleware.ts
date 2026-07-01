@@ -15,7 +15,19 @@ export function validateRequest<T>(
       return;
     }
 
-    req[source] = result.data;
+    req.validated ??= {};
+
+    if (source === "query") {
+      // Express 5 exposes req.query as a read-only getter — never reassign it.
+      req.validated.query = result.data;
+    } else if (source === "params") {
+      req.validated.params = result.data;
+      req.params = result.data as Request["params"];
+    } else {
+      req.validated.body = result.data;
+      req.body = result.data;
+    }
+
     next();
   };
 }

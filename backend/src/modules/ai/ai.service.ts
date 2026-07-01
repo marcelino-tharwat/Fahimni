@@ -7,6 +7,8 @@ import { AppError } from "../../shared/utils/AppError.js";
 import type { IndexingStatus, TextChunk, SimilarChunk } from "./ai.types.js";
 
 const BATCH_SIZE = 5;
+/** Must match `content_chunks.embedding vector(3072)` and Gemini text-embedding-004 output. */
+export const EXPECTED_EMBEDDING_DIMENSION = 3072;
 
 export class AiService {
   private indexingStatus = new Map<string, IndexingStatus>();
@@ -55,6 +57,12 @@ export class AiService {
       for (let j = 0; j < batch.length; j++) {
         const chunk = batch[j]!;
         const vector = embeddings[j]!;
+        if (vector.length !== EXPECTED_EMBEDDING_DIMENSION) {
+          throw new AppError(
+            `Embedding dimension mismatch: expected ${EXPECTED_EMBEDDING_DIMENSION}, got ${vector.length}`,
+            500,
+          );
+        }
         const vectorStr = `[${vector.join(",")}]`;
 
         await prisma.$executeRaw`
@@ -90,25 +98,43 @@ export class AiService {
       await prisma.$executeRaw`DELETE FROM content_chunks WHERE "lessonId" = ${lessonId}`;
 
       const chunks = this.chunkText(pdfText);
+      logger.info("material_chunking_completed", {
+        lessonId,
+        chunkCount: chunks.length,
+      });
 
       if (chunks.length === 0) {
-        this.indexingStatus.set(lessonId, "ready");
-        logger.warn(`[AiService] No chunks extracted for lesson ${lessonId}`);
-        return;
+        this.indexingStatus.set(lessonId, "failed");
+        logger.info("material_processing_failed", {
+          lessonId,
+          safeErrorCode: "EMPTY_TEXT",
+          chunkCount: 0,
+        });
+        throw new AppError("No indexable text content for lesson", 400);
       }
 
       await this.embedAndStore(chunks, lessonId, metadata ?? {});
+      logger.info("material_embedding_completed", {
+        lessonId,
+        chunkCount: chunks.length,
+      });
 
       this.indexingStatus.set(lessonId, "ready");
-      logger.info(
-        `[AiService] Indexed ${chunks.length} chunks for lesson ${lessonId}`,
-      );
+      logger.info("material_processing_completed", {
+        lessonId,
+        chunkCount: chunks.length,
+        outcome: "READY",
+      });
     } catch (error) {
       this.indexingStatus.set(lessonId, "failed");
-      logger.error(
-        `[AiService] Indexing failed for lesson ${lessonId}`,
-        error instanceof Error ? error.message : error,
-      );
+      const safeErrorCode =
+        error instanceof AppError && error.statusCode === 400
+          ? "EMPTY_TEXT"
+          : "UNKNOWN_PROCESSING_ERROR";
+      logger.info("material_processing_failed", {
+        lessonId,
+        safeErrorCode,
+      });
       throw error;
     }
   }

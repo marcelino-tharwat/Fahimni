@@ -45,7 +45,10 @@ function geminiJson(answer: string, citationRefs: string[]): string {
 
 function makeMocks() {
   const prisma = { lesson: { findMany: vi.fn() } };
-  const rag = { similaritySearchInLessons: vi.fn() };
+  const rag = {
+    similaritySearchInLessons: vi.fn(),
+    countChunksInLessons: vi.fn(),
+  };
   const gemini = { generateContent: vi.fn() };
   return { prisma, rag, gemini };
 }
@@ -64,6 +67,7 @@ function makeService(
 
 function primeHappyPath(m: ReturnType<typeof makeMocks>) {
   m.prisma.lesson.findMany.mockResolvedValue(accessibleLessons());
+  m.rag.countChunksInLessons.mockResolvedValue(4);
   m.rag.similaritySearchInLessons.mockResolvedValue(chunks());
   m.gemini.generateContent.mockResolvedValue(geminiJson("الإجابة المختصرة", ["SOURCE_1"]));
 }
@@ -74,6 +78,7 @@ describe("AiTutorService.ask", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     m = makeMocks();
+    m.rag.countChunksInLessons.mockResolvedValue(2);
   });
 
   // ── Input validation ────────────────────────────────────────────────────
@@ -81,6 +86,7 @@ describe("AiTutorService.ask", () => {
     primeHappyPath(m);
     const res = await makeService(m).ask("ما هي المعادلة الخطية؟", STUDENT);
     expect(res.answer).toBe("الإجابة المختصرة");
+    expect(res.outcome).toBe("ANSWERED");
     expect(res.citations).toHaveLength(1);
     expect(res.citations[0]).toEqual({
       lessonId: L1,
@@ -162,6 +168,7 @@ describe("AiTutorService.ask", () => {
 
   it("preserves relevance ordering from the search", async () => {
     m.prisma.lesson.findMany.mockResolvedValue(accessibleLessons());
+    m.rag.countChunksInLessons.mockResolvedValue(2);
     m.rag.similaritySearchInLessons.mockResolvedValue(chunks());
     m.gemini.generateContent.mockResolvedValue(
       geminiJson("إجابة", ["SOURCE_2", "SOURCE_1"]),
@@ -171,12 +178,23 @@ describe("AiTutorService.ask", () => {
     expect(res.citations.map((c) => c.lessonId)).toEqual([L2, L1]);
   });
 
-  it("returns the localized not-found and skips Gemini when no chunks are found", async () => {
+  it("returns NO_RELEVANT_MATCH when indexed content exists but search is empty", async () => {
     m.prisma.lesson.findMany.mockResolvedValue(accessibleLessons());
+    m.rag.countChunksInLessons.mockResolvedValue(3);
     m.rag.similaritySearchInLessons.mockResolvedValue([]);
     const res = await makeService(m).ask("سؤال غير موجود", STUDENT);
     expect(res.answer).toBe(TUTOR_NOT_FOUND_MESSAGE.ar);
     expect(res.citations).toEqual([]);
+    expect(res.outcome).toBe("NO_RELEVANT_MATCH");
+    expect(m.gemini.generateContent).not.toHaveBeenCalled();
+  });
+
+  it("returns NO_INDEXED_CONTENT when eligible lessons have zero chunks", async () => {
+    m.prisma.lesson.findMany.mockResolvedValue(accessibleLessons());
+    m.rag.countChunksInLessons.mockResolvedValue(0);
+    const res = await makeService(m).ask("سؤال", STUDENT);
+    expect(res.outcome).toBe("NO_INDEXED_CONTENT");
+    expect(m.rag.similaritySearchInLessons).not.toHaveBeenCalled();
     expect(m.gemini.generateContent).not.toHaveBeenCalled();
   });
 
@@ -191,6 +209,7 @@ describe("AiTutorService.ask", () => {
 
   it("enforces the retrieval timeout budget", async () => {
     m.prisma.lesson.findMany.mockResolvedValue(accessibleLessons());
+    m.rag.countChunksInLessons.mockResolvedValue(2);
     m.rag.similaritySearchInLessons.mockReturnValue(
       new Promise((resolve) => setTimeout(() => resolve(chunks()), 200)),
     );
