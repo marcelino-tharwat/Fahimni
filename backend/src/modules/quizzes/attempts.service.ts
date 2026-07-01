@@ -126,7 +126,7 @@ export class AttemptsService {
           title: q.title,
           questionCount: q.questionCount,
           points: q.totalPoints,
-          durationMinutes: q.durationMinutes ?? 30,
+          durationMinutes: q.durationMinutes,
           difficulty: "medium" as const,
           status,
           attemptId: attempt?.id ?? null,

@@ -6,7 +6,7 @@ export interface QuizItem {
   title: string;
   questionCount: number;
   points: number;
-  durationMinutes: number;
+  durationMinutes: number | null;
   difficulty: Difficulty;
   status: QuizStatus;
   score?: number;
