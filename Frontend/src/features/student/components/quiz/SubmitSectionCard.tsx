@@ -6,9 +6,15 @@ interface SubmitSectionCardProps {
   answeredCount: number;
   totalCount: number;
   onOpenModal: () => void;
+  disabled?: boolean;
 }
 
-export function SubmitSectionCard({ answeredCount, totalCount, onOpenModal }: SubmitSectionCardProps) {
+export function SubmitSectionCard({
+  answeredCount,
+  totalCount,
+  onOpenModal,
+  disabled = false,
+}: SubmitSectionCardProps) {
   const { t } = useTranslation();
   const allAnswered = answeredCount === totalCount;
 
@@ -31,7 +37,8 @@ export function SubmitSectionCard({ answeredCount, totalCount, onOpenModal }: Su
         <button
           type="button"
           onClick={onOpenModal}
-          className="flex h-12 min-w-[200px] items-center justify-center gap-2 rounded-btn bg-cyan-gradient px-8 text-sm font-bold text-white"
+          disabled={disabled}
+          className="flex h-12 min-w-[200px] items-center justify-center gap-2 rounded-btn bg-cyan-gradient px-8 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
           style={{ boxShadow: '0 8px 20px -6px rgba(0,201,219,0.45)' }}
         >
           <Send size={16} />

@@ -326,6 +326,10 @@ exports.Prisma.QuizAttemptScalarFieldEnum = {
   status: 'status',
   startedAt: 'startedAt',
   completedAt: 'completedAt',
+  durationMinutesSnapshot: 'durationMinutesSnapshot',
+  expiresAt: 'expiresAt',
+  submissionReason: 'submissionReason',
+  lastSavedAt: 'lastSavedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -445,6 +449,11 @@ exports.AttemptStatus = exports.$Enums.AttemptStatus = {
   IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
   GRADED: 'GRADED'
+};
+
+exports.AttemptSubmissionReason = exports.$Enums.AttemptSubmissionReason = {
+  MANUAL: 'MANUAL',
+  TIME_EXPIRED: 'TIME_EXPIRED'
 };
 
 exports.AiMessageRole = exports.$Enums.AiMessageRole = {

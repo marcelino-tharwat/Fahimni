@@ -29,8 +29,12 @@ export interface StartAttemptResponse {
   quizId: string;
   status: string;
   startedAt: string;
+  expiresAt: string;
+  serverTime: string;
   totalPoints: number;
-  durationMinutes: number | null;
+  durationMinutes: number;
+  lastSavedAt: string | null;
+  savedAnswers: { questionId: string; answer: string }[];
   quiz: { id: string; title: string; description: string | null };
   questions: RawQuestion[];
 }
@@ -128,9 +132,57 @@ export function mapMetaFromAttempt(
     title: response.quiz.title,
     totalQuestions: response.questions.length,
     totalPoints: response.totalPoints,
-    durationMinutes: response.durationMinutes ?? 30,
+    durationMinutes: response.durationMinutes,
     attemptLabel: '1',
   };
+}
+
+/** Resolve a student's raw answer into the backend-expected value. */
+export function resolveAnswerForBackend(
+  question: import('@/shared/types').QuizQuestion,
+  raw: string | undefined,
+): string {
+  const hasAnswer = raw !== undefined && raw !== '';
+
+  if (question.type === 'mcq' && question.options?.length) {
+    const byId = hasAnswer ? question.options.find((o) => o.id === raw) : undefined;
+    const byText = hasAnswer ? question.options.find((o) => o.text === raw) : undefined;
+    return (byId ?? byText ?? question.options[0]).text;
+  }
+  if (question.type === 'tf') {
+    return hasAnswer ? raw : 'خطأ';
+  }
+  return hasAnswer ? raw : '';
+}
+
+/** Build the submit payload — manual submit requires every question. */
+export function buildSubmitAnswers(
+  questions: import('@/shared/types').QuizQuestion[],
+  answers: Record<string, string>,
+  options?: { allowBlanks?: boolean },
+): { questionId: string; answer: string }[] {
+  return questions.map((q) => {
+    const raw = answers[q.id];
+    const resolved = resolveAnswerForBackend(q, raw);
+    if (!options?.allowBlanks && resolved.trim() === '') {
+      return { questionId: q.id, answer: q.type === 'essay' ? 'لا إجابة' : resolved };
+    }
+    return { questionId: q.id, answer: resolved };
+  });
+}
+
+/** Build draft-save payload for answered questions only. */
+export function buildDraftAnswers(
+  questions: import('@/shared/types').QuizQuestion[],
+  answers: Record<string, string>,
+): { questionId: string; answer: string }[] {
+  return questions
+    .map((q) => {
+      const raw = answers[q.id];
+      if (raw === undefined || raw === '') return null;
+      return { questionId: q.id, answer: resolveAnswerForBackend(q, raw) };
+    })
+    .filter((item): item is { questionId: string; answer: string } => item != null);
 }
 
 const RESULT_STATUSES: ResultStatus[] = ['correct', 'incorrect', 'pending', 'graded'];
@@ -218,11 +270,25 @@ export const quizApi = {
       `/quizzes/${quizId}/attempt`,
     ),
 
+  /** PATCH /api/attempts/:attemptId/answers — persist draft answers. */
+  saveDraftAnswers: (
+    attemptId: string,
+    answers: { questionId: string; answer: string }[],
+  ) =>
+    apiClient.patch<{ success: boolean; data: { lastSavedAt: string; savedCount: number } }>(
+      `/attempts/${attemptId}/answers`,
+      { answers },
+    ),
+
   /** POST /api/attempts/:attemptId/submit — submit all answers. */
-  submitAttempt: (attemptId: string, answers: { questionId: string; answer: string }[]) =>
+  submitAttempt: (
+    attemptId: string,
+    answers: { questionId: string; answer: string }[],
+    submissionReason?: 'MANUAL' | 'TIME_EXPIRED',
+  ) =>
     apiClient.post<{ success: boolean; data: SubmitAttemptResponse }>(
       `/attempts/${attemptId}/submit`,
-      { answers },
+      { answers, ...(submissionReason ? { submissionReason } : {}) },
     ),
 };
 

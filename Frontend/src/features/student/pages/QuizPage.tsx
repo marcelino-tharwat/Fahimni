@@ -14,9 +14,22 @@ import {
   MobileStickySubmitBar,
   SubmitModal,
 } from '@/features/student/components/quiz';
-import { quizApi, mapApiQuestion, mapMetaFromAttempt, buildQuizResults } from '@/features/student/api/quiz';
+import {
+  quizApi,
+  mapApiQuestion,
+  mapMetaFromAttempt,
+  buildQuizResults,
+  buildDraftAnswers,
+  buildSubmitAnswers,
+  getAttemptResults,
+} from '@/features/student/api/quiz';
+import { useQuizAttemptTimer } from '@/features/student/hooks/useQuizAttemptTimer';
 import type { PageStatus, QuizQuestion, QuizMeta } from '@/shared/types';
 import type { ApiError } from '@/shared/lib/api/client';
+
+type AutoSubmitState = 'idle' | 'submitting' | 'retrying';
+
+const DRAFT_SAVE_DEBOUNCE_MS = 800;
 
 export function QuizPage() {
   const { quizId } = useParams<{ quizId: string }>();
@@ -25,10 +38,10 @@ export function QuizPage() {
   const { i18n, t } = useTranslation();
 
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [timerSeconds, setTimerSeconds] = useState<number>(1800);
   const [status, setStatus] = useState<PageStatus>('loading');
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [autoSubmitState, setAutoSubmitState] = useState<AutoSubmitState>('idle');
   const [validationErrors, setValidationErrors] = useState<Set<string>>(new Set());
   const [pulsingErrors, setPulsingErrors] = useState<Set<string>>(new Set());
   const [showValidationBanner, setShowValidationBanner] = useState(false);
@@ -36,12 +49,25 @@ export function QuizPage() {
   const [meta, setMeta] = useState<QuizMeta | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [serverTime, setServerTime] = useState<string | null>(null);
+  const [inputsLocked, setInputsLocked] = useState(false);
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const hasAutoSubmitted = useRef(false);
+  const finalizeInFlightRef = useRef(false);
+  const draftSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingDraftRef = useRef<{ questionId: string; answer: string }[] | null>(null);
+  const questionsRef = useRef<QuizQuestion[]>([]);
+  const answersRef = useRef<Record<string, string>>({});
 
-  const timerWarning = timerSeconds < 300;
+  const { remainingSeconds, timerWarning, isExpired, setOnExpire } = useQuizAttemptTimer({
+    expiresAt,
+    serverTime,
+    enabled: status === 'active',
+  });
+
+  questionsRef.current = questions;
+  answersRef.current = answers;
 
   const answeredCount = useMemo(
     () => questions.filter((q) => {
@@ -60,7 +86,33 @@ export function QuizPage() {
     [answers, questions],
   );
 
+  const flushDraftSave = useCallback(async (): Promise<void> => {
+    if (!attemptId || inputsLocked) return;
+    const payload =
+      pendingDraftRef.current ??
+      buildDraftAnswers(questionsRef.current, answersRef.current);
+    if (payload.length === 0) return;
+
+    pendingDraftRef.current = null;
+    try {
+      await quizApi.saveDraftAnswers(attemptId, payload);
+    } catch {
+      pendingDraftRef.current = payload;
+    }
+  }, [attemptId, inputsLocked]);
+
+  const scheduleDraftSave = useCallback(() => {
+    if (!attemptId || inputsLocked) return;
+    if (draftSaveTimerRef.current) {
+      clearTimeout(draftSaveTimerRef.current);
+    }
+    draftSaveTimerRef.current = setTimeout(() => {
+      void flushDraftSave();
+    }, DRAFT_SAVE_DEBOUNCE_MS);
+  }, [attemptId, inputsLocked, flushDraftSave]);
+
   const setAnswer = useCallback((id: string, value: string) => {
+    if (inputsLocked) return;
     setAnswers((prev) => ({ ...prev, [id]: value }));
     setValidationErrors((prev) => {
       const next = new Set(prev);
@@ -72,7 +124,75 @@ export function QuizPage() {
       next.delete(id);
       return next;
     });
-  }, []);
+    scheduleDraftSave();
+  }, [inputsLocked, scheduleDraftSave]);
+
+  const navigateToResults = useCallback(
+    (submitResponse: Awaited<ReturnType<typeof getAttemptResults>>) => {
+      if (!quizId) return;
+      const resultsData = buildQuizResults(submitResponse);
+      navigate(`/student/quizzes/${quizId}/results/${submitResponse.attemptId}`, {
+        replace: true,
+        state: resultsData,
+      });
+    },
+    [navigate, quizId],
+  );
+
+  const finalizeAttempt = useCallback(
+    async (mode: 'MANUAL' | 'TIME_EXPIRED') => {
+      if (!attemptId || !quizId || finalizeInFlightRef.current) return;
+      finalizeInFlightRef.current = true;
+      setIsSubmitting(true);
+      if (mode === 'TIME_EXPIRED') {
+        setAutoSubmitState('submitting');
+        setInputsLocked(true);
+      }
+
+      try {
+        if (draftSaveTimerRef.current) {
+          clearTimeout(draftSaveTimerRef.current);
+        }
+        await flushDraftSave();
+
+        const answerArray =
+          mode === 'MANUAL'
+            ? buildSubmitAnswers(questionsRef.current, answersRef.current)
+            : [];
+
+        const res = await quizApi.submitAttempt(attemptId, answerArray, mode);
+        navigateToResults(res.data.data);
+      } catch (err) {
+        const apiErr = err as ApiError;
+        if (apiErr.statusCode === 409 || apiErr.code === 'ATTEMPT_ALREADY_SUBMITTED') {
+          try {
+            const existing = await getAttemptResults(attemptId);
+            navigateToResults(existing);
+            return;
+          } catch {
+            // fall through to retry/error handling
+          }
+        }
+
+        if (mode === 'TIME_EXPIRED') {
+          setAutoSubmitState('retrying');
+          finalizeInFlightRef.current = false;
+          window.setTimeout(() => {
+            void finalizeAttempt('TIME_EXPIRED');
+          }, 3000);
+          return;
+        }
+
+        setIsSubmitting(false);
+        finalizeInFlightRef.current = false;
+        dispatch(addToast({
+          type: 'error',
+          message: t('common:error', { defaultValue: 'حدث خطأ، حاول مرة أخرى' }),
+        }));
+      }
+    },
+    [attemptId, quizId, flushDraftSave, navigateToResults, dispatch, t],
+  );
 
   useEffect(() => {
     if (!quizId) return;
@@ -82,67 +202,54 @@ export function QuizPage() {
       .then((res) => {
         const data = res.data.data;
         setAttemptId(data.attemptId);
-
-        const totalSec = (data.durationMinutes ?? 30) * 60;
-        const elapsed = Math.floor(
-          (Date.now() - new Date(data.startedAt).getTime()) / 1000,
-        );
-        setTimerSeconds(Math.max(totalSec - elapsed, 0));
+        setExpiresAt(data.expiresAt);
+        setServerTime(data.serverTime);
 
         const mapped = data.questions.map((q, i) => mapApiQuestion(q, i, i18n.language));
         setQuestions(mapped);
+
+        const restored: Record<string, string> = {};
+        for (const item of data.savedAnswers ?? []) {
+          const question = mapped.find((q) => q.id === item.questionId);
+          if (!question) continue;
+          if (question.type === 'mcq' && question.options?.length) {
+            const byText = question.options.find((o) => o.text === item.answer);
+            restored[item.questionId] = byText?.id ?? item.answer;
+          } else {
+            restored[item.questionId] = item.answer;
+          }
+        }
+        setAnswers(restored);
 
         const mappedMeta = mapMetaFromAttempt(data);
         if (data.quiz.description) {
           mappedMeta.chapterLabel = data.quiz.description;
         }
         setMeta(mappedMeta);
-
         setStatus('active');
       })
       .catch((err: ApiError) => {
         if (err.statusCode === 409) {
-          // Already submitted. The results route now requires an attemptId, which
-          // the 409 error does not carry, so send the student back to the quiz
-          // list where they can re-open the attempt's results.
           navigate('/student/quizzes', { replace: true });
         } else {
           setStatus('error-403');
         }
       });
-  }, [quizId, i18n.language]);
+  }, [quizId, i18n.language, navigate]);
 
   useEffect(() => {
-    if (status !== 'active') return;
-
-    timerRef.current = setInterval(() => {
-      setTimerSeconds((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [status]);
+    setOnExpire(() => {
+      if (status !== 'active' || !attemptId) return;
+      void finalizeAttempt('TIME_EXPIRED');
+    });
+    return () => setOnExpire(null);
+  }, [status, attemptId, setOnExpire, finalizeAttempt]);
 
   useEffect(() => {
-    // The timer hitting 0 re-renders repeatedly; the ref guard ensures the
-    // auto-submit fires exactly once (avoids duplicate 400 requests).
-    if (
-      timerSeconds === 0 &&
-      status === 'active' &&
-      attemptId &&
-      !hasAutoSubmitted.current
-    ) {
-      hasAutoSubmitted.current = true;
-      handleAutoSubmit();
+    if (isExpired && status === 'active') {
+      setInputsLocked(true);
     }
-  }, [timerSeconds, status, attemptId]);
+  }, [isExpired, status]);
 
   useEffect(() => {
     if (status !== 'active') return;
@@ -167,61 +274,16 @@ export function QuizPage() {
     };
   }, [status, questions]);
 
-  const submitAnswers = useCallback(() => {
-    if (!attemptId || !quizId) return;
-
-    // The backend requires every quiz question to be answered exactly once, and
-    // validates each answer's format (MCQ → must be one of the option texts,
-    // TRUE_FALSE → a recognized true/false token, ESSAY → non-empty). So send an
-    // entry for every question — including a safe fallback for any left blank.
-    const answerArray = questions.map((q) => {
-      const raw = answers[q.id];
-      const hasAnswer = raw !== undefined && raw !== '';
-
-      let answer: string;
-      if (q.type === 'mcq' && q.options?.length) {
-        // The student selects an option by id ('a'..'d'), but the backend
-        // grades against the option *text* — resolve to the selected option's
-        // text (matching by id, or by text defensively), else the first option.
-        const byId = hasAnswer ? q.options.find((o) => o.id === raw) : undefined;
-        const byText = hasAnswer ? q.options.find((o) => o.text === raw) : undefined;
-        answer = (byId ?? byText ?? q.options[0]).text;
-      } else if (q.type === 'tf') {
-        answer = hasAnswer ? raw : 'خطأ';
-      } else {
-        // essay / fill — must be non-empty after trim.
-        answer = hasAnswer ? raw : 'لا إجابة';
+  useEffect(() => {
+    return () => {
+      if (draftSaveTimerRef.current) {
+        clearTimeout(draftSaveTimerRef.current);
       }
-
-      return { questionId: q.id, answer };
-    });
-
-    quizApi
-      .submitAttempt(attemptId, answerArray)
-      .then((res) => {
-        // The backend returns every field needed, so build the results shape
-        // directly from the submit response. It is carried via navigation state
-        // for an instant render; the attemptId in the URL lets the results page
-        // re-fetch on refresh / direct visit (SCRUM-423 §9).
-        const submitResponse = res.data.data;
-        const resultsData = buildQuizResults(submitResponse);
-        navigate(`/student/quizzes/${quizId}/results/${submitResponse.attemptId}`, {
-          replace: true,
-          state: resultsData,
-        });
-      })
-      .catch(() => {
-        setIsSubmitting(false);
-        dispatch(addToast({ type: 'error', message: t('common:error', { defaultValue: 'حدث خطأ، حاول مرة أخرى' }) }));
-      });
-  }, [attemptId, quizId, answers, questions, navigate, dispatch, t]);
-
-  const handleAutoSubmit = useCallback(() => {
-    setIsSubmitting(true);
-    submitAnswers();
-  }, [submitAnswers]);
+    };
+  }, []);
 
   const handleOpenModal = useCallback(() => {
+    if (inputsLocked) return;
     const unanswered = questions.filter((q) => !answers[q.id] || answers[q.id] === '');
     if (unanswered.length > 0) {
       const errorIds = new Set(unanswered.map((q) => q.id));
@@ -237,7 +299,7 @@ export function QuizPage() {
       document.getElementById(`q-${firstUnanswered.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     setSubmitModalOpen(true);
-  }, [answers, questions]);
+  }, [answers, questions, inputsLocked]);
 
   const handleDismissModal = useCallback(() => {
     setSubmitModalOpen(false);
@@ -247,9 +309,8 @@ export function QuizPage() {
   }, []);
 
   const handleConfirmSubmit = useCallback(() => {
-    setIsSubmitting(true);
-    submitAnswers();
-  }, [submitAnswers]);
+    void finalizeAttempt('MANUAL');
+  }, [finalizeAttempt]);
 
   const handleScrollToQuestion = useCallback((id: string) => {
     setSubmitModalOpen(false);
@@ -264,6 +325,13 @@ export function QuizPage() {
   const handleEndExam = useCallback(() => {
     handleOpenModal();
   }, [handleOpenModal]);
+
+  const timerStatusLabel =
+    autoSubmitState === 'submitting'
+      ? t('quiz:autoSubmitting')
+      : autoSubmitState === 'retrying'
+        ? t('quiz:autoSubmitRetry')
+        : undefined;
 
   if (status === 'loading') {
     return (
@@ -326,9 +394,11 @@ export function QuizPage() {
   return (
     <div dir={i18n.dir()} className="min-h-screen bg-navy-50 font-cairo">
       <ExamTopbar
-        timerSeconds={timerSeconds}
+        timerSeconds={remainingSeconds}
         timerWarning={timerWarning}
         onEndExam={handleEndExam}
+        timerLabel={timerStatusLabel}
+        disableEndExam={inputsLocked || isSubmitting}
       />
 
       <main className="px-4 py-5 pb-32 sm:px-6 sm:pb-8">
@@ -352,6 +422,7 @@ export function QuizPage() {
               onAnswer={setAnswer}
               hasError={validationErrors.has(q.id)}
               isPulsing={pulsingErrors.has(q.id)}
+              disabled={inputsLocked}
             />
           ))}
 
@@ -359,6 +430,7 @@ export function QuizPage() {
             answeredCount={answeredCount}
             totalCount={questions.length}
             onOpenModal={handleOpenModal}
+            disabled={inputsLocked}
           />
         </div>
       </main>
@@ -367,6 +439,7 @@ export function QuizPage() {
         answeredCount={answeredCount}
         totalCount={questions.length}
         onOpenModal={handleOpenModal}
+        disabled={inputsLocked}
       />
 
       <SubmitModal
