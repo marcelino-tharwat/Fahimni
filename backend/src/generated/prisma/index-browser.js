@@ -337,6 +337,7 @@ exports.Prisma.PromoCodeScalarFieldEnum = {
   usedByStudentId: 'usedByStudentId',
   usedAt: 'usedAt',
   createdById: 'createdById',
+  chapterId: 'chapterId',
   createdAt: 'createdAt',
   expiresAt: 'expiresAt'
 };

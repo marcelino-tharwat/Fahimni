@@ -111,7 +111,9 @@
     "errorLoading": "حدث خطأ في تحميل الأكواد",
     "retry": "إعادة المحاولة",
     "errorGenerating": "حدث خطأ أثناء إنشاء الكود",
-    "successToast": "تم إنشاء الكود بنجاح"
+    "successToast": "تم إنشاء الكود بنجاح",
+    "chapterIdLabel": "معرّف الفصل",
+    "chapterIdPlaceholder": "أدخل معرّف الفصل (UUID)"
   },
   "language": { "ar": "العربية", "en": "English" }
 }

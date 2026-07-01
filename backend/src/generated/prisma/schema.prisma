@@ -91,6 +91,7 @@ model Chapter {
   lessons             Lesson[]
   quizzes             Quiz[]
   paymentTransactions PaymentTransaction[]
+  promoCodes          PromoCode[]
 
   @@index([stageId])
   @@index([stageId, sortOrder])
@@ -333,13 +334,16 @@ model PromoCode {
   usedByStudentId String?
   usedAt          DateTime?
   createdById     String
+  chapterId       String
   createdAt       DateTime  @default(now())
   expiresAt       DateTime?
   usedByStudent   User?     @relation("PromoCodeUsedBy", fields: [usedByStudentId], references: [id])
   createdBy       User      @relation("PromoCodeCreatedBy", fields: [createdById], references: [id])
+  chapter         Chapter   @relation(fields: [chapterId], references: [id])
 
   @@index([usedByStudentId])
   @@index([createdById])
+  @@index([chapterId])
   @@map("promo_codes")
 }
 

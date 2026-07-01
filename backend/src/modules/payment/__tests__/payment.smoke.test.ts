@@ -92,6 +92,7 @@ describe("PaymentService", () => {
 
       await expect(service.checkout("stu1", "ch1")).rejects.toMatchObject({
         statusCode: 404,
+        code: "CHAPTER_NOT_FOUND",
       });
     });
 
@@ -106,6 +107,7 @@ describe("PaymentService", () => {
 
       await expect(service.checkout("stu1", "ch1")).rejects.toMatchObject({
         statusCode: 400,
+        code: "CHAPTER_FREE",
       });
     });
 
@@ -122,6 +124,7 @@ describe("PaymentService", () => {
 
       await expect(service.checkout("stu1", "ch1")).rejects.toMatchObject({
         statusCode: 409,
+        code: "ALREADY_ENROLLED",
       });
     });
   });
@@ -132,7 +135,7 @@ describe("PaymentService", () => {
 
       await expect(
         service.handleWebhook(payload, "wrong-hmac"),
-      ).rejects.toMatchObject({ statusCode: 401 });
+      ).rejects.toMatchObject({ statusCode: 401, code: "INVALID_HMAC" });
     });
 
     it("returns silently when transaction is already SUCCESS (idempotency)", async () => {

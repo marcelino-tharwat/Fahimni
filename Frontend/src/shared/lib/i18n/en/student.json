@@ -118,13 +118,30 @@
       "errorUsed": "This code has already been used",
       "errorExpired": "This code has expired",
       "errorInvalid": "Invalid code, please check and try again",
-      "errorEmpty": "Please enter a code"
+      "errorEmpty": "Please enter a code",
+      "errorNotForChapter": "This code is not valid for this chapter"
     },
     "paymob": {
       "title": "Pay with Paymob",
       "subtitle": "Pay with bank card, e-wallet, or Fawry",
       "subscribe": "Subscribe Now",
-      "preparing": "Preparing payment..."
+      "preparing": "Preparing payment...",
+      "error": "Failed to initiate payment. Please try again."
+    },
+    "confirming": {
+      "title": "Confirming payment",
+      "description": "Waiting for payment confirmation from Paymob...",
+      "doNotClose": "Please do not close this page"
+    },
+    "stillProcessing": {
+      "title": "Payment not yet confirmed",
+      "description": "The payment may take a few minutes to confirm. You can check the status manually."
+    },
+    "checkStatus": "Check payment status",
+    "failedRetry": {
+      "title": "Payment failed",
+      "description": "The payment was not confirmed. You can try again.",
+      "retryButton": "Try Again"
     },
     "secure": {
       "text": "All payments are secure and encrypted",

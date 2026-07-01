@@ -19,8 +19,9 @@ export class PromoCodeController {
   public createPromoCode = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const createdById = req.user!.id;
+      const { chapterId } = req.body as { chapterId: string };
 
-      const promoCode = await promoCodeService.create(createdById);
+      const promoCode = await promoCodeService.create(createdById, chapterId);
 
       res
         .status(201)
@@ -33,9 +34,6 @@ export class PromoCodeController {
 
   public getAllPromoCodes = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
-      // Express 5 exposes req.query as read-only, so the list query is validated
-      // here (not via validateRequest); the thrown ZodError is handled by the
-      // global error handler exactly as the validate middleware would.
       const query = listPromoCodesSchema.parse(req.query);
 
       const result = await promoCodeService.findAll(query);
@@ -52,8 +50,9 @@ export class PromoCodeController {
   public validatePromoCode = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const code = req.params.code as string;
+      const chapterId = req.query.chapterId as string | undefined;
 
-      const result = await promoCodeService.validate(code);
+      const result = await promoCodeService.validate(code, chapterId);
 
       res
         .status(200)
@@ -64,10 +63,6 @@ export class PromoCodeController {
     },
   );
 
-  /**
-   * STORY-53 canonical: POST /api/promo-codes/redeem  body: { code, chapterId }.
-   * Student id always from auth; never from the body.
-   */
   public redeemByBody = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const studentId = req.user!.id;
@@ -87,10 +82,6 @@ export class PromoCodeController {
     },
   );
 
-  /**
-   * Compatibility alias retained from STORY-52: POST /api/promo-codes/:code/redeem.
-   * Delegates to the same shared redemption service method as the canonical route.
-   */
   public redeemPromoCode = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const code = req.params.code as string;

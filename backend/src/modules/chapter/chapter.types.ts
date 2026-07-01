@@ -10,6 +10,21 @@ export interface ChapterResponseDTO {
   updatedAt: Date;
 }
 
+/**
+ * Lighter response DTO for the STUDENT-facing GET /chapters/:id endpoint.
+ * Omits internal fields (sortOrder, createdAt, updatedAt) and includes the
+ * stage name so the frontend can render breadcrumbs without an extra join.
+ */
+export interface StudentChapterResponseDTO {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number | null;
+  stageId: string;
+  stageName: string;
+  lessonsCount: number;
+}
+
 export interface StageParams {
   stageId?: string;
 }

@@ -24,7 +24,7 @@ const owned = {
 
 interface HttpResult {
   status: number;
-  json: { success?: boolean; message?: string; data?: unknown } | null;
+  json: { success?: boolean; message?: string; code?: string; data?: unknown } | null;
   setCookie: string[];
 }
 
@@ -164,10 +164,12 @@ describe("STORY-53 — promo code redemption E2E", () => {
     const en = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code: bogus, chapterId } });
     expect(en.status).toBe(400);
     expect(en.json?.message).toBe(REDEEM_MESSAGES.en.invalidCode);
+    expect((en.json as { code?: string })?.code).toBe("INVALID_CODE");
 
     const ar = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code: bogus, chapterId }, acceptLanguage: "ar" });
     expect(ar.status).toBe(400);
     expect(ar.json?.message).toBe(REDEEM_MESSAGES.ar.invalidCode);
+    expect((ar.json as { code?: string })?.code).toBe("INVALID_CODE");
 
     expect(await prisma.enrollment.count({ where: { studentId: s1.id, chapterId } })).toBe(0);
   });
@@ -178,6 +180,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
 
     const r = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code, chapterId } });
     expect(r.status).toBe(400);
+    expect(r.json?.code).toBe("INVALID_CODE");
     const pc = await prisma.promoCode.findUniqueOrThrow({ where: { code }, select: { isUsed: true } });
     expect(pc.isUsed).toBe(false);
     expect(await prisma.enrollment.count({ where: { studentId: s1.id, chapterId } })).toBe(0);
@@ -193,6 +196,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
 
     const second = await http("POST", "/api/promo-codes/redeem", { cookie: s2Cookie, body: { code, chapterId: chapterId2 } });
     expect(second.status).toBe(400);
+    expect(second.json?.code).toBe("CODE_ALREADY_USED");
     expect(second.json?.message).toBe(REDEEM_MESSAGES.en.alreadyUsed);
     expect(await prisma.enrollment.count({ where: { studentId: s2.id, chapterId: chapterId2 } })).toBe(0);
   });
@@ -204,6 +208,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
 
     const r = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code, chapterId } });
     expect(r.status).toBe(400);
+    expect(r.json?.code).toBe("ALREADY_ENROLLED");
     expect(r.json?.message).toBe(REDEEM_MESSAGES.en.alreadyEnrolled);
 
     const pc = await prisma.promoCode.findUniqueOrThrow({ where: { code }, select: { isUsed: true } });

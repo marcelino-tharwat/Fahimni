@@ -44,6 +44,7 @@ const envSchema = z.object({
   PAYMOB_HMAC_SECRET: z.string().min(1),
   PAYMOB_CURRENCY: z.string().min(1).default("EGP"),
   PAYMOB_BASE_URL: z.string().url().default("https://accept.paymob.com"),
+  FRONTEND_BASE_URL: z.string().url().default("http://localhost:5173"),
 });
 
 export const env = envSchema.parse(process.env);

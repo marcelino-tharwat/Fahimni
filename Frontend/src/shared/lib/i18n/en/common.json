@@ -112,7 +112,9 @@
     "errorLoading": "Failed to load codes",
     "retry": "Retry",
     "errorGenerating": "Failed to generate code",
-    "successToast": "Code generated successfully"
+    "successToast": "Code generated successfully",
+    "chapterIdLabel": "Chapter ID",
+    "chapterIdPlaceholder": "Enter chapter ID (UUID)"
   },
   "language": { "ar": "العربية", "en": "English" }
 }

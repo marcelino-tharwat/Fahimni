@@ -20,10 +20,13 @@ export const studentPromoApi = {
    * path param must be 8 uppercase alphanumerics, so the code is trimmed +
    * upper-cased here to mirror the server and avoid a 400 on casing/whitespace.
    */
-  validate: async (code: string): Promise<PromoValidationResult> => {
+  validate: async (code: string, chapterId?: string): Promise<PromoValidationResult> => {
     const normalized = code.trim().toUpperCase();
+    const params = chapterId ? { chapterId } : undefined;
     const { data } = await apiClient.post<ApiResponse<PromoValidationResult>>(
       `/promo-codes/${encodeURIComponent(normalized)}/validate`,
+      undefined,
+      { params },
     );
     return data.data;
   },

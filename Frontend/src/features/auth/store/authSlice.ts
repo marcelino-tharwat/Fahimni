@@ -175,6 +175,8 @@ const authSlice = createSlice({
       state.error = null;
       clearUser();
       removeRefreshToken();
+      // Prevent stale payment state from persisting across auth sessions
+      sessionStorage.removeItem('pending_payment');
     },
     clearError(state) {
       state.error = null;

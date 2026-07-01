@@ -21,6 +21,7 @@ export interface PromoCode {
   usedByStudentId: string | null;
   usedAt: string | null; // ISO date string
   createdById: string;
+  chapterId: string;
   createdAt: string; // ISO date string
   expiresAt: string | null; // ISO date string
 }
@@ -57,7 +58,7 @@ export interface ListPromoCodesParams {
  */
 export interface PromoValidationResult {
   valid: boolean;
-  reason?: 'CODE_NOT_FOUND' | 'CODE_ALREADY_USED' | 'CODE_EXPIRED';
+  reason?: 'CODE_NOT_FOUND' | 'CODE_ALREADY_USED' | 'CODE_EXPIRED' | 'CODE_NOT_FOR_THIS_CHAPTER';
 }
 
 /**

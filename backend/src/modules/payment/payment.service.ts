@@ -31,11 +31,11 @@ export class PaymentService {
     });
 
     if (!chapter || chapter.deletedAt) {
-      throw new AppError(paymentMessages.chapterNotFound[lang], 404);
+      throw new AppError(paymentMessages.chapterNotFound[lang], 404, "CHAPTER_NOT_FOUND");
     }
 
     if (chapter.price === null || Number(chapter.price) === 0) {
-      throw new AppError(paymentMessages.chapterFree[lang], 400);
+      throw new AppError(paymentMessages.chapterFree[lang], 400, "CHAPTER_FREE");
     }
 
     const existingEnrollment = await prisma.enrollment.findFirst({
@@ -44,7 +44,7 @@ export class PaymentService {
     });
 
     if (existingEnrollment) {
-      throw new AppError(paymentMessages.alreadyEnrolled[lang], 409);
+      throw new AppError(paymentMessages.alreadyEnrolled[lang], 409, "ALREADY_ENROLLED");
     }
 
     const amountEGP = Number(chapter.price);
@@ -58,7 +58,7 @@ export class PaymentService {
     });
 
     if (!student) {
-      throw new AppError(paymentMessages.studentNotFound[lang], 404);
+      throw new AppError(paymentMessages.studentNotFound[lang], 404, "STUDENT_NOT_FOUND");
     }
 
     const nameParts = student.fullName.split(" ");
@@ -84,6 +84,7 @@ export class PaymentService {
       paymobOrderId,
       amountEGP,
       billingData,
+      chapterId,
     );
 
     const iframeUrl = this.paymobService.buildIframeUrl(paymentKey);
@@ -105,7 +106,7 @@ export class PaymentService {
     const calculated = this.calculateHmac(payload);
     if (calculated !== hmacFromQuery) {
       logger.warn("Paymob webhook rejected — HMAC mismatch");
-      throw new AppError("Invalid HMAC signature", 401);
+      throw new AppError("Invalid HMAC signature", 401, "INVALID_HMAC");
     }
 
     logger.info("Paymob webhook received — HMAC verified");
@@ -220,6 +221,33 @@ export class PaymentService {
     }
   }
 
+  /**
+   * Get payment status by Paymob order ID. The `status` field in the response
+   * is always one of: "PENDING" | "SUCCESS" | "FAILED".
+   *
+   * ## Polling recommendation (frontend)
+   * The Paymob webhook is the source of truth for payment finalisation. It
+   * typically arrives **3–30 seconds** after the user completes payment in the
+   * iframe. To bridge the gap between iframe completion and webhook delivery,
+   * the frontend SHOULD poll this endpoint:
+   *
+   *   Interval:   every 3 seconds
+   *   Timeout:    120 seconds (2 minutes)
+   *   Stop when:  status !== "PENDING"
+   *
+   * ## Alternative — PostMessage (no polling needed)
+   * Paymob's iframe supports a `post_message=true` query parameter. When set,
+   * the Paymob iframe posts a `message` event to the parent window with the
+   * transaction result, which the frontend can listen for directly. This
+   * eliminates the need for polling.
+   *
+   * To enable, add `&post_message=true` to the iframe URL in PaymobService's
+   * `buildIframeUrl()`. The frontend would then listen:
+   *   window.addEventListener('message', (event) => { … });
+   *
+   * The webhook remains the canonical source of truth regardless of which
+   * mechanism the frontend uses for the interim waiting period.
+   */
   async getPaymentStatus(
     paymobOrderId: string,
     studentId: string,
@@ -230,11 +258,11 @@ export class PaymentService {
     });
 
     if (!transaction) {
-      throw new AppError(paymentMessages.paymentNotFound[lang], 404);
+      throw new AppError(paymentMessages.paymentNotFound[lang], 404, "PAYMENT_NOT_FOUND");
     }
 
     if (transaction.studentId !== studentId) {
-      throw new AppError(paymentMessages.forbidden[lang], 403);
+      throw new AppError(paymentMessages.forbidden[lang], 403, "FORBIDDEN");
     }
 
     return this.toDTO(transaction);
