@@ -69,30 +69,58 @@ export class FilesService {
       },
     });
 
-    console.warn("AV scan pending for:", filePath);
+    logger.info("material_processing_started", {
+      lessonId,
+      materialId: record.id,
+      mimeType: file.mimetype,
+      fileSize: file.size,
+    });
 
     let indexingStatus: IndexingStatus = "pending";
     try {
       const parser = new PDFParse({ data: new Uint8Array(file.buffer) });
       const textResult = await parser.getText();
       const text = textResult.text.trim();
-      if (text.length > 0) {
+      const nonWhitespace = text.replace(/\s+/g, "").length;
+      logger.info("material_text_extracted", {
+        lessonId,
+        materialId: record.id,
+        pageCount: textResult.total ?? 0,
+        characterCount: text.length,
+        nonWhitespaceCharacterCount: nonWhitespace,
+      });
+      if (nonWhitespace > 0) {
         try {
           await aiService.indexLesson(lessonId, text, {
             fileName: file.originalname,
             filePath,
+            materialId: record.id,
           });
           indexingStatus = "ready";
         } catch (err: unknown) {
           indexingStatus = "failed";
-          logger.warn(`[FilesService] Auto-indexing failed: ${err}`);
+          logger.info("material_processing_failed", {
+            lessonId,
+            materialId: record.id,
+            safeErrorCode: "EMBEDDING_FAILED",
+          });
         }
       } else {
-        logger.warn(`[FilesService] No extractable text in PDF ${file.originalname}`);
+        indexingStatus = "failed";
+        logger.info("material_processing_failed", {
+          lessonId,
+          materialId: record.id,
+          safeErrorCode: "OCR_REQUIRED",
+          pageCount: textResult.total ?? 0,
+        });
       }
     } catch (err: unknown) {
       indexingStatus = "failed";
-      logger.warn(`[FilesService] PDF text extraction failed: ${err}`);
+      logger.info("material_processing_failed", {
+        lessonId,
+        materialId: record.id,
+        safeErrorCode: "CORRUPT_PDF",
+      });
     }
 
     return { record, indexingStatus };

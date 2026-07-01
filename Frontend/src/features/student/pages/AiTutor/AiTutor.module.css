@@ -1,0 +1,106 @@
+.page {
+  display: flex;
+  height: calc(100dvh - 4rem - 3.5rem);
+  overflow: hidden;
+  margin: -0.75rem;
+  background: var(--color-background);
+}
+
+@media (min-width: 768px) {
+  .page {
+    height: calc(100vh - 4rem);
+    margin: -1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page {
+    margin: -1.5rem;
+  }
+}
+
+.sidebar {
+  display: none;
+  width: 280px;
+  flex-shrink: 0;
+  flex-direction: column;
+  border-inline-end: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+.chatColumn {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  height: 3rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding-inline: 1rem;
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  background: #f4f4fafa;
+  padding: 1.25rem 1rem;
+}
+
+.messagesInner {
+  display: flex;
+  max-width: 48rem;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-inline: auto;
+}
+
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(0 0 0 / 50%);
+}
+
+.drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 50;
+  display: flex;
+  width: min(100%, 320px);
+  flex-direction: column;
+  background: var(--color-surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+}
+
+@media (min-width: 1024px) {
+  .drawerOverlay,
+  .drawer {
+    display: none;
+  }
+}

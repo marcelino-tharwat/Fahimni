@@ -1,41 +1,52 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { prisma } from "../src/config/database.js";
+import { logger } from "../src/config/logger.js";
 import { assertLocalDatabase } from "../src/seed/local-guard.js";
+import {
+  isValidUuid,
+  seedId,
+} from "../src/seed/chemistry-ids.js";
+import {
+  ALL_QUIZ_IDS,
+  buildQuestions,
+} from "../src/seed/chemistry-seed.fixtures.js";
 import type { Prisma } from "../src/generated/prisma/client.js";
 
 /**
  * Fahimni development seed — محتوى تجريبي لكيمياء الصف الثالث الثانوي.
  *
- * Deterministic, idempotent, demo-only chemistry dataset. NOT an official
- * Ministry curriculum — it is sample content for frontend/backend/E2E testing.
- *
- * Safety:
- *  - Aborts unless DATABASE_URL is a recognised LOCAL host and NODE_ENV != production
- *    (assertLocalDatabase).
- *  - Every seed-owned row uses a stable `seed-chem-` id (or the SEED_PREFIX),
- *    so cleanup is scoped — never an unrestricted deleteMany({}).
- *  - Re-running deletes only the seed-owned namespace, then recreates it inside a
- *    transaction → idempotent (no duplicates, no unique-constraint errors).
+ * Deterministic UUID v5 ids, idempotent, demo-only. NOT official curriculum.
  */
 
 const BCRYPT_ROUNDS = 12;
-const SEED_PREFIX = "seed-"; // covers legacy `seed-*` AND new `seed-chem-*`
-const id = (s: string) => `seed-chem-${s}`;
-
-// Demo password comes only from the git-ignored .env (never hardcoded/printed).
+const LEGACY_SEED_PREFIX = "seed-chem-";
 const LOCAL_PASSWORD = process.env.SEED_LOCAL_PASSWORD ?? "ChemDemo#2026";
 
-// ── Stable identities ───────────────────────────────────────────────────────
+const CHEMISTRY_SEED_EMAILS = [
+  "admin.chemistry@fahimni.test",
+  "teacher.chemistry@fahimni.test",
+  "chem.student01@fahimni.test",
+  "chem.student02@fahimni.test",
+  "chem.student03@fahimni.test",
+  "chem.student04@fahimni.test",
+  "chem.student05@fahimni.test",
+  "chem.student06@fahimni.test",
+  "chem.student07@fahimni.test",
+  "chem.student08@fahimni.test",
+] as const;
+
+const SEED_PROMO_CODES = ["CHEM2026", "CHEMREV", "ORGDEMO"] as const;
+
 const ADMIN = {
-  id: id("admin"),
+  id: seedId("admin"),
   email: "admin.chemistry@fahimni.test",
   fullName: "مشرف منصة فهمني (تجريبي)",
   mobile: "01000000001",
   role: "ADMIN" as const,
 };
 const TEACHER = {
-  id: id("teacher"),
+  id: seedId("teacher"),
   email: "teacher.chemistry@fahimni.test",
   fullName: "أ. محمود الكيميائي",
   mobile: "01000000002",
@@ -44,34 +55,33 @@ const TEACHER = {
 const STUDENTS = Array.from({ length: 8 }, (_v, i) => {
   const n = String(i + 1).padStart(2, "0");
   return {
-    id: id(`student${n}`),
+    id: seedId(`student-${n}`),
     email: `chem.student${n}@fahimni.test`,
     fullName: `طالب كيمياء ${n}`,
     mobile: `0100000${String(1001 + i).padStart(4, "0")}`,
     role: "STUDENT" as const,
   };
 });
-const SEED_PROMO_CODES = ["CHEM2026", "CHEMREV", "ORGDEMO"]; // VarChar(8) max
 
 const STAGE = {
-  id: id("stage"),
+  id: seedId("stage"),
   name: "كيمياء الصف الثالث الثانوي",
   description: "محتوى تجريبي لكيمياء الصف الثالث الثانوي",
 };
 
 const CHAPTERS = [
   {
-    id: id("ch1"),
+    id: seedId("chapter-01"),
     name: "العناصر الانتقالية",
     lessons: ["خواص العناصر الانتقالية", "حالات التأكسد", "الحديد وسبائكه"],
   },
   {
-    id: id("ch2"),
+    id: seedId("chapter-02"),
     name: "التحليل الكيميائي",
     lessons: ["التحليل النوعي", "التحليل الكمي", "المعايرة والحسابات"],
   },
   {
-    id: id("ch3"),
+    id: seedId("chapter-03"),
     name: "الاتزان الكيميائي",
     lessons: [
       "مفهوم الاتزان الديناميكي",
@@ -80,12 +90,12 @@ const CHAPTERS = [
     ],
   },
   {
-    id: id("ch4"),
+    id: seedId("chapter-04"),
     name: "الكيمياء الكهربية",
     lessons: ["الخلايا الجلفانية", "التحليل الكهربي", "قوانين فاراداي"],
   },
   {
-    id: id("ch5"),
+    id: seedId("chapter-05"),
     name: "الكيمياء العضوية",
     lessons: ["الهيدروكربونات", "الكحولات والأحماض", "البوليمرات"],
   },
@@ -96,9 +106,15 @@ const daysAgo = (d: number) =>
   new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
 const utcDate = (d: Date) =>
   new Date(`${d.toISOString().slice(0, 10)}T00:00:00.000Z`);
-const lessonId = (ci: number, li: number) => id(`l${ci + 1}-${li + 1}`);
 
-/** A QuestionResult entry matching auto-grade.ts (stored in QuizAttempt.answers). */
+const lessonId = (ci: number, li: number) =>
+  seedId(`lesson-ch${ci + 1}-${String(li + 1).padStart(2, "0")}`);
+
+const ALL_SEED_USER_IDS = [ADMIN.id, TEACHER.id, ...STUDENTS.map((s) => s.id)];
+const ALL_CHAPTER_IDS = CHAPTERS.map((c) => c.id);
+const ALL_LESSON_IDS = CHAPTERS.flatMap((c, ci) =>
+  c.lessons.map((_t, li) => lessonId(ci, li)),
+);
 function result(
   questionId: string,
   type: string,
@@ -119,45 +135,52 @@ function result(
   };
 }
 
-async function cleanup(): Promise<void> {
-  // FK-safe order. Scope: seed-owned ids (legacy `seed-*` + new `seed-chem-*`),
-  // seed promo codes, and the fixed demo emails. No unrestricted deletes.
-  const seedUserIds = (
-    await prisma.user.findMany({
-      where: {
-        OR: [
-          { id: { startsWith: SEED_PREFIX } },
-          { email: { endsWith: "@fahimni.test" } },
-          { email: { endsWith: "@school.edu" } },
-        ],
-      },
-      select: { id: true },
-    })
-  ).map((u) => u.id);
+async function resolveSeedUserIds(): Promise<string[]> {
+  const rows = await prisma.user.findMany({
+    where: {
+      OR: [
+        { email: { in: [...CHEMISTRY_SEED_EMAILS] } },
+        { id: { in: ALL_SEED_USER_IDS } },
+        { id: { startsWith: LEGACY_SEED_PREFIX } },
+      ],
+    },
+    select: { id: true },
+  });
+  return [...new Set(rows.map((r) => r.id))];
+}
 
-  // Content owned by seed users (by ownership, not just id-prefix) so legacy
-  // seed rows with UUID ids are also removed and FK constraints stay satisfied.
+async function cleanup(): Promise<void> {
+  const seedUserIds = await resolveSeedUserIds();
+
+  logger.info("legacy_cleanup_started", {
+    legacyUsersFound: seedUserIds.length,
+  });
+
   const ownedLesson = {
     OR: [
-      { id: { startsWith: SEED_PREFIX } },
+      { id: { in: ALL_LESSON_IDS } },
+      { id: { startsWith: LEGACY_SEED_PREFIX } },
       { chapter: { stage: { teacherId: { in: seedUserIds } } } },
     ],
   };
   const ownedChapter = {
     OR: [
-      { id: { startsWith: SEED_PREFIX } },
+      { id: { in: ALL_CHAPTER_IDS } },
+      { id: { startsWith: LEGACY_SEED_PREFIX } },
       { stage: { teacherId: { in: seedUserIds } } },
     ],
   };
   const ownedStage = {
     OR: [
-      { id: { startsWith: SEED_PREFIX } },
+      { id: STAGE.id },
+      { id: { startsWith: LEGACY_SEED_PREFIX } },
       { teacherId: { in: seedUserIds } },
     ],
   };
   const ownedQuiz = {
     OR: [
-      { id: { startsWith: SEED_PREFIX } },
+      { id: { in: ALL_QUIZ_IDS } },
+      { id: { startsWith: LEGACY_SEED_PREFIX } },
       { createdBy: { in: seedUserIds } },
     ],
   };
@@ -166,24 +189,19 @@ async function cleanup(): Promise<void> {
     await tx.quizAttempt.deleteMany({
       where: {
         OR: [
-          { id: { startsWith: SEED_PREFIX } },
+          { id: { startsWith: LEGACY_SEED_PREFIX } },
           { studentId: { in: seedUserIds } },
           { quiz: ownedQuiz },
         ],
       },
     });
     await tx.aiTutorUsage.deleteMany({
-      where: {
-        OR: [
-          { id: { startsWith: SEED_PREFIX } },
-          { studentId: { in: seedUserIds } },
-        ],
-      },
+      where: { studentId: { in: seedUserIds } },
     });
     await tx.lessonProgress.deleteMany({
       where: {
         OR: [
-          { id: { startsWith: SEED_PREFIX } },
+          { id: { startsWith: LEGACY_SEED_PREFIX } },
           { studentId: { in: seedUserIds } },
           { lesson: ownedLesson },
         ],
@@ -192,7 +210,7 @@ async function cleanup(): Promise<void> {
     await tx.enrollment.deleteMany({
       where: {
         OR: [
-          { id: { startsWith: SEED_PREFIX } },
+          { id: { startsWith: LEGACY_SEED_PREFIX } },
           { studentId: { in: seedUserIds } },
           { chapter: ownedChapter },
         ],
@@ -205,20 +223,21 @@ async function cleanup(): Promise<void> {
     });
     await tx.question.deleteMany({ where: { quiz: ownedQuiz } });
     await tx.quiz.deleteMany({ where: ownedQuiz });
-    // content_chunks: scoped raw delete for seed-owned lessons (Unsupported vector column).
     await tx.$executeRaw`
       DELETE FROM content_chunks WHERE "lessonId" IN (
         SELECT l.id FROM lessons l
         JOIN chapters c ON c.id = l."chapterId"
         JOIN stages s ON s.id = c."stageId"
-        WHERE l.id LIKE 'seed-%' OR s."teacherId" = ANY(${seedUserIds}::text[])
+        WHERE l.id = ANY(${ALL_LESSON_IDS}::text[])
+           OR l.id LIKE 'seed-chem-%'
+           OR s."teacherId" = ANY(${seedUserIds}::text[])
       )`;
     await tx.lessonMaterial.deleteMany({ where: { lesson: ownedLesson } });
     await tx.lesson.deleteMany({ where: ownedLesson });
     await tx.promoCode.deleteMany({
       where: {
         OR: [
-          { code: { in: SEED_PROMO_CODES } },
+          { code: { in: [...SEED_PROMO_CODES] } },
           { createdById: { in: seedUserIds } },
           { usedByStudentId: { in: seedUserIds } },
         ],
@@ -242,153 +261,30 @@ async function cleanup(): Promise<void> {
     });
     await tx.user.deleteMany({ where: { id: { in: seedUserIds } } });
   });
+
+  logger.info("legacy_cleanup_completed", {
+    legacyUsersRemoved: seedUserIds.length,
+  });
 }
 
-interface SeedQuestion {
-  id: string;
-  quizId: string;
-  type: "MCQ" | "TRUE_FALSE" | "ESSAY";
-  text: string;
-  options: Prisma.InputJsonValue;
-  correctAnswer: string | null;
-  explanation: string;
-  sortOrder: number;
-  points: number;
-}
-
-/** Deterministic 3-question set (MCQ + TRUE_FALSE + ESSAY) themed per chapter. */
-function buildQuestions(quizId: string, ci: number): SeedQuestion[] {
-  const themes = [
-    {
-      mcq: [
-        "ما العدد الأكسجيني للحديد في أكسيد الحديد III؟",
-        ["+2", "+3", "+4", "0"],
-        "+3",
-        "في Fe2O3 يكون الحديد في حالة تأكسد +3.",
-      ],
-      tf: [
-        "العناصر الانتقالية تكوّن أيونات ملوّنة.",
-        "صح",
-        "بسبب انتقال الإلكترونات بين مستويات d.",
-      ],
-      essay: [
-        "اشرح سبب تعدد حالات التأكسد في العناصر الانتقالية.",
-        "تقارب طاقات مستويات (n-1)d و ns يسمح بفقد أعداد مختلفة من الإلكترونات.",
-      ],
-    },
-    {
-      mcq: [
-        "أي كاشف يُستخدم للكشف عن أيون الكلوريد؟",
-        ["نترات الفضة", "هيدروكسيد الصوديوم", "كلوريد الباريوم", "ماء الجير"],
-        "نترات الفضة",
-        "يتكوّن راسب أبيض من AgCl.",
-      ],
-      tf: [
-        "المعايرة طريقة في التحليل الكمي.",
-        "صح",
-        "تُستخدم لتحديد تركيز محلول مجهول.",
-      ],
-      essay: [
-        "وضّح خطوات حساب تركيز حمض من نتائج المعايرة.",
-        "باستخدام عدد المولات = التركيز × الحجم ونسب التفاعل المتكافئة.",
-      ],
-    },
-    {
-      mcq: [
-        "عند زيادة الضغط على تفاعل غازي، يتجه الاتزان نحو:",
-        [
-          "الجهة الأقل في عدد المولات الغازية",
-          "الجهة الأكثر في المولات",
-          "لا يتأثر",
-          "يتوقف التفاعل",
-        ],
-        "الجهة الأقل في عدد المولات الغازية",
-        "حسب مبدأ لوشاتلييه.",
-      ],
-      tf: [
-        "ثابت الاتزان يتغير بتغير التركيز فقط.",
-        "خطأ",
-        "ثابت الاتزان يتغير بتغير درجة الحرارة وليس التركيز.",
-      ],
-      essay: [
-        "اذكر العوامل المؤثرة على موضع الاتزان الكيميائي.",
-        "التركيز والضغط ودرجة الحرارة (والعامل الحفّاز لا يغيّر الموضع).",
-      ],
-    },
-    {
-      mcq: [
-        "في الخلية الجلفانية يحدث عند المصعد (الأنود):",
-        ["تأكسد", "اختزال", "لا تفاعل", "ترسيب"],
-        "تأكسد",
-        "الأنود هو قطب التأكسد.",
-      ],
-      tf: [
-        "قوانين فاراداي تربط كتلة المادة المترسبة بكمية الكهرباء.",
-        "صح",
-        "الكتلة تتناسب طرديًا مع الشحنة المارة.",
-      ],
-      essay: [
-        "قارن بين الخلية الجلفانية وخلية التحليل الكهربي من حيث الطاقة.",
-        "الجلفانية تحوّل كيميائية←كهربية تلقائيًا، والتحليل الكهربي يحتاج طاقة كهربية لإحداث تفاعل غير تلقائي.",
-      ],
-    },
-    {
-      mcq: [
-        "أي المركبات التالية كحول؟",
-        ["CH3OH", "CH4", "CO2", "NaCl"],
-        "CH3OH",
-        "الميثانول كحول يحتوي مجموعة OH.",
-      ],
-      tf: [
-        "البوليمرات جزيئات كبيرة تتكوّن من وحدات متكررة.",
-        "صح",
-        "تنتج من بلمرة المونومرات.",
-      ],
-      essay: [
-        "اشرح الفرق بين الكحولات والأحماض الكربوكسيلية في المجموعة الوظيفية.",
-        "الكحول مجموعته OH بينما الحمض الكربوكسيلي مجموعته COOH.",
-      ],
-    },
-  ];
-  const t = themes[ci]!;
-  return [
-    {
-      id: `${quizId}-q1`,
-      quizId,
-      type: "MCQ",
-      text: t.mcq[0] as string,
-      options: t.mcq[1] as unknown as Prisma.InputJsonValue,
-      correctAnswer: t.mcq[2] as string,
-      explanation: t.mcq[3] as string,
-      sortOrder: 1,
-      points: 2,
-    },
-    {
-      id: `${quizId}-q2`,
-      quizId,
-      type: "TRUE_FALSE",
-      text: t.tf[0]!,
-      options: ["صح", "خطأ"] as unknown as Prisma.InputJsonValue,
-      correctAnswer: t.tf[1]!,
-      explanation: t.tf[2]!,
-      sortOrder: 2,
-      points: 1,
-    },
-    {
-      id: `${quizId}-q3`,
-      quizId,
-      type: "ESSAY",
-      text: t.essay[0]!,
-      options: [] as unknown as Prisma.InputJsonValue,
-      correctAnswer: null,
-      explanation: t.essay[1]!,
-      sortOrder: 3,
-      points: 3,
-    },
-  ];
+function validateAllSeedIds(): void {
+  for (const id of [
+    ADMIN.id,
+    TEACHER.id,
+    ...STUDENTS.map((s) => s.id),
+    STAGE.id,
+    ...ALL_CHAPTER_IDS,
+    ...ALL_LESSON_IDS,
+    ...ALL_QUIZ_IDS,
+  ]) {
+    if (!isValidUuid(id)) {
+      throw new Error(`Invalid seed entity id: ${id}`);
+    }
+  }
 }
 
 async function seed(): Promise<void> {
+  validateAllSeedIds();
   const passwordHash = await bcrypt.hash(LOCAL_PASSWORD, BCRYPT_ROUNDS);
 
   const chapterRows = CHAPTERS.map((c, ci) => ({
@@ -409,9 +305,10 @@ async function seed(): Promise<void> {
     })),
   );
 
+  logger.info("seed_insert_started");
+
   await prisma.$transaction(
     async (tx) => {
-      // 1. Accounts + profiles
       await tx.user.createMany({
         data: [ADMIN, TEACHER, ...STUDENTS].map((u) => ({
           ...u,
@@ -421,7 +318,7 @@ async function seed(): Promise<void> {
       });
       await tx.teacherProfile.create({
         data: {
-          id: id("tprofile"),
+          id: seedId("teacher-profile"),
           userId: TEACHER.id,
           subject: "الكيمياء",
           bio: "أستاذ كيمياء للصف الثالث الثانوي — محتوى تجريبي على فهمني.",
@@ -429,13 +326,12 @@ async function seed(): Promise<void> {
         },
       });
       await tx.studentProfile.createMany({
-        data: STUDENTS.map((s) => ({
-          id: id(`sprofile-${s.id.slice(-2)}`),
+        data: STUDENTS.map((s, i) => ({
+          id: seedId(`student-profile-${String(i + 1).padStart(2, "0")}`),
           userId: s.id,
         })),
       });
 
-      // 2. Stage + chapters + lessons
       await tx.stage.create({
         data: {
           id: STAGE.id,
@@ -448,10 +344,9 @@ async function seed(): Promise<void> {
       await tx.chapter.createMany({ data: chapterRows });
       await tx.lesson.createMany({ data: lessonRows });
 
-      // 3. Quizzes (one per chapter) + questions; ch5 kept DRAFT (lifecycle variety)
       for (let ci = 0; ci < CHAPTERS.length; ci++) {
         const ch = CHAPTERS[ci]!;
-        const quizId = id(`quiz-ch${ci + 1}`);
+        const quizId = seedId(`quiz-ch${ci + 1}`);
         const isDraft = ci === 4;
         const questions = buildQuestions(quizId, ci);
         const totalPoints = questions.reduce((s, q) => s + q.points, 0);
@@ -472,11 +367,11 @@ async function seed(): Promise<void> {
         await tx.question.createMany({ data: questions });
       }
 
-      // 4. Enrollments — all students in ch1 (active, varied recency); multi-chapter; one deactivated
       const enrollments: Prisma.EnrollmentCreateManyInput[] = [];
       STUDENTS.forEach((s, i) => {
+        const n = String(i + 1).padStart(2, "0");
         enrollments.push({
-          id: id(`enr-${s.id.slice(-2)}-c1`),
+          id: seedId(`enrollment-student${n}-ch1`),
           studentId: s.id,
           chapterId: CHAPTERS[0]!.id,
           status: "ACTIVE",
@@ -486,7 +381,7 @@ async function seed(): Promise<void> {
         });
         if (i % 2 === 0)
           enrollments.push({
-            id: id(`enr-${s.id.slice(-2)}-c2`),
+            id: seedId(`enrollment-student${n}-ch2`),
             studentId: s.id,
             chapterId: CHAPTERS[1]!.id,
             status: "ACTIVE",
@@ -496,7 +391,7 @@ async function seed(): Promise<void> {
           });
       });
       enrollments.push({
-        id: id("enr-08-c3-deact"),
+        id: seedId("enrollment-student08-ch3-deact"),
         studentId: STUDENTS[7]!.id,
         chapterId: CHAPTERS[2]!.id,
         status: "DEACTIVATED",
@@ -506,11 +401,10 @@ async function seed(): Promise<void> {
       });
       await tx.enrollment.createMany({ data: enrollments });
 
-      // 5. Promo codes (≤8 chars)
       await tx.promoCode.createMany({
         data: [
           {
-            id: id("promo-1"),
+            id: seedId("promo-chem2026"),
             code: "CHEM2026",
             isUsed: false,
             createdById: TEACHER.id,
@@ -518,7 +412,7 @@ async function seed(): Promise<void> {
             expiresAt: daysAgo(-90),
           },
           {
-            id: id("promo-2"),
+            id: seedId("promo-chemrev"),
             code: "CHEMREV",
             isUsed: false,
             createdById: TEACHER.id,
@@ -526,7 +420,7 @@ async function seed(): Promise<void> {
             expiresAt: daysAgo(-30),
           },
           {
-            id: id("promo-3"),
+            id: seedId("promo-orgdemo"),
             code: "ORGDEMO",
             isUsed: true,
             usedByStudentId: STUDENTS[0]!.id,
@@ -538,32 +432,31 @@ async function seed(): Promise<void> {
         ],
       });
 
-      // 6. Lesson progress — varied (none / started / completed)
       await tx.lessonProgress.createMany({
         data: [
           {
-            id: id("lp-01-a"),
+            id: seedId("lesson-progress-student01-a"),
             studentId: STUDENTS[0]!.id,
             lessonId: lessonId(0, 0),
             completed: true,
             updatedAt: daysAgo(1),
           },
           {
-            id: id("lp-01-b"),
+            id: seedId("lesson-progress-student01-b"),
             studentId: STUDENTS[0]!.id,
             lessonId: lessonId(0, 1),
             completed: true,
             updatedAt: daysAgo(1),
           },
           {
-            id: id("lp-02-a"),
+            id: seedId("lesson-progress-student02-a"),
             studentId: STUDENTS[1]!.id,
             lessonId: lessonId(0, 0),
             completed: false,
             updatedAt: daysAgo(4),
           },
           {
-            id: id("lp-03-a"),
+            id: seedId("lesson-progress-student03-a"),
             studentId: STUDENTS[2]!.id,
             lessonId: lessonId(0, 0),
             completed: true,
@@ -572,11 +465,10 @@ async function seed(): Promise<void> {
         ],
       });
 
-      // 7. Attempts across lifecycle states (answers shaped like QuestionResult[])
-      const quiz1 = id("quiz-ch1"),
-        quiz2 = id("quiz-ch2"),
-        quiz3 = id("quiz-ch3"),
-        quiz4 = id("quiz-ch4");
+      const quiz1 = seedId("quiz-ch1"),
+        quiz2 = seedId("quiz-ch2"),
+        quiz3 = seedId("quiz-ch3"),
+        quiz4 = seedId("quiz-ch4");
       const q1 = buildQuestions(quiz1, 0),
         q2 = buildQuestions(quiz2, 1),
         q3 = buildQuestions(quiz3, 2),
@@ -584,7 +476,7 @@ async function seed(): Promise<void> {
       const attempts: Prisma.QuizAttemptCreateManyInput[] = [];
 
       attempts.push({
-        id: id("att-ip"),
+        id: seedId("attempt-in-progress"),
         quizId: quiz1,
         studentId: STUDENTS[0]!.id,
         answers: [] as unknown as Prisma.InputJsonValue,
@@ -608,7 +500,7 @@ async function seed(): Promise<void> {
         );
         const score = ans.reduce((s, a) => s + (a.awardedPoints ?? 0), 0);
         attempts.push({
-          id: id("att-graded-100"),
+          id: seedId("attempt-graded-100"),
           quizId: quiz2,
           studentId: STUDENTS[1]!.id,
           answers: ans as unknown as Prisma.InputJsonValue,
@@ -642,7 +534,7 @@ async function seed(): Promise<void> {
         const score = ans.reduce((s, a) => s + (a.awardedPoints ?? 0), 0);
         const total = q3.reduce((s, x) => s + x.points, 0);
         attempts.push({
-          id: id("att-pending"),
+          id: seedId("attempt-pending"),
           quizId: quiz3,
           studentId: STUDENTS[2]!.id,
           answers: ans as unknown as Prisma.InputJsonValue,
@@ -677,7 +569,7 @@ async function seed(): Promise<void> {
         const score = ans.reduce((s, a) => s + (a.awardedPoints ?? 0), 0);
         const total = q3.reduce((s, x) => s + x.points, 0);
         attempts.push({
-          id: id("att-graded-essay"),
+          id: seedId("attempt-graded-essay"),
           quizId: quiz3,
           studentId: STUDENTS[3]!.id,
           answers: ans as unknown as Prisma.InputJsonValue,
@@ -712,7 +604,7 @@ async function seed(): Promise<void> {
         const score = ans.reduce((s, a) => s + (a.awardedPoints ?? 0), 0);
         const total = q4.reduce((s, x) => s + x.points, 0);
         attempts.push({
-          id: id("att-graded-low"),
+          id: seedId("attempt-graded-low"),
           quizId: quiz4,
           studentId: STUDENTS[4]!.id,
           answers: ans as unknown as Prisma.InputJsonValue,
@@ -725,17 +617,16 @@ async function seed(): Promise<void> {
       }
       await tx.quizAttempt.createMany({ data: attempts });
 
-      // 8. AI Tutor usage (below the cap)
       await tx.aiTutorUsage.createMany({
         data: [
           {
-            id: id("aiu-01"),
+            id: seedId("ai-usage-student01"),
             studentId: STUDENTS[0]!.id,
             usageDate: utcDate(now),
             count: 3,
           },
           {
-            id: id("aiu-02"),
+            id: seedId("ai-usage-student02"),
             studentId: STUDENTS[1]!.id,
             usageDate: utcDate(now),
             count: 1,
@@ -747,16 +638,8 @@ async function seed(): Promise<void> {
   );
 }
 
-async function main(): Promise<void> {
-  assertLocalDatabase({
-    nodeEnv: process.env.NODE_ENV,
-    databaseUrl: process.env.DATABASE_URL,
-  });
-  console.log(
-    "[seed] محتوى تجريبي لكيمياء الصف الثالث الثانوي — starting (scoped, idempotent)…",
-  );
-  await cleanup();
-  await seed();
+async function countChemistrySeed(): Promise<Record<string, number>> {
+  const userIds = ALL_SEED_USER_IDS;
   const [
     users,
     teachers,
@@ -770,34 +653,109 @@ async function main(): Promise<void> {
     attempts,
     promos,
     progress,
+    legacyPrefix,
   ] = await Promise.all([
-    prisma.user.count({ where: { id: { startsWith: "seed-chem-" } } }),
+    prisma.user.count({ where: { id: { in: userIds } } }),
     prisma.user.count({
-      where: { id: { startsWith: "seed-chem-" }, role: "OPERATION" },
+      where: { id: { in: userIds }, role: "OPERATION" },
     }),
     prisma.user.count({
-      where: { id: { startsWith: "seed-chem-" }, role: "STUDENT" },
+      where: { id: { in: userIds }, role: "STUDENT" },
     }),
-    prisma.stage.count({ where: { id: { startsWith: "seed-chem-" } } }),
-    prisma.chapter.count({ where: { id: { startsWith: "seed-chem-" } } }),
-    prisma.lesson.count({ where: { id: { startsWith: "seed-chem-" } } }),
-    prisma.quiz.count({ where: { id: { startsWith: "seed-chem-" } } }),
-    prisma.question.count({ where: { id: { startsWith: "seed-chem-" } } }),
-    prisma.enrollment.count({ where: { id: { startsWith: "seed-chem-" } } }),
-    prisma.quizAttempt.count({ where: { id: { startsWith: "seed-chem-" } } }),
-    prisma.promoCode.count({ where: { code: { in: SEED_PROMO_CODES } } }),
+    prisma.stage.count({ where: { id: STAGE.id } }),
+    prisma.chapter.count({ where: { id: { in: ALL_CHAPTER_IDS } } }),
+    prisma.lesson.count({ where: { id: { in: ALL_LESSON_IDS } } }),
+    prisma.quiz.count({ where: { id: { in: ALL_QUIZ_IDS } } }),
+    prisma.question.count({ where: { quizId: { in: ALL_QUIZ_IDS } } }),
+    prisma.enrollment.count({
+      where: { studentId: { in: STUDENTS.map((s) => s.id) } },
+    }),
+    prisma.quizAttempt.count({
+      where: { studentId: { in: STUDENTS.map((s) => s.id) } },
+    }),
+    prisma.promoCode.count({ where: { code: { in: [...SEED_PROMO_CODES] } } }),
     prisma.lessonProgress.count({
-      where: { id: { startsWith: "seed-chem-" } },
+      where: { studentId: { in: STUDENTS.map((s) => s.id) } },
+    }),
+    prisma.question.count({
+      where: { id: { startsWith: LEGACY_SEED_PREFIX } },
     }),
   ]);
-  console.log(
-    `[seed] done: users=${users} (teachers=${teachers}, students=${students}) stages=${stages} chapters=${chapters} lessons=${lessons} quizzes=${quizzes} questions=${questions} enrollments=${enrollments} attempts=${attempts} promos=${promos} progress=${progress}`,
-  );
+
+  return {
+    users,
+    teachers,
+    students,
+    stages,
+    chapters,
+    lessons,
+    quizzes,
+    questions,
+    enrollments,
+    attempts,
+    promos,
+    progress,
+    legacyPrefix,
+  };
+}
+
+async function main(): Promise<void> {
+  const host = assertLocalDatabase({
+    nodeEnv: process.env.NODE_ENV,
+    databaseUrl: process.env.DATABASE_URL,
+  });
+
+  logger.info("seed_started", {
+    environment: process.env.NODE_ENV ?? "development",
+    databaseHost: host,
+  });
+
+  const legacyUsers = await prisma.user.count({
+    where: {
+      OR: [
+        { email: { in: [...CHEMISTRY_SEED_EMAILS] } },
+        { id: { startsWith: LEGACY_SEED_PREFIX } },
+      ],
+    },
+  });
+  const legacyQuestions = await prisma.question.count({
+    where: { id: { startsWith: LEGACY_SEED_PREFIX } },
+  });
+
+  logger.info("legacy_seed_audit", {
+    legacyChemistryUsersFound: legacyUsers,
+    legacyChemistryQuestionsFound: legacyQuestions,
+  });
+
+  await cleanup();
+  await seed();
+
+  const counts = await countChemistrySeed();
+  logger.info("seed_completed", counts);
+
+  if (counts.legacyPrefix > 0) {
+    throw new Error(
+      `Legacy seed-chem- question ids remain: ${counts.legacyPrefix}`,
+    );
+  }
+
+  const sampleQuestions = await prisma.question.findMany({
+    where: { quizId: seedId("quiz-ch2") },
+    select: { id: true },
+    take: 3,
+  });
+  for (const q of sampleQuestions) {
+    if (!isValidUuid(q.id)) {
+      throw new Error(`Seeded question id is not a UUID: ${q.id}`);
+    }
+  }
 }
 
 main()
   .catch((e) => {
-    console.error("[seed] FAILED:", e instanceof Error ? e.message : e);
+    logger.error("seed_failed", {
+      message: e instanceof Error ? e.message : String(e),
+    });
     process.exitCode = 1;
   })
   .finally(() => prisma.$disconnect());

@@ -83,10 +83,13 @@ function mkCodeStr(): string {
   return s;
 }
 
-async function createCode(opts: { expiresInDays?: number } = {}): Promise<string> {
+async function createCode(chapterId: string, opts: { expiresInDays?: number } = {}): Promise<string> {
   const code = mkCodeStr();
   const expiresAt = new Date(Date.now() + (opts.expiresInDays ?? 365) * 86_400_000);
-  const row = await prisma.promoCode.create({ data: { code, createdById: admin.id, expiresAt }, select: { id: true } });
+  const row = await prisma.promoCode.create({
+    data: { code, createdById: admin.id, chapterId, expiresAt },
+    select: { id: true },
+  });
   owned.codeIds.push(row.id);
   return code;
 }
@@ -134,7 +137,7 @@ afterAll(async () => {
 describe("STORY-53 — promo code redemption E2E", () => {
   it("redeems a valid code: enrollment + code consumed + appears in my-courses", async () => {
     const chapterId = await createChapter(stageId);
-    const code = await createCode();
+    const code = await createCode(chapterId);
 
     const r = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code, chapterId } });
     expect(r.status).toBe(201);
@@ -176,7 +179,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
 
   it("rejects an expired code with 400 and leaves it unused", async () => {
     const chapterId = await createChapter(stageId);
-    const code = await createCode({ expiresInDays: -1 });
+    const code = await createCode(chapterId, { expiresInDays: -1 });
 
     const r = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code, chapterId } });
     expect(r.status).toBe(400);
@@ -189,7 +192,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
   it("rejects a second student reusing an already-used code (400 already used)", async () => {
     const chapterId1 = await createChapter(stageId);
     const chapterId2 = await createChapter(stageId);
-    const code = await createCode();
+    const code = await createCode(chapterId1);
 
     const first = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code, chapterId: chapterId1 } });
     expect(first.status).toBe(201);
@@ -204,7 +207,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
   it("rejects an already-enrolled student (400) and leaves the fresh code unused", async () => {
     const chapterId = await createChapter(stageId);
     await prisma.enrollment.create({ data: { studentId: s1.id, chapterId, price: 0, paymentMethod: "CASH" } });
-    const code = await createCode();
+    const code = await createCode(chapterId);
 
     const r = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code, chapterId } });
     expect(r.status).toBe(400);
@@ -217,7 +220,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
 
   it("requires authentication (401) and student role (403)", async () => {
     const chapterId = await createChapter(stageId);
-    const code = await createCode();
+    const code = await createCode(chapterId);
 
     const noAuth = await http("POST", "/api/promo-codes/redeem", { body: { code, chapterId } });
     expect(noAuth.status).toBe(401);
@@ -232,7 +235,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
   it("Case A — two students, same code concurrently → one wins, code unused→winner only", async () => {
     const chA = await createChapter(stageId);
     const chB = await createChapter(stageId);
-    const code = await createCode();
+    const code = await createCode(chA);
 
     const [a, b] = await Promise.all([
       http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code, chapterId: chA } }),
@@ -259,8 +262,8 @@ describe("STORY-53 — promo code redemption E2E", () => {
 
   it("Case B — one student, two codes, same chapter concurrently → one enrollment, one code used", async () => {
     const chapterId = await createChapter(stageId);
-    const code1 = await createCode();
-    const code2 = await createCode();
+    const code1 = await createCode(chapterId);
+    const code2 = await createCode(chapterId);
 
     const [a, b] = await Promise.all([
       http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code: code1, chapterId } }),

@@ -29,7 +29,7 @@ import { LessonPage } from '@/features/student/pages/LessonPage';
 import { QuizPage } from '@/features/student/pages/QuizPage';
 import { StudentQuizListPage } from '@/features/student/pages/StudentQuizListPage';
 import { QuizResultsPage } from '@/features/student/pages/QuizResultsPage';
-import { AiTutorPage } from '@/features/student/pages/AiTutorPage';
+import { AiTutorPage } from '@/features/student/pages/AiTutor/AiTutorPage';
 import { PaymentPage } from '@/features/student/pages/PaymentPage';
 import { StudentProfilePage } from '@/features/student/pages/StudentProfilePage';
 
@@ -82,6 +82,7 @@ const router = createBrowserRouter([
               { path: '/student/courses', element: <MyCoursesPage /> },
               { path: '/student/quizzes/:quizId/results/:attemptId', element: <QuizResultsPage /> },
               { path: '/student/ai-tutor', element: <AiTutorPage /> },
+              { path: '/student/ai-tutor/:conversationId', element: <AiTutorPage /> },
               { path: '/student/pay/:chapterId', element: <PaymentPage /> },
               { path: '/student/profile', element: <StudentProfilePage /> },
               { path: '/student/quizzes', element: <StudentQuizListPage /> },

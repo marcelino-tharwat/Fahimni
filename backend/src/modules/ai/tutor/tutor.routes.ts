@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { TutorController } from "./tutor.controller.js";
+import conversationRouter from "./conversations/conversation.routes.js";
 import { authenticateMiddleware } from "../../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../../shared/middlewares/authorize.middleware.js";
 import { validateRequest } from "../../../shared/middlewares/validate.middleware.js";
@@ -8,6 +9,8 @@ import { askQuestionSchema } from "./dto/ask-question.dto.js";
 // STORY-64 — canonical route: POST /api/tutor/ask (mounted at /api/tutor).
 const router = Router();
 const controller = new TutorController();
+
+router.use("/conversations", conversationRouter);
 
 router.post(
   "/ask",

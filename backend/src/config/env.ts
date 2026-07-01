@@ -34,6 +34,11 @@ const envSchema = z.object({
   GEMINI_EMBEDDING_MODEL: z.string().default("text-embedding-004"),
   // STORY-64: max accepted AI-tutor questions per student per UTC calendar day.
   AI_TUTOR_DAILY_QUERY_LIMIT: z.coerce.number().int().positive().default(20),
+  // STORY-69: bounded tutor chat persistence and context windows.
+  TUTOR_CHAT_MAX_MESSAGE_CHARS: z.coerce.number().int().positive().default(500),
+  TUTOR_CHAT_RECENT_MESSAGE_LIMIT: z.coerce.number().int().positive().default(16),
+  TUTOR_CHAT_CONVERSATION_PAGE_SIZE: z.coerce.number().int().positive().default(20),
+  TUTOR_CHAT_MESSAGE_PAGE_SIZE: z.coerce.number().int().positive().default(30),
   // STORY-45 canonical quiz-generation budgets: total 25s, Gemini call 20s
   // (Gemini timeout must stay < total). Configurable for ops tuning.
   QUIZ_GENERATION_TIMEOUT_MS: z.coerce.number().int().positive().default(25_000),
@@ -45,6 +50,8 @@ const envSchema = z.object({
   PAYMOB_CURRENCY: z.string().min(1).default("EGP"),
   PAYMOB_BASE_URL: z.string().url().default("https://accept.paymob.com"),
   FRONTEND_BASE_URL: z.string().url().default("http://localhost:5173"),
+  TUTOR_RAG_SIMILARITY_THRESHOLD: z.coerce.number().min(0).max(1).default(0),
+  TUTOR_RAG_MAX_CHUNKS: z.coerce.number().int().positive().default(5),
 });
 
 export const env = envSchema.parse(process.env);

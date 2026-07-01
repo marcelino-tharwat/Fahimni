@@ -13,6 +13,7 @@ import {
   buildTutorSystemInstruction,
   detectQuestionLanguage,
   TUTOR_NOT_FOUND_MESSAGE,
+  type TutorConversationTurn,
   type TutorPromptSource,
 } from "../gemini/prompts/tutor-prompt.js";
 import { parseTutorResponse } from "./ai-tutor.parser.js";
@@ -38,10 +39,17 @@ export interface TutorCitation {
   relevanceScore: number;
 }
 
+/** Outcome of a tutor ask call for observability (no question/answer text). */
+export type TutorOutcome =
+  | "ANSWERED"
+  | "NO_INDEXED_CONTENT"
+  | "NO_RELEVANT_MATCH";
+
 /** The public result of {@link AiTutorService.ask}. */
 export interface TutorAnswer {
   answer: string;
   citations: TutorCitation[];
+  outcome: TutorOutcome;
 }
 
 /**
@@ -53,6 +61,17 @@ export interface TutorAskOptions {
   totalTimeoutMs?: number;
   retrievalTimeoutMs?: number;
   geminiTimeoutMs?: number;
+  /** Bounded prior turns from the same conversation (STORY-69). */
+  recentMessages?: TutorConversationTurn[];
+}
+
+/** Retrieval stage result with safe diagnostic counts (no question text). */
+interface RetrievalResult {
+  sources: PreparedSource[];
+  eligibleLessonCount: number;
+  indexedChunkCount: number;
+  matchedChunkCount: number;
+  noMatchReason?: "NO_ELIGIBLE_LESSONS" | "NO_INDEXED_CONTENT" | "NO_RELEVANT_MATCH";
 }
 
 /** A retrieved chunk enriched with trusted metadata, scoped to one ask call. */
@@ -60,9 +79,11 @@ interface PreparedSource extends TutorPromptSource {
   lessonId: string;
   relevanceScore: number;
 }
-
 type PrismaLike = typeof defaultPrisma;
-type RagLike = Pick<typeof aiService, "similaritySearchInLessons">;
+type RagLike = Pick<
+  typeof aiService,
+  "similaritySearchInLessons" | "countChunksInLessons"
+>;
 type GeminiLike = Pick<typeof geminiClient, "generateContent">;
 
 export interface AiTutorServiceDeps {
@@ -142,6 +163,7 @@ export class AiTutorService {
       deadline,
       retrievalTimeoutMs,
       geminiTimeoutMs,
+      options.recentMessages,
     );
     // If the deadline wins the race, `work` may still settle later; swallow its
     // eventual rejection so it is never an unhandled promise.
@@ -163,24 +185,50 @@ export class AiTutorService {
     deadline: number,
     retrievalTimeoutMs: number,
     geminiTimeoutMs: number,
+    recentMessages?: TutorConversationTurn[],
   ): Promise<TutorAnswer> {
     const startedAt = Date.now();
 
     // 1–3. Retrieval (embed + access-scoped top-K search) under its budget.
-    const sources = await this.retrieve(question, studentId, retrievalTimeoutMs);
+    const retrieval = await this.retrieve(question, studentId, retrievalTimeoutMs);
 
-    // 7 (Phase): no accessible relevant chunks → localized not-found, no Gemini.
-    if (sources.length === 0) {
+    if (retrieval.sources.length === 0) {
+      const outcome: TutorOutcome =
+        retrieval.noMatchReason === "NO_RELEVANT_MATCH"
+          ? "NO_RELEVANT_MATCH"
+          : "NO_INDEXED_CONTENT";
+      logger.info(
+        outcome === "NO_INDEXED_CONTENT"
+          ? "ai_tutor_retrieval_no_indexed_content"
+          : "ai_tutor_retrieval_no_relevant_match",
+        {
+          studentId,
+          eligibleLessonCount: retrieval.eligibleLessonCount,
+          indexedChunkCount: retrieval.indexedChunkCount,
+          matchedChunkCount: 0,
+          durationMs: Date.now() - startedAt,
+        },
+      );
       logger.info(
         `[AiTutor] not-found (no chunks) lang=${language} qlen=${question.length} totalMs=${Date.now() - startedAt}`,
       );
-      return { answer: TUTOR_NOT_FOUND_MESSAGE[language], citations: [] };
+      return {
+        answer: TUTOR_NOT_FOUND_MESSAGE[language],
+        citations: [],
+        outcome,
+      };
     }
+
+    const sources = retrieval.sources;
 
     this.assertDeadline(deadline);
 
     // 4–6. Grounded prompt → Gemini (10s) → strict parse.
-    const prompt = buildTutorPrompt({ question, sources });
+    const prompt = buildTutorPrompt({
+      question,
+      sources,
+      ...(recentMessages ? { recentMessages } : {}),
+    });
     const systemInstruction = buildTutorSystemInstruction(language);
 
     const geminiStart = Date.now();
@@ -196,13 +244,22 @@ export class AiTutorService {
     // 7. Map model citation keys back to TRUSTED metadata (dedupe by lesson).
     const citations = this.mapCitations(parsed.citationRefs, sources);
 
+    logger.info("ai_tutor_retrieval_completed", {
+      studentId,
+      eligibleLessonCount: retrieval.eligibleLessonCount,
+      indexedChunkCount: retrieval.indexedChunkCount,
+      matchedChunkCount: retrieval.matchedChunkCount,
+      citationCount: citations.length,
+      durationMs: Date.now() - startedAt,
+    });
+
     logger.info(
       `[AiTutor] success lang=${language} qlen=${question.length} ` +
         `sources=${sources.length} citations=${citations.length} ` +
         `geminiMs=${geminiMs} totalMs=${Date.now() - startedAt}`,
     );
 
-    return { answer: parsed.answer, citations };
+    return { answer: parsed.answer, citations, outcome: "ANSWERED" };
   }
 
   /** Retrieval stage wrapped in its own budget. */
@@ -210,7 +267,7 @@ export class AiTutorService {
     question: string,
     studentId: string,
     retrievalTimeoutMs: number,
-  ): Promise<PreparedSource[]> {
+  ): Promise<RetrievalResult> {
     let timer: ReturnType<typeof setTimeout> | undefined;
     const timeoutPromise = new Promise<never>((_, reject) => {
       timer = setTimeout(
@@ -234,10 +291,21 @@ export class AiTutorService {
   private async _retrieve(
     question: string,
     studentId: string,
-  ): Promise<PreparedSource[]> {
-    // Accessible lessons: indexed/valid lessons inside chapters the student is
-    // actively enrolled in. One bounded query, no N+1 — also yields the trusted
-    // lesson title + chapter name used for citations.
+  ): Promise<RetrievalResult> {
+    const empty = (
+      noMatchReason: NonNullable<RetrievalResult["noMatchReason"]>,
+      eligibleLessonCount: number,
+      indexedChunkCount: number,
+    ): RetrievalResult => ({
+      sources: [],
+      eligibleLessonCount,
+      indexedChunkCount,
+      matchedChunkCount: 0,
+      noMatchReason,
+    });
+
+    logger.info("ai_tutor_retrieval_started", { studentId });
+
     const lessons = await this.prisma.lesson.findMany({
       where: {
         deletedAt: null,
@@ -251,7 +319,7 @@ export class AiTutorService {
     });
 
     if (lessons.length === 0) {
-      return [];
+      return empty("NO_ELIGIBLE_LESSONS", 0, 0);
     }
 
     const lessonMeta = new Map(
@@ -262,10 +330,13 @@ export class AiTutorService {
     );
     const lessonIds = lessons.map((l) => l.id);
 
+    const indexedChunkCount = await this.rag.countChunksInLessons(lessonIds);
+    if (indexedChunkCount === 0) {
+      return empty("NO_INDEXED_CONTENT", lessons.length, 0);
+    }
+
     let chunks;
     try {
-      // Reuses the shared RAG search (STORY-43): embeds the question once and
-      // runs the access-scoped cosine top-K pgvector query. K = 5.
       chunks = await this.rag.similaritySearchInLessons(
         question,
         lessonIds,
@@ -275,11 +346,14 @@ export class AiTutorService {
       throw this.mapRetrievalError(error);
     }
 
-    // Chunks arrive ordered by relevance (cosine similarity desc). Attach
-    // controlled source keys + TRUSTED metadata; drop anything that somehow
-    // falls outside the access scope.
+    const threshold = Number(process.env.TUTOR_RAG_SIMILARITY_THRESHOLD ?? 0);
+    const filtered =
+      threshold > 0
+        ? chunks.filter((c) => this.normalizeScore(c.score) >= threshold)
+        : chunks;
+
     const sources: PreparedSource[] = [];
-    for (const chunk of chunks) {
+    for (const chunk of filtered) {
       const meta = lessonMeta.get(chunk.lessonId);
       if (!meta) {
         continue;
@@ -294,7 +368,16 @@ export class AiTutorService {
       });
     }
 
-    return sources;
+    if (sources.length === 0) {
+      return empty("NO_RELEVANT_MATCH", lessons.length, indexedChunkCount);
+    }
+
+    return {
+      sources,
+      eligibleLessonCount: lessons.length,
+      indexedChunkCount,
+      matchedChunkCount: sources.length,
+    };
   }
 
   private async callGemini(

@@ -1,5 +1,5 @@
 // src/features/auth/pages/AuthPage.tsx
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -132,6 +132,7 @@ function LoginForm() {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const inFlightRef = useRef(false);
 
   const {
     register,
@@ -142,6 +143,10 @@ function LoginForm() {
   });
 
   const onSubmit = async (v: { email: string; password: string }) => {
+    if (inFlightRef.current) {
+      return;
+    }
+    inFlightRef.current = true;
     setError(null);
     setLoading(true);
     try {
@@ -150,6 +155,7 @@ function LoginForm() {
     } catch (err) {
       setError(err ? String(err) : t("auth:errGeneric"));
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
     }
   };
@@ -206,6 +212,7 @@ function RegisterForm() {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const inFlightRef = useRef(false);
 
   const {
     register,
@@ -216,6 +223,10 @@ function RegisterForm() {
   });
 
   const onSubmit = async (v: { fullName: string; email: string; mobile: string; password: string }) => {
+    if (inFlightRef.current) {
+      return;
+    }
+    inFlightRef.current = true;
     setError(null);
     setLoading(true);
     try {
@@ -224,6 +235,7 @@ function RegisterForm() {
     } catch (err) {
       setError(err ? String(err) : t("auth:errGeneric"));
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
     }
   };

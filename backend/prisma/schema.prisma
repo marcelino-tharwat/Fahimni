@@ -31,6 +31,7 @@ model User {
   teacherProfile      TeacherProfile?
   paymentTransactions PaymentTransaction[]
   aiTutorUsage        AiTutorUsage[]
+  aiConversations     AiConversation[]
 }
 
 model StudentProfile {
@@ -397,6 +398,52 @@ enum PaymentMethod {
 enum PaymentStatus {
   PENDING
   SUCCESS
+  FAILED
+}
+
+/// STORY-69 — persistent AI tutor conversations owned by a student.
+model AiConversation {
+  id         String      @id @default(uuid())
+  studentId  String
+  title      String      @default("محادثة جديدة")
+  isArchived Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
+  student    User        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  messages   AiMessage[]
+
+  @@index([studentId, updatedAt])
+  @@map("ai_conversations")
+}
+
+/// STORY-69 — persisted tutor chat messages (text + citation metadata).
+model AiMessage {
+  id              String          @id @default(uuid())
+  conversationId  String
+  role            AiMessageRole
+  content         String
+  status          AiMessageStatus @default(PENDING)
+  citations       Json            @default("[]")
+  clientMessageId String?
+  errorCode       String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  conversation    AiConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, clientMessageId])
+  @@index([conversationId, createdAt])
+  @@map("ai_messages")
+}
+
+enum AiMessageRole {
+  STUDENT
+  ASSISTANT
+}
+
+enum AiMessageStatus {
+  PENDING
+  COMPLETED
   FAILED
 }
 

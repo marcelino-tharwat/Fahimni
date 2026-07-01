@@ -41,6 +41,15 @@ describe('authSlice bootstrap states', () => {
     expect(s.user).toBeNull();
   });
 
+  it('login.pending does not flip bootstrap status to loading', () => {
+    const failed = reducer(
+      initial,
+      initAuth.rejected(new Error('x'), 'r', undefined, 'Session invalid'),
+    );
+    const s = reducer(failed, login.pending('r', { email: 'a@b.c', password: 'x' }));
+    expect(s.status).toBe('failed');
+  });
+
   it('login.fulfilled authenticates', () => {
     const s = reducer(initial, login.fulfilled({ user }, 'r', { email: '', password: '' }));
     expect(s.isAuthenticated).toBe(true);

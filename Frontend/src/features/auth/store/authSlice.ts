@@ -186,7 +186,9 @@ const authSlice = createSlice({
     // ---- login ----
     builder
       .addCase(login.pending, (state) => {
-        state.status = 'loading';
+        // Do not set bootstrap `status` to 'loading' here — that status is only
+        // for initAuth and route guards. Flipping it on every login attempt made
+        // guards spin forever on the second failed try.
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
@@ -196,8 +198,10 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.status = 'failed';
         state.error = action.payload ?? 'حصل خطأ غير متوقع.';
+        if (!state.isAuthenticated) {
+          state.status = 'failed';
+        }
       });
 
     // ---- validateAuth ----
@@ -236,7 +240,6 @@ const authSlice = createSlice({
     // ---- register ----
     builder
       .addCase(register.pending, (state) => {
-        state.status = 'loading';
         state.error = null;
       })
       .addCase(register.fulfilled, (state, action) => {

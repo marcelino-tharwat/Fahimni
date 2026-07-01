@@ -342,6 +342,29 @@ exports.Prisma.PromoCodeScalarFieldEnum = {
   expiresAt: 'expiresAt'
 };
 
+exports.Prisma.AiConversationScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  title: 'title',
+  isArchived: 'isArchived',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.AiMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  role: 'role',
+  content: 'content',
+  status: 'status',
+  citations: 'citations',
+  clientMessageId: 'clientMessageId',
+  errorCode: 'errorCode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -424,6 +447,17 @@ exports.AttemptStatus = exports.$Enums.AttemptStatus = {
   GRADED: 'GRADED'
 };
 
+exports.AiMessageRole = exports.$Enums.AiMessageRole = {
+  STUDENT: 'STUDENT',
+  ASSISTANT: 'ASSISTANT'
+};
+
+exports.AiMessageStatus = exports.$Enums.AiMessageStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   StudentProfile: 'StudentProfile',
@@ -443,7 +477,9 @@ exports.Prisma.ModelName = {
   Quiz: 'Quiz',
   Question: 'Question',
   QuizAttempt: 'QuizAttempt',
-  PromoCode: 'PromoCode'
+  PromoCode: 'PromoCode',
+  AiConversation: 'AiConversation',
+  AiMessage: 'AiMessage'
 };
 
 /**

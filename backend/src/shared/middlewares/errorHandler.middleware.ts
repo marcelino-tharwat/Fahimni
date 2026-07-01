@@ -4,8 +4,19 @@ import { env } from "../../config/env.js";
 import { logger } from "../../config/logger.js";
 import { AppError } from "../utils/AppError.js";
 
-export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
+function requestPath(req: { originalUrl?: string; url?: string }): string {
+  const url = req.originalUrl ?? req.url ?? "";
+  return url.split("?")[0] ?? "";
+}
+
+export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   if (err instanceof ZodError) {
+    logger.warn("validation_error", {
+      requestId: req.requestId,
+      method: req.method,
+      path: requestPath(req),
+      statusCode: 400,
+    });
     res.status(400).json({
       success: false,
       message: "Validation error",
@@ -24,8 +35,24 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   const message =
     err instanceof Error ? err.message : "Internal server error";
 
+  const logMeta = {
+    requestId: req.requestId,
+    method: req.method,
+    path: requestPath(req),
+    statusCode: status,
+    errorName: err instanceof Error ? err.name : "UnknownError",
+    ...(err instanceof AppError && err.code ? { code: err.code } : {}),
+    ...(env.NODE_ENV !== "production" &&
+    err instanceof Error &&
+    err.stack
+      ? { stack: err.stack }
+      : {}),
+  };
+
   if (status >= 500) {
-    logger.error(message, err);
+    logger.error("http_error", { ...logMeta, message });
+  } else {
+    logger.warn("http_error", { ...logMeta, message });
   }
 
   // Surface safe, structured fields only when the error explicitly carries them
