@@ -111,6 +111,7 @@ const router = createBrowserRouter([
             element: <TeacherLayout />,
             children: [
               { path: '/teacher/dashboard', element: <TeacherDashboardPage /> },
+              { path: '/teacher/content', element: <AllStagesPage /> },
               { path: '/teacher/quizzes', element: <QuizListPage /> },
               { path: '/teacher/quizzes/generator', element: <AiQuizGeneratorPage /> },
               { path: '/teacher/quizzes/generator/review/:quizId', element: <AiQuizReviewPage /> },
@@ -124,7 +125,6 @@ const router = createBrowserRouter([
           {
             element: <TeacherStageLayout />,
             children: [
-              { path: '/teacher/content', element: <AllStagesPage /> },
               { path: '/teacher/content/new', element: <CreateStagePage /> },
               { path: '/teacher/content/:stageId', element: <StageDetailPage /> },
             ],

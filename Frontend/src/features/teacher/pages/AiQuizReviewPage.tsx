@@ -57,7 +57,9 @@ const FILTERS: { value: TypeFilter; key: string }[] = [
 
 export function AiQuizReviewPage() {
   const { quizId } = useParams<{ quizId: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const BackArrow = i18n.language === 'ar' ? ArrowRight : ArrowLeft;
+  const ForwardArrow = i18n.language === 'ar' ? ArrowLeft : ArrowRight;
   const navigate = useNavigate();
   const tk = (k: string, o?: Record<string, unknown>) => t(`teacher:quizGenerator.review.${k}`, o);
 
@@ -307,7 +309,7 @@ export function AiQuizReviewPage() {
       {/* Bottom nav (sticky within the content column) */}
       <div className="sticky bottom-0 z-20 -mx-1 flex items-center justify-between gap-3 border-t border-border bg-surface/95 px-1 py-3 backdrop-blur">
         <Button variant="ghost" onClick={() => navigate('/teacher/quizzes/generator')}>
-          <ArrowRight size={18} />
+          <BackArrow size={18} />
           {tk('backToStep1')}
         </Button>
         <Button
@@ -315,7 +317,7 @@ export function AiQuizReviewPage() {
           disabled={count === 0}
         >
           {tk('continueToStep3')} ({tk('countBadge', { count })})
-          <ArrowLeft size={18} />
+          <ForwardArrow size={18} />
         </Button>
       </div>
 
