@@ -203,7 +203,6 @@ function MyCoursesCard() {
     return (
       <div className="rounded-card bg-white p-4 shadow-card md:p-5">
         <div className="mb-4 flex items-center justify-between">
-          <div />
           <h2 className="font-cairo text-h3 font-bold text-navy-900">
             {t('profile.myCourses')}
           </h2>
@@ -223,6 +222,9 @@ function MyCoursesCard() {
   return (
     <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <div className="mb-4 flex items-center justify-between">
+        <h2 className="font-cairo text-h3 font-bold text-navy-900">
+          {t('profile.myCourses')}
+        </h2>
         <button
           type="button"
           onClick={() => navigate('/student/courses')}
@@ -230,9 +232,6 @@ function MyCoursesCard() {
         >
           {t('profile.viewAll')}
         </button>
-        <h2 className="font-cairo text-h3 font-bold text-navy-900">
-          {t('profile.myCourses')}
-        </h2>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -329,6 +328,9 @@ function SubscriptionHistoryCard() {
   return (
     <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <div className="mb-4 flex items-center justify-between">
+        <h2 className="font-cairo text-h3 font-bold text-navy-900">
+          {t('profile.subscriptionHistory')}
+        </h2>
         <button
           type="button"
           onClick={() => navigate('/student/courses')}
@@ -336,9 +338,6 @@ function SubscriptionHistoryCard() {
         >
           {t('profile.viewAll')}
         </button>
-        <h2 className="font-cairo text-h3 font-bold text-navy-900">
-          {t('profile.subscriptionHistory')}
-        </h2>
       </div>
 
       {all.length === 0 ? (

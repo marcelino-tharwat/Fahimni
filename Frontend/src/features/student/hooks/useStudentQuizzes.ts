@@ -10,5 +10,7 @@ export function useStudentQuizzes() {
       const { data } = await quizApi.getStudentQuizzes();
       return data.data;
     },
+    refetchOnMount: 'always',
+    retry: 2,
   });
 }

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { GraduationCap, Languages } from "lucide-react";
 
@@ -15,12 +16,12 @@ export function AuthNavbar() {
       dir="ltr"
       className="flex w-full items-center justify-between border-b border-gray-100 bg-white px-8 py-4 shadow-sm"
     >
-      <div className="flex items-center gap-2">
+      <Link to="/" className="flex items-center gap-2">
         <GraduationCap className="h-6 w-6 text-cyan-500" />
         <span className="font-cairo text-xl font-bold text-navy-900">
           Fahimni
         </span>
-      </div>
+      </Link>
 
       <button
         type="button"

@@ -175,7 +175,7 @@ export function LessonPage() {
             {t('student:lesson.enrollmentRequired.description')}
           </p>
           <Link
-            to="/student/content"
+            to="/student/dashboard"
             className="mt-2 inline-flex min-h-[44px] items-center justify-center rounded-button bg-navy-800 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-navy-900"
           >
             {t('student:lesson.enrollmentRequired.cta')}
@@ -197,10 +197,10 @@ export function LessonPage() {
           {t('student:lesson.notFound.description')}
         </p>
         <Link
-          to="/student/content"
-          className="mt-2 inline-flex min-h-[44px] items-center justify-center rounded-button bg-navy-800 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-navy-900"
-        >
-          {t('student:lesson.notFound.back')}
+to="/student/dashboard"
+            className="mt-2 inline-flex min-h-[44px] items-center justify-center rounded-button bg-navy-800 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-navy-900"
+          >
+            {t('student:lesson.notFound.back')}
         </Link>
       </div>
     );
@@ -213,7 +213,7 @@ export function LessonPage() {
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       {/* Breadcrumb */}
       <nav className="flex flex-wrap items-center gap-1 font-cairo text-sm text-gray-500">
-        <Link to="/student/content" className="hover:text-accent transition-colors">
+        <Link to="/student/dashboard" className="hover:text-accent transition-colors">
           {t('student:content.tabs.allContent')}
         </Link>
         {parentInfo && (
@@ -293,7 +293,7 @@ export function LessonPage() {
 
       {/* PDF Materials */}
       {(lesson.attachments?.length ?? 0) > 0 && (
-        <Card padding="md" className="flex flex-col gap-3">
+        <Card padding="md" className="flex flex-col gap-3 shadow-lg border border-gray-200">
           <div className="flex items-center gap-2 border-b border-border pb-3">
             <FileText size={20} className="text-accent" />
             <h2 className="font-cairo text-base font-semibold text-navy-900">
@@ -318,7 +318,7 @@ export function LessonPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 download
-                className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-button border border-border px-3 font-cairo text-sm font-medium text-text-primary transition-colors hover:bg-gray-100"
+                className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-button bg-cyan-500 px-4 font-cairo text-sm font-medium text-white shadow-md transition-all hover:bg-cyan-600 hover:shadow-lg"
               >
                 {t('student:lesson.download')}
               </a>
@@ -381,7 +381,7 @@ export function LessonPage() {
           <Button
             variant="outline"
             onClick={() => navigate(`/student/lessons/${prevLesson.id}`)}
-            className="flex-col items-start gap-1"
+            className="flex-col items-start gap-1 px-4 py-3"
           >
             <span className="inline-flex items-center gap-1 text-xs text-gray-500">
               <ChevronLeft size={14} className="rtl:rotate-180" />
@@ -399,7 +399,7 @@ export function LessonPage() {
           <Button
             variant="primary"
             onClick={() => navigate(`/student/lessons/${nextLesson.id}`)}
-            className="col-start-2 flex-col items-end gap-1"
+            className="col-start-2 flex-col items-end gap-1 px-4 py-3"
           >
             <span className="inline-flex items-center gap-1 text-xs text-white/70">
               {t('student:lesson.nextLesson')}

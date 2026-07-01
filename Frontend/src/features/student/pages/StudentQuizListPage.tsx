@@ -107,7 +107,9 @@ function QuizRow({
           </span>
           <span className="inline-flex items-center gap-1">
             <Clock size={12} />
-            {t('student:quizzes.quiz.minutes', { count: quiz.durationMinutes })}
+            {quiz.durationMinutes != null
+              ? t('student:quizzes.quiz.minutes', { count: quiz.durationMinutes })
+              : '—'}
           </span>
         </div>
 
@@ -345,7 +347,7 @@ export function StudentQuizListPage() {
         </p>
         <button
           type="button"
-          onClick={() => navigate('/student/content')}
+          onClick={() => navigate('/student/dashboard')}
           className="rounded-btn bg-cyan-gradient px-6 py-2 font-cairo text-small font-bold text-white shadow-glow transition-opacity hover:opacity-90"
         >
           {t('student:quizzes.empty.cta')}

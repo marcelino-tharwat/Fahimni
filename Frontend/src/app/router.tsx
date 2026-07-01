@@ -6,6 +6,7 @@ import { StudentLayout } from '@/shared/components/layout/StudentLayout';
 import { TeacherLayout } from '@/shared/components/layout/TeacherLayout';
 import { SupportLayout } from '@/shared/components/layout/SupportLayout';
 import { TeacherStageLayout } from '@/shared/components/layout/TeacherStageLayout';
+import { LessonLayout } from '@/shared/components/layout/LessonLayout';
 import { AdminLayout } from '@/shared/components/layout/AdminLayout';
 
 // Guards
@@ -23,7 +24,7 @@ import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage';
 // Student pages
 import { StudentDashboardPage } from '@/features/student/pages/StudentDashboardPage';
 import { MyCoursesPage } from '@/features/student/pages/MyCoursesPage';
-import { AllContentPage } from '@/features/student/pages/AllContentPage';
+
 import { LessonPage } from '@/features/student/pages/LessonPage';
 import { QuizPage } from '@/features/student/pages/QuizPage';
 import { StudentQuizListPage } from '@/features/student/pages/StudentQuizListPage';
@@ -79,13 +80,18 @@ const router = createBrowserRouter([
             children: [
               { path: '/student/dashboard', element: <StudentDashboardPage /> },
               { path: '/student/courses', element: <MyCoursesPage /> },
-              { path: '/student/content', element: <AllContentPage /> },
-              { path: '/student/lessons/:lessonId', element: <LessonPage /> },
               { path: '/student/quizzes/:quizId/results/:attemptId', element: <QuizResultsPage /> },
               { path: '/student/ai-tutor', element: <AiTutorPage /> },
               { path: '/student/pay/:chapterId', element: <PaymentPage /> },
               { path: '/student/profile', element: <StudentProfilePage /> },
               { path: '/student/quizzes', element: <StudentQuizListPage /> },
+            ],
+          },
+          // Lesson page — no sidebar, has a minimal topbar-only layout
+          {
+            element: <LessonLayout />,
+            children: [
+              { path: '/student/lessons/:lessonId', element: <LessonPage /> },
             ],
           },
           // Quiz taking page — no sidebar, no bottom tab bar (distraction-free)
