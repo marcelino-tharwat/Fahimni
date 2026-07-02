@@ -195,8 +195,7 @@ export type EnrollmentStatus = (typeof EnrollmentStatus)[keyof typeof Enrollment
 
 
 export const PaymentMethod: {
-  CASH: 'CASH',
-  VISA: 'VISA',
+  FREE: 'FREE',
   PROMO: 'PROMO',
   PAYMOB: 'PAYMOB'
 };

@@ -29,8 +29,35 @@ export interface ChangePasswordInput {
   confirmPassword: string;
 }
 
-export type EnrollmentPaymentMethod = 'CASH' | 'VISA' | 'PROMO';
+export type EnrollmentPaymentMethod = 'FREE' | 'PROMO' | 'PAYMOB';
 export type EnrollmentRecordStatus = 'ACTIVE' | 'DEACTIVATED';
+
+/**
+ * Enrollment as returned by `POST /enrollments/free` (backend
+ * `EnrollmentResponseDTO`). Same row as `EnrollmentRecord` but the chapter
+ * projection differs (description + stageId instead of the nested stage), so
+ * it gets its own shape. `price` is a number (0 for free); `paymentMethod` is
+ * `'FREE'`.
+ */
+export interface FreeEnrollment {
+  id: string;
+  studentId: string;
+  chapterId: string;
+  status: EnrollmentRecordStatus;
+  price: number;
+  paymentMethod: EnrollmentPaymentMethod;
+  promoCodeId: string | null;
+  enrolledAt: string;
+  createdAt: string;
+  updatedAt: string;
+  chapter: {
+    id: string;
+    name: string;
+    description: string | null;
+    price: number | null;
+    stageId: string;
+  };
+}
 
 /**
  * A student's own enrollment as returned by `GET /enrollments/my`

@@ -18,7 +18,10 @@ import {
 import { Card, Skeleton } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils/cn';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
+import { useAppDispatch } from '@/shared/store/hooks';
+import { addToast } from '@/shared/store/slices/toastSlice';
 import { useStudentTree } from '@/features/student/hooks/useStudentContent';
+import { useEnrollFree } from '@/features/student/hooks/useEnrollFree';
 import type {
   StudentChapterNode,
   StudentContentTreeItem,
@@ -27,7 +30,10 @@ import {
   getChapterStatusConfig,
   type ChapterBadgeToken,
 } from '@/features/student/lib/chapterStatus';
-import { LockedChapterModal } from './LockedChapterModal';
+import {
+  ChapterEnrollModal,
+  type ChapterEnrollTarget,
+} from './ChapterEnrollModal';
 
 /**
  * Gradient tile + icon cycled per stage. The gradients are our design-token
@@ -44,12 +50,41 @@ const STAGE_VISUALS: Array<{ gradient: string; icon: LucideIcon }> = [
 export function AllContentTree() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { data, isLoading, isError, refetch, isFetching } = useStudentTree();
+  const enrollFreeMutation = useEnrollFree();
 
   // `null` override means "not toggled yet — use the derived defaults below".
   const [stageOverride, setStageOverride] = useState<Set<string> | null>(null);
   const [chapterOverride, setChapterOverride] = useState<Set<string> | null>(null);
-  const [lockedChapter, setLockedChapter] = useState<StudentChapterNode | null>(null);
+  const [enrollTarget, setEnrollTarget] = useState<ChapterEnrollTarget | null>(null);
+
+  // Enroll button routes free vs paid chapters to the matching modal variant.
+  const handleEnroll = (chapter: StudentChapterNode) => {
+    const variant = chapter.enrollmentStatus === 'locked' ? 'locked' : 'free';
+    setEnrollTarget({ chapter, variant });
+  };
+
+  const closeEnrollModal = () => {
+    // Don't let an overlay/Escape close swallow an in-flight enrollment.
+    if (enrollFreeMutation.isPending) return;
+    setEnrollTarget(null);
+  };
+
+  const handleConfirmFree = (chapter: StudentChapterNode) => {
+    enrollFreeMutation.mutate(chapter.id, {
+      onSuccess: () => {
+        dispatch(addToast({ type: 'success', message: t('student:content.enrollSuccess') }));
+        setEnrollTarget(null);
+      },
+      onError: (error) => {
+        // The apiClient interceptor rejects with a normalized ApiError-shaped
+        // object; read its message structurally (matches the rest of the app).
+        const message = (error as { message?: string }).message || t('student:content.enrollError');
+        dispatch(addToast({ type: 'error', message }));
+      },
+    });
+  };
 
   // Default expansion (first stage + its first accessible chapter) derived during
   // render — no effect, so it never triggers cascading re-renders. Once the
@@ -115,7 +150,7 @@ export function AllContentTree() {
           onToggle={() => toggleStage(item.stage.id)}
           expandedChapters={expandedChapters}
           onToggleChapter={toggleChapter}
-          onLockedChapter={setLockedChapter}
+          onEnroll={handleEnroll}
         />
       ))}
 
@@ -127,13 +162,15 @@ export function AllContentTree() {
         })}
       </p>
 
-      <LockedChapterModal
-        chapter={lockedChapter}
-        onClose={() => setLockedChapter(null)}
+      <ChapterEnrollModal
+        target={enrollTarget}
+        onClose={closeEnrollModal}
         onSubscribe={(chapter) => {
-          setLockedChapter(null);
+          setEnrollTarget(null);
           navigate(`/student/pay/${chapter.id}`);
         }}
+        onConfirmFree={handleConfirmFree}
+        isEnrolling={enrollFreeMutation.isPending}
       />
     </div>
   );
@@ -150,7 +187,7 @@ function StageCard({
   onToggle,
   expandedChapters,
   onToggleChapter,
-  onLockedChapter,
+  onEnroll,
 }: {
   item: StudentContentTreeItem;
   index: number;
@@ -158,7 +195,7 @@ function StageCard({
   onToggle: () => void;
   expandedChapters: Set<string>;
   onToggleChapter: (id: string) => void;
-  onLockedChapter: (chapter: StudentChapterNode) => void;
+  onEnroll: (chapter: StudentChapterNode) => void;
 }) {
   const { t } = useTranslation();
   const visual = STAGE_VISUALS[index % STAGE_VISUALS.length]!;
@@ -198,7 +235,7 @@ function StageCard({
               index={chapterIndex}
               expanded={expandedChapters.has(chapterItem.chapter.id)}
               onToggle={onToggleChapter}
-              onLockedChapter={onLockedChapter}
+              onEnroll={onEnroll}
             />
           ))}
         </div>
@@ -216,54 +253,90 @@ function ChapterRow({
   index,
   expanded,
   onToggle,
-  onLockedChapter,
+  onEnroll,
 }: {
   chapterItem: StudentContentTreeItem['chapters'][number];
   index: number;
   expanded: boolean;
   onToggle: (id: string) => void;
-  onLockedChapter: (chapter: StudentChapterNode) => void;
+  onEnroll: (chapter: StudentChapterNode) => void;
 }) {
   const { t } = useTranslation();
   const { chapter, lessons } = chapterItem;
   const config = getChapterStatusConfig(chapter.enrollmentStatus, chapter.price != null);
 
-  const handleClick = () => {
-    if (config.locksOnClick) onLockedChapter(chapter);
-    else if (config.accessible) onToggle(chapter.id);
-  };
+  // Explicit Enroll action for any chapter the student hasn't enrolled in yet
+  // (free or locked). Once purchased, only the Subscribed badge shows.
+  const showEnroll =
+    chapter.enrollmentStatus === 'free' || chapter.enrollmentStatus === 'locked';
+  const chapterLabel = t('student:content.chapter', {
+    order: toLocalNum(index + 1),
+    name: chapter.name,
+  });
+
+  const title = (
+    <>
+      <Folder size={18} className="shrink-0 text-gray-400" />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-cairo text-sm font-semibold text-navy-900">{chapterLabel}</p>
+        {chapter.description && (
+          <p className="truncate font-cairo text-xs text-gray-400">{chapter.description}</p>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <div className="border-b border-gray-100 last:border-b-0">
-      <button
-        type="button"
-        onClick={handleClick}
-        aria-expanded={config.accessible ? expanded : undefined}
-        className="flex w-full items-center gap-3 px-2 py-3.5 text-start transition-colors hover:bg-gray-50/60"
-      >
-        <Folder size={18} className="shrink-0 text-gray-400" />
-
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-cairo text-sm font-semibold text-navy-900">
-            {t('student:content.chapter', { order: toLocalNum(index + 1), name: chapter.name })}
-          </p>
-          {chapter.description && (
-            <p className="truncate font-cairo text-xs text-gray-400">{chapter.description}</p>
-          )}
-        </div>
+      <div className="flex w-full items-center gap-3 px-2 py-3.5">
+        {/* Expand/collapse is available only when the content is accessible
+            (free / purchased). Locked chapters aren't expandable, so their title
+            is a plain, non-interactive region. */}
+        {config.accessible ? (
+          <button
+            type="button"
+            onClick={() => onToggle(chapter.id)}
+            aria-expanded={expanded}
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-md text-start transition-colors hover:bg-gray-50/60"
+          >
+            {title}
+          </button>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center gap-3">{title}</div>
+        )}
 
         <div className="flex shrink-0 items-center gap-2">
           <ChapterBadges chapter={chapter} badges={config.badges} />
+          {showEnroll && (
+            <button
+              type="button"
+              onClick={(e) => {
+                // Never let the Enroll click bubble up into a row toggle.
+                e.stopPropagation();
+                onEnroll(chapter);
+              }}
+              className="shrink-0 rounded-button bg-cyan-500 px-3 py-1 font-cairo text-xs font-semibold text-white transition-colors hover:bg-cyan-600"
+            >
+              {t('student:content.enroll')}
+            </button>
+          )}
         </div>
 
-        <ChevronDown
-          size={18}
-          className={cn(
-            'shrink-0 text-gray-400 transition-transform',
-            config.accessible && expanded && 'rotate-180',
-          )}
-        />
-      </button>
+        {config.accessible && (
+          <button
+            type="button"
+            onClick={() => onToggle(chapter.id)}
+            aria-expanded={expanded}
+            aria-label={chapterLabel}
+            className="shrink-0"
+          >
+            <ChevronDown
+              size={18}
+              className={cn('text-gray-400 transition-transform', expanded && 'rotate-180')}
+            />
+          </button>
+        )}
+      </div>
 
       {config.accessible && expanded && lessons.length > 0 && (
         <ul className="mb-3 ms-7 me-1 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">

@@ -80,6 +80,104 @@ export class EnrollmentService {
     return this.toResponseDTO(enrollment);
   }
 
+  /**
+   * Direct self-enrollment into a free chapter — no promo code, no payment.
+   * A chapter is free when its price is unset (null) or explicitly 0. Creates a
+   * price:0 / paymentMethod:FREE enrollment, and mirrors the promo redeem flow's
+   * app-level duplicate check + P2002 fallback.
+   */
+  public async enrollFree(
+    studentId: string,
+    chapterId: string,
+  ): Promise<EnrollmentResponseDTO> {
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        deletedAt: true,
+        stage: { select: { teacherId: true } },
+      },
+    });
+
+    if (!chapter || chapter.deletedAt) {
+      throw new AppError("Chapter not found", 404, "CHAPTER_NOT_FOUND");
+    }
+
+    // Chapter.price is a nullable Decimal; the rest of the codebase normalizes
+    // it with Number(...) rather than Decimal.equals(), so we do the same here.
+    // A null price means the chapter can't be charged for, so it is free too.
+    const isFree = chapter.price === null || Number(chapter.price) === 0;
+    if (!isFree) {
+      throw new AppError(
+        "This chapter is not free. Please use the payment flow.",
+        400,
+        "CHAPTER_NOT_FREE",
+      );
+    }
+
+    const existing = await prisma.enrollment.findUnique({
+      where: { studentId_chapterId: { studentId, chapterId } },
+      select: { id: true },
+    });
+
+    if (existing) {
+      throw new AppError(
+        "You are already enrolled in this chapter",
+        400,
+        "ALREADY_ENROLLED",
+      );
+    }
+
+    let enrollment;
+    try {
+      enrollment = await prisma.enrollment.create({
+        data: {
+          studentId,
+          chapterId,
+          price: 0,
+          paymentMethod: "FREE",
+        },
+        select: enrollmentPublicFields,
+      });
+    } catch (e) {
+      // Guards the race between the check above and create against the
+      // @@unique([studentId, chapterId]) constraint — same pattern as redeem.
+      if ((e as { code?: string } | null)?.code === "P2002") {
+        throw new AppError(
+          "You are already enrolled in this chapter",
+          400,
+          "ALREADY_ENROLLED",
+        );
+      }
+      throw e;
+    }
+
+    const student = await prisma.user.findUnique({
+      where: { id: studentId },
+      select: { fullName: true },
+    });
+
+    await auditLogService.record({
+      action: "STUDENT_ENROLLED",
+      resourceType: "ENROLLMENT",
+      resourceId: enrollment.id,
+      actorId: studentId,
+      actorType: "STUDENT",
+      actorName: student?.fullName ?? null,
+      scopeTeacherId: chapter.stage.teacherId,
+      details: {
+        chapterId: chapter.id,
+        chapterName: chapter.name,
+        price: 0,
+        paymentMethod: "FREE",
+      },
+    });
+
+    return this.toResponseDTO(enrollment);
+  }
+
   /** SCRUM-506: deactivate an active enrollment (ADMIN-only action). */
   public async deactivateEnrollment(
     enrollmentId: string,

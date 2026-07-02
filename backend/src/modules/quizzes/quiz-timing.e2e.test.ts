@@ -97,7 +97,7 @@ async function createChapter(stageId: string) {
 
 async function enroll(studentId: string, chapterId: string) {
   const e = await prisma.enrollment.create({
-    data: { studentId, chapterId, price: 0, paymentMethod: "CASH", status: "ACTIVE" },
+    data: { studentId, chapterId, price: 0, paymentMethod: "FREE", status: "ACTIVE" },
   });
   owned.enrollmentIds.push(e.id);
 }

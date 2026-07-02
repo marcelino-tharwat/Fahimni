@@ -35,6 +35,15 @@
       "subscribe": "اشترك الآن",
       "cancel": "إلغاء"
     },
+    "enroll": "اشتراك",
+    "freeModal": {
+      "title": "الاشتراك في هذا الباب",
+      "description": "هذا الباب مجاني. أكّد اشتراكك لتبدأ التعلم.",
+      "confirm": "أكّد الاشتراك",
+      "cancel": "إلغاء"
+    },
+    "enrollSuccess": "تم الاشتراك بنجاح!",
+    "enrollError": "فشل الاشتراك. حاول مرة أخرى.",
     "myCoursesTab": {
       "lessons": "{{n}} درس",
       "progress": "التقدم",
@@ -226,7 +235,7 @@
     "subscriptionHistory": "سجل الاشتراكات",
     "active": "نشط",
     "ended": "منتهي",
-    "paymentMethod": { "PROMO": "كود خصم", "CASH": "كاش", "PAYMOB": "بايموب" },
+    "paymentMethod": { "FREE": "مجاناً", "PROMO": "كود خصم", "PAYMOB": "بايموب" },
     "achievements": "الإنجازات",
     "firstLesson": "أول درس",
     "tenLessons": "١٠ دروس",

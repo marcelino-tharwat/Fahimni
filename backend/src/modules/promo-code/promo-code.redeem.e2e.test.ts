@@ -206,7 +206,7 @@ describe("STORY-53 — promo code redemption E2E", () => {
 
   it("rejects an already-enrolled student (400) and leaves the fresh code unused", async () => {
     const chapterId = await createChapter(stageId);
-    await prisma.enrollment.create({ data: { studentId: s1.id, chapterId, price: 0, paymentMethod: "CASH" } });
+    await prisma.enrollment.create({ data: { studentId: s1.id, chapterId, price: 0, paymentMethod: "FREE" } });
     const code = await createCode(chapterId);
 
     const r = await http("POST", "/api/promo-codes/redeem", { cookie: s1Cookie, body: { code, chapterId } });

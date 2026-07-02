@@ -91,7 +91,7 @@ async function createQuiz(chapterId: string, teacherId: string) {
   return id;
 }
 async function enroll(studentId: string, chapterId: string, enrolledAt: Date) {
-  await prisma.enrollment.create({ data: { studentId, chapterId, price: 0, paymentMethod: "CASH", status: "ACTIVE", enrolledAt } });
+  await prisma.enrollment.create({ data: { studentId, chapterId, price: 0, paymentMethod: "FREE", status: "ACTIVE", enrolledAt } });
 }
 async function progress(studentId: string, lessonId: string, completed: boolean, updatedAt: Date) {
   await prisma.lessonProgress.create({ data: { studentId, lessonId, completed, createdAt: updatedAt, updatedAt } });

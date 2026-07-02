@@ -6,7 +6,10 @@ import type {
   EnrollmentResponseDTO,
   EnrollmentListItemDTO,
 } from "./enrollment.types.js";
-import type { CreateEnrollmentInput } from "./enrollment.validation.js";
+import type {
+  CreateEnrollmentInput,
+  FreeEnrollmentInput,
+} from "./enrollment.validation.js";
 
 const enrollmentService = new EnrollmentService();
 
@@ -19,6 +22,25 @@ export class EnrollmentController {
       const enrollment = await enrollmentService.createEnrollment(
         studentId,
         input,
+      );
+
+      res
+        .status(201)
+        .json(okResponse<EnrollmentResponseDTO>(
+          "Enrollment created successfully",
+          enrollment,
+        ));
+    },
+  );
+
+  public createFree = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const studentId = req.user!.id;
+      const { chapterId } = req.body as FreeEnrollmentInput;
+
+      const enrollment = await enrollmentService.enrollFree(
+        studentId,
+        chapterId,
       );
 
       res

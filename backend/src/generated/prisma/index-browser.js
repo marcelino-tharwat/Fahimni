@@ -422,8 +422,7 @@ exports.EnrollmentStatus = exports.$Enums.EnrollmentStatus = {
 };
 
 exports.PaymentMethod = exports.$Enums.PaymentMethod = {
-  CASH: 'CASH',
-  VISA: 'VISA',
+  FREE: 'FREE',
   PROMO: 'PROMO',
   PAYMOB: 'PAYMOB'
 };

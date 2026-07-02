@@ -77,8 +77,8 @@ beforeAll(async () => {
     owned.userIds.push(id);
     users.push({ id, email: `perf-s-${id.slice(0, 8)}@e2e.test`, fullName: `Perf Student ${String(i).padStart(3, "0")}`, mobile: `010${String((now + i) % 100000000).padStart(8, "0")}`, password: pwHash, role: "STUDENT", status: "ACTIVE" });
     // 1–2 enrollments (some multi-chapter), varied recency.
-    enrollments.push({ studentId: id, chapterId: chapterIds[0]!, price: 0, paymentMethod: "CASH", status: "ACTIVE", enrolledAt: new Date(now - (i % 60) * DAY) });
-    if (i % 3 === 0) enrollments.push({ studentId: id, chapterId: chapterIds[1]!, price: 0, paymentMethod: "CASH", status: "ACTIVE", enrolledAt: new Date(now - (i % 20) * DAY) });
+    enrollments.push({ studentId: id, chapterId: chapterIds[0]!, price: 0, paymentMethod: "FREE", status: "ACTIVE", enrolledAt: new Date(now - (i % 60) * DAY) });
+    if (i % 3 === 0) enrollments.push({ studentId: id, chapterId: chapterIds[1]!, price: 0, paymentMethod: "FREE", status: "ACTIVE", enrolledAt: new Date(now - (i % 20) * DAY) });
     // ~85% have lesson progress + graded attempt + login; ~15% null activity.
     if (i % 7 !== 0) {
       progresses.push({ studentId: id, lessonId: lessonIds[i % 5]!, completed: true, updatedAt: new Date(now - (i % 10) * DAY) });

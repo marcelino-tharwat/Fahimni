@@ -35,6 +35,15 @@
       "subscribe": "Subscribe Now",
       "cancel": "Cancel"
     },
+    "enroll": "Enroll",
+    "freeModal": {
+      "title": "Enroll in this chapter",
+      "description": "This chapter is free. Confirm your enrollment to start learning.",
+      "confirm": "Confirm enrollment",
+      "cancel": "Cancel"
+    },
+    "enrollSuccess": "Enrolled successfully!",
+    "enrollError": "Enrollment failed. Please try again.",
     "myCoursesTab": {
       "lessons": "{{n}} lessons",
       "progress": "Progress",
@@ -222,7 +231,7 @@
     "subscriptionHistory": "Subscription History",
     "active": "Active",
     "ended": "Ended",
-    "paymentMethod": { "PROMO": "Promo Code", "CASH": "Cash", "PAYMOB": "Paymob" },
+    "paymentMethod": { "FREE": "Free", "PROMO": "Promo Code", "PAYMOB": "Paymob" },
     "achievements": "Achievements",
     "firstLesson": "First Lesson",
     "tenLessons": "10 Lessons",
