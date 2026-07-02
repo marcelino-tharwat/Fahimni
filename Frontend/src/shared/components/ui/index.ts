@@ -13,3 +13,4 @@ export { Skeleton } from './Skeleton';
 export { Modal } from './Modal';
 export { ConfirmDialog } from './ConfirmDialog';
 export { Toast } from './Toast';
+export { FloatingWhatsAppButton } from './FloatingWhatsAppButton';

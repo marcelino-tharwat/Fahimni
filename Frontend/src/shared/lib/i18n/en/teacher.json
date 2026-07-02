@@ -488,6 +488,24 @@
       "bio": "Bio",
       "bioPlaceholder": "Write a bio about yourself and your experience... it will appear to students on the academy page"
     },
+    "support": {
+      "title": "Support settings",
+      "description": "Set the WhatsApp number students will use to reach you",
+      "label": "WhatsApp number",
+      "placeholder": "1012345678",
+      "hint": "This number will be used for the WhatsApp button shown to students",
+      "previewHeading": "Support button preview",
+      "previewBody": "A WhatsApp button will appear for students on every page and messages will be sent to:",
+      "previewEmpty": "No number set",
+      "save": "Save",
+      "saving": "Saving...",
+      "saved": "Support settings saved successfully",
+      "saveError": "Failed to save support settings",
+      "unsavedChanges": "Unsaved changes",
+      "errorRequired": "WhatsApp number is required",
+      "errorInvalid": "Must be a valid Egyptian number (e.g. 0101234567)",
+      "errorTooShort": "Number must be 10 digits"
+    },
     "branding": {
       "title": "Academy Branding",
       "logoLabel": "Academy Logo",
