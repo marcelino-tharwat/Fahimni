@@ -87,9 +87,16 @@ export function PaymentPage() {
   }
 
   const goToCourse = useCallback(() => {
-    if (chapter?.firstLessonId) navigate(`/student/lessons/${chapter.firstLessonId}`);
-    else navigate('/student/content');
-  }, [chapter, navigate]);
+    if (chapter?.firstLessonId) {
+      navigate(`/student/lessons/${chapter.firstLessonId}`);
+      return;
+    }
+    // Enrolled, but the chapter has no lessons yet (empty chapter, or a race
+    // against stale tree data). Never route to a non-existent lesson URL —
+    // land on the dashboard and tell the student lessons are on the way.
+    dispatch(addToast({ type: 'success', message: t('student:content.enrolledButEmpty') }));
+    navigate('/student/dashboard');
+  }, [chapter, navigate, dispatch, t]);
 
   const handleRetry = useCallback(() => {
     sessionStorage.removeItem(PENDING_STORAGE_KEY);
@@ -112,7 +119,7 @@ export function PaymentPage() {
   // --- Loading / Error / NotFound ---
   if (isLoading) return <PaymentLoading />;
   if (isError) return <PaymentError onRetry={() => refetch()} retrying={isFetching} />;
-  if (!chapter) return <ChapterNotFound onBack={() => navigate('/student/content')} />;
+  if (!chapter) return <ChapterNotFound onBack={() => navigate('/student/dashboard')} />;
 
   // --- Already enrolled (from initial load) ---
   if (enrolledOnLoad.current) {
@@ -166,7 +173,7 @@ export function PaymentPage() {
     <div className="mx-auto flex w-full max-w-[640px] flex-col gap-5">
       <button
         type="button"
-        onClick={() => navigate('/student/content')}
+        onClick={() => navigate('/student/dashboard')}
         className="flex w-fit items-center gap-1.5 font-cairo text-sm text-gray-600 transition-opacity hover:opacity-70"
       >
         <ChevronRight size={14} />

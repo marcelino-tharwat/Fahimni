@@ -3,8 +3,8 @@ import type {
   StudentContentTreeItem,
 } from '@/features/student/types/studentContent';
 
-/** Real student content hub route (fallback continuation target). */
-export const STUDENT_CONTENT_ROUTE = '/student/content';
+/** Real student dashboard route (fallback continuation target — the "All Content" hub). */
+export const STUDENT_DASHBOARD_ROUTE = '/student/dashboard';
 
 /**
  * Resolve the real "Continue" destination for an enrolled course (a chapter).
@@ -32,5 +32,5 @@ export function courseContinueDestination(
       }
     }
   }
-  return STUDENT_CONTENT_ROUTE;
+  return STUDENT_DASHBOARD_ROUTE;
 }

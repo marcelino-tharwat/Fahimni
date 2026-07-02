@@ -131,7 +131,7 @@ export function MyCoursesContent({ enabled = true, showExplore = false }: MyCour
             </p>
             <button
               type="button"
-              onClick={() => navigate('/student/content')}
+              onClick={() => navigate('/student/dashboard')}
               className="mt-2 flex min-h-[44px] items-center justify-center gap-2 rounded-button bg-cyan-500 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-cyan-600"
             >
               <Compass size={16} />

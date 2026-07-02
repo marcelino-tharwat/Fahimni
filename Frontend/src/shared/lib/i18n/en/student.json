@@ -44,6 +44,9 @@
     },
     "enrollSuccess": "Enrolled successfully!",
     "enrollError": "Enrollment failed. Please try again.",
+    "comingSoon": "Coming soon",
+    "emptyChapterTooltip": "This chapter has no lessons yet",
+    "enrolledButEmpty": "Enrolled successfully! Lessons will be added soon.",
     "myCoursesTab": {
       "lessons": "{{n}} lessons",
       "progress": "Progress",
