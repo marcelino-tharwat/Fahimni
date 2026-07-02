@@ -5,6 +5,7 @@ import { RecentActivityCard } from '@/components/profile/RecentActivityCard';
 import { StudentEngagementCard } from '@/components/profile/StudentEngagementCard';
 import { ProfileInfoCard } from '@/components/profile/ProfileInfoCard';
 import { AcademicIdentityCard } from '@/components/profile/AcademicIdentityCard';
+import { SupportSettingsCard } from '@/components/profile/SupportSettingsCard';
 import type { TeacherProfile } from '@/features/teacher/types/teacher';
 import type { RecentActivity } from '@/features/teacher/types/dashboard';
 import type { ActivityItem } from '@/types/profile.types';
@@ -159,6 +160,10 @@ export function ProfilePage() {
           totalEnrolled={mapped.engagement.total}
           trend={mapped.engagement.trend}
           grades={mapped.grades}
+        />
+        <SupportSettingsCard
+          isLoading={isLoading}
+          profile={mapped.profile}
         />
       </div>
     </div>
