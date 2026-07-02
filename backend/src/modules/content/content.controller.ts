@@ -165,10 +165,14 @@ export class ContentController {
           let enrollmentStatus: EnrollmentStatus;
           const price = chapter.price ? Number(chapter.price) : null;
 
-          if (price === null || price === 0) {
-            enrollmentStatus = "free";
-          } else if (enrolledSet.has(chapter.id)) {
+          // Enrollment is the source of truth for "is this student in?" —
+          // check it first, regardless of price. Otherwise a free chapter the
+          // student has actively enrolled in short-circuits to "free" and never
+          // flips to "purchased" (same Subscribed path paid chapters use).
+          if (enrolledSet.has(chapter.id)) {
             enrollmentStatus = "purchased";
+          } else if (price === null || price === 0) {
+            enrollmentStatus = "free";
           } else {
             enrollmentStatus = "locked";
           }
