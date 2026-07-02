@@ -16,7 +16,9 @@ export function ResultFilterBar({ active, counts, onChange }: ResultFilterBarPro
     { key: 'all', label: t('quiz:results.filterAll') },
     { key: 'correct', label: t('quiz:results.filterCorrect') },
     { key: 'wrong', label: t('quiz:results.filterWrong') },
-    { key: 'pending', label: t('quiz:results.filterPending') },
+    ...(counts.pending > 0
+      ? [{ key: 'pending' as const, label: t('quiz:results.filterPending') }]
+      : []),
   ];
 
   return (

@@ -6,6 +6,7 @@ import type {
   QuizResultsData,
   ResultStatus,
 } from '@/features/student/types/quizResults';
+import { summarizeQuizResults } from '@/features/student/lib/quizResultStats';
 
 export interface ApiOptionValue {
   id: string;
@@ -238,6 +239,8 @@ export function buildQuizResults(submit: SubmitAttemptResponse): QuizResultsData
     explanation: r.explanation,
   }));
 
+  const { correctCount, wrongCount, pendingCount } = summarizeQuizResults(results);
+
   return {
     quizId: submit.quizId,
     quizTitle: submit.quizTitle,
@@ -245,9 +248,9 @@ export function buildQuizResults(submit: SubmitAttemptResponse): QuizResultsData
     score: submit.score,
     totalPoints: submit.totalPoints,
     percentage: submit.percentage,
-    correctCount: results.filter((r) => r.status === 'correct').length,
-    wrongCount: results.filter((r) => r.status === 'incorrect').length,
-    pendingCount: results.filter((r) => r.status === 'pending' || r.status === 'graded').length,
+    correctCount,
+    wrongCount,
+    pendingCount,
     results,
   };
 }

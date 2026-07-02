@@ -10,6 +10,7 @@
     "settings": "الإعدادات",
     "aiTutor": "المساعد الذكي",
     "quizzes": "الاختبارات",
+    "essayGrading": "تصحيح المقالات",
     "profile": "الملف الشخصي",
     "promoCodes": "أكواد الخصم",
     "studentLookup": "بحث الطلاب",
@@ -111,9 +112,13 @@
     "errorLoading": "حدث خطأ في تحميل الأكواد",
     "retry": "إعادة المحاولة",
     "errorGenerating": "حدث خطأ أثناء إنشاء الكود",
+    "errorChapterNotFound": "الفصل المحدد غير موجود. اختر فصلاً من قائمة المحتوى.",
     "successToast": "تم إنشاء الكود بنجاح",
-    "chapterIdLabel": "معرّف الفصل",
-    "chapterIdPlaceholder": "أدخل معرّف الفصل (UUID)"
+    "stageLabel": "المرحلة",
+    "stagePlaceholder": "اختر المرحلة",
+    "chapterLabel": "الفصل",
+    "chapterPlaceholder": "اختر الفصل",
+    "noChapters": "لا توجد فصول متاحة. أنشئ فصلاً من إدارة المحتوى أولاً."
   },
   "language": { "ar": "العربية", "en": "English" }
 }

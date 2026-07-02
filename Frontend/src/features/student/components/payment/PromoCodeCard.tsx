@@ -12,7 +12,8 @@ type PromoState =
   | 'error-used'
   | 'error-expired'
   | 'error-invalid'
-  | 'error-not-for-chapter';
+  | 'error-not-for-chapter'
+  | 'error-chapter-not-found';
 
 /** i18n key per error state — mirrors the backend reasons. */
 const ERROR_KEY: Record<string, string> = {
@@ -20,6 +21,7 @@ const ERROR_KEY: Record<string, string> = {
   'error-expired': 'student:payment.promo.errorExpired',
   'error-invalid': 'student:payment.promo.errorInvalid',
   'error-not-for-chapter': 'student:payment.promo.errorNotForChapter',
+  'error-chapter-not-found': 'student:payment.promo.errorChapterNotFound',
 };
 
 const PROMO_CODE_LENGTH = 8;
@@ -44,11 +46,15 @@ function reasonToState(reason?: string): PromoState {
   }
 }
 
-/** Best-effort mapping of a redeem 400 (race after validate) to an error state. */
+/** Best-effort mapping of a redeem error to an error state. */
 function redeemErrorToState(error: unknown): PromoState {
+  const apiError = error as { code?: string; message?: string };
+  if (apiError.code === 'CHAPTER_NOT_FOUND') return 'error-chapter-not-found';
+
   const message = extractApiMessage(error).toLowerCase();
   if (message.includes('used')) return 'error-used';
   if (message.includes('expired')) return 'error-expired';
+  if (message.includes('chapter')) return 'error-chapter-not-found';
   return 'error-invalid';
 }
 
@@ -111,7 +117,7 @@ export function PromoCodeCard({ chapterId, onSuccess }: PromoCodeCardProps) {
           },
         );
       },
-      onError: () => setState('error-invalid'),
+      onError: (error) => setState(redeemErrorToState(error)),
     });
   };
 

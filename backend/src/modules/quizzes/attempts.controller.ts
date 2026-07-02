@@ -3,9 +3,13 @@ import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { attemptsService } from "./attempts.service.js";
-import { resultsQuerySchema } from "./attempts.validation.js";
+import {
+  resultsQuerySchema,
+  essayGradingListQuerySchema,
+} from "./attempts.validation.js";
 import type {
   GradeEssaysInput,
+  EssayGradingListQueryInput,
   SaveDraftAnswersInput,
   SubmitAttemptInput,
 } from "./attempts.validation.js";
@@ -156,6 +160,60 @@ export class AttemptsController {
         `attachment; filename="quiz-${quizId}-results.csv"`,
       );
       res.status(200).send(csv);
+    },
+  );
+
+  /** GET /api/quizzes/essay-grading (teacher) — essay grading hub. */
+  public getEssayGradingHub = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const parsed = essayGradingListQuerySchema.safeParse(req.query);
+      if (!parsed.success) throw parsed.error;
+
+      const data = await attemptsService.getEssayGradingHub(
+        req.user!.id,
+        parsed.data,
+      );
+      res
+        .status(200)
+        .json(okResponse("Essay grading hub fetched successfully", data));
+    },
+  );
+
+  /** GET /api/quizzes/:quizId/essay-submissions (teacher). */
+  public getEssaySubmissions = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const quizId = req.params.quizId;
+      if (typeof quizId !== "string") throw new AppError("Invalid quiz ID", 400);
+
+      const parsed = essayGradingListQuerySchema.safeParse(req.query);
+      if (!parsed.success) throw parsed.error;
+
+      const data = await attemptsService.getEssaySubmissions(
+        quizId,
+        req.user!.id,
+        parsed.data,
+      );
+      res
+        .status(200)
+        .json(okResponse("Essay submissions fetched successfully", data));
+    },
+  );
+
+  /** GET /api/attempts/:attemptId/essay-grading (teacher). */
+  public getEssayGradingDetail = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const attemptId = req.params.attemptId;
+      if (typeof attemptId !== "string") {
+        throw new AppError("Invalid attempt ID", 400);
+      }
+
+      const data = await attemptsService.getEssayGradingDetail(
+        attemptId,
+        req.user!.id,
+      );
+      res
+        .status(200)
+        .json(okResponse("Essay grading detail fetched successfully", data));
     },
   );
 }

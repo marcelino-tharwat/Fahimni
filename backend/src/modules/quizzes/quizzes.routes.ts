@@ -47,6 +47,13 @@ quizStandaloneRouter.post(
   quizController.generate,
 );
 
+quizStandaloneRouter.get(
+  "/essay-grading",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  attemptsController.getEssayGradingHub,
+);
+
 // ── Student quiz-taking (STORY-48) ─────────────────────────────────────
 // Static routes must be registered before parameterized /:id routes.
 quizStandaloneRouter.get(
@@ -109,6 +116,13 @@ quizStandaloneRouter.use("/:quizId/questions", questionNestedRouter);
 
 // ── Teacher quiz results & CSV export (STORY-68) ───────────────────────
 // Static sub-paths registered before parameterized /:id routes.
+quizStandaloneRouter.get(
+  "/:quizId/essay-submissions",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  attemptsController.getEssaySubmissions,
+);
+
 quizStandaloneRouter.get(
   "/:quizId/results/ungraded",
   authenticateMiddleware,

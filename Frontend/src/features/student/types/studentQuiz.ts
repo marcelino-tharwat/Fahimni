@@ -1,5 +1,6 @@
 export type QuizStatus = 'new' | 'passed' | 'failed' | 'pending';
 export type Difficulty = 'easy' | 'medium' | 'hard';
+export type QuizAttemptStatus = 'IN_PROGRESS' | 'COMPLETED' | 'GRADED';
 
 export interface QuizItem {
   id: string;
@@ -12,6 +13,7 @@ export interface QuizItem {
   score?: number;
   retakeAllowed?: boolean;
   attemptId?: string | null;
+  attemptStatus?: QuizAttemptStatus | null;
 }
 
 export interface ChapterGroup {

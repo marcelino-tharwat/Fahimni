@@ -4,6 +4,11 @@ dist
 .env.local
 *.local
 
+# Local Fahimni React design reference
+/Frontend/Design System for Fahimni/
+
+# Local implementation reports
+/*_REPORT.md
 
 _bmad/
 _bmad-output/

@@ -45,6 +45,14 @@ const gradeEssaysChain = [
 attemptsRouter.post("/:attemptId/grade-essays", ...gradeEssaysChain);
 attemptsRouter.patch("/:attemptId/grade-essays", ...gradeEssaysChain);
 
+// Teacher essay grading detail — before student GET /:attemptId.
+attemptsRouter.get(
+  "/:attemptId/essay-grading",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  controller.getEssayGradingDetail,
+);
+
 // Student re-fetches their own submitted attempt results. Registered AFTER the
 // more specific /:attemptId/* routes above so it never shadows them.
 attemptsRouter.get(

@@ -91,7 +91,23 @@ export const resultsQuerySchema = z
   })
   .strip();
 
+const essayListLimit = z.coerce
+  .number()
+  .int()
+  .min(1)
+  .max(50)
+  .optional();
+
+/** Cursor pagination for essay-grading list endpoints. */
+export const essayGradingListQuerySchema = z
+  .object({
+    cursor: uuid.optional(),
+    limit: essayListLimit,
+  })
+  .strip();
+
 export type SubmitAttemptInput = z.infer<typeof submitAttemptSchema>;
 export type SaveDraftAnswersInput = z.infer<typeof saveDraftAnswersSchema>;
 export type GradeEssaysInput = z.infer<typeof gradeEssaysSchema>;
 export type ResultsQueryInput = z.infer<typeof resultsQuerySchema>;
+export type EssayGradingListQueryInput = z.infer<typeof essayGradingListQuerySchema>;
