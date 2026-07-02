@@ -9,6 +9,7 @@ import {
   Folder,
   FileText,
   ChevronDown,
+  Clock,
   Lock,
   FolderOpen,
   AlertCircle,
@@ -269,6 +270,13 @@ function ChapterRow({
   // (free or locked). Once purchased, only the Subscribed badge shows.
   const showEnroll =
     chapter.enrollmentStatus === 'free' || chapter.enrollmentStatus === 'locked';
+
+  // A not-yet-enrolled chapter with zero lessons can't be entered — enrolling
+  // would land the student on a non-existent lesson URL. Gate it here: disable
+  // Enroll and swap the price/free badge for a neutral "Coming soon" badge.
+  // (Purchased chapters keep their Subscribed badge — they're already in.)
+  const isEmpty = chapter.lessonCount === 0;
+  const gateEmpty = showEnroll && isEmpty;
   const chapterLabel = t('student:content.chapter', {
     order: toLocalNum(index + 1),
     name: chapter.name,
@@ -306,16 +314,36 @@ function ChapterRow({
         )}
 
         <div className="flex shrink-0 items-center gap-2">
-          <ChapterBadges chapter={chapter} badges={config.badges} />
+          {gateEmpty ? (
+            // Amber "not-yet-ready" pill, mirroring the Locked badge's
+            // icon+text pill so it carries the same visual weight as the
+            // Free / Locked / Subscribed badges on other rows.
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 font-cairo text-xs font-medium text-amber-800">
+              <Clock size={13} aria-hidden />
+              {t('student:content.comingSoon')}
+            </span>
+          ) : (
+            <ChapterBadges chapter={chapter} badges={config.badges} />
+          )}
           {showEnroll && (
             <button
               type="button"
+              aria-disabled={gateEmpty}
+              title={gateEmpty ? t('student:content.emptyChapterTooltip') : undefined}
               onClick={(e) => {
                 // Never let the Enroll click bubble up into a row toggle.
                 e.stopPropagation();
+                // Empty chapters can't be enrolled in — swallow the click so no
+                // modal opens (aria-disabled keeps the tooltip working on hover).
+                if (gateEmpty) return;
                 onEnroll(chapter);
               }}
-              className="shrink-0 rounded-button bg-cyan-500 px-3 py-1 font-cairo text-xs font-semibold text-white transition-colors hover:bg-cyan-600"
+              className={cn(
+                'shrink-0 rounded-button px-3 py-1 font-cairo text-xs font-semibold text-white transition-colors',
+                gateEmpty
+                  ? 'cursor-not-allowed bg-gray-300'
+                  : 'bg-cyan-500 hover:bg-cyan-600',
+              )}
             >
               {t('student:content.enroll')}
             </button>

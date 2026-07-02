@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   courseContinueDestination,
-  STUDENT_CONTENT_ROUTE,
+  STUDENT_DASHBOARD_ROUTE,
 } from './myCourses';
 import type { StudentContentTreeItem } from '@/features/student/types/studentContent';
 
@@ -66,19 +66,19 @@ describe('courseContinueDestination', () => {
 
   it('falls back to the real content hub when the tree is not loaded', () => {
     expect(courseContinueDestination({ id: 'chapter-a' }, undefined)).toBe(
-      STUDENT_CONTENT_ROUTE,
+      STUDENT_DASHBOARD_ROUTE,
     );
   });
 
   it('falls back to the content hub when the chapter has no lessons', () => {
     expect(courseContinueDestination({ id: 'chapter-empty' }, treeFixture())).toBe(
-      STUDENT_CONTENT_ROUTE,
+      STUDENT_DASHBOARD_ROUTE,
     );
   });
 
   it('falls back to the content hub when the chapter is not in the tree', () => {
     expect(courseContinueDestination({ id: 'unknown' }, treeFixture())).toBe(
-      STUDENT_CONTENT_ROUTE,
+      STUDENT_DASHBOARD_ROUTE,
     );
   });
 
@@ -86,6 +86,6 @@ describe('courseContinueDestination', () => {
     const dest = courseContinueDestination({ id: 'chapter-a' }, treeFixture());
     expect(dest).not.toBe('/student/courses');
     expect(dest.toLowerCase()).not.toContain('mock');
-    expect(STUDENT_CONTENT_ROUTE).toBe('/student/content');
+    expect(STUDENT_DASHBOARD_ROUTE).toBe('/student/dashboard');
   });
 });

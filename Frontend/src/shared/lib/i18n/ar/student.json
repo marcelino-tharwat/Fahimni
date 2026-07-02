@@ -44,6 +44,9 @@
     },
     "enrollSuccess": "تم الاشتراك بنجاح!",
     "enrollError": "فشل الاشتراك. حاول مرة أخرى.",
+    "comingSoon": "قريباً",
+    "emptyChapterTooltip": "هذا الباب لا يحتوي على دروس بعد",
+    "enrolledButEmpty": "تم الاشتراك بنجاح! الدروس ستضاف قريباً",
     "myCoursesTab": {
       "lessons": "{{n}} درس",
       "progress": "التقدم",

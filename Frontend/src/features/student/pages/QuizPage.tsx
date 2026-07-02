@@ -370,7 +370,7 @@ export function QuizPage() {
 
     const handlePrimary = () => {
       if (accessError.primaryAction === 'browseCourses') {
-        navigate('/student/content');
+        navigate('/student/dashboard');
         return;
       }
       if (accessError.primaryAction === 'viewResults' && accessError.attemptId && quizId) {
@@ -413,7 +413,7 @@ export function QuizPage() {
           <p className="mt-2 max-w-xs text-body text-gray-600">{t('quiz:err403Msg')}</p>
           <button
             type="button"
-            onClick={() => navigate('/student/content')}
+            onClick={() => navigate('/student/dashboard')}
             className="h-11 rounded-btn bg-cyan-gradient px-8 text-sm font-bold text-white"
           >
             {t('quiz:browseCourses')}
