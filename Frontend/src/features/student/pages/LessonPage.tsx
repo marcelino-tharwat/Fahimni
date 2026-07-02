@@ -16,6 +16,8 @@ import {
 import { Badge, Button, Card, Skeleton } from '@/shared/components/ui';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { useLesson, useStudentTree } from '@/features/student/hooks/useStudentContent';
+import { useStudentQuizzes } from '@/features/student/hooks/useStudentQuizzes';
+import { resolveQuizStudentAction } from '@/features/student/lib/quizNavigation';
 import { contentApi } from '@/features/student/api/content';
 import { quizApi } from '@/features/student/api/quiz';
 import type { StudentContentTreeItem } from '@/features/student/types/studentContent';
@@ -110,6 +112,7 @@ export function LessonPage() {
   const { data: lesson, isLoading, isError, error } = useLesson(lessonId ?? '');
   const apiError = error as ApiError | null;
   const { data: tree } = useStudentTree();
+  const { data: studentQuizzes } = useStudentQuizzes();
 
   useEffect(() => {
     if (lessonId) {
@@ -137,6 +140,33 @@ export function LessonPage() {
   });
 
   const chapterQuiz = chapterQuizzes?.[0] ?? null;
+
+  const chapterQuizMeta = useMemo(() => {
+    if (!chapterQuiz || !studentQuizzes) return null;
+    for (const ch of studentQuizzes.chapters) {
+      const found = ch.quizzes.find((q) => q.id === chapterQuiz.id);
+      if (found) return found;
+    }
+    return null;
+  }, [chapterQuiz, studentQuizzes]);
+
+  const chapterQuizAction = chapterQuizMeta
+    ? resolveQuizStudentAction(chapterQuizMeta)
+    : 'start';
+
+  const handleChapterQuizClick = () => {
+    if (!chapterQuiz) return;
+    if (
+      chapterQuizAction === 'viewResult' &&
+      chapterQuizMeta?.attemptId
+    ) {
+      navigate(
+        `/student/quizzes/${chapterQuiz.id}/results/${chapterQuizMeta.attemptId}`,
+      );
+      return;
+    }
+    navigate(`/student/quizzes/${chapterQuiz.id}`);
+  };
 
   const allLessons = useMemo(() => {
     if (!tree) return [];
@@ -332,20 +362,35 @@ to="/student/dashboard"
 
       {/* Quiz */}
       {chapterQuiz && (
-        <Card padding="md" className="flex items-center justify-between gap-4">
+        <Card padding="md" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1">
             <span className="font-cairo text-base font-semibold text-navy-900">
-              {t('student:takeQuiz')}
+              {chapterQuiz.title}
             </span>
             <span className="font-cairo text-sm text-gray-500">
-              {chapterQuiz.description ?? t('student:takeQuiz')}
+              {chapterQuizAction === 'viewResult'
+                ? t('student:lesson.quizAlreadyTaken')
+                : chapterQuizAction === 'resume'
+                  ? t('student:lesson.quizInProgress')
+                  : (chapterQuiz.description ?? t('student:lesson.quizPrompt'))}
             </span>
+            {chapterQuizMeta?.status === 'passed' || chapterQuizMeta?.status === 'failed' ? (
+              <Badge variant={chapterQuizMeta.status === 'passed' ? 'success' : 'danger'}>
+                {t(`quiz:quiz.status.${chapterQuizMeta.status}`, {
+                  score: chapterQuizMeta.score ?? 0,
+                })}
+              </Badge>
+            ) : null}
           </div>
           <Button
-            variant="primary"
-            onClick={() => navigate(`/student/quizzes/${chapterQuiz.id}`)}
+            variant={chapterQuizAction === 'viewResult' ? 'outline' : 'primary'}
+            onClick={handleChapterQuizClick}
           >
-            {t('student:takeQuiz')}
+            {chapterQuizAction === 'viewResult'
+              ? t('quiz:quiz.action.viewResult')
+              : chapterQuizAction === 'resume'
+                ? t('quiz:quiz.action.continue')
+                : t('student:takeQuiz')}
           </Button>
         </Card>
       )}

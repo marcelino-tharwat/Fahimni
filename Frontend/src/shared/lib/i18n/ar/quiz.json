@@ -40,8 +40,8 @@
     "enrollmentInactiveMsg": "اشتراكك في هذا الفصل غير نشط. يرجى تجديد الاشتراك للمتابعة.",
     "attemptLimitTitle": "استنفاد المحاولات",
     "attemptLimitMsg": "لقد استنفدت عدد المحاولات المتاحة لهذا الاختبار.",
-    "alreadySubmittedTitle": "تم إرسال المحاولة",
-    "alreadySubmittedMsg": "تم إرسال هذه المحاولة بالفعل، وسيتم عرض النتيجة.",
+    "alreadySubmittedTitle": "لقد أنهيت هذا الاختبار مسبقاً",
+    "alreadySubmittedMsg": "لا يمكن بدء محاولة جديدة. يمكنك مراجعة نتيجتك أو العودة لقائمة الاختبارات.",
     "attemptExpiredTitle": "انتهى وقت المحاولة",
     "attemptExpiredMsg": "انتهى وقت المحاولة، وجارٍ تجهيز النتيجة.",
     "durationNotConfiguredTitle": "مدة الاختبار غير مضبوطة",
@@ -79,6 +79,7 @@
     },
     "action": {
       "start": "ابدأ الاختبار",
+      "continue": "متابعة الاختبار",
       "viewResult": "عرض النتيجة",
       "viewAnswers": "عرض الإجابات",
       "retake": "إعادة المحاولة"

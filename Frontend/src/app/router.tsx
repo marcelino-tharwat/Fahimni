@@ -8,8 +8,6 @@ import { SupportLayout } from '@/shared/components/layout/SupportLayout';
 import { TeacherStageLayout } from '@/shared/components/layout/TeacherStageLayout';
 import { LessonLayout } from '@/shared/components/layout/LessonLayout';
 import { AdminLayout } from '@/shared/components/layout/AdminLayout';
-
-// Guards
 import { AuthGuard } from '@/shared/components/guards/AuthGuard';
 import { RoleGuard } from '@/shared/components/guards/RoleGuard';
 
@@ -45,6 +43,9 @@ import { ProfilePage } from '@/pages/ProfilePage';
 import { AllStagesPage } from '@/features/teacher/pages/AllStagesPage';
 import { StageDetailPage } from '@/features/teacher/pages/StageDetailPage';
 import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
+import { EssayGradingHubPage } from '@/features/teacher/pages/EssayGradingHubPage';
+import { EssaySubmissionsPage } from '@/features/teacher/pages/EssaySubmissionsPage';
+import { EssayGradingDetailPage } from '@/features/teacher/pages/EssayGradingDetailPage';
 
 // Support pages
 import { StudentLookupPage } from '@/features/support/pages/StudentLookupPage';
@@ -114,6 +115,9 @@ const router = createBrowserRouter([
               { path: '/teacher/dashboard', element: <TeacherDashboardPage /> },
               { path: '/teacher/content', element: <AllStagesPage /> },
               { path: '/teacher/quizzes', element: <QuizListPage /> },
+              { path: '/teacher/essay-grading', element: <EssayGradingHubPage /> },
+              { path: '/teacher/essay-grading/:quizId', element: <EssaySubmissionsPage /> },
+              { path: '/teacher/essay-grading/:quizId/:attemptId', element: <EssayGradingDetailPage /> },
               { path: '/teacher/quizzes/generator', element: <AiQuizGeneratorPage /> },
               { path: '/teacher/quizzes/generator/review/:quizId', element: <AiQuizReviewPage /> },
               { path: '/teacher/quizzes/generator/publish/:quizId', element: <AiQuizPublishPage /> },

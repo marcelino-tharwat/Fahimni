@@ -235,16 +235,6 @@ export function QuizPage() {
       })
       .catch((err: ApiError) => {
         const resolved = resolveQuizAccessError(err);
-        if (
-          resolved.primaryAction === 'viewResults' &&
-          resolved.attemptId &&
-          quizId
-        ) {
-          navigate(`/student/quizzes/${quizId}/results/${resolved.attemptId}`, {
-            replace: true,
-          });
-          return;
-        }
         setAccessError(resolved);
         setStatus('error-access');
       });
@@ -361,20 +351,20 @@ export function QuizPage() {
   }
 
   if (status === 'error-access' && accessError) {
-    const primaryLabel =
-      accessError.primaryAction === 'browseCourses'
+    const isAlreadySubmitted = accessError.primaryAction === 'viewResults';
+    const primaryLabel = isAlreadySubmitted
+      ? t('quiz:viewResults')
+      : accessError.primaryAction === 'browseCourses'
         ? t('quiz:browseCourses')
-        : accessError.primaryAction === 'viewResults'
-          ? t('quiz:viewResults')
-          : t('quiz:results.backToQuizzes', { defaultValue: 'العودة للاختبارات' });
+        : t('quiz:results.backToQuizzes', { defaultValue: 'العودة للاختبارات' });
 
     const handlePrimary = () => {
-      if (accessError.primaryAction === 'browseCourses') {
-        navigate('/student/dashboard');
+      if (isAlreadySubmitted && accessError.attemptId && quizId) {
+        navigate(`/student/quizzes/${quizId}/results/${accessError.attemptId}`);
         return;
       }
-      if (accessError.primaryAction === 'viewResults' && accessError.attemptId && quizId) {
-        navigate(`/student/quizzes/${quizId}/results/${accessError.attemptId}`);
+      if (accessError.primaryAction === 'browseCourses') {
+        navigate('/student/dashboard');
         return;
       }
       navigate('/student/quizzes');
@@ -384,18 +374,37 @@ export function QuizPage() {
       <div dir={i18n.dir()} className="min-h-screen bg-navy-50 font-cairo">
         <ExamTopbar timerSeconds={0} timerWarning={false} onEndExam={() => {}} />
         <div className="flex flex-col items-center justify-center gap-5 px-6 py-20 text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gray-200">
-            <Lock size={36} className="text-gray-500" />
+          <div
+            className={`flex h-20 w-20 items-center justify-center rounded-2xl ${
+              isAlreadySubmitted ? 'bg-success-50' : 'bg-gray-200'
+            }`}
+          >
+            {isAlreadySubmitted ? (
+              <ClipboardCheck size={36} className="text-success-500" />
+            ) : (
+              <Lock size={36} className="text-gray-500" />
+            )}
           </div>
           <h1 className="text-h3 text-navy-800">{t(accessError.titleKey)}</h1>
-          <p className="mt-2 max-w-xs text-body text-gray-600">{t(accessError.messageKey)}</p>
-          <button
-            type="button"
-            onClick={handlePrimary}
-            className="h-11 rounded-btn bg-cyan-gradient px-8 text-sm font-bold text-white"
-          >
-            {primaryLabel}
-          </button>
+          <p className="max-w-md text-body text-gray-600">{t(accessError.messageKey)}</p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handlePrimary}
+              className="h-11 rounded-btn bg-cyan-gradient px-8 text-sm font-bold text-white"
+            >
+              {primaryLabel}
+            </button>
+            {isAlreadySubmitted && (
+              <button
+                type="button"
+                onClick={() => navigate('/student/quizzes')}
+                className="h-11 rounded-btn border-2 border-gray-300 px-8 text-sm font-semibold text-navy-800 transition-colors hover:bg-gray-50"
+              >
+                {t('quiz:results.backToQuizzes')}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );

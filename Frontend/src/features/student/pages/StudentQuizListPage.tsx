@@ -17,6 +17,7 @@ import {
 import { cn } from '@/shared/lib/utils/cn';
 import { Skeleton, Badge } from '@/shared/components/ui';
 import { useStudentQuizzes } from '@/features/student/hooks/useStudentQuizzes';
+import { resolveQuizStudentAction } from '@/features/student/lib/quizNavigation';
 import type { ChapterGroup, QuizItem } from '@/features/student/types/studentQuiz';
 
 const statusConfig: Record<
@@ -87,6 +88,7 @@ function QuizRow({
   const { t } = useTranslation();
   const cfg = statusConfig[quiz.status];
   const Icon = cfg.icon;
+  const action = resolveQuizStudentAction(quiz);
 
   return (
     <div className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-gray-50">
@@ -154,7 +156,7 @@ function QuizRow({
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-1.5">
-        {quiz.status === 'new' && (
+        {action === 'start' && (
           <button
             type="button"
             onClick={() => onStart(quiz.id)}
@@ -164,7 +166,17 @@ function QuizRow({
             {t('quiz:quiz.action.start')}
           </button>
         )}
-        {(quiz.status === 'passed' || quiz.status === 'failed') && quiz.attemptId && (
+        {action === 'resume' && (
+          <button
+            type="button"
+            onClick={() => onStart(quiz.id)}
+            className="inline-flex items-center gap-1.5 rounded-btn bg-cyan-gradient px-4 py-2 font-cairo text-small font-bold text-white shadow-glow transition-opacity hover:opacity-90"
+          >
+            <Play size={14} />
+            {t('quiz:quiz.action.continue')}
+          </button>
+        )}
+        {action === 'viewResult' && quiz.attemptId && (
           <button
             type="button"
             onClick={() => onViewResult(quiz.id, quiz.attemptId!)}
@@ -172,16 +184,6 @@ function QuizRow({
           >
             <Eye size={14} />
             {t('quiz:quiz.action.viewResult')}
-          </button>
-        )}
-        {quiz.status === 'pending' && (
-          <button
-            type="button"
-            disabled
-            className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-btn border border-gray-400 px-4 py-2 font-cairo text-small font-bold text-gray-500"
-          >
-            <Clock size={14} />
-            {t('quiz:quiz.action.viewAnswers')}
           </button>
         )}
         {quiz.retakeAllowed && quiz.status === 'failed' && (

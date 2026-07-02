@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
+import { cn } from '@/shared/lib/utils/cn';
 import { PASS_THRESHOLD, type QuizResultsData } from '@/features/student/types/quizResults';
 import { ScoreRing } from './ScoreRing';
 
@@ -27,13 +28,17 @@ export function ScoreHeroCard({ data }: ScoreHeroCardProps) {
       value: data.wrongCount,
       label: t('quiz:results.wrong'),
     },
-    {
-      key: 'pending',
-      icon: Clock,
-      color: 'text-warning-500',
-      value: data.pendingCount,
-      label: t('quiz:results.pending'),
-    },
+    ...(data.pendingCount > 0
+      ? [
+          {
+            key: 'pending' as const,
+            icon: Clock,
+            color: 'text-warning-500',
+            value: data.pendingCount,
+            label: t('quiz:results.pending'),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -63,7 +68,12 @@ export function ScoreHeroCard({ data }: ScoreHeroCardProps) {
         <p className="text-sm text-gray-600">{t('quiz:results.failEncouragement')}</p>
       )}
 
-      <div className="grid w-full grid-cols-3 gap-3">
+      <div
+        className={cn(
+          'grid w-full gap-3',
+          stats.length === 3 ? 'grid-cols-3' : 'grid-cols-2',
+        )}
+      >
         {stats.map(({ key, icon: Icon, color, value, label }) => (
           <div key={key} className="flex flex-col items-center gap-1 rounded-xl bg-gray-100 p-3">
             <Icon size={20} className={color} />

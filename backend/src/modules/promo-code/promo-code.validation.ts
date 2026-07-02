@@ -25,7 +25,10 @@ export const createPromoCodeSchema = z.object({
   chapterId: z
     .string({ error: "Chapter ID is required" })
     .trim()
-    .min(1, "Chapter ID is required"),
+    .regex(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      "Chapter ID must be a valid UUID",
+    ),
 });
 
 export type CreatePromoCodeInput = z.infer<typeof createPromoCodeSchema>;

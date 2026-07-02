@@ -11,6 +11,7 @@
     "branding": "Branding",
     "aiTutor": "AI Tutor",
     "quizzes": "Quizzes",
+    "essayGrading": "Essay Grading",
     "profile": "Profile",
     "promoCodes": "Promo Codes",
     "studentLookup": "Student Lookup",
@@ -112,9 +113,13 @@
     "errorLoading": "Failed to load codes",
     "retry": "Retry",
     "errorGenerating": "Failed to generate code",
+    "errorChapterNotFound": "The selected chapter was not found. Choose a chapter from your content.",
     "successToast": "Code generated successfully",
-    "chapterIdLabel": "Chapter ID",
-    "chapterIdPlaceholder": "Enter chapter ID (UUID)"
+    "stageLabel": "Stage",
+    "stagePlaceholder": "Select stage",
+    "chapterLabel": "Chapter",
+    "chapterPlaceholder": "Select a chapter",
+    "noChapters": "No chapters available. Create a chapter in Content Manager first."
   },
   "language": { "ar": "العربية", "en": "English" }
 }

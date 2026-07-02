@@ -166,7 +166,8 @@
       "errorExpired": "This code has expired",
       "errorInvalid": "Invalid code, please check and try again",
       "errorEmpty": "Please enter a code",
-      "errorNotForChapter": "This code is not valid for this chapter"
+      "errorNotForChapter": "This code is not valid for this chapter",
+      "errorChapterNotFound": "This chapter could not be found. Go back to content and try again."
     },
     "paymob": {
       "title": "Pay with Paymob",
@@ -247,6 +248,9 @@
     "noEnrollmentsDesc": "Browse available courses and start your learning journey"
   },
   "lesson": {
+    "quizPrompt": "Test your understanding of this chapter",
+    "quizAlreadyTaken": "You already completed this quiz — review your result",
+    "quizInProgress": "You have an attempt in progress — continue the quiz",
     "notFound": {
       "title": "Lesson Not Found",
       "description": "This lesson could not be found. It may have been removed or the link may be incorrect.",

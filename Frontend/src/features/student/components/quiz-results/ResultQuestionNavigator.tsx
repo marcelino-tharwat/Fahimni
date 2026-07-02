@@ -4,15 +4,15 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { cn } from '@/shared/lib/utils/cn';
 import type { QuestionResult } from '@/features/student/types/quizResults';
+import { resolveResultTone } from '@/features/student/lib/quizResultStats';
 
 interface ResultQuestionNavigatorProps {
   results: QuestionResult[];
 }
 
-const STATUS_BG: Record<string, string> = {
+const TONE_BG: Record<string, string> = {
   correct: 'bg-success-500',
   incorrect: 'bg-danger-500',
-  graded: 'bg-success-500',
   pending: 'bg-warning-500',
 };
 
@@ -54,7 +54,7 @@ export function ResultQuestionNavigator({ results }: ResultQuestionNavigatorProp
             aria-label={t('quiz:goToQuestion', { num: toLocalNum(idx + 1) })}
             className={cn(
               'flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-xs font-bold text-white transition-transform hover:scale-110',
-              STATUS_BG[r.status] ?? 'bg-gray-500',
+              TONE_BG[resolveResultTone(r)] ?? 'bg-gray-500',
             )}
           >
             {toLocalNum(idx + 1)}

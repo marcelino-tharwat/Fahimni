@@ -13,6 +13,7 @@ import {
 import { usePromoCodes, useGeneratePromoCode } from '../hooks/usePromoCodes';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
+import type { ApiError } from '@/shared/lib/api/client';
 import type { PromoCode } from '@/shared/types';
 
 const ITEMS_PER_PAGE = 10;
@@ -69,8 +70,12 @@ export function PromoCodesPage() {
         setGeneratedCode(code);
         dispatch(addToast({ type: 'success', message: t('promoCodes.successToast') }));
       },
-      onError: () => {
-        dispatch(addToast({ type: 'error', message: t('promoCodes.errorGenerating') }));
+      onError: (error: ApiError) => {
+        const message =
+          error.code === 'CHAPTER_NOT_FOUND'
+            ? t('promoCodes.errorChapterNotFound')
+            : t('promoCodes.errorGenerating');
+        dispatch(addToast({ type: 'error', message }));
       },
     });
   };

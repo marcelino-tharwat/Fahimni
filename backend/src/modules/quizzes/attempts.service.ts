@@ -2,6 +2,13 @@ import { prisma } from "../../config/database.js";
 import { logger } from "../../config/logger.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import {
+  countStatuses,
+  deriveEssayGradingStatus,
+  essayResultsFromStored,
+  essayScoreSummary,
+  type EssayGradingStatus,
+} from "./essay-grading.js";
+import {
   finalizeOutcome,
   gradeAttempt,
   optionsToArray,
@@ -25,6 +32,7 @@ import {
 } from "./attempt-timing.js";
 import type {
   GradeEssaysInput,
+  EssayGradingListQueryInput,
   ResultsQueryInput,
   SaveDraftAnswersInput,
   SubmitAttemptInput,
@@ -145,6 +153,7 @@ export class AttemptsService {
           difficulty: "medium" as const,
           status,
           attemptId: attempt?.id ?? null,
+          attemptStatus: attempt?.status ?? null,
           ...(score !== undefined ? { score } : {}),
           ...(retakeAllowed !== undefined ? { retakeAllowed } : {}),
         };
@@ -870,6 +879,13 @@ export class AttemptsService {
       storedResults.filter((r) => r.result === "pending").map((r) => r.questionId),
     );
 
+    logger.info("essay_grading_started", {
+      teacherId,
+      attemptId,
+      quizId: attempt.quizId,
+      essayQuestionCount: pendingEssayIds.size,
+    });
+
     const gradeIds = new Set(input.grades.map((g) => g.questionId));
 
     // Every supplied grade must target a pending essay question…
@@ -921,6 +937,15 @@ export class AttemptsService {
       throw new AppError("Attempt has already been graded", 409);
     }
 
+    logger.info("essay_grading_completed", {
+      teacherId,
+      attemptId,
+      quizId: attempt.quizId,
+      essayQuestionCount: input.grades.length,
+      gradedCount: input.grades.length,
+      gradingStatus: "GRADED",
+    });
+
     return this.toSubmissionResponse(
       attemptId,
       attempt.quizId,
@@ -929,6 +954,291 @@ export class AttemptsService {
       newResults,
       questions,
     );
+  }
+
+  private static readonly ESSAY_LIST_DEFAULT_LIMIT = 20;
+  private static readonly ESSAY_LIST_MAX_LIMIT = 50;
+
+  private resolveListLimit(limit?: number): number {
+    const raw = limit ?? AttemptsService.ESSAY_LIST_DEFAULT_LIMIT;
+    return Math.min(Math.max(1, raw), AttemptsService.ESSAY_LIST_MAX_LIMIT);
+  }
+
+  /** GET /api/quizzes/essay-grading — hub of quizzes with essay submissions. */
+  public async getEssayGradingHub(
+    teacherId: string,
+    query: EssayGradingListQueryInput,
+  ) {
+    const limit = this.resolveListLimit(query.limit);
+    const cursor = query.cursor;
+
+    const quizzes = await prisma.quiz.findMany({
+      where: {
+        createdBy: teacherId,
+        questions: { some: { type: "ESSAY" } },
+        attempts: { some: { status: { in: ["COMPLETED", "GRADED"] } } },
+        ...(cursor ? { id: { gt: cursor } } : {}),
+      },
+      orderBy: { id: "asc" },
+      take: limit + 1,
+      select: {
+        id: true,
+        title: true,
+        chapter: { select: { name: true } },
+        questions: { where: { type: "ESSAY" }, select: { id: true } },
+        attempts: {
+          where: { status: { in: ["COMPLETED", "GRADED"] } },
+          select: { answers: true },
+        },
+      },
+    });
+
+    const hasMore = quizzes.length > limit;
+    const page = hasMore ? quizzes.slice(0, limit) : quizzes;
+
+    const data = page.map((quiz) => {
+      const essayQuestionCount = quiz.questions.length;
+      const submissionStatuses: EssayGradingStatus[] = [];
+
+      for (const attempt of quiz.attempts) {
+        const stored = (attempt.answers as unknown as QuestionResult[]) ?? [];
+        const essays = essayResultsFromStored(stored);
+        if (essays.length === 0) continue;
+        submissionStatuses.push(deriveEssayGradingStatus(essays));
+      }
+
+      const counts = countStatuses(submissionStatuses);
+      return {
+        quizId: quiz.id,
+        quizTitle: quiz.title,
+        chapterTitle: quiz.chapter?.name ?? "",
+        essayQuestionCount,
+        studentSubmissionCount: submissionStatuses.length,
+        ...counts,
+      };
+    });
+
+    logger.info("essay_grading_hub_loaded", {
+      teacherId,
+      submissionCount: data.reduce((s, q) => s + q.studentSubmissionCount, 0),
+      essayQuestionCount: data.reduce((s, q) => s + q.essayQuestionCount, 0),
+      gradedCount: data.reduce((s, q) => s + q.gradedCount, 0),
+      durationMs: 0,
+    });
+
+    return {
+      data,
+      meta: {
+        nextCursor: hasMore ? page[page.length - 1]!.id : null,
+        hasMore,
+      },
+    };
+  }
+
+  /** GET /api/quizzes/:quizId/essay-submissions — student essay submissions for a quiz. */
+  public async getEssaySubmissions(
+    quizId: string,
+    teacherId: string,
+    query: EssayGradingListQueryInput,
+  ) {
+    await this.assertQuizOwnership(quizId, teacherId);
+    const limit = this.resolveListLimit(query.limit);
+    const cursor = query.cursor;
+
+    const quiz = await prisma.quiz.findFirst({
+      where: { id: quizId, createdBy: teacherId },
+      select: {
+        id: true,
+        title: true,
+        chapter: { select: { name: true } },
+        questions: { where: { type: "ESSAY" }, select: { id: true, points: true } },
+      },
+    });
+    if (!quiz) throw new AppError("Quiz not found", 404);
+
+    const essayQuestionCount = quiz.questions.length;
+    if (essayQuestionCount === 0) {
+      throw new AppError("Quiz has no essay questions", 404);
+    }
+
+    const allAttempts = await prisma.quizAttempt.findMany({
+      where: { quizId, status: { in: ["COMPLETED", "GRADED"] } },
+      select: { answers: true },
+    });
+    const allStatuses: EssayGradingStatus[] = [];
+    for (const a of allAttempts) {
+      const stored = (a.answers as unknown as QuestionResult[]) ?? [];
+      const essays = essayResultsFromStored(stored);
+      if (essays.length > 0) {
+        allStatuses.push(deriveEssayGradingStatus(essays));
+      }
+    }
+    const summary = {
+      totalStudents: allStatuses.length,
+      ...countStatuses(allStatuses),
+    };
+
+    const attempts = await prisma.quizAttempt.findMany({
+      where: {
+        quizId,
+        status: { in: ["COMPLETED", "GRADED"] },
+        ...(cursor ? { id: { gt: cursor } } : {}),
+      },
+      orderBy: [{ completedAt: "asc" }, { id: "asc" }],
+      take: limit + 1,
+      select: {
+        id: true,
+        studentId: true,
+        status: true,
+        completedAt: true,
+        answers: true,
+        student: { select: { fullName: true } },
+      },
+    });
+
+    const hasMore = attempts.length > limit;
+    const page = hasMore ? attempts.slice(0, limit) : attempts;
+
+    const submissions = page
+      .map((a) => {
+        const stored = (a.answers as unknown as QuestionResult[]) ?? [];
+        const essays = essayResultsFromStored(stored);
+        if (essays.length === 0) return null;
+        const essaySummary = essayScoreSummary(essays);
+        const status = deriveEssayGradingStatus(essays);
+        return {
+          attemptId: a.id,
+          studentId: a.studentId,
+          studentName: a.student.fullName,
+          essayQuestionCount: essaySummary.essayQuestionCount,
+          gradedEssayQuestionCount: essaySummary.gradedEssayQuestionCount,
+          status,
+          earnedEssayScore: essaySummary.earnedEssayScore,
+          maximumEssayScore: essaySummary.maximumEssayScore,
+          submittedAt: a.completedAt?.toISOString() ?? null,
+        };
+      })
+      .filter((s): s is NonNullable<typeof s> => s !== null);
+
+    logger.info("essay_submissions_loaded", {
+      teacherId,
+      quizId,
+      submissionCount: submissions.length,
+      essayQuestionCount,
+      gradedCount: summary.gradedCount,
+    });
+
+    return {
+      data: {
+        quiz: {
+          id: quiz.id,
+          title: quiz.title,
+          chapterTitle: quiz.chapter?.name ?? "",
+        },
+        summary,
+        submissions,
+      },
+      meta: {
+        nextCursor: hasMore ? page[page.length - 1]!.id : null,
+        hasMore,
+      },
+    };
+  }
+
+  /** GET /api/attempts/:attemptId/essay-grading — teacher grading detail. */
+  public async getEssayGradingDetail(attemptId: string, teacherId: string) {
+    const attempt = await prisma.quizAttempt.findUnique({
+      where: { id: attemptId },
+      select: {
+        id: true,
+        status: true,
+        score: true,
+        totalPoints: true,
+        completedAt: true,
+        answers: true,
+        quizId: true,
+        quiz: {
+          select: {
+            id: true,
+            title: true,
+            createdBy: true,
+            chapter: { select: { name: true } },
+          },
+        },
+        student: { select: { id: true, fullName: true } },
+      },
+    });
+
+    if (!attempt) throw new AppError("Attempt not found", 404);
+    if (attempt.quiz.createdBy !== teacherId) {
+      throw new AppError("Attempt not found", 404);
+    }
+    if (!["COMPLETED", "GRADED"].includes(attempt.status)) {
+      throw new AppError("Attempt is not eligible for essay grading", 409);
+    }
+
+    const questions = await prisma.question.findMany({
+      where: { quizId: attempt.quizId, type: "ESSAY" },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, text: true, points: true, sortOrder: true },
+    });
+
+    if (questions.length === 0) {
+      throw new AppError("Quiz has no essay questions", 404);
+    }
+
+    const stored = (attempt.answers as unknown as QuestionResult[]) ?? [];
+    const byQuestion = new Map(stored.map((r) => [r.questionId, r]));
+    const essayAnswers = questions.map((q, idx) => {
+      const r = byQuestion.get(q.id);
+      const awardedPoints = r?.awardedPoints ?? null;
+      const gradingStatus: EssayGradingStatus =
+        awardedPoints === null ? "PENDING" : "GRADED";
+      return {
+        questionId: q.id,
+        order: idx + 1,
+        questionText: q.text,
+        studentAnswer: r?.answer ?? "",
+        maximumPoints: q.points,
+        awardedPoints,
+        feedback: r?.feedback ?? null,
+        gradingStatus,
+      };
+    });
+
+    const essays = essayResultsFromStored(stored);
+    const gradingStatus = deriveEssayGradingStatus(essays);
+    const essaySummary = essayScoreSummary(essays);
+
+    logger.info("essay_grading_detail_loaded", {
+      teacherId,
+      quizId: attempt.quizId,
+      attemptId,
+      essayQuestionCount: essaySummary.essayQuestionCount,
+      gradedCount: essaySummary.gradedEssayQuestionCount,
+      gradingStatus,
+    });
+
+    return {
+      quiz: {
+        id: attempt.quiz.id,
+        title: attempt.quiz.title,
+        chapterTitle: attempt.quiz.chapter?.name ?? "",
+      },
+      student: {
+        id: attempt.student.id,
+        displayName: attempt.student.fullName,
+      },
+      attempt: {
+        id: attempt.id,
+        status: attempt.status,
+        gradingStatus,
+        submittedAt: attempt.completedAt?.toISOString() ?? null,
+        earnedScore: attempt.score ?? essaySummary.earnedEssayScore,
+        maximumScore: attempt.totalPoints || essaySummary.maximumEssayScore,
+      },
+      essayAnswers,
+    };
   }
 
   /**

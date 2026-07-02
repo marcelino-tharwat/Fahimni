@@ -3,6 +3,7 @@ import { CheckCircle, XCircle, Clock, Lightbulb, Info } from 'lucide-react';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { cn } from '@/shared/lib/utils/cn';
 import type { QuestionResult } from '@/features/student/types/quizResults';
+import { resolveResultTone } from '@/features/student/lib/quizResultStats';
 
 interface ResultQuestionCardProps {
   result: QuestionResult;
@@ -11,11 +12,8 @@ interface ResultQuestionCardProps {
 
 type Tone = 'correct' | 'incorrect' | 'pending';
 
-/** Map the four backend statuses onto the three visual tones used here. */
-function toneOf(status: QuestionResult['status']): Tone {
-  if (status === 'correct' || status === 'graded') return 'correct';
-  if (status === 'incorrect') return 'incorrect';
-  return 'pending';
+function toneOf(result: QuestionResult): Tone {
+  return resolveResultTone(result);
 }
 
 const TONE = {
@@ -26,13 +24,13 @@ const TONE = {
 
 export function ResultQuestionCard({ result, index }: ResultQuestionCardProps) {
   const { t } = useTranslation();
-  const { question, studentAnswer, status, awardedPoints, maxPoints, feedback, correctAnswer, explanation } = result;
+  const { question, studentAnswer, awardedPoints, maxPoints, feedback, correctAnswer, explanation } = result;
 
   // The backend now sends a dedicated per-question explanation; fall back to the
   // grading feedback when it isn't present (e.g. essay feedback).
   const explanationText = explanation ?? feedback;
 
-  const tone = toneOf(status);
+  const tone = toneOf(result);
   const { strip, icon: StatusIcon, text } = TONE[tone];
 
   const statusLabel =

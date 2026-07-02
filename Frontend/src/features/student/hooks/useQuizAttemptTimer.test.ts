@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   computeRemainingSeconds,
+  deriveTimerExpired,
   formatTimerDisplay,
 } from './useQuizAttemptTimer';
 
@@ -41,5 +42,25 @@ describe('computeRemainingSeconds', () => {
       0,
     );
     expect(remaining).toBe(0);
+  });
+});
+
+describe('deriveTimerExpired', () => {
+  it('is false before timer sync (remainingSeconds still 0)', () => {
+    expect(
+      deriveTimerExpired(false, true, '2026-07-01T12:05:00.000Z', 0),
+    ).toBe(false);
+  });
+
+  it('is false when time remains after sync', () => {
+    expect(
+      deriveTimerExpired(true, true, '2026-07-01T12:05:00.000Z', 300),
+    ).toBe(false);
+  });
+
+  it('is true only after sync when remaining is 0', () => {
+    expect(
+      deriveTimerExpired(true, true, '2026-07-01T11:59:00.000Z', 0),
+    ).toBe(true);
   });
 });

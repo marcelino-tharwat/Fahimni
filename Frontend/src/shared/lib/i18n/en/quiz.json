@@ -41,8 +41,8 @@
     "enrollmentInactiveMsg": "Your enrollment in this chapter is not active. Please renew to continue.",
     "attemptLimitTitle": "Attempt limit reached",
     "attemptLimitMsg": "You have used all available attempts for this quiz.",
-    "alreadySubmittedTitle": "Attempt already submitted",
-    "alreadySubmittedMsg": "This attempt has already been submitted. Your result will be shown.",
+    "alreadySubmittedTitle": "You already completed this quiz",
+    "alreadySubmittedMsg": "You cannot start a new attempt. Review your result or return to the quiz list.",
     "attemptExpiredTitle": "Attempt time expired",
     "attemptExpiredMsg": "Your attempt time has expired. Preparing your result.",
     "durationNotConfiguredTitle": "Quiz duration not configured",
@@ -80,6 +80,7 @@
     },
     "action": {
       "start": "Start Quiz",
+      "continue": "Continue Quiz",
       "viewResult": "View Result",
       "viewAnswers": "View Answers",
       "retake": "Retake"

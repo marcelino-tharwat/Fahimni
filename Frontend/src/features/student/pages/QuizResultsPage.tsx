@@ -15,6 +15,7 @@ import {
   type ResultFilterKey,
 } from '@/features/student/types/quizResults';
 import { getAttemptResults, buildQuizResults } from '@/features/student/api/quiz';
+import { resolveResultTone } from '@/features/student/lib/quizResultStats';
 
 /** Shown when results can't be loaded (invalid/missing attempt, fetch failure). */
 function ErrorFallback() {
@@ -83,9 +84,7 @@ export function QuizResultsPage() {
   const filtered = useMemo(() => {
     if (!data) return [];
     if (filter === 'all') return data.results;
-    if (filter === 'correct') return data.results.filter((r) => r.status === 'correct' || r.status === 'graded');
-    if (filter === 'wrong') return data.results.filter((r) => r.status === 'incorrect');
-    return data.results.filter((r) => r.status === 'pending');
+    return data.results.filter((r) => resolveResultTone(r) === filter);
   }, [data, filter]);
 
   if (loading) {

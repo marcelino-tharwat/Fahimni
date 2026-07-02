@@ -19,12 +19,22 @@ export function computeRemainingSeconds(
  * Server-authoritative countdown derived from `expiresAt` and `serverTime`.
  * Re-syncs on visibility/focus; does not drift via naive decrement.
  */
+export function deriveTimerExpired(
+  timerReady: boolean,
+  enabled: boolean,
+  expiresAt: string | null,
+  remainingSeconds: number,
+): boolean {
+  return timerReady && enabled && expiresAt != null && remainingSeconds === 0;
+}
+
 export function useQuizAttemptTimer({
   expiresAt,
   serverTime,
   enabled,
 }: QuizAttemptTimerInput) {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
+  const [timerReady, setTimerReady] = useState(false);
   const serverOffsetRef = useRef(0);
   const hasExpiredRef = useRef(false);
   const onExpireRef = useRef<(() => void) | null>(null);
@@ -35,15 +45,18 @@ export function useQuizAttemptTimer({
 
   useEffect(() => {
     if (!enabled || !expiresAt || !serverTime) {
+      setTimerReady(false);
       return;
     }
 
     serverOffsetRef.current = Date.parse(serverTime) - Date.now();
     hasExpiredRef.current = false;
+    setTimerReady(false);
 
     const tick = () => {
       const rem = computeRemainingSeconds(expiresAt, serverOffsetRef.current);
       setRemainingSeconds(rem);
+      setTimerReady(true);
       if (rem === 0 && !hasExpiredRef.current) {
         hasExpiredRef.current = true;
         onExpireRef.current?.();
@@ -63,8 +76,13 @@ export function useQuizAttemptTimer({
     };
   }, [enabled, expiresAt, serverTime]);
 
-  const timerWarning = remainingSeconds > 0 && remainingSeconds < 300;
-  const isExpired = enabled && expiresAt != null && remainingSeconds === 0;
+  const timerWarning = timerReady && remainingSeconds > 0 && remainingSeconds < 300;
+  const isExpired = deriveTimerExpired(
+    timerReady,
+    enabled,
+    expiresAt,
+    remainingSeconds,
+  );
 
   return { remainingSeconds, timerWarning, isExpired, setOnExpire };
 }
