@@ -29,7 +29,7 @@ export function Toast() {
   if (toasts.length === 0) return null;
 
   return createPortal(
-    <div className="fixed inset-x-0 top-4 z-[60] flex flex-col items-center gap-2 px-4">
+    <div className="fixed inset-x-0 top-4 z-[200] flex flex-col items-center gap-2 px-4">
       {toasts.map((toast) => {
         const style = TOAST_STYLES[toast.type];
         const Icon = style.Icon;

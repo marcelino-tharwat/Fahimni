@@ -255,5 +255,13 @@
       "description": "You need to enroll in this chapter to access this lesson. Subscribe now to unlock all lessons and start learning.",
       "cta": "Browse Content"
     }
+  },
+  "support": {
+    "whatsapp": {
+      "tooltip": "Need help? Chat with us on WhatsApp",
+      "ariaLabel": "Contact support on WhatsApp",
+      "messageTemplate": "Hi! I'm {{name}} ({{email}}) and I need help with the platform.",
+      "fallbackName": "a student"
+    }
   }
 }

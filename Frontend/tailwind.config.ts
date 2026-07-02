@@ -88,6 +88,14 @@ const config: Config = {
           500: '#EC4899',
           50: '#FDF2F8',
         },
+
+        // ─── WhatsApp Green (Brand Color) ───
+        whatsapp: {
+          DEFAULT: '#25D366',
+          hover: '#128C7E',
+          active: '#075E54',
+          light: 'rgba(37, 211, 102, 0.12)',
+        },
       },
 
       // ─── Border Radius ───
@@ -137,6 +145,17 @@ const config: Config = {
         'cyan-gradient': 'linear-gradient(135deg, #00C9DB 0%, #0EA5E9 100%)',
         'green-gradient': 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
         'purple-gradient': 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+      },
+
+      // ─── Animations ───
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+      },
+      animation: {
+        float: 'float 3s ease-in-out infinite',
       },
     },
   },
