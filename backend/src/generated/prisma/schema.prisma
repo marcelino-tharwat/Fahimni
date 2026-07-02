@@ -398,8 +398,7 @@ enum EnrollmentStatus {
 }
 
 enum PaymentMethod {
-  CASH
-  VISA
+  FREE
   PROMO
   PAYMOB
 }

@@ -5,6 +5,7 @@ import { authorizeMiddleware } from "../../shared/middlewares/authorize.middlewa
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import {
   createEnrollmentSchema,
+  freeEnrollmentSchema,
   studentParamSchema,
   enrollmentIdParamSchema,
 } from "./enrollment.validation.js";
@@ -13,6 +14,7 @@ import {
  * Enrollment Routes — Authorization Matrix
  * ─────────────────────────────────────────
  * POST   /                    → STUDENT only (self-enrollment)
+ * POST   /free                → STUDENT only (direct free-chapter enrollment)
  * GET    /my                  → STUDENT only (own enrollments)
  * GET    /student/:studentId  → OPERATION (own chapters only), ADMIN (all)
  * PATCH  /:id/deactivate      → ADMIN only
@@ -50,6 +52,16 @@ router.patch(
   authorizeMiddleware("ADMIN"),
   validateRequest(enrollmentIdParamSchema, "params"),
   controller.deactivate,
+);
+
+// Literal "/free" is declared before "/" so it is never shadowed. Both are
+// STUDENT-only; the student id is always taken from req.user, never the body.
+router.post(
+  "/free",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  validateRequest(freeEnrollmentSchema),
+  controller.createFree,
 );
 
 router.post(

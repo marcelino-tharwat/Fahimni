@@ -21,7 +21,7 @@ export const enrollmentPublicFields = {
 } as const;
 
 export type EnrollmentStatus = "ACTIVE" | "DEACTIVATED";
-export type PaymentMethod = "CASH" | "VISA" | "PROMO";
+export type PaymentMethod = "FREE" | "PROMO" | "PAYMOB";
 
 export interface EnrollmentChapterDTO {
   id: string;

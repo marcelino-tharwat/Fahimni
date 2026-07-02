@@ -116,7 +116,7 @@ beforeAll(async () => {
   owned.quizIds.push(foreignQuizId);
 
   for (const sid of [student1.id, student2.id]) {
-    const e = await prisma.enrollment.create({ data: { studentId: sid, chapterId: chapter.id, price: 0, paymentMethod: "CASH", status: "ACTIVE" } });
+    const e = await prisma.enrollment.create({ data: { studentId: sid, chapterId: chapter.id, price: 0, paymentMethod: "FREE", status: "ACTIVE" } });
     owned.enrollmentIds.push(e.id);
   }
 

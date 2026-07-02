@@ -265,18 +265,18 @@ function MyCoursesCard() {
 
 function PaymentMethodBadge({ method }: { method: string }) {
   const { t } = useTranslation('student');
-  // PROMO → "كود خصم" (purple); CASH → "كاش" (neutral); CARD/VISA/other → "بايموب" (cyan).
+  // FREE → "مجاناً" (green); PROMO → "كود خصم" (purple); PAYMOB/other → "بايموب" (cyan).
+  if (method === 'FREE') {
+    return (
+      <span className="rounded-badge bg-success-50 px-2.5 py-0.5 text-caption text-success-600">
+        {t('profile.paymentMethod.FREE')}
+      </span>
+    );
+  }
   if (method === 'PROMO') {
     return (
       <span className="rounded-badge bg-purple-50 px-2.5 py-0.5 text-caption text-purple-600">
         {t('profile.paymentMethod.PROMO')}
-      </span>
-    );
-  }
-  if (method === 'CASH') {
-    return (
-      <span className="rounded-badge bg-gray-200 px-2.5 py-0.5 text-caption text-gray-700">
-        {t('profile.paymentMethod.CASH')}
       </span>
     );
   }

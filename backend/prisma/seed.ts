@@ -376,7 +376,7 @@ async function seed(): Promise<void> {
           chapterId: CHAPTERS[0]!.id,
           status: "ACTIVE",
           price: 0,
-          paymentMethod: "CASH",
+          paymentMethod: "FREE",
           enrolledAt: daysAgo(i < 4 ? 5 + i : 40 + i),
         });
         if (i % 2 === 0)
@@ -396,7 +396,7 @@ async function seed(): Promise<void> {
         chapterId: CHAPTERS[2]!.id,
         status: "DEACTIVATED",
         price: 150,
-        paymentMethod: "VISA",
+        paymentMethod: "PAYMOB",
         enrolledAt: daysAgo(60),
       });
       await tx.enrollment.createMany({ data: enrollments });

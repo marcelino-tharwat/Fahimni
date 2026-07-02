@@ -9,5 +9,6 @@ _bmad/
 _bmad-output/
 .agents/
 .opencode/
+.claude/
 docs/
 
