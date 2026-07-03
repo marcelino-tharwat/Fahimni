@@ -154,6 +154,7 @@ const CHAPTER_INPUT: GenerateQuizInput = {
   lessonIds: [],
   questionCount: 3,
   types: ["MCQ", "TF", "ESSAY"],
+  difficultyMode: "SINGLE",
   difficulty: "medium",
 };
 
@@ -262,6 +263,7 @@ describe("QuizGenerationService.generate", () => {
         lessonIds: [LESSON_1, LESSON_2],
         questionCount: 3,
         types: ["MCQ", "TF", "ESSAY"],
+        difficultyMode: "SINGLE",
         difficulty: "easy",
       },
       TEACHER,
@@ -297,6 +299,7 @@ describe("QuizGenerationService.generate", () => {
           lessonIds: [LESSON_1, LESSON_2],
           questionCount: 3,
           types: ["MCQ", "TF", "ESSAY"],
+          difficultyMode: "SINGLE",
           difficulty: "easy",
         },
         TEACHER,
@@ -339,6 +342,7 @@ describe("QuizGenerationService.generate", () => {
           lessonIds: [LESSON_1, LESSON_2],
           questionCount: 3,
           types: ["MCQ", "TF", "ESSAY"],
+          difficultyMode: "SINGLE",
           difficulty: "easy",
         },
         TEACHER,

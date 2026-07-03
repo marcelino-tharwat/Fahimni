@@ -33,6 +33,7 @@ import {
   persistQuizLessonRelations,
   type QuizContentScope,
 } from "./quiz-scope.js";
+import { resolveQuizDifficulty } from "./quiz-difficulty.js";
 
 // Canonical STORY-45 budgets, env-configurable (defaults: total 25s, Gemini 20s;
 // the Gemini call timeout must remain < the total endpoint deadline).
@@ -43,7 +44,7 @@ const DEFAULT_MAX_PROMPT_CHARS = 12_000;
 const MAX_TITLE_LENGTH = 200;
 const MAX_DESCRIPTION_LENGTH = 2_000;
 
-const DIFFICULTY_LABEL_AR: Record<GenerateQuizInput["difficulty"], string> = {
+const DIFFICULTY_LABEL_AR: Record<"easy" | "medium" | "hard", string> = {
   easy: "سهل",
   medium: "متوسط",
   hard: "صعب",
@@ -169,6 +170,19 @@ export class QuizGenerationService {
 
     // 1. Resolve & authorize the requested content source.
     const content = await this.resolveContent(input, teacherId);
+    const resolvedDifficulty = resolveQuizDifficulty(
+      input.difficultyMode === "SINGLE"
+        ? {
+            difficultyMode: "SINGLE",
+            difficulty: input.difficulty,
+            questionCount: input.questionCount,
+          }
+        : {
+            difficultyMode: "MIXED",
+            difficultyDistribution: input.difficultyDistribution,
+            questionCount: input.questionCount,
+          },
+    );
 
     logger.info("quiz_generation_started", {
       teacherId,
@@ -179,6 +193,7 @@ export class QuizGenerationService {
         : 0,
       resolvedLessonCount: content.lessonIds.length,
       questionCount: input.questionCount,
+      difficultyMode: resolvedDifficulty.difficultyMode,
     });
 
     // 2. RAG precondition: there must be usable indexed chunks.
@@ -188,7 +203,7 @@ export class QuizGenerationService {
     }
 
     // 3. Build a scoped semantic query and retrieve top-K chunks.
-    const ragQuery = this.buildRagQuery(input, content.sourceTitles);
+    const ragQuery = this.buildRagQuery(input, content.sourceTitles, resolvedDifficulty);
     const ragStart = Date.now();
     const rawChunks = await this.rag.similaritySearchInLessons(
       ragQuery,
@@ -209,9 +224,13 @@ export class QuizGenerationService {
       chunks: preparedChunks,
       questionCount: input.questionCount,
       types: input.types,
-      difficulty: input.difficulty,
-      topicFocus: input.topicFocus,
+      difficultyMode: resolvedDifficulty.difficultyMode,
+      difficultyQuestionCounts: resolvedDifficulty.questionCounts,
       sourceTitles: content.sourceTitles,
+      ...(resolvedDifficulty.difficultyMode === "SINGLE"
+        ? { difficulty: resolvedDifficulty.difficulty }
+        : {}),
+      ...(input.topicFocus !== undefined ? { topicFocus: input.topicFocus } : {}),
     });
 
     // 5. Call Gemini (capped at 20s) and map provider failures to safe 422s.
@@ -293,13 +312,19 @@ export class QuizGenerationService {
   private buildRagQuery(
     input: GenerateQuizInput,
     sourceTitles: string[],
+    resolvedDifficulty: ReturnType<typeof resolveQuizDifficulty>,
   ): string {
     const parts: string[] = [];
     if (input.topicFocus) {
       parts.push(input.topicFocus);
     }
     parts.push(...sourceTitles);
-    parts.push("أسئلة اختبار", DIFFICULTY_LABEL_AR[input.difficulty]);
+    parts.push("أسئلة اختبار");
+    if (resolvedDifficulty.difficultyMode === "SINGLE") {
+      parts.push(DIFFICULTY_LABEL_AR[resolvedDifficulty.difficulty]);
+    } else {
+      parts.push("مستويات صعوبة متعددة");
+    }
     return parts.join(" ").trim();
   }
 

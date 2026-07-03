@@ -9,7 +9,9 @@ function build(overrides: Partial<Parameters<typeof buildQuizGenerationPrompt>[0
     ],
     questionCount: 5,
     types: ["MCQ", "TF", "ESSAY"],
+    difficultyMode: "SINGLE",
     difficulty: "medium",
+    difficultyQuestionCounts: { easy: 0, medium: 5, hard: 0 },
     topicFocus: "المعادلات الخطية",
     sourceTitles: ["الجبر", "الدرس الأول"],
     ...overrides,
@@ -40,7 +42,17 @@ describe("buildQuizGenerationPrompt", () => {
   });
 
   it("applies the requested difficulty", () => {
-    expect(build({ difficulty: "hard" })).toContain("صعب");
+    expect(build({ difficultyMode: "SINGLE", difficulty: "hard", difficultyQuestionCounts: { easy: 0, medium: 0, hard: 5 } })).toContain("صعب");
+  });
+
+  it("applies mixed difficulty allocation", () => {
+    const prompt = build({
+      difficultyMode: "MIXED",
+      difficultyQuestionCounts: { easy: 2, medium: 2, hard: 1 },
+    });
+    expect(prompt).toContain("سهل = 2");
+    expect(prompt).toContain("متوسط = 2");
+    expect(prompt).toContain("صعب = 1");
   });
 
   it("applies topicFocus when supplied", () => {

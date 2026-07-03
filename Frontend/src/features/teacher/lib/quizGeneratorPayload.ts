@@ -3,26 +3,48 @@ import type {
   QuizContentScope,
   QuizGeneratorFormState,
 } from '@/features/teacher/types/quizGeneration';
+import { mapFormDifficultyMode } from '@/features/teacher/lib/quizDifficultyValidation';
 
 /** Build the canonical generate-quiz request body from form state. */
 export function buildGenerateQuizPayload(
   form: Pick<
     QuizGeneratorFormState,
-    'chapterId' | 'contentScope' | 'lessonIds' | 'questionCount' | 'questionTypes' | 'difficulty'
+    | 'chapterId'
+    | 'contentScope'
+    | 'lessonIds'
+    | 'questionCount'
+    | 'questionTypes'
+    | 'difficultyMode'
+    | 'difficulty'
+    | 'mixedDifficulty'
   >,
   topicFocus?: string,
 ): GenerateQuizPayload {
   const lessonIds =
     form.contentScope === 'SELECTED_LESSONS' ? [...form.lessonIds] : [];
 
-  return {
+  const base = {
     chapterId: form.chapterId,
     contentScope: form.contentScope,
     lessonIds,
     questionCount: form.questionCount,
     types: form.questionTypes,
-    difficulty: form.difficulty as 'easy' | 'medium' | 'hard',
+    difficultyMode: mapFormDifficultyMode(form.difficultyMode),
     ...(topicFocus ? { topicFocus } : {}),
+  };
+
+  if (form.difficultyMode === 'mixed') {
+    return {
+      ...base,
+      difficultyMode: 'MIXED',
+      difficultyDistribution: { ...form.mixedDifficulty },
+    };
+  }
+
+  return {
+    ...base,
+    difficultyMode: 'SINGLE',
+    difficulty: form.difficulty as 'easy' | 'medium' | 'hard',
   };
 }
 

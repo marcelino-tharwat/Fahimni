@@ -26,7 +26,9 @@ export interface GenerateQuizPayload {
   lessonIds: string[];
   questionCount: number;
   types: ('MCQ' | 'TF' | 'ESSAY')[];
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficultyMode: 'SINGLE' | 'MIXED';
+  difficulty?: 'easy' | 'medium' | 'hard';
+  difficultyDistribution?: { easy: number; medium: number; hard: number };
   topicFocus?: string;
 }
 

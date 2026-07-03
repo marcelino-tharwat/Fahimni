@@ -19,8 +19,12 @@ import {
   DifficultySelector,
 } from '@/features/teacher/components/quiz-generator';
 import { ContentIndexingDialog } from '@/features/teacher/components/quiz-generator/ContentIndexingDialog';
-import type { QuizGeneratorFormState, GenerateQuizPayload } from '@/features/teacher/types/quizGeneration';
+import type { QuizGeneratorFormState } from '@/features/teacher/types/quizGeneration';
 import { resolveQuizGenerationError } from '@/features/teacher/lib/quizGenerationErrors';
+import {
+  validateQuizGeneratorDifficulty,
+} from '@/features/teacher/lib/quizDifficultyValidation';
+import { buildGenerateQuizPayload } from '@/features/teacher/lib/quizGeneratorPayload';
 
 const SESSION_KEY = 'quizGeneratorFormState_v2';
 
@@ -117,7 +121,7 @@ export function AiQuizGeneratorPage() {
     }
     if (form.questionTypes.length === 0) errs.questionTypes = t('teacher:quizGenerator.validationQuestionType');
     if (form.questionCount < 1) errs.questionCount = t('teacher:quizGenerator.requiredQuestionCount');
-    if (!form.difficulty) errs.difficulty = t('teacher:quizGenerator.validationDifficulty');
+    Object.assign(errs, validateQuizGeneratorDifficulty(form, t));
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }, [form, t]);
@@ -125,14 +129,7 @@ export function AiQuizGeneratorPage() {
   const handleSubmit = useCallback(async () => {
     if (!validate()) return;
     generateQuiz.reset();
-    const payload: GenerateQuizPayload = {
-      chapterId: form.chapterId,
-      contentScope: form.contentScope,
-      lessonIds: form.contentScope === 'SELECTED_LESSONS' ? form.lessonIds : [],
-      questionCount: form.questionCount,
-      types: form.questionTypes as ('MCQ' | 'TF' | 'ESSAY')[],
-      difficulty: form.difficulty as 'easy' | 'medium' | 'hard',
-    };
+    const payload = buildGenerateQuizPayload(form);
     try {
       const result = await generateQuiz.mutateAsync(payload);
       navigate(`/teacher/quizzes/generator/review/${result.id}`);
@@ -341,14 +338,45 @@ export function AiQuizGeneratorPage() {
           mode={form.difficultyMode}
           uniformValue={form.difficulty}
           mixedValue={form.mixedDifficulty}
-          onModeChange={(mode) => setField('difficultyMode', mode)}
-          onUniformChange={(val) => setField('difficulty', val)}
-          onMixedChange={(val) => dispatch({ type: 'SET_MIXED_DIFFICULTY', value: val })}
+          onModeChange={(mode) => {
+            setField('difficultyMode', mode);
+            if (mode === 'mixed') {
+              setField('difficulty', '');
+            }
+            setErrors((prev) => {
+              const next = { ...prev };
+              delete next.difficulty;
+              delete next.mixedDifficulty;
+              return next;
+            });
+          }}
+          onUniformChange={(val) => {
+            setField('difficulty', val);
+            setErrors((prev) => {
+              const next = { ...prev };
+              delete next.difficulty;
+              return next;
+            });
+          }}
+          onMixedChange={(val) => {
+            dispatch({ type: 'SET_MIXED_DIFFICULTY', value: val });
+            setErrors((prev) => {
+              const next = { ...prev };
+              delete next.mixedDifficulty;
+              return next;
+            });
+          }}
         />
         {errors.difficulty && (
           <p className="flex items-center gap-1 font-cairo text-xs text-danger mt-2">
             <AlertCircle size={11} />
             {errors.difficulty}
+          </p>
+        )}
+        {errors.mixedDifficulty && (
+          <p className="flex items-center gap-1 font-cairo text-xs text-danger mt-2">
+            <AlertCircle size={11} />
+            {errors.mixedDifficulty}
           </p>
         )}
 

@@ -17,7 +17,9 @@ const baseForm = {
   lessonIds: [] as string[],
   questionCount: 5,
   questionTypes: ['MCQ' as const],
+  difficultyMode: 'uniform' as const,
   difficulty: 'medium' as const,
+  mixedDifficulty: { easy: 33, medium: 34, hard: 33 },
 };
 
 describe('buildGenerateQuizPayload', () => {
@@ -29,6 +31,7 @@ describe('buildGenerateQuizPayload', () => {
       lessonIds: [],
       questionCount: 5,
       types: ['MCQ'],
+      difficultyMode: 'SINGLE',
       difficulty: 'medium',
     });
   });
@@ -51,6 +54,25 @@ describe('buildGenerateQuizPayload', () => {
       lessonIds: [L1, L2],
     });
     expect(payload.lessonIds).toEqual([L1, L2]);
+  });
+
+  it('sends MIXED mode without single difficulty', () => {
+    const payload = buildGenerateQuizPayload({
+      ...baseForm,
+      difficultyMode: 'mixed',
+      difficulty: 'hard',
+      mixedDifficulty: { easy: 20, medium: 30, hard: 50 },
+    });
+    expect(payload).toEqual({
+      chapterId: CHAPTER,
+      contentScope: 'CHAPTER',
+      lessonIds: [],
+      questionCount: 5,
+      types: ['MCQ'],
+      difficultyMode: 'MIXED',
+      difficultyDistribution: { easy: 20, medium: 30, hard: 50 },
+    });
+    expect(payload).not.toHaveProperty('difficulty');
   });
 
   it('does not include deprecated contradictory fields', () => {

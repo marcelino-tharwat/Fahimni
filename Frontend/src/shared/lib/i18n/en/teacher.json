@@ -232,6 +232,8 @@
     "validationChapter": "Please select a chapter",
     "validationQuestionType": "Please select at least one question type",
     "validationDifficulty": "Please select a difficulty level",
+    "validationDifficultyDistribution": "Set the difficulty level percentages",
+    "validationDifficultyDistributionInvalid": "Each percentage must be between 0 and 100",
     "generationFailed": "An error occurred while generating the quiz",
     "generationFailedHint": "Try reducing the question count or selecting only one type",
     "generationErrorDismiss": "Got it",
