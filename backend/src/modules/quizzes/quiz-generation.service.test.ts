@@ -101,10 +101,11 @@ function makeMocks() {
   const tx = {
     quiz: { create: vi.fn() },
     question: { createMany: vi.fn(), findMany: vi.fn() },
+    quizLesson: { deleteMany: vi.fn(), createMany: vi.fn() },
   };
   const prisma = {
     chapter: { findFirst: vi.fn() },
-    lesson: { findMany: vi.fn() },
+    lesson: { findMany: vi.fn(), findFirst: vi.fn() },
     $transaction: vi.fn(async (cb: (t: typeof tx) => unknown) => cb(tx)),
   };
   const rag = {
@@ -134,18 +135,23 @@ function primeHappyPath(m: ReturnType<typeof makeMocks>) {
     title: "اختبار: اختبار الجبر",
     description: "وصف",
     chapterId: CHAPTER_ID,
+    contentScope: "CHAPTER",
     status: "DRAFT",
     createdBy: TEACHER,
     createdAt: new Date(),
     updatedAt: new Date(),
     publishedAt: null,
   });
+  m.tx.quizLesson.deleteMany.mockResolvedValue({ count: 0 });
+  m.tx.quizLesson.createMany.mockResolvedValue({ count: 0 });
   m.tx.question.createMany.mockResolvedValue({ count: 3 });
   m.tx.question.findMany.mockResolvedValue(persistedQuestions());
 }
 
 const CHAPTER_INPUT: GenerateQuizInput = {
   chapterId: CHAPTER_ID,
+  contentScope: "CHAPTER",
+  lessonIds: [],
   questionCount: 3,
   types: ["MCQ", "TF", "ESSAY"],
   difficulty: "medium",
@@ -222,10 +228,14 @@ describe("QuizGenerationService.generate", () => {
     expect(query).toContain("المعادلات الخطية");
   });
 
-  it("assigns chapterId for a single-chapter lessonIds selection", async () => {
+  it("persists chapterId and contentScope for SELECTED_LESSONS", async () => {
+    m.prisma.chapter.findFirst.mockResolvedValue({
+      id: CHAPTER_ID,
+      name: "الجبر",
+    });
     m.prisma.lesson.findMany.mockResolvedValue([
-      { id: LESSON_1, title: "د١", chapterId: CHAPTER_ID },
-      { id: LESSON_2, title: "د٢", chapterId: CHAPTER_ID },
+      { id: LESSON_1, title: "د١" },
+      { id: LESSON_2, title: "د٢" },
     ]);
     m.rag.countChunksInLessons.mockResolvedValue(5);
     m.rag.similaritySearchInLessons.mockResolvedValue([{ content: "نص" }]);
@@ -235,15 +245,20 @@ describe("QuizGenerationService.generate", () => {
       title: "t",
       description: null,
       chapterId: CHAPTER_ID,
+      contentScope: "SELECTED_LESSONS",
       status: "DRAFT",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+    m.tx.quizLesson.deleteMany.mockResolvedValue({ count: 0 });
+    m.tx.quizLesson.createMany.mockResolvedValue({ count: 2 });
     m.tx.question.createMany.mockResolvedValue({ count: 3 });
     m.tx.question.findMany.mockResolvedValue(persistedQuestions());
 
     await service().generate(
       {
+        chapterId: CHAPTER_ID,
+        contentScope: "SELECTED_LESSONS",
         lessonIds: [LESSON_1, LESSON_2],
         questionCount: 3,
         types: ["MCQ", "TF", "ESSAY"],
@@ -253,45 +268,41 @@ describe("QuizGenerationService.generate", () => {
     );
 
     const created = m.tx.quiz.create.mock.calls[0]![0] as {
-      data: { chapterId: string | null };
+      data: { chapterId: string; contentScope: string };
     };
     expect(created.data.chapterId).toBe(CHAPTER_ID);
+    expect(created.data.contentScope).toBe("SELECTED_LESSONS");
+    expect(m.tx.quizLesson.createMany).toHaveBeenCalledWith({
+      data: [
+        { quizId: "quiz-1", lessonId: LESSON_1 },
+        { quizId: "quiz-1", lessonId: LESSON_2 },
+      ],
+      skipDuplicates: true,
+    });
   });
 
-  it("stores chapterId null when lessons span multiple chapters", async () => {
-    m.prisma.lesson.findMany.mockResolvedValue([
-      { id: LESSON_1, title: "د١", chapterId: CHAPTER_ID },
-      { id: LESSON_2, title: "د٢", chapterId: "other-chapter" },
-    ]);
-    m.rag.countChunksInLessons.mockResolvedValue(5);
-    m.rag.similaritySearchInLessons.mockResolvedValue([{ content: "نص" }]);
-    m.gemini.generateContent.mockResolvedValue(validGeminiOutput());
-    m.tx.quiz.create.mockResolvedValue({
-      id: "quiz-1",
-      title: "t",
-      description: null,
-      chapterId: null,
-      status: "DRAFT",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  it("rejects lessons from another chapter", async () => {
+    m.prisma.chapter.findFirst.mockResolvedValue({
+      id: CHAPTER_ID,
+      name: "الجبر",
     });
-    m.tx.question.createMany.mockResolvedValue({ count: 3 });
-    m.tx.question.findMany.mockResolvedValue(persistedQuestions());
+    m.prisma.lesson.findMany.mockResolvedValue([{ id: LESSON_1, title: "د١" }]);
+    m.prisma.lesson.findFirst.mockResolvedValue({ id: LESSON_2 });
 
-    await service().generate(
-      {
-        lessonIds: [LESSON_1, LESSON_2],
-        questionCount: 3,
-        types: ["MCQ", "TF", "ESSAY"],
-        difficulty: "easy",
-      },
-      TEACHER,
-    );
-
-    const created = m.tx.quiz.create.mock.calls[0]![0] as {
-      data: { chapterId: string | null };
-    };
-    expect(created.data.chapterId).toBeNull();
+    await expect(
+      service().generate(
+        {
+          chapterId: CHAPTER_ID,
+          contentScope: "SELECTED_LESSONS",
+          lessonIds: [LESSON_1, LESSON_2],
+          questionCount: 3,
+          types: ["MCQ", "TF", "ESSAY"],
+          difficulty: "easy",
+        },
+        TEACHER,
+      ),
+    ).rejects.toMatchObject({ code: "LESSON_NOT_IN_CHAPTER" });
+    expect(m.prisma.$transaction).not.toHaveBeenCalled();
   });
 
   it("rejects with 404 when the chapter is not owned/found", async () => {
@@ -312,12 +323,19 @@ describe("QuizGenerationService.generate", () => {
   });
 
   it("fails the whole request when any lesson is missing/unauthorized", async () => {
+    m.prisma.chapter.findFirst.mockResolvedValue({
+      id: CHAPTER_ID,
+      name: "الجبر",
+    });
     m.prisma.lesson.findMany.mockResolvedValue([
-      { id: LESSON_1, title: "د١", chapterId: CHAPTER_ID },
+      { id: LESSON_1, title: "د١" },
     ]);
+    m.prisma.lesson.findFirst.mockResolvedValue(null);
     await expect(
       service().generate(
         {
+          chapterId: CHAPTER_ID,
+          contentScope: "SELECTED_LESSONS",
           lessonIds: [LESSON_1, LESSON_2],
           questionCount: 3,
           types: ["MCQ", "TF", "ESSAY"],
@@ -325,7 +343,7 @@ describe("QuizGenerationService.generate", () => {
         },
         TEACHER,
       ),
-    ).rejects.toThrow(AppError);
+    ).rejects.toMatchObject({ code: "LESSON_NOT_FOUND" });
     expect(m.prisma.$transaction).not.toHaveBeenCalled();
   });
 

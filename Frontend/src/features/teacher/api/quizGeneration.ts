@@ -3,7 +3,6 @@ import type { ApiResponse } from '@/shared/types/api';
 import type { Stage, Chapter } from '@/shared/types/content';
 import type { Lesson } from '@/features/teacher/types/lesson';
 import type { GenerateQuizPayload, GenerateQuizResponse } from '@/features/teacher/types/quizGeneration';
-import type { Chapter as TeacherChapter } from '@/features/teacher/types/chapter';
 
 export const quizGenerationApi = {
   getStages: async (): Promise<Stage[]> => {
@@ -22,15 +21,9 @@ export const quizGenerationApi = {
   },
 
   generateQuiz: async (payload: GenerateQuizPayload): Promise<GenerateQuizResponse> => {
-    const body: Record<string, unknown> = { ...payload };
-    if (body.lessonIds && Array.isArray(body.lessonIds) && body.lessonIds.length > 0) {
-      delete body.chapterId;
-    } else {
-      delete body.lessonIds;
-    }
     const { data } = await apiClient.post<{ success: boolean; data: GenerateQuizResponse }>(
       '/quizzes/generate',
-      body,
+      payload,
     );
     return data.data;
   },
@@ -146,6 +139,7 @@ export interface DraftQuizResponse {
   title: string;
   description?: string | null;
   chapterId: string | null;
+  contentScope?: 'CHAPTER' | 'SELECTED_LESSONS';
   status: string;
   questionCount: number;
   totalPoints: number;
@@ -153,6 +147,11 @@ export interface DraftQuizResponse {
   createdAt: string;
   updatedAt: string;
   publishedAt?: string | null;
+  scope?: {
+    contentScope: 'CHAPTER' | 'SELECTED_LESSONS';
+    chapter: { id: string; title: string } | null;
+    lessons: { id: string; title: string }[];
+  };
   questions: DraftQuestion[];
 }
 

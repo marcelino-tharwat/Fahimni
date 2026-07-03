@@ -17,6 +17,9 @@ export type PublicQuestionType = (typeof PUBLIC_QUESTION_TYPES)[number];
 export const DIFFICULTIES = ["easy", "medium", "hard"] as const;
 export type Difficulty = (typeof DIFFICULTIES)[number];
 
+export const QUIZ_CONTENT_SCOPES = ["CHAPTER", "SELECTED_LESSONS"] as const;
+export type QuizContentScopeWire = (typeof QUIZ_CONTENT_SCOPES)[number];
+
 const uuid = z
   .string()
   .regex(
@@ -24,17 +27,19 @@ const uuid = z
     "Invalid UUID",
   );
 
+const lessonIdsField = z
+  .array(uuid)
+  .default([])
+  .refine(
+    (ids) => new Set(ids).size === ids.length,
+    "lessonIds must not contain duplicates",
+  );
+
 export const generateQuizSchema = z
   .object({
-    chapterId: uuid.optional(),
-    lessonIds: z
-      .array(uuid)
-      .nonempty("lessonIds must contain at least one lesson")
-      .refine(
-        (ids) => new Set(ids).size === ids.length,
-        "lessonIds must not contain duplicates",
-      )
-      .optional(),
+    chapterId: uuid,
+    contentScope: z.enum(QUIZ_CONTENT_SCOPES),
+    lessonIds: lessonIdsField,
     questionCount: z
       .number()
       .int("questionCount must be an integer")
@@ -61,12 +66,22 @@ export const generateQuizSchema = z
       )
       .optional(),
   })
-  // Exactly one content source: chapterId XOR lessonIds.
-  .refine((data) => Boolean(data.chapterId) !== Boolean(data.lessonIds), {
-    message: "Provide exactly one of chapterId or lessonIds",
-    path: ["chapterId"],
-  })
-  // Every requested type must be representable within questionCount.
+  .refine(
+    (data) =>
+      data.contentScope !== "CHAPTER" || data.lessonIds.length === 0,
+    {
+      message: "lessonIds must be empty when contentScope is CHAPTER",
+      path: ["lessonIds"],
+    },
+  )
+  .refine(
+    (data) =>
+      data.contentScope !== "SELECTED_LESSONS" || data.lessonIds.length >= 1,
+    {
+      message: "lessonIds must contain at least one lesson when contentScope is SELECTED_LESSONS",
+      path: ["lessonIds"],
+    },
+  )
   .refine((data) => data.questionCount >= new Set(data.types).size, {
     message:
       "questionCount must be at least the number of selected question types",

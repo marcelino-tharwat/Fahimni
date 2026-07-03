@@ -89,3 +89,19 @@ export class GeminiSafetyBlockedError extends QuizGenerationError {
     Object.setPrototypeOf(this, GeminiSafetyBlockedError.prototype);
   }
 }
+
+/** Database persistence failed during quiz generation. */
+export class QuizGenerationPersistenceError extends QuizGenerationError {
+  constructor(details?: string) {
+    super("تعذر حفظ الاختبار المُولَّد.", {
+      reason: "PERSISTENCE_FAILED",
+      statusCode: 503,
+      details:
+        details ??
+        "حدث خطأ أثناء حفظ الاختبار. لم يتم إنشاء اختبار غير مكتمل.",
+      suggestion: "حاول مرة أخرى. إذا استمرت المشكلة تواصل مع الدعم.",
+    });
+    this.name = "QuizGenerationPersistenceError";
+    Object.setPrototypeOf(this, QuizGenerationPersistenceError.prototype);
+  }
+}

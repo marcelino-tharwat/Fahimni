@@ -3,8 +3,8 @@ import { env } from "../../config/env.js";
 import { logger } from "../../config/logger.js";
 import { geminiClient } from "../../shared/services/geminiClient.js";
 import { aiService } from "../ai/ai.service.js";
-import { auditLogService } from "../../shared/services/auditLog.service.js";
 import { AppError } from "../../shared/utils/AppError.js";
+import { auditLogService } from "../../shared/services/auditLog.service.js";
 import {
   GeminiContentBlockedError,
   GeminiRateLimitError,
@@ -20,12 +20,19 @@ import {
   ContentNotIndexedError,
   GeminiSafetyBlockedError,
   QuizGenerationError,
+  QuizGenerationPersistenceError,
   QuizGenerationTimeoutError,
 } from "./quiz-generation.errors.js";
 import { quizPublicFields, questionPublicFields } from "./quizzes.types.js";
 import type { GenerateQuizInput } from "./dto/generate-quiz.dto.js";
 import type { QuestionType, QuizStatus } from "../../generated/prisma/client.js";
 import type { Prisma } from "../../generated/prisma/client.js";
+import { Prisma as PrismaNamespace } from "../../generated/prisma/client.js";
+import {
+  resolveAndValidateQuizContentScope,
+  persistQuizLessonRelations,
+  type QuizContentScope,
+} from "./quiz-scope.js";
 
 // Canonical STORY-45 budgets, env-configurable (defaults: total 25s, Gemini 20s;
 // the Gemini call timeout must remain < the total endpoint deadline).
@@ -58,6 +65,7 @@ export interface GeneratedQuizDTO {
   title: string;
   description: string | null;
   chapterId: string | null;
+  contentScope: QuizContentScope;
   status: QuizStatus;
   questionCount: number;
   totalPoints: number;
@@ -87,7 +95,8 @@ export interface QuizGenerationServiceDeps {
 interface ResolvedContent {
   lessonIds: string[];
   sourceTitles: string[];
-  chapterId: string | null;
+  chapterId: string;
+  contentScope: QuizContentScope;
 }
 
 /**
@@ -161,6 +170,17 @@ export class QuizGenerationService {
     // 1. Resolve & authorize the requested content source.
     const content = await this.resolveContent(input, teacherId);
 
+    logger.info("quiz_generation_started", {
+      teacherId,
+      chapterId: content.chapterId,
+      contentScope: content.contentScope,
+      selectedLessonCount: content.contentScope === "SELECTED_LESSONS"
+        ? content.lessonIds.length
+        : 0,
+      resolvedLessonCount: content.lessonIds.length,
+      questionCount: input.questionCount,
+    });
+
     // 2. RAG precondition: there must be usable indexed chunks.
     const chunkCount = await this.rag.countChunksInLessons(content.lessonIds);
     if (chunkCount === 0) {
@@ -221,85 +241,51 @@ export class QuizGenerationService {
     const result = await this.persist(
       title,
       description,
-      content.chapterId,
+      content,
       teacherId,
       parsed.questions,
     );
+
+    logger.info("quiz_generation_completed", {
+      teacherId,
+      quizId: result.id,
+      chapterId: content.chapterId,
+      contentScope: content.contentScope,
+      questionCount: parsed.questions.length,
+    });
     const persistMs = Date.now() - persistStart;
 
     logger.info(
-      `[QuizGeneration] success source=${
-        input.chapterId ? "chapter" : "lessons"
-      } lessons=${content.lessonIds.length} chunks=${preparedChunks.length} ` +
-        `questions=${parsed.questions.length} types=${input.types.join("|")} ` +
-        `ragMs=${ragMs} geminiMs=${geminiMs} parseMs=${parseMs} persistMs=${persistMs} ` +
-        `totalMs=${Date.now() - startedAt}`,
+      `[QuizGeneration] success scope=${content.contentScope} ` +
+        `chapterId=${content.chapterId} lessons=${content.lessonIds.length} ` +
+        `chunks=${preparedChunks.length} questions=${parsed.questions.length} ` +
+        `types=${input.types.join("|")} ragMs=${ragMs} geminiMs=${geminiMs} ` +
+        `parseMs=${parseMs} persistMs=${persistMs} totalMs=${Date.now() - startedAt}`,
     );
 
     return result;
   }
 
-  /** Resolve the content source, enforcing teacher ownership and soft-deletes. */
+  /** Resolve the content source via the shared scope validator. */
   private async resolveContent(
     input: GenerateQuizInput,
     teacherId: string,
   ): Promise<ResolvedContent> {
-    if (input.chapterId) {
-      const chapter = await this.prisma.chapter.findFirst({
-        where: {
-          id: input.chapterId,
-          deletedAt: null,
-          stage: { teacherId, deletedAt: null },
-        },
-        select: { id: true, name: true },
-      });
-
-      if (!chapter) {
-        throw new AppError("Chapter not found", 404);
-      }
-
-      const lessons = await this.prisma.lesson.findMany({
-        where: { chapterId: chapter.id, deletedAt: null },
-        select: { id: true, title: true },
-        orderBy: { sortOrder: "asc" },
-      });
-
-      if (lessons.length === 0) {
-        throw new ContentNotIndexedError(
-          "لا يحتوي الفصل المحدد على دروس قابلة للاستخدام.",
-        );
-      }
-
-      return {
-        lessonIds: lessons.map((l) => l.id),
-        sourceTitles: [chapter.name, ...lessons.map((l) => l.title)],
-        chapterId: chapter.id,
-      };
-    }
-
-    // lessonIds path — all must exist, be owned, and be active.
-    const lessonIds = input.lessonIds!;
-    const lessons = await this.prisma.lesson.findMany({
-      where: {
-        id: { in: lessonIds },
-        deletedAt: null,
-        chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+    const scope = await resolveAndValidateQuizContentScope(
+      {
+        chapterId: input.chapterId,
+        contentScope: input.contentScope,
+        lessonIds: input.lessonIds,
       },
-      select: { id: true, title: true, chapterId: true },
-    });
-
-    if (lessons.length !== lessonIds.length) {
-      // Any missing/unauthorized/deleted lesson fails the whole request.
-      throw new AppError("One or more lessons not found", 404);
-    }
-
-    const uniqueChapterIds = new Set(lessons.map((l) => l.chapterId));
+      teacherId,
+      this.prisma,
+    );
 
     return {
-      lessonIds: lessons.map((l) => l.id),
-      sourceTitles: lessons.map((l) => l.title),
-      // Single shared chapter → attach it; spanning multiple chapters → null.
-      chapterId: uniqueChapterIds.size === 1 ? [...uniqueChapterIds][0]! : null,
+      lessonIds: scope.lessonIds,
+      sourceTitles: scope.sourceTitles,
+      chapterId: scope.chapterId,
+      contentScope: scope.contentScope,
     };
   }
 
@@ -422,21 +408,30 @@ export class QuizGenerationService {
   private async persist(
     title: string,
     description: string | null,
-    chapterId: string | null,
+    content: ResolvedContent,
     teacherId: string,
     questions: ParsedQuestion[],
   ): Promise<GeneratedQuizDTO> {
-    const created = await this.prisma.$transaction(async (tx) => {
+    let created;
+    try {
+      created = await this.prisma.$transaction(async (tx) => {
       const quiz = await tx.quiz.create({
         data: {
           title,
           description,
-          chapterId,
+          chapterId: content.chapterId,
+          contentScope: content.contentScope,
           createdBy: teacherId,
-          // status defaults to DRAFT in the schema — never auto-published.
         },
         select: quizPublicFields,
       });
+
+      await persistQuizLessonRelations(
+        tx,
+        quiz.id,
+        content.contentScope,
+        content.contentScope === "SELECTED_LESSONS" ? content.lessonIds : [],
+      );
 
       await tx.question.createMany({
         data: questions.map((q) => ({
@@ -457,6 +452,26 @@ export class QuizGenerationService {
 
       return { quiz, persistedQuestions };
     });
+    } catch (error) {
+      if (error instanceof QuizGenerationError) {
+        throw error;
+      }
+      if (error instanceof PrismaNamespace.PrismaClientKnownRequestError) {
+        logger.error("quiz_generation_persist_failed", {
+          teacherId,
+          chapterId: content.chapterId,
+          contentScope: content.contentScope,
+          prismaCode: error.code,
+        });
+        throw error;
+      }
+      logger.error("quiz_generation_persist_failed", {
+        teacherId,
+        chapterId: content.chapterId,
+        contentScope: content.contentScope,
+      });
+      throw new QuizGenerationPersistenceError();
+    }
 
     await auditLogService.record({
       action: "QUIZ_GENERATED",
@@ -467,7 +482,8 @@ export class QuizGenerationService {
       scopeTeacherId: teacherId,
       details: {
         title,
-        chapterId,
+        chapterId: content.chapterId,
+        contentScope: content.contentScope,
         questionCount: questions.length,
       },
     });
@@ -484,6 +500,7 @@ export class QuizGenerationService {
       title: quizRow.title as string,
       description: (quizRow.description as string | null) ?? null,
       chapterId: (quizRow.chapterId as string | null) ?? null,
+      contentScope: (quizRow.contentScope as QuizContentScope) ?? "CHAPTER",
       status: quizRow.status as QuizStatus,
       questionCount: created.persistedQuestions.length,
       totalPoints,

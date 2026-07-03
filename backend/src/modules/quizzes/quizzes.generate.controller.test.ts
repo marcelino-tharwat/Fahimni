@@ -46,7 +46,7 @@ describe("QuizzesController.generate", () => {
     generateMock.mockResolvedValue({ id: "quiz-1", status: "DRAFT" });
     const controller = new QuizzesController();
     const req = {
-      body: { chapterId: "c", teacherId: "ATTACKER", questionCount: 3 },
+      body: { chapterId: "c", contentScope: "CHAPTER", lessonIds: [], questionCount: 3 },
       user: { id: "teacher-real" },
     } as unknown as Request;
     const res = mockRes();
@@ -62,7 +62,7 @@ describe("QuizzesController.generate", () => {
     generateMock.mockResolvedValue(data);
     const controller = new QuizzesController();
     const req = {
-      body: { chapterId: "c" },
+      body: { chapterId: "c", contentScope: "CHAPTER", lessonIds: [] },
       user: { id: "teacher-real" },
     } as unknown as Request;
     const res = mockRes();
@@ -77,7 +77,7 @@ describe("QuizzesController.generate", () => {
     generateMock.mockRejectedValue(new QuizGenerationParseError());
     const controller = new QuizzesController();
     const req = {
-      body: { chapterId: "c" },
+      body: { chapterId: "c", contentScope: "CHAPTER", lessonIds: [] },
       user: { id: "teacher-real" },
     } as unknown as Request;
     const next = vi.fn() as unknown as NextFunction;

@@ -1,6 +1,7 @@
 import { useState, useCallback, useReducer, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useMemo } from 'react';
 import {
   BrainCircuit, BookOpen, ListChecks, Gauge, Minus, Plus, AlertCircle,
 } from 'lucide-react';
@@ -19,12 +20,14 @@ import {
 } from '@/features/teacher/components/quiz-generator';
 import { ContentIndexingDialog } from '@/features/teacher/components/quiz-generator/ContentIndexingDialog';
 import type { QuizGeneratorFormState, GenerateQuizPayload } from '@/features/teacher/types/quizGeneration';
+import { resolveQuizGenerationError } from '@/features/teacher/lib/quizGenerationErrors';
 
 const SESSION_KEY = 'quizGeneratorFormState_v2';
 
 const DEFAULT_FORM: QuizGeneratorFormState = {
   stageId: '',
   chapterId: '',
+  contentScope: 'CHAPTER',
   lessonIds: [],
   title: '',
   questionCount: 0,
@@ -67,7 +70,7 @@ function FormDivider() {
 }
 
 export function AiQuizGeneratorPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [form, dispatch] = useReducer(formReducer, DEFAULT_FORM, (initial) => {
     try {
@@ -87,6 +90,11 @@ export function AiQuizGeneratorPage() {
   const { data: lessons = [], isLoading: lessonsLoading, isError: lessonsIsError, refetch: refetchLessons } = useLessonsByChapter(form.chapterId);
   const generateQuiz = useGenerateQuiz();
 
+  const generationError = useMemo(() => {
+    if (!generateQuiz.isError || !generateQuiz.error) return null;
+    return resolveQuizGenerationError(generateQuiz.error, t, i18n.language);
+  }, [generateQuiz.isError, generateQuiz.error, t, i18n.language]);
+
   const setField = useCallback(<K extends keyof QuizGeneratorFormState>(field: K, value: QuizGeneratorFormState[K]) => {
     dispatch({ type: 'SET_FIELD', field, value } as Action);
   }, []);
@@ -96,7 +104,7 @@ export function AiQuizGeneratorPage() {
   // Lessons to offer for indexing: the explicitly selected ones, or all of the
   // chapter when none are individually selected.
   const lessonsToIndex =
-    form.lessonIds.length > 0
+    form.contentScope === 'SELECTED_LESSONS' && form.lessonIds.length > 0
       ? lessons.filter((l) => form.lessonIds.includes(l.id))
       : lessons;
 
@@ -104,6 +112,9 @@ export function AiQuizGeneratorPage() {
     const errs: Record<string, string> = {};
     if (!form.stageId) errs.stageId = t('teacher:quizGenerator.validationStage');
     if (!form.chapterId) errs.chapterId = t('teacher:quizGenerator.validationChapter');
+    if (form.contentScope === 'SELECTED_LESSONS' && form.lessonIds.length === 0) {
+      errs.lessonIds = t('teacher:quizGenerator.validationLessons');
+    }
     if (form.questionTypes.length === 0) errs.questionTypes = t('teacher:quizGenerator.validationQuestionType');
     if (form.questionCount < 1) errs.questionCount = t('teacher:quizGenerator.requiredQuestionCount');
     if (!form.difficulty) errs.difficulty = t('teacher:quizGenerator.validationDifficulty');
@@ -113,9 +124,11 @@ export function AiQuizGeneratorPage() {
 
   const handleSubmit = useCallback(async () => {
     if (!validate()) return;
+    generateQuiz.reset();
     const payload: GenerateQuizPayload = {
       chapterId: form.chapterId,
-      lessonIds: form.lessonIds.length > 0 ? form.lessonIds : undefined,
+      contentScope: form.contentScope,
+      lessonIds: form.contentScope === 'SELECTED_LESSONS' ? form.lessonIds : [],
       questionCount: form.questionCount,
       types: form.questionTypes as ('MCQ' | 'TF' | 'ESSAY')[],
       difficulty: form.difficulty as 'easy' | 'medium' | 'hard',
@@ -124,7 +137,7 @@ export function AiQuizGeneratorPage() {
       const result = await generateQuiz.mutateAsync(payload);
       navigate(`/teacher/quizzes/generator/review/${result.id}`);
     } catch {
-      /* handled by react-query */
+      // Error surfaced via generationError banner below.
     }
   }, [form, validate, generateQuiz, navigate]);
 
@@ -146,12 +159,46 @@ export function AiQuizGeneratorPage() {
 
       <QuizStepper activeStep={0} />
 
+      {generationError && (
+        <div
+          role="alert"
+          className="rounded-xl border border-danger-200 bg-danger-50 p-4 shadow-sm"
+        >
+          <div className="flex items-start gap-3">
+            <AlertCircle size={20} className="mt-0.5 shrink-0 text-danger-600" />
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <p className="font-cairo text-sm font-bold text-danger-800">
+                {generationError.title}
+              </p>
+              {generationError.details && (
+                <p className="font-cairo text-sm text-danger-700">
+                  {generationError.details}
+                </p>
+              )}
+              {generationError.suggestion && (
+                <p className="font-cairo text-xs text-danger-600">
+                  {generationError.suggestion}
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => generateQuiz.reset()}
+              className="shrink-0 font-cairo text-xs font-medium text-danger-700 underline hover:no-underline"
+            >
+              {t('teacher:quizGenerator.generationErrorDismiss')}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-[14px] border border-[#E5E7EB] p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
         <SectionHead icon={<BookOpen size={18} />} title={t('teacher:quizGenerator.contentSelection')} />
 
         <ContentSelector
           stageId={form.stageId}
           chapterId={form.chapterId}
+          contentScope={form.contentScope}
           lessonIds={form.lessonIds}
           onStageChange={(id) => {
             setField('stageId', id);
@@ -161,6 +208,12 @@ export function AiQuizGeneratorPage() {
           onChapterChange={(id) => {
             setField('chapterId', id);
             setField('lessonIds', []);
+          }}
+          onContentScopeChange={(scope) => {
+            setField('contentScope', scope);
+            if (scope === 'CHAPTER') {
+              setField('lessonIds', []);
+            }
           }}
           onLessonsChange={(ids) => setField('lessonIds', ids)}
           stages={stages}
@@ -176,6 +229,9 @@ export function AiQuizGeneratorPage() {
           onRetryChapters={() => refetchChapters()}
           onRetryLessons={() => refetchLessons()}
         />
+        {errors.lessonIds && (
+          <p className="font-cairo text-xs text-danger-500">{errors.lessonIds}</p>
+        )}
 
         <div className="mt-3 flex flex-col gap-1">
           <Button

@@ -20,6 +20,7 @@ import type {
   AssignQuizInput,
 } from "./quizzes.validation.js";
 import type { Prisma } from "../../generated/prisma/client.js";
+import { loadQuizScopeSummary, resolveAndValidateQuizContentScope } from "./quiz-scope.js";
 
 function toQuestionResponseDTO(
   row: Record<string, unknown>,
@@ -64,11 +65,26 @@ export class QuizService {
     input: CreateQuizInput,
     teacherId: string,
   ): Promise<QuizResponseDTO> {
+    let chapterId: string | null = input.chapterId ?? null;
+    let contentScope: "CHAPTER" | "SELECTED_LESSONS" = "CHAPTER";
+
+    if (chapterId) {
+      const scope = await resolveAndValidateQuizContentScope(
+        { chapterId, contentScope: "CHAPTER", lessonIds: [] },
+        teacherId,
+        undefined,
+        { requireUsableContent: false },
+      );
+      chapterId = scope.chapterId;
+      contentScope = scope.contentScope;
+    }
+
     const quiz = await prisma.quiz.create({
       data: {
         title: input.title,
         description: input.description ?? null,
-        chapterId: input.chapterId ?? null,
+        chapterId,
+        contentScope,
         durationMinutes: input.durationMinutes ?? null,
         createdBy: teacherId,
       },
@@ -137,9 +153,16 @@ export class QuizService {
     const { _count: count, questions, ...rest } =
       row as unknown as { _count: { questions: number }; questions: unknown[] } & Record<string, unknown>;
 
+    const scope = await loadQuizScopeSummary(
+      id,
+      (rest.contentScope as "CHAPTER" | "SELECTED_LESSONS") ?? "CHAPTER",
+      (rest.chapterId as string | null) ?? null,
+    );
+
     return {
       ...rest,
       questionCount: count.questions,
+      scope,
       questions: (questions as Record<string, unknown>[]).map(toQuestionResponseDTO),
     } as unknown as QuizDetailResponseDTO;
   }
@@ -535,12 +558,17 @@ export class QuizService {
       throw new AppError("Chapter not found", 404);
     }
 
-    const quiz = await prisma.quiz.update({
-      where: { id: quizId },
-      data: {
-        chapter: { connect: { id: chapterId } },
-      },
-      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+    const quiz = await prisma.$transaction(async (tx) => {
+      await tx.quizLesson.deleteMany({ where: { quizId } });
+
+      return tx.quiz.update({
+        where: { id: quizId },
+        data: {
+          chapter: { connect: { id: chapterId } },
+          contentScope: "CHAPTER",
+        },
+        select: { ...quizPublicFields, _count: { select: { questions: true } } },
+      });
     });
 
     const { _count: count, ...quizFields } =

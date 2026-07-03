@@ -12,6 +12,8 @@ const LESSON_2 = "33333333-3333-4333-8333-333333333333";
 function base(overrides: Record<string, unknown> = {}) {
   return {
     chapterId: CHAPTER_ID,
+    contentScope: "CHAPTER",
+    lessonIds: [],
     questionCount: 10,
     types: ["MCQ", "TF", "ESSAY"],
     difficulty: "medium",
@@ -20,13 +22,15 @@ function base(overrides: Record<string, unknown> = {}) {
 }
 
 describe("generateQuizSchema", () => {
-  it("accepts a valid chapterId request", () => {
+  it("accepts a valid CHAPTER scope request", () => {
     const result = generateQuizSchema.safeParse(base());
     expect(result.success).toBe(true);
   });
 
-  it("accepts a valid lessonIds request", () => {
+  it("accepts a valid SELECTED_LESSONS request", () => {
     const result = generateQuizSchema.safeParse({
+      chapterId: CHAPTER_ID,
+      contentScope: "SELECTED_LESSONS",
       lessonIds: [LESSON_1, LESSON_2],
       questionCount: 8,
       types: ["MCQ", "TF"],
@@ -36,32 +40,24 @@ describe("generateQuizSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects when both chapterId and lessonIds are supplied", () => {
+  it("rejects CHAPTER scope with lessonIds", () => {
     const result = generateQuizSchema.safeParse(
       base({ lessonIds: [LESSON_1] }),
     );
     expect(result.success).toBe(false);
   });
 
-  it("rejects when neither source is supplied", () => {
-    const { chapterId: _drop, ...noSource } = base();
-    void _drop;
-    const result = generateQuizSchema.safeParse(noSource);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects an empty lessonIds array", () => {
-    const result = generateQuizSchema.safeParse({
-      lessonIds: [],
-      questionCount: 5,
-      types: ["MCQ"],
-      difficulty: "easy",
-    });
+  it("rejects SELECTED_LESSONS without lessonIds", () => {
+    const result = generateQuizSchema.safeParse(
+      base({ contentScope: "SELECTED_LESSONS", lessonIds: [] }),
+    );
     expect(result.success).toBe(false);
   });
 
   it("rejects duplicate lessonIds", () => {
     const result = generateQuizSchema.safeParse({
+      chapterId: CHAPTER_ID,
+      contentScope: "SELECTED_LESSONS",
       lessonIds: [LESSON_1, LESSON_1],
       questionCount: 5,
       types: ["MCQ"],
