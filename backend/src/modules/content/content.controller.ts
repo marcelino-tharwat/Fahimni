@@ -20,6 +20,7 @@ import {
   assertLessonUnlocked,
 } from "../progression/lesson-progression.js";
 import { loadChapterProgressionContext } from "../progression/progression-context.js";
+import { quizVisibilityService } from "../quizzes/quiz-visibility.service.js";
 
 const filesService = new FilesService();
 
@@ -380,6 +381,14 @@ export class ContentController {
         chapterId: lessonFields.chapterId,
       });
 
+      const quizzes = await quizVisibilityService.buildLessonQuizzesSection(
+        studentId,
+        lessonId,
+        lessonFields.chapterId,
+        access.requiredQuizId,
+        access.progressStatus,
+      );
+
       const materials = (
         lessonMaterials ?? []
       ) as Array<{
@@ -413,6 +422,7 @@ export class ContentController {
             progressStatus: access.progressStatus,
             requiredQuizId: access.requiredQuizId,
             nextLessonId: access.nextLessonId,
+            quizzes,
           } as LessonResponseDTO),
         );
     },
@@ -474,6 +484,14 @@ export class ContentController {
       progressionCtx.completedLessonIds.add(lessonId);
       const accessAfter = evaluateChapterLessons(progressionCtx)[lessonIndex]!;
 
+      const quizzes = await quizVisibilityService.buildLessonQuizzesSection(
+        studentId,
+        lessonId,
+        lesson.chapterId,
+        accessAfter.requiredQuizId,
+        accessAfter.progressStatus,
+      );
+
       logger.info("lesson_completed", {
         studentId,
         chapterId: lesson.chapterId,
@@ -488,6 +506,7 @@ export class ContentController {
           progressStatus: "COMPLETED",
           requiredQuizId: accessAfter.requiredQuizId,
           nextLessonId: accessAfter.nextLessonId,
+          quizzes,
           access: accessAfter,
         }),
       );

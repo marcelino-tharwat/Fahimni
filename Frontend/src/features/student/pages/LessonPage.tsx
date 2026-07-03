@@ -1,14 +1,12 @@
 import { useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
 import {
   ChevronLeft,
   ChevronRight,
   Clock,
   BookOpen,
   Layers,
-  Eye,
   FileText,
   AlertCircle,
   Lock,
@@ -18,12 +16,10 @@ import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { useLesson, useStudentTree, useCompleteLesson } from '@/features/student/hooks/useStudentContent';
 import { resolveLessonLockMessage } from '@/features/student/lib/lessonAccessErrors';
 import type { StudentLessonNode } from '@/features/student/types/studentContent';
-import { useStudentQuizzes } from '@/features/student/hooks/useStudentQuizzes';
-import { resolveQuizStudentAction } from '@/features/student/lib/quizNavigation';
 import { contentApi } from '@/features/student/api/content';
-import { quizApi } from '@/features/student/api/quiz';
 import type { StudentContentTreeItem } from '@/features/student/types/studentContent';
 import type { ApiError } from '@/shared/lib/api/client';
+import { LessonQuizSections } from '@/features/student/components/LessonQuizSections';
 
 function extractYouTubeId(url: string): string | null {
   const match = url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
@@ -44,21 +40,6 @@ function findLessonInTree(
       const found = ch.lessons.find((l) => l.id === lessonId);
       if (found) {
         return { stageName: item.stage.name, chapterName: ch.chapter.name };
-      }
-    }
-  }
-  return null;
-}
-
-function findChapterIdForLesson(
-  tree: StudentContentTreeItem[],
-  lessonId: string,
-): string | null {
-  for (const item of tree) {
-    for (const ch of item.chapters) {
-      const found = ch.lessons.find((l) => l.id === lessonId);
-      if (found) {
-        return ch.chapter.id;
       }
     }
   }
@@ -86,31 +67,29 @@ function findLessonTitle(
   return node?.title ?? null;
 }
 
+/** Previous unlocked lesson in the same chapter (backend lock state). */
+function findPreviousUnlockedLesson(
+  tree: StudentContentTreeItem[],
+  lessonId: string,
+): StudentLessonNode | null {
+  for (const item of tree) {
+    for (const ch of item.chapters) {
+      const index = ch.lessons.findIndex((l) => l.id === lessonId);
+      if (index <= 0) continue;
+      for (let i = index - 1; i >= 0; i--) {
+        const candidate = ch.lessons[i];
+        if (candidate?.isUnlocked) return candidate;
+      }
+    }
+  }
+  return null;
+}
+
 interface FlatLesson {
   id: string;
   title: string;
 }
 
-/**
- * Flattens lessons across the whole tree in stage -> chapter -> lesson order so
- * prev/next can walk across chapter and stage boundaries. Locked chapters are
- * skipped: their lessons aren't viewable, so navigating into one would only
- * bounce the student to the enrollment screen.
- */
-function flattenLessons(tree: StudentContentTreeItem[]): FlatLesson[] {
-  const result: FlatLesson[] = [];
-  for (const item of tree) {
-    for (const ch of item.chapters) {
-      if (ch.chapter.enrollmentStatus === 'locked') continue;
-      for (const lesson of ch.lessons) {
-        result.push({ id: lesson.id, title: lesson.title });
-      }
-    }
-  }
-  return result;
-}
-
-/** Other lessons in the same chapter as `lessonId` (excluding it), for "related". */
 function siblingLessons(
   tree: StudentContentTreeItem[],
   lessonId: string,
@@ -119,7 +98,7 @@ function siblingLessons(
     for (const ch of item.chapters) {
       if (ch.lessons.some((l) => l.id === lessonId)) {
         return ch.lessons
-          .filter((l) => l.id !== lessonId)
+          .filter((l) => l.id !== lessonId && l.isUnlocked)
           .map((l) => ({ id: l.id, title: l.title }));
       }
     }
@@ -136,7 +115,6 @@ export function LessonPage() {
   const completeLesson = useCompleteLesson();
   const apiError = error as ApiError | null;
   const { data: tree } = useStudentTree();
-  const { data: studentQuizzes } = useStudentQuizzes();
 
   useEffect(() => {
     if (lessonId) {
@@ -149,87 +127,28 @@ export function LessonPage() {
     return findLessonInTree(tree, lessonId ?? '');
   }, [tree, lessonId]);
 
-  const chapterId = useMemo(() => {
-    if (!tree) return null;
-    return findChapterIdForLesson(tree, lessonId ?? '');
+  const treeLesson = useMemo(() => {
+    if (!tree || !lessonId) return null;
+    return findTreeLessonNode(tree, lessonId);
   }, [tree, lessonId]);
 
-  const { data: chapterQuizzes } = useQuery({
-    queryKey: ['chapter', 'quizzes', chapterId],
-    queryFn: async () => {
-      const { data } = await quizApi.getChapterQuizzes(chapterId!);
-      return data.data;
-    },
-    enabled: !!chapterId,
-  });
-
-  const chapterQuiz = useMemo(() => {
-    if (!chapterQuizzes?.length) return null;
-    const requiredId = lesson?.requiredQuizId;
-    if (requiredId) {
-      return chapterQuizzes.find((q) => q.id === requiredId) ?? null;
-    }
-    return null;
-  }, [chapterQuizzes, lesson?.requiredQuizId]);
-
-  const chapterQuizMeta = useMemo(() => {
-    if (!chapterQuiz || !studentQuizzes) return null;
-    for (const ch of studentQuizzes.chapters) {
-      const found = ch.quizzes.find((q) => q.id === chapterQuiz.id);
-      if (found) return found;
-    }
-    return null;
-  }, [chapterQuiz, studentQuizzes]);
-
-  const chapterQuizAction = chapterQuizMeta
-    ? resolveQuizStudentAction(chapterQuizMeta)
-    : 'start';
-
-  const handleChapterQuizClick = () => {
-    if (!chapterQuiz) return;
-    if (
-      chapterQuizAction === 'viewResult' &&
-      chapterQuizMeta?.attemptId
-    ) {
-      navigate(
-        `/student/quizzes/${chapterQuiz.id}/results/${chapterQuizMeta.attemptId}`,
-      );
-      return;
-    }
-    navigate(`/student/quizzes/${chapterQuiz.id}`);
-  };
-
-  const allLessons = useMemo(() => {
-    if (!tree) return [];
-    return flattenLessons(tree);
-  }, [tree]);
+  const prevLesson = useMemo(() => {
+    if (!tree || !lessonId) return null;
+    return findPreviousUnlockedLesson(tree, lessonId);
+  }, [tree, lessonId]);
 
   const relatedLessons = useMemo(() => {
     if (!tree) return [];
     return siblingLessons(tree, lessonId ?? '');
   }, [tree, lessonId]);
 
-  const currentIndex = useMemo(() => {
-    return allLessons.findIndex((l) => l.id === lessonId);
-  }, [allLessons, lessonId]);
-
-  const treeLesson = useMemo(() => {
-    if (!tree || !lessonId) return null;
-    return findTreeLessonNode(tree, lessonId);
-  }, [tree, lessonId]);
-
   const nextLessonId = lesson?.nextLessonId ?? treeLesson?.nextLessonId ?? null;
   const nextLessonTitle = nextLessonId && tree ? findLessonTitle(tree, nextLessonId) : null;
 
-  const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
-
-  const showRequiredQuiz =
-    (lesson?.progressStatus === 'COMPLETED' || treeLesson?.progressStatus === 'COMPLETED') &&
-    !!lesson?.requiredQuizId &&
-    !!chapterQuiz;
-
   const isLessonCompleted =
     lesson?.progressStatus === 'COMPLETED' || treeLesson?.progressStatus === 'COMPLETED';
+
+  const lessonQuizzes = lesson?.quizzes ?? { available: [], required: null };
 
   if (isLoading) return <LessonSkeleton />;
 
@@ -285,7 +204,6 @@ export function LessonPage() {
       );
     }
 
-    // 404 or any other error → not found / generic error
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 py-20 text-center">
         <span className="flex h-20 w-20 items-center justify-center rounded-full bg-danger-50">
@@ -298,10 +216,10 @@ export function LessonPage() {
           {t('student:lesson.notFound.description')}
         </p>
         <Link
-to="/student/dashboard"
-            className="mt-2 inline-flex min-h-[44px] items-center justify-center rounded-button bg-navy-800 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-navy-900"
-          >
-            {t('student:lesson.notFound.back')}
+          to="/student/dashboard"
+          className="mt-2 inline-flex min-h-[44px] items-center justify-center rounded-button bg-navy-800 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-navy-900"
+        >
+          {t('student:lesson.notFound.back')}
         </Link>
       </div>
     );
@@ -312,7 +230,6 @@ to="/student/dashboard"
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      {/* Breadcrumb */}
       <nav className="flex flex-wrap items-center gap-1 font-cairo text-sm text-gray-500">
         <Link to="/student/dashboard" className="hover:text-accent transition-colors">
           {t('student:content.tabs.allContent')}
@@ -329,7 +246,6 @@ to="/student/dashboard"
         <span className="font-semibold text-navy-900">{lesson.title}</span>
       </nav>
 
-      {/* YouTube embed / video error state */}
       {showVideo ? (
         <div className="relative w-full overflow-hidden rounded-card pb-[56.25%] bg-gray-200">
           <iframe
@@ -351,7 +267,6 @@ to="/student/dashboard"
         </div>
       )}
 
-      {/* Lesson info */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="flex flex-col gap-1">
@@ -365,7 +280,6 @@ to="/student/dashboard"
           <p className="font-cairo text-gray-500">{lesson.description}</p>
         )}
 
-        {/* Meta row */}
         <div className="flex flex-wrap items-center gap-4 font-cairo text-sm text-gray-500">
           <span className="inline-flex items-center gap-1.5">
             <Clock size={16} />
@@ -398,7 +312,6 @@ to="/student/dashboard"
         )}
       </div>
 
-      {/* PDF Materials */}
       {(lesson.attachments?.length ?? 0) > 0 && (
         <Card padding="md" className="flex flex-col gap-3 shadow-lg border border-gray-200">
           <div className="flex items-center gap-2 border-b border-border pb-3">
@@ -437,42 +350,11 @@ to="/student/dashboard"
         </Card>
       )}
 
-      {/* Required progression quiz */}
-      {showRequiredQuiz && chapterQuiz && (
-        <Card padding="md" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-1">
-            <span className="font-cairo text-base font-semibold text-navy-900">
-              {chapterQuiz.title}
-            </span>
-            <span className="font-cairo text-sm text-gray-500">
-              {chapterQuizAction === 'viewResult'
-                ? t('student:lesson.quizAlreadyTaken')
-                : chapterQuizAction === 'resume'
-                  ? t('student:lesson.quizInProgress')
-                  : (chapterQuiz.description ?? t('student:lesson.quizPrompt'))}
-            </span>
-            {chapterQuizMeta?.status === 'passed' || chapterQuizMeta?.status === 'failed' ? (
-              <Badge variant={chapterQuizMeta.status === 'passed' ? 'success' : 'danger'}>
-                {t(`quiz:quiz.status.${chapterQuizMeta.status}`, {
-                  score: chapterQuizMeta.score ?? 0,
-                })}
-              </Badge>
-            ) : null}
-          </div>
-          <Button
-            variant={chapterQuizAction === 'viewResult' ? 'outline' : 'primary'}
-            onClick={handleChapterQuizClick}
-          >
-            {chapterQuizAction === 'viewResult'
-              ? t('quiz:quiz.action.viewResult')
-              : chapterQuizAction === 'resume'
-                ? t('quiz:quiz.action.continue')
-                : t('student:takeQuiz')}
-          </Button>
-        </Card>
-      )}
+      <LessonQuizSections
+        available={lessonQuizzes.available}
+        required={lessonQuizzes.required}
+      />
 
-      {/* Other lessons in this chapter */}
       {relatedLessons.length > 0 && (
         <section className="flex flex-col gap-3">
           <h2 className="font-cairo text-base font-semibold text-navy-900">
@@ -497,7 +379,6 @@ to="/student/dashboard"
         </section>
       )}
 
-      {/* Previous / Next navigation */}
       <div className="grid grid-cols-2 gap-4">
         {prevLesson ? (
           <Button
@@ -542,10 +423,6 @@ to="/student/dashboard"
     </div>
   );
 }
-
-/* ------------------------------------------------------------------ */
-/*  Skeleton state                                                     */
-/* ------------------------------------------------------------------ */
 
 function LessonSkeleton() {
   return (

@@ -86,6 +86,7 @@ export interface StudentLessonDetail {
   progressStatus?: StudentLessonNode['progressStatus'];
   requiredQuizId?: string | null;
   nextLessonId?: string | null;
+  quizzes?: import('@/features/student/types/studentQuiz').LessonQuizzesSection;
   attachments?: Array<{
     id: string;
     displayName: string;

@@ -274,6 +274,10 @@
     "completeLesson": "Mark lesson complete",
     "completing": "Saving…",
     "completeSuccess": "Lesson marked complete",
+    "lessonQuizzesTitle": "Quizzes for this lesson",
+    "requiredQuizTitle": "Required quiz to unlock the next lesson",
+    "requiredQuizHint": "You must complete this quiz to unlock the next lesson.",
+    "optionalQuizHint": "Optional practice — completing this lesson is enough to continue. This quiz does not block the next lesson.",
     "nextLessonLockedQuiz": "Complete the quiz first to unlock the next lesson.",
     "lock": {
       "title": "Lesson locked",

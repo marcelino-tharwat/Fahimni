@@ -278,6 +278,10 @@
     "completeLesson": "إكمال الدرس",
     "completing": "جارٍ الحفظ…",
     "completeSuccess": "تم إكمال الدرس",
+    "lessonQuizzesTitle": "اختبارات هذا الدرس",
+    "requiredQuizTitle": "اختبار مطلوب لفتح الدرس التالي",
+    "requiredQuizHint": "يجب إكمال هذا الاختبار لفتح الدرس التالي.",
+    "optionalQuizHint": "تدريب اختياري — إكمال الدرس كافٍ للمتابعة. هذا الاختبار لا يمنع الدرس التالي.",
     "nextLessonLockedQuiz": "أكمل الاختبار أولًا لفتح الدرس التالي.",
     "lock": {
       "title": "الدرس مغلق",

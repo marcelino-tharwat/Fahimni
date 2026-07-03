@@ -78,8 +78,14 @@ export const quizGenerationApi = {
   },
 
   /** PATCH /quizzes/:id/publish — publish a draft quiz. */
-  publishQuiz: async (quizId: string): Promise<QuizListItem> => {
-    const { data } = await apiClient.patch<ApiResponse<QuizListItem>>(`/quizzes/${quizId}/publish`);
+  publishQuiz: async (
+    quizId: string,
+    body?: { progressionGateLessonIds?: string[] },
+  ): Promise<QuizListItem> => {
+    const { data } = await apiClient.patch<ApiResponse<QuizListItem>>(
+      `/quizzes/${quizId}/publish`,
+      body ?? {},
+    );
     return data.data;
   },
 

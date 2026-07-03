@@ -412,6 +412,7 @@ export class QuizService {
   public async publishQuiz(
     quizId: string,
     teacherId: string,
+    options?: { progressionGateLessonIds?: string[] },
   ): Promise<QuizResponseDTO> {
     const existing = await this.assertQuizOwned(quizId, teacherId);
 
@@ -488,6 +489,17 @@ export class QuizService {
       details: { title: existing.title, questionCount: questions.length },
     });
 
+    if (options?.progressionGateLessonIds?.length) {
+      const { applyQuizProgressionGates } = await import(
+        "../progression/quiz-progression-gate.js"
+      );
+      await applyQuizProgressionGates(
+        quizId,
+        options.progressionGateLessonIds,
+        teacherId,
+      );
+    }
+
     return {
       ...quizFields,
       questionCount: count.questions,
@@ -558,15 +570,60 @@ export class QuizService {
       throw new AppError("Chapter not found", 404);
     }
 
+    // Same chapter: preserve contentScope and quiz_lessons (no-op assign).
+    if (existing.chapterId === chapterId) {
+      const quiz = await prisma.quiz.findUniqueOrThrow({
+        where: { id: quizId },
+        select: { ...quizPublicFields, _count: { select: { questions: true } } },
+      });
+      const { _count: count, ...quizFields } =
+        quiz as unknown as { _count: { questions: number } } & Record<string, unknown>;
+      return {
+        ...quizFields,
+        questionCount: count.questions,
+      } as unknown as QuizResponseDTO;
+    }
+
+    const linkedLessons = await prisma.quizLesson.findMany({
+      where: { quizId },
+      select: { lessonId: true },
+    });
+
+    if (
+      existing.contentScope === "SELECTED_LESSONS" &&
+      linkedLessons.length > 0
+    ) {
+      const validInTarget = await prisma.lesson.count({
+        where: {
+          id: { in: linkedLessons.map((l) => l.lessonId) },
+          chapterId,
+          deletedAt: null,
+        },
+      });
+      if (validInTarget !== linkedLessons.length) {
+        throw new AppError(
+          "Cannot assign quiz to another chapter while selected lessons belong to the current chapter. Clear lesson scope or select lessons in the target chapter first.",
+          409,
+          "QUIZ_SCOPE_CHAPTER_MISMATCH",
+        );
+      }
+    }
+
     const quiz = await prisma.$transaction(async (tx) => {
-      await tx.quizLesson.deleteMany({ where: { quizId } });
+      if (existing.contentScope !== "SELECTED_LESSONS" || linkedLessons.length === 0) {
+        await tx.quizLesson.deleteMany({ where: { quizId } });
+      }
+
+      const updateData: Prisma.QuizUpdateInput = {
+        chapter: { connect: { id: chapterId } },
+      };
+      if (existing.contentScope !== "SELECTED_LESSONS" || linkedLessons.length === 0) {
+        updateData.contentScope = "CHAPTER";
+      }
 
       return tx.quiz.update({
         where: { id: quizId },
-        data: {
-          chapter: { connect: { id: chapterId } },
-          contentScope: "CHAPTER",
-        },
+        data: updateData,
         select: { ...quizPublicFields, _count: { select: { questions: true } } },
       });
     });

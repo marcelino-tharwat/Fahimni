@@ -75,7 +75,9 @@ const CODE_TO_VIEW: Record<string, Omit<QuizAccessErrorView, 'attemptId'>> = {
     messageKey: 'quiz:access.noQuestionsMsg',
     primaryAction: 'viewQuizzes',
   },
-}; Omit<QuizAccessErrorView, 'attemptId'> = {
+};
+
+const GENERIC_FALLBACK: Omit<QuizAccessErrorView, 'attemptId'> = {
   titleKey: 'quiz:err403Title',
   messageKey: 'quiz:err403Msg',
   primaryAction: 'browseCourses',

@@ -5,6 +5,7 @@ import type {
   ProgressionLessonRow,
   ProgressionQuizRow,
 } from "./lesson-progression.js";
+import { pickProgressionAttempt } from "./lesson-progression.js";
 
 export async function loadChapterProgressionContext(
   studentId: string,
@@ -51,7 +52,9 @@ export async function loadChapterProgressionContext(
             status: true,
             score: true,
             totalPoints: true,
+            completedAt: true,
           },
+          orderBy: { completedAt: "desc" },
         })
       : Promise.resolve([]),
   ]);
@@ -60,9 +63,17 @@ export async function loadChapterProgressionContext(
   const quizzesById = new Map<string, ProgressionQuizRow>(
     quizRows.map((q) => [q.id, q]),
   );
-  const attemptsByQuizId = new Map<string, ProgressionAttemptRow>(
-    attemptRows.map((a) => [a.quizId, a]),
-  );
+  const attemptsByQuiz = new Map<string, ProgressionAttemptRow[]>();
+  for (const row of attemptRows) {
+    const bucket = attemptsByQuiz.get(row.quizId) ?? [];
+    bucket.push(row as ProgressionAttemptRow);
+    attemptsByQuiz.set(row.quizId, bucket);
+  }
+  const attemptsByQuizId = new Map<string, ProgressionAttemptRow>();
+  for (const [quizId, rows] of attemptsByQuiz) {
+    const picked = pickProgressionAttempt(rows);
+    if (picked) attemptsByQuizId.set(quizId, picked);
+  }
 
   return {
     chapterId,

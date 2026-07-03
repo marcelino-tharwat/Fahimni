@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Info } from 'lucide-react';
@@ -7,6 +7,7 @@ import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
 import { createLessonSchema, flattenZodErrors } from '@/features/teacher/validation';
 import { useUpdateLesson } from '@/features/teacher/hooks/useLessons';
+import { useQuizList } from '@/features/teacher/hooks/useQuizList';
 import { usePdfUpload } from '@/features/teacher/hooks/usePdfUpload';
 import type { Lesson } from '@/features/teacher/types/lesson';
 import { EditorHeader } from './EditorHeader';
@@ -42,7 +43,27 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
   const [description, setDescription] = useState(lesson.description ?? '');
   const [duration, setDuration] = useState(String(lesson.durationMinutes));
   const [youtubeUrl, setYoutubeUrl] = useState(lesson.youtubeUrl ?? '');
+  const [requiredQuizId, setRequiredQuizId] = useState<string>(
+    lesson.requiredQuizId ?? '',
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const { data: publishedQuizzes, isLoading: quizzesLoading } = useQuizList('PUBLISHED');
+  const chapterQuizzes = useMemo(
+    () =>
+      (publishedQuizzes ?? []).filter(
+        (q) => q.chapterId === lesson.chapterId && q.status === 'PUBLISHED',
+      ),
+    [publishedQuizzes, lesson.chapterId],
+  );
+
+  const linkedWithoutGate = useMemo(
+    () =>
+      (lesson.linkedQuizzes ?? []).filter(
+        (q) => q.id !== (requiredQuizId || undefined),
+      ),
+    [lesson.linkedQuizzes, requiredQuizId],
+  );
 
   const pdfUpload = usePdfUpload({
     teacherId,
@@ -57,6 +78,7 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
     setDescription(lesson.description ?? '');
     setDuration(String(lesson.durationMinutes));
     setYoutubeUrl(lesson.youtubeUrl ?? '');
+    setRequiredQuizId(lesson.requiredQuizId ?? '');
     setErrors({});
     pdfUpload.clearError();
   };
@@ -84,6 +106,7 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
           description: description.trim() || null,
           durationMinutes: parsed.data.durationMinutes,
           youtubeUrl: youtubeUrl.trim() === '' ? null : youtubeUrl.trim(),
+          requiredQuizId: requiredQuizId === '' ? null : requiredQuizId,
         },
       },
       {
@@ -172,6 +195,50 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
           }}
           error={errors.description}
         />
+
+        <div className="flex flex-col gap-1.5">
+          <label className="font-cairo text-sm font-medium text-gray-700">
+            {t('contentTree.editor.requiredQuiz')}
+          </label>
+          <p className="font-cairo text-xs text-gray-500">
+            {t('contentTree.editor.requiredQuizHint')}
+          </p>
+          {linkedWithoutGate.length > 0 && !requiredQuizId && (
+            <div className="rounded-lg border border-warning-200 bg-warning-50 px-3 py-2">
+              <p className="font-cairo text-xs text-warning-800">
+                {t('contentTree.editor.linkedQuizOptionalHint', {
+                  title: linkedWithoutGate[0]?.title ?? '',
+                })}
+              </p>
+              {linkedWithoutGate.length === 1 && linkedWithoutGate[0] && (
+                <button
+                  type="button"
+                  className="mt-2 font-cairo text-xs font-semibold text-accent underline"
+                  onClick={() => setRequiredQuizId(linkedWithoutGate[0]!.id)}
+                >
+                  {t('contentTree.editor.setLinkedQuizRequired')}
+                </button>
+              )}
+            </div>
+          )}
+          <select
+            value={requiredQuizId}
+            onChange={(e) => setRequiredQuizId(e.target.value)}
+            className="rounded-input border border-gray-200 px-3 py-2 font-cairo text-sm text-navy-900"
+            disabled={quizzesLoading}
+          >
+            <option value="">{t('contentTree.editor.requiredQuizNone')}</option>
+            {quizzesLoading ? (
+              <option disabled>{t('contentTree.editor.requiredQuizLoading')}</option>
+            ) : (
+              chapterQuizzes.map((q) => (
+                <option key={q.id} value={q.id}>
+                  {q.title}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-3">

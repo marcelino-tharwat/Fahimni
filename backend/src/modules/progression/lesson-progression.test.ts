@@ -3,6 +3,7 @@ import {
   evaluateChapterLessons,
   evaluateLessonAccess,
   evaluateQuizRequirement,
+  pickProgressionAttempt,
   scorePercentage,
   type ChapterProgressionContext,
 } from "./lesson-progression.js";
@@ -131,7 +132,7 @@ describe("evaluateLessonAccess", () => {
     expect(evalQuiz.lockReason).toBe("REQUIRED_QUIZ_AWAITING_GRADING");
   });
 
-  it("ignores draft quizzes as progression blockers", () => {
+  it("keeps next lesson locked when required quiz is draft/unpublished", () => {
     const base = ctx({
       lessons: [
         { id: "l1", sortOrder: 1, requiredQuizId: "q1" },
@@ -142,7 +143,47 @@ describe("evaluateLessonAccess", () => {
         ["q1", { id: "q1", status: "DRAFT", passingScore: 50 }],
       ]),
     });
-    expect(evaluateLessonAccess(1, base).isUnlocked).toBe(true);
+    expect(evaluateLessonAccess(1, base).isUnlocked).toBe(false);
+    expect(evaluateLessonAccess(1, base).lockReason).toBe(
+      "REQUIRED_QUIZ_NOT_COMPLETED",
+    );
+    expect(evaluateLessonAccess(0, base).nextLessonId).toBeNull();
+  });
+
+  it("returns null nextLessonId when lesson complete but required quiz unsatisfied", () => {
+    const base = ctx({
+      lessons: [
+        { id: "l1", sortOrder: 1, requiredQuizId: "q1" },
+        { id: "l2", sortOrder: 2, requiredQuizId: null },
+      ],
+      completedLessonIds: new Set(["l1"]),
+      quizzesById: new Map([
+        ["q1", { id: "q1", status: "PUBLISHED", passingScore: 50 }],
+      ]),
+    });
+    expect(evaluateLessonAccess(0, base).nextLessonId).toBeNull();
+  });
+});
+
+describe("pickProgressionAttempt", () => {
+  it("prefers the latest graded attempt over an older pass", () => {
+    const picked = pickProgressionAttempt([
+      {
+        quizId: "q1",
+        status: "GRADED",
+        score: 8,
+        totalPoints: 10,
+        completedAt: new Date("2026-01-01"),
+      },
+      {
+        quizId: "q1",
+        status: "GRADED",
+        score: 2,
+        totalPoints: 10,
+        completedAt: new Date("2026-01-02"),
+      },
+    ]);
+    expect(picked?.score).toBe(2);
   });
 });
 

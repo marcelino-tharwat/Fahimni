@@ -33,6 +33,7 @@ export interface ProgressionAttemptRow {
   status: string;
   score: number | null;
   totalPoints: number;
+  completedAt?: Date | null;
 }
 
 export interface LessonAccessEvaluation {
@@ -91,7 +92,7 @@ export function evaluateQuizRequirement(
 ): QuizRequirementEvaluation {
   const quiz = ctx.quizzesById.get(quizId);
   if (!quiz || quiz.status !== "PUBLISHED") {
-    return { satisfied: true, lockReason: null };
+    return { satisfied: false, lockReason: "REQUIRED_QUIZ_NOT_COMPLETED" };
   }
 
   const attempt = ctx.attemptsByQuizId.get(quizId);
@@ -120,6 +121,24 @@ export function evaluateQuizRequirement(
   }
 
   return { satisfied: false, lockReason: "REQUIRED_QUIZ_NOT_COMPLETED" };
+}
+
+/** Pick the attempt that should drive progression for a quiz gate. */
+export function pickProgressionAttempt(
+  attempts: ProgressionAttemptRow[],
+): ProgressionAttemptRow | undefined {
+  if (attempts.length === 0) return undefined;
+
+  const byRecency = [...attempts].sort(
+    (a, b) => (b.completedAt?.getTime() ?? 0) - (a.completedAt?.getTime() ?? 0),
+  );
+
+  const finalized = byRecency.find(
+    (a) => a.status === "GRADED" || a.status === "COMPLETED",
+  );
+  if (finalized) return finalized;
+
+  return byRecency.find((a) => a.status === "IN_PROGRESS");
 }
 
 function progressStatusFor(

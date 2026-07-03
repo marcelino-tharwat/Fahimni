@@ -11,6 +11,7 @@ import {
   updateQuestionSchema,
   reorderSchema,
   assignQuizSchema,
+  publishQuizSchema,
 } from "./quizzes.validation.js";
 import { generateQuizSchema } from "./dto/generate-quiz.dto.js";
 import { AttemptsController } from "./attempts.controller.js";
@@ -152,6 +153,7 @@ quizStandaloneRouter.patch(
   "/:id/publish",
   authenticateMiddleware,
   authorizeMiddleware("OPERATION"),
+  validateRequest(publishQuizSchema),
   quizController.publishQuiz,
 );
 

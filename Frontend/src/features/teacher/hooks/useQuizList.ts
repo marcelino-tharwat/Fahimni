@@ -14,7 +14,13 @@ export function useQuizList(status?: string) {
 export function usePublishQuiz() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (quizId: string) => quizGenerationApi.publishQuiz(quizId),
+    mutationFn: ({
+      quizId,
+      progressionGateLessonIds,
+    }: {
+      quizId: string;
+      progressionGateLessonIds?: string[];
+    }) => quizGenerationApi.publishQuiz(quizId, { progressionGateLessonIds }),
     onSuccess: () => qc.invalidateQueries({ queryKey: QUIZ_LIST_KEY }),
   });
 }
