@@ -18,6 +18,7 @@ export const createStudentSchema = z.object({
       /^01[0-9]{9}$/,
       "Mobile number must be a valid Egyptian number (e.g. 01012345678)",
     ),
+  stageId: z.string().uuid("Stage must be a valid UUID"),
 });
 
 export const updateStudentSchema = z

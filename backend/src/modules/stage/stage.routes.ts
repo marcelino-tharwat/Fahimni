@@ -8,6 +8,12 @@ import chapterRouter from "../chapter/chapter.routes.js";
 
 const router = Router();
 const controller = new StageController();
+
+router.get(
+  "/public",
+  controller.listPublic,
+);
+
 router.use("/:stageId/chapters", chapterRouter);
 
 router.patch(

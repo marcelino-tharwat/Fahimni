@@ -108,10 +108,15 @@ export const initAuth = createAsyncThunk<
   }
 });
 
+export interface RegisterReject {
+  message: string;
+  fieldErrors?: Record<string, string[]>;
+}
+
 export const register = createAsyncThunk<
   { user: User },
-  { fullName: string; email: string; mobile: string; password: string; role?: string },
-  { rejectValue: string }
+  { fullName: string; email: string; mobile: string; password: string; stageId?: string; role?: string },
+  { rejectValue: RegisterReject }
 >('auth/register', async (payload, { rejectWithValue }) => {
   try {
     const { data } = await apiClient.post<{
@@ -122,7 +127,10 @@ export const register = createAsyncThunk<
     return { user: data.data.user };
   } catch (err) {
     const apiErr = err as ApiError;
-    return rejectWithValue(apiErr.message ?? 'حصل خطأ أثناء إنشاء الحساب.');
+    return rejectWithValue({
+      message: apiErr.message ?? 'حصل خطأ أثناء إنشاء الحساب.',
+      fieldErrors: apiErr.errors,
+    });
   }
 });
 

@@ -32,7 +32,11 @@ export class StudentController {
 
       const profile = await Student.findUnique({
         where: { userId: id },
-        select: { ...studentPublicFields, user: { select: userPublicFields } },
+        select: {
+          ...studentPublicFields,
+          user: { select: userPublicFields },
+          stage: { select: { name: true } },
+        },
       });
       if (!profile) {
         return next(new AppError("Student not found", 404));
@@ -63,6 +67,12 @@ export class StudentController {
 
       const input = req.body as UpdateStudentInput;
 
+      if ("stageId" in req.body) {
+        return next(
+          new AppError("Stage cannot be changed after registration", 400),
+        );
+      }
+
       if (input.email || input.mobile) {
         const duplicate = await prisma.user.findFirst({
           where: {
@@ -89,7 +99,10 @@ export class StudentController {
       const user = await prisma.user.update({
         where: { id },
         data,
-        select: { ...userPublicFields, studentProfile: true },
+        select: {
+          ...userPublicFields,
+          studentProfile: { include: { stage: { select: { name: true } } } },
+        },
       });
 
       _res.status(200).json(okResponse("Student updated successfully", user));
@@ -116,7 +129,7 @@ export class StudentController {
 
   public create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { fullName, email, password, mobile } =
+      const { fullName, email, password, mobile, stageId } =
         req.body as CreateStudentInput;
 
       const existing = await prisma.user.findFirst({
@@ -135,7 +148,7 @@ export class StudentController {
           mobile,
           password: hashedPassword,
           role: "STUDENT",
-          studentProfile: { create: {} },
+          studentProfile: { create: { stageId } },
         },
         select: { ...userPublicFields, studentProfile: true },
       });

@@ -11,20 +11,34 @@ const passwordSchema = z
     "Password must contain at least one special character",
   );
 
-export const registerSchema = z.object({
-  fullName: z
-    .string()
-    .trim()
-    .min(2, "Full name must be at least 2 characters")
-    .max(100, "Full name must not exceed 100 characters"),
-  mobile: z
-    .string()
-    .trim()
-    .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "Invalid Egyptian phone number"),
-  email: z.string().trim().email("Invalid email address").toLowerCase(),
-  password: passwordSchema,
-  role: z.enum(["STUDENT", "OPERATION"]).default("STUDENT"),
-});
+export const registerSchema = z
+  .object({
+    fullName: z
+      .string()
+      .trim()
+      .min(2, "Full name must be at least 2 characters")
+      .max(100, "Full name must not exceed 100 characters"),
+    mobile: z
+      .string()
+      .trim()
+      .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "Invalid Egyptian phone number"),
+    email: z.string().trim().email("Invalid email address").toLowerCase(),
+    password: passwordSchema,
+    role: z.enum(["STUDENT", "OPERATION"]).default("STUDENT"),
+    stageId: z.preprocess(
+      (v) => (v === "" ? undefined : v),
+      z.string().uuid("Stage must be a valid UUID").optional(),
+    ),
+  })
+  .refine(
+    (data) => {
+      if (data.role === "STUDENT" && !data.stageId) {
+        return false;
+      }
+      return true;
+    },
+    { message: "Please select your stage", path: ["stageId"] },
+  );
 
 export const loginSchema = z.object({
   email: z.string().trim().email(),

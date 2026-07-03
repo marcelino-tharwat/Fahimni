@@ -1,15 +1,17 @@
 // src/features/auth/pages/AuthPage.tsx
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  GraduationCap, User, Mail, Phone, Lock, Eye, EyeOff, Check, Loader2,
+  GraduationCap, User, Mail, Phone, Lock, Eye, EyeOff, Check, Loader2, ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import { AuthNavbar } from "../components/AuthNavbar";
 import { useAppDispatch } from "@/shared/store/hooks";
+import { apiClient } from "@/shared/lib/api/client";
 import { login as loginThunk, register as registerThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
+import type { PublicStage } from "@/features/student/types/student";
 
 /* ------------------------------------------------------------------ */
 /*  Field                                                              */
@@ -212,17 +214,32 @@ function RegisterForm() {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stages, setStages] = useState<PublicStage[]>([]);
+  const [stagesLoading, setStagesLoading] = useState(true);
   const inFlightRef = useRef(false);
+
+  useEffect(() => {
+    apiClient.get<{ success: boolean; message: string; data: PublicStage[] }>('/stages/public')
+      .then(({ data }) => setStages(data.data ?? []))
+      .catch(() => setStages([]))
+      .finally(() => setStagesLoading(false));
+  }, []);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ fullName: string; email: string; mobile: string; password: string }>({
-    defaultValues: { fullName: "", email: "", mobile: "", password: "" },
+    setValue,
+    setError: setFieldError,
+  } = useForm<{ fullName: string; email: string; mobile: string; password: string; stageId: string }>({
+    defaultValues: { fullName: "", email: "", mobile: "", password: "", stageId: "" },
   });
 
-  const onSubmit = async (v: { fullName: string; email: string; mobile: string; password: string }) => {
+  const stageIdRegister = register("stageId", {
+    required: { value: true, message: t("auth:errStageRequired") },
+  });
+
+  const onSubmit = async (v: { fullName: string; email: string; mobile: string; password: string; stageId: string }) => {
     if (inFlightRef.current) {
       return;
     }
@@ -233,7 +250,23 @@ function RegisterForm() {
       const res = await dispatch(registerThunk({ ...v, role: 'STUDENT' })).unwrap();
       navigate(dashboardPathByRole[res.user.role]);
     } catch (err) {
-      setError(err ? String(err) : t("auth:errGeneric"));
+      const reject = err as { message?: string; fieldErrors?: Record<string, string[]> } | string;
+      const message = typeof reject === "string" ? reject : reject.message;
+      const fieldErrors = typeof reject === "object" ? reject.fieldErrors : undefined;
+
+      if (fieldErrors) {
+        const knownFields = new Set(["fullName", "email", "mobile", "password", "stageId"]);
+        let hasFieldError = false;
+        for (const [field, msgs] of Object.entries(fieldErrors)) {
+          if (knownFields.has(field) && msgs.length > 0) {
+            setFieldError(field as any, { message: msgs[0], type: "server" });
+            hasFieldError = true;
+          }
+        }
+        if (!hasFieldError) setError(message ?? t("auth:errGeneric"));
+      } else {
+        setError(message ?? t("auth:errGeneric"));
+      }
     } finally {
       inFlightRef.current = false;
       setLoading(false);
@@ -296,6 +329,15 @@ function RegisterForm() {
           },
         })}
       />
+      {/* Hidden input so react-hook-form tracks stageId validation */}
+      <input type="hidden" {...stageIdRegister} />
+      {/* Stage selector */}
+      <StageSelect
+        stages={stages}
+        loading={stagesLoading}
+        error={errors.stageId?.message}
+        onChange={(id) => setValue("stageId", id, { shouldValidate: true })}
+      />
       <p className="text-right text-small text-gray-500">
         {t("auth:termsPrefix")}{" "}
         <a href="/terms" className="text-cyan-600">{t("auth:termsOfService")}</a>
@@ -304,6 +346,94 @@ function RegisterForm() {
       </p>
       <SubmitButton disabled={loading}>{t("auth:registerButton")}</SubmitButton>
     </form>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Stage Select                                                       */
+/* ------------------------------------------------------------------ */
+
+function StageSelect({
+  stages,
+  loading,
+  error,
+  onChange,
+}: {
+  stages: PublicStage[];
+  loading: boolean;
+  error?: string;
+  onChange: (id: string) => void;
+}) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<PublicStage | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative w-full">
+      <button
+        type="button"
+        onClick={() => !loading && setOpen((o) => !o)}
+        disabled={loading}
+        className={`flex w-full items-center gap-3 rounded-input border py-3 pl-11 pr-4 text-right outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 ${
+          error ? "border-red-400" : "border-gray-300"
+        } ${loading ? "cursor-not-allowed opacity-60" : ""}`}
+        style={{ direction: 'rtl' }}
+      >
+        <GraduationCap size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <span className={`flex-1 font-cairo text-body ${selected ? "text-navy-900" : "text-gray-400"}`}>
+          {loading
+            ? t("auth:loading")
+            : selected
+              ? selected.name
+              : t("auth:selectStage")}
+        </span>
+        <ChevronDown
+          size={18}
+          className={`shrink-0 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {error && (
+        <p className="mt-1.5 text-xs text-red-500">{error}</p>
+      )}
+      {open && !loading && (
+        <div className="absolute z-50 mt-1 w-full rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+          {stages.length === 0 ? (
+            <p className="px-4 py-3 font-cairo text-sm text-gray-500">
+              {t("auth:noStages")}
+            </p>
+          ) : (
+            stages.map((stage) => (
+              <button
+                key={stage.id}
+                type="button"
+                onClick={() => {
+                  setSelected(stage);
+                  onChange(stage.id);
+                  setOpen(false);
+                }}
+                className={`flex w-full items-center gap-3 px-4 py-2.5 text-right font-cairo text-body transition hover:bg-gray-50 ${
+                  selected?.id === stage.id ? "bg-cyan-50 font-semibold text-cyan-700" : "text-navy-900"
+                }`}
+              >
+                <GraduationCap size={16} className="shrink-0 text-gray-400" />
+                <span className="flex-1">{stage.name}</span>
+              </button>
+            ))
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

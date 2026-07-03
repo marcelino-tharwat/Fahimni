@@ -12,9 +12,17 @@ export interface StudentProfileUser {
 export interface StudentProfile {
   id: string;
   userId: string;
+  stageId: string;
+  stage: { name: string };
   createdAt: string;
   updatedAt: string;
   user: StudentProfileUser;
+}
+
+export interface PublicStage {
+  id: string;
+  name: string;
+  sortOrder: number;
 }
 
 export interface UpdateStudentProfileInput {

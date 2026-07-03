@@ -116,8 +116,11 @@ export class AuthService {
       }
 
       if (input.role === "STUDENT") {
+        if (!input.stageId) {
+          throw new AppError("Stage is required for student registration", 400);
+        }
         await tx.studentProfile.create({
-          data: { userId: created.id },
+          data: { userId: created.id, stageId: input.stageId },
         });
       }
 
