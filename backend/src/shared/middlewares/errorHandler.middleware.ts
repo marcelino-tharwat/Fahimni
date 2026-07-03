@@ -3,10 +3,24 @@ import { ZodError } from "zod";
 import { env } from "../../config/env.js";
 import { logger } from "../../config/logger.js";
 import { AppError } from "../utils/AppError.js";
+import { QuizGenerationError } from "../../modules/quizzes/quiz-generation.errors.js";
+import {
+  isPrismaClientError,
+  mapPrismaClientError,
+} from "../utils/prismaErrors.js";
 
 function requestPath(req: { originalUrl?: string; url?: string }): string {
   const url = req.originalUrl ?? req.url ?? "";
   return url.split("?")[0] ?? "";
+}
+
+function isUnsafeInternalMessage(message: string): boolean {
+  return (
+    message.includes("Invalid `") ||
+    message.includes("invocation in") ||
+    message.includes("PrismaClient") ||
+    message.includes("P20")
+  );
 }
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
@@ -25,6 +39,27 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     return;
   }
 
+  if (isPrismaClientError(err)) {
+    const safe = mapPrismaClientError(err);
+    logger.error("prisma_client_error", {
+      requestId: req.requestId,
+      method: req.method,
+      path: requestPath(req),
+      statusCode: safe.statusCode,
+      prismaCode: err.code,
+      errorName: err.name,
+    });
+    res.status(safe.statusCode).json({
+      success: false,
+      statusCode: safe.statusCode,
+      message: safe.message,
+      reason: safe.reason,
+      ...(safe.details ? { details: safe.details } : {}),
+      ...(safe.suggestion ? { suggestion: safe.suggestion } : {}),
+    });
+    return;
+  }
+
   let status = 500;
   if (err instanceof AppError) {
     status = err.statusCode;
@@ -32,8 +67,12 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     status = err.status as number;
   }
 
-  const message =
+  let message =
     err instanceof Error ? err.message : "Internal server error";
+
+  if (status >= 500 && isUnsafeInternalMessage(message)) {
+    message = "حدث خطأ داخلي. يرجى المحاولة لاحقاً.";
+  }
 
   const logMeta = {
     requestId: req.requestId,
@@ -50,13 +89,14 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   };
 
   if (status >= 500) {
-    logger.error("http_error", { ...logMeta, message });
+    logger.error("http_error", {
+      ...logMeta,
+      message: err instanceof Error ? err.message : message,
+    });
   } else {
     logger.warn("http_error", { ...logMeta, message });
   }
 
-  // Surface safe, structured fields only when the error explicitly carries them
-  // as strings — e.g. quiz-generation 422 errors or machine-readable error codes.
   const safeExtras: Record<string, string> = {};
   if (err && typeof err === "object") {
     for (const key of ["reason", "details", "suggestion", "code"] as const) {
@@ -67,17 +107,18 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     }
   }
 
+  if (err instanceof QuizGenerationError) {
+    safeExtras.reason = err.reason;
+    if (err.details) safeExtras.details = err.details;
+    safeExtras.suggestion = err.suggestion;
+    message = err.message;
+  }
+
   res.status(status).json({
     success: false,
     statusCode: status,
     message,
     ...safeExtras,
     ...(err instanceof AppError && err.meta ? err.meta : {}),
-    ...(env.NODE_ENV === "development" &&
-    status >= 500 &&
-    err instanceof Error &&
-    err.stack
-      ? { stack: err.stack }
-      : {}),
   });
 };

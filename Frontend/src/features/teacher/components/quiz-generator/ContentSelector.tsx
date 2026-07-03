@@ -6,12 +6,16 @@ import { cn } from '@/shared/lib/utils/cn';
 import type { Stage, Chapter } from '@/shared/types/content';
 import type { Lesson } from '@/features/teacher/types/lesson';
 
+import type { QuizContentScope } from '@/features/teacher/types/quizGeneration';
+
 interface ContentSelectorProps {
   stageId: string;
   chapterId: string;
+  contentScope: QuizContentScope;
   lessonIds: string[];
   onStageChange: (id: string) => void;
   onChapterChange: (id: string) => void;
+  onContentScopeChange: (scope: QuizContentScope) => void;
   onLessonsChange: (ids: string[]) => void;
   stages: Stage[];
   chapters: Chapter[];
@@ -30,9 +34,11 @@ interface ContentSelectorProps {
 export function ContentSelector({
   stageId,
   chapterId,
+  contentScope,
   lessonIds,
   onStageChange,
   onChapterChange,
+  onContentScopeChange,
   onLessonsChange,
   stages,
   chapters,
@@ -257,6 +263,8 @@ export function ContentSelector({
     );
   };
 
+  const showLessonPicker = contentScope === 'SELECTED_LESSONS';
+
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -290,10 +298,65 @@ export function ContentSelector({
         )}
       </div>
 
-      <div className="flex w-full flex-col gap-1.5">
-        <label className="font-cairo text-sm font-medium text-text-primary">{t('teacher:quizGenerator.lessons')}</label>
-        {renderLessonsField()}
+      <div className="flex w-full flex-col gap-2">
+        <label className="font-cairo text-sm font-medium text-text-primary">
+          {t('teacher:quizGenerator.scopeLabel')}
+        </label>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {(
+            [
+              {
+                value: 'CHAPTER' as const,
+                label: t('teacher:quizGenerator.scopeChapter'),
+                hint: t('teacher:quizGenerator.scopeChapterHint'),
+              },
+              {
+                value: 'SELECTED_LESSONS' as const,
+                label: t('teacher:quizGenerator.scopeSelectedLessons'),
+                hint: t('teacher:quizGenerator.scopeSelectedLessonsHint'),
+              },
+            ] as const
+          ).map((option) => {
+            const selected = contentScope === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                disabled={!chapterId}
+                onClick={() => onContentScopeChange(option.value)}
+                className={cn(
+                  'flex flex-col gap-1 rounded-xl border p-3 text-start transition-all',
+                  !chapterId && 'cursor-not-allowed opacity-50',
+                  selected
+                    ? 'border-cyan-500 bg-cyan-50 shadow-glow'
+                    : 'border-gray-200 bg-gray-50 hover:border-gray-300',
+                )}
+              >
+                <span className="font-cairo text-sm font-medium text-text-primary">
+                  {option.label}
+                </span>
+                <span className="font-cairo text-xs text-text-secondary">{option.hint}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
+
+      {showLessonPicker && (
+        <div className="flex w-full flex-col gap-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <label className="font-cairo text-sm font-medium text-text-primary">
+              {t('teacher:quizGenerator.lessons')}
+            </label>
+            {lessonIds.length > 0 && (
+              <span className="font-cairo text-xs text-text-secondary">
+                {t('teacher:quizGenerator.selectedLessonsCount', { count: lessonIds.length })}
+              </span>
+            )}
+          </div>
+          {renderLessonsField()}
+        </div>
+      )}
     </div>
   );
 }

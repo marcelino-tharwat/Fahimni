@@ -116,6 +116,7 @@ model Lesson {
   lessonProgress  LessonProgress[]
   contentChunks   ContentChunk[]
   chapter         Chapter          @relation(fields: [chapterId], references: [id])
+  quizLessons     QuizLesson[]
 
   @@index([chapterId])
   @@index([chapterId, sortOrder])
@@ -268,25 +269,43 @@ model RefreshToken {
 }
 
 model Quiz {
-  id              String        @id @default(uuid())
+  id              String           @id @default(uuid())
   title           String
   description     String?
   chapterId       String?
-  status          QuizStatus    @default(DRAFT)
-  durationMinutes Int?          @map("duration_minutes")
-  questionCount   Int           @default(0)
-  totalPoints     Int           @default(0)
+  contentScope    QuizContentScope @default(CHAPTER) @map("content_scope")
+  status          QuizStatus       @default(DRAFT)
+  durationMinutes Int?             @map("duration_minutes")
+  questionCount   Int              @default(0)
+  totalPoints     Int              @default(0)
   createdBy       String
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   publishedAt     DateTime?
   questions       Question[]
   attempts        QuizAttempt[]
-  chapter         Chapter?      @relation(fields: [chapterId], references: [id])
-  creator         User          @relation(fields: [createdBy], references: [id])
+  quizLessons     QuizLesson[]
+  chapter         Chapter?         @relation(fields: [chapterId], references: [id])
+  creator         User             @relation(fields: [createdBy], references: [id])
 
   @@index([chapterId, status])
   @@map("quizzes")
+}
+
+model QuizLesson {
+  quizId   String
+  lessonId String
+  quiz     Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+
+  @@id([quizId, lessonId])
+  @@index([lessonId])
+  @@map("quiz_lessons")
+}
+
+enum QuizContentScope {
+  CHAPTER
+  SELECTED_LESSONS
 }
 
 model Question {

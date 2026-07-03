@@ -5,6 +5,7 @@ export const quizPublicFields = {
   title: true,
   description: true,
   chapterId: true,
+  contentScope: true,
   status: true,
   durationMinutes: true,
   createdBy: true,
@@ -37,17 +38,30 @@ export const studentQuestionPublicFields = {
   updatedAt: true,
 } as const;
 
+export interface QuizScopeLessonDTO {
+  id: string;
+  title: string;
+}
+
+export interface QuizScopeSummaryDTO {
+  contentScope: "CHAPTER" | "SELECTED_LESSONS";
+  chapter: { id: string; title: string } | null;
+  lessons: QuizScopeLessonDTO[];
+}
+
 export interface QuizResponseDTO {
   id: string;
   title: string;
   description: string | null;
   chapterId: string | null;
+  contentScope: "CHAPTER" | "SELECTED_LESSONS";
   status: QuizStatus;
   durationMinutes: number | null;
   questionCount: number;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
+  scope?: QuizScopeSummaryDTO;
 }
 
 export interface QuizDetailResponseDTO extends QuizResponseDTO {

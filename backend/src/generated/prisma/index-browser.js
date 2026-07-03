@@ -292,6 +292,7 @@ exports.Prisma.QuizScalarFieldEnum = {
   title: 'title',
   description: 'description',
   chapterId: 'chapterId',
+  contentScope: 'contentScope',
   status: 'status',
   durationMinutes: 'durationMinutes',
   questionCount: 'questionCount',
@@ -300,6 +301,11 @@ exports.Prisma.QuizScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   publishedAt: 'publishedAt'
+};
+
+exports.Prisma.QuizLessonScalarFieldEnum = {
+  quizId: 'quizId',
+  lessonId: 'lessonId'
 };
 
 exports.Prisma.QuestionScalarFieldEnum = {
@@ -433,6 +439,11 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   FAILED: 'FAILED'
 };
 
+exports.QuizContentScope = exports.$Enums.QuizContentScope = {
+  CHAPTER: 'CHAPTER',
+  SELECTED_LESSONS: 'SELECTED_LESSONS'
+};
+
 exports.QuizStatus = exports.$Enums.QuizStatus = {
   DRAFT: 'DRAFT',
   PUBLISHED: 'PUBLISHED'
@@ -483,6 +494,7 @@ exports.Prisma.ModelName = {
   AuditLog: 'AuditLog',
   RefreshToken: 'RefreshToken',
   Quiz: 'Quiz',
+  QuizLesson: 'QuizLesson',
   Question: 'Question',
   QuizAttempt: 'QuizAttempt',
   PromoCode: 'PromoCode',
