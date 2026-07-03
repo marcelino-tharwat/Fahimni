@@ -3,7 +3,6 @@ import type { ApiResponse } from '@/shared/types/api';
 import type { Stage, Chapter } from '@/shared/types/content';
 import type { Lesson } from '@/features/teacher/types/lesson';
 import type { GenerateQuizPayload, GenerateQuizResponse } from '@/features/teacher/types/quizGeneration';
-import type { Chapter as TeacherChapter } from '@/features/teacher/types/chapter';
 
 export const quizGenerationApi = {
   getStages: async (): Promise<Stage[]> => {
@@ -22,15 +21,9 @@ export const quizGenerationApi = {
   },
 
   generateQuiz: async (payload: GenerateQuizPayload): Promise<GenerateQuizResponse> => {
-    const body: Record<string, unknown> = { ...payload };
-    if (body.lessonIds && Array.isArray(body.lessonIds) && body.lessonIds.length > 0) {
-      delete body.chapterId;
-    } else {
-      delete body.lessonIds;
-    }
     const { data } = await apiClient.post<{ success: boolean; data: GenerateQuizResponse }>(
       '/quizzes/generate',
-      body,
+      payload,
     );
     return data.data;
   },
@@ -112,6 +105,22 @@ export const quizGenerationApi = {
   deleteQuiz: async (quizId: string): Promise<void> => {
     await apiClient.delete(`/quizzes/${quizId}`);
   },
+
+  // ── STORY-68: quiz results ───────────────────────────────────────────────
+
+  /** GET /quizzes/:quizId/results — all attempts with per-question breakdown. */
+  getQuizResults: async (quizId: string): Promise<QuizResultsResponse> => {
+    const { data } = await apiClient.get<ApiResponse<QuizResultsResponse>>(`/quizzes/${quizId}/results`);
+    return data.data;
+  },
+
+  /** GET /quizzes/:quizId/results/export — CSV file download (blob). */
+  getQuizResultsExport: async (quizId: string): Promise<Blob> => {
+    const { data } = await apiClient.get<Blob>(`/quizzes/${quizId}/results/export`, {
+      responseType: 'blob',
+    });
+    return data;
+  },
 };
 
 export interface DraftQuestion {
@@ -130,6 +139,7 @@ export interface DraftQuizResponse {
   title: string;
   description?: string | null;
   chapterId: string | null;
+  contentScope?: 'CHAPTER' | 'SELECTED_LESSONS';
   status: string;
   questionCount: number;
   totalPoints: number;
@@ -137,6 +147,11 @@ export interface DraftQuizResponse {
   createdAt: string;
   updatedAt: string;
   publishedAt?: string | null;
+  scope?: {
+    contentScope: 'CHAPTER' | 'SELECTED_LESSONS';
+    chapter: { id: string; title: string } | null;
+    lessons: { id: string; title: string }[];
+  };
   questions: DraftQuestion[];
 }
 
@@ -166,4 +181,38 @@ export interface QuestionWriteBody {
   options: Record<string, string>;
   correctAnswer: string | null;
   sortOrder?: number;
+}
+
+// ── STORY-68: quiz results types ──────────────────────────────────────────
+
+export interface StudentResultQuestion {
+  questionId: string;
+  questionText: string;
+  type: string;
+  result: string;
+  awardedPoints: number | null;
+  maxPoints: number;
+  answer: string;
+  correctAnswer: string | null;
+  feedback?: string;
+}
+
+export interface StudentResultRow {
+  attemptId: string;
+  studentId: string;
+  studentName: string;
+  studentMobile: string;
+  status: string;
+  score: number;
+  totalPoints: number;
+  percentage: number;
+  pendingEssayCount: number;
+  submittedAt: string | null;
+  questions: StudentResultQuestion[];
+}
+
+export interface QuizResultsResponse {
+  quizId: string;
+  count: number;
+  results: StudentResultRow[];
 }

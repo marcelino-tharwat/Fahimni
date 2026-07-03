@@ -1,9 +1,10 @@
 import { useMemo, useReducer, useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import {
   Link, Settings, FileText, AlertTriangle, CheckCircle,
-  Loader2, ArrowLeft, ArrowRight,
+  Loader2, ArrowLeft, ArrowRight, BookOpen,
 } from 'lucide-react';
 import { Button, Modal } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils/cn';
@@ -11,6 +12,8 @@ import { QuizStepper } from '@/features/teacher/components/quiz-generator';
 import { useDraftQuiz } from '@/features/teacher/hooks/useQuizReview';
 import { useStagesList, useChaptersByStage } from '@/features/teacher/hooks/useQuizGeneration';
 import { useAssignQuiz, usePublishQuiz, useUpdateQuiz } from '@/features/teacher/hooks/useQuizList';
+import { chaptersApi } from '@/features/teacher/api/chapters';
+import { formatQuizScopeLabel } from '@/features/teacher/lib/quizScopeLabel';
 import type { DraftQuestion } from '@/features/teacher/api/quizGeneration';
 
 type PublishUIState = 'idle' | 'confirm-modal' | 'loading' | 'success';
@@ -99,12 +102,40 @@ export function AiQuizPublishPage() {
   const { data: stages = [] } = useStagesList();
   const { data: chapters = [] } = useChaptersByStage(form.stageId);
 
+  const effectiveChapterId = form.chapterId || draftQuiz?.chapterId || '';
+  const hasPresetScope = Boolean(draftQuiz?.chapterId);
+
+  const { data: chapterDetail } = useQuery({
+    queryKey: ['teacher', 'chapter', effectiveChapterId],
+    queryFn: () => chaptersApi.getChapter(effectiveChapterId),
+    enabled: Boolean(effectiveChapterId),
+  });
+
+  const stageName = useMemo(() => {
+    const stageId = chapterDetail?.stageId ?? form.stageId;
+    return stages.find((s) => s.id === stageId)?.name ?? '—';
+  }, [chapterDetail?.stageId, form.stageId, stages]);
+
+  const chapterName = useMemo(() => {
+    return (
+      draftQuiz?.scope?.chapter?.title ??
+      chapterDetail?.name ??
+      chapters.find((c) => c.id === effectiveChapterId)?.name ??
+      ''
+    );
+  }, [draftQuiz?.scope?.chapter?.title, chapterDetail?.name, chapters, effectiveChapterId]);
+
+  const scopeLabel = useMemo(() => {
+    if (!draftQuiz?.scope) return null;
+    return formatQuizScopeLabel(draftQuiz.scope, t);
+  }, [draftQuiz?.scope, t]);
+
   const selectedChapter = useMemo(
-    () => chapters.find((c) => c.id === form.chapterId),
-    [chapters, form.chapterId],
+    () => chapters.find((c) => c.id === effectiveChapterId),
+    [chapters, effectiveChapterId],
   );
 
-  const publishedChapterLabel = selectedChapter?.name ?? '';
+  const publishedChapterLabel = chapterName || selectedChapter?.name || '';
 
   const chapterOptions = useMemo(
     () => chapters.map((c) => ({
@@ -114,11 +145,14 @@ export function AiQuizPublishPage() {
     [chapters],
   );
 
-  const isPublishDisabled = !form.chapterId;
+  const isPublishDisabled = !effectiveChapterId;
 
   useEffect(() => {
     if (!draftQuiz) return;
     dispatch({ type: 'SET_FIELD', field: 'quizTitle', value: draftQuiz.title });
+    if (draftQuiz.chapterId) {
+      dispatch({ type: 'SET_FIELD', field: 'chapterId', value: draftQuiz.chapterId });
+    }
     if (draftQuiz.durationMinutes != null) {
       dispatch({ type: 'SET_FIELD', field: 'timeLimitMinutes', value: draftQuiz.durationMinutes });
     } else {
@@ -133,6 +167,12 @@ export function AiQuizPublishPage() {
       } catch { /* ignore */ }
     }
   }, [draftQuiz]);
+
+  useEffect(() => {
+    if (chapterDetail?.stageId && form.stageId !== chapterDetail.stageId) {
+      dispatch({ type: 'SET_FIELD', field: 'stageId', value: chapterDetail.stageId });
+    }
+  }, [chapterDetail?.stageId, form.stageId]);
 
   const questionTypeCounts = useMemo(
     () => draftQuiz ? computeQuestionTypeCounts(draftQuiz.questions) : {},
@@ -176,13 +216,13 @@ export function AiQuizPublishPage() {
   }, []);
 
   const handleOpenConfirm = useCallback(() => {
-    if (!form.chapterId) {
+    if (!effectiveChapterId) {
       setValidationError(t('teacher:publish.chapterRequired'));
       return;
     }
     setValidationError('');
     dispatch({ type: 'SET_UI_STATE', value: 'confirm-modal' });
-  }, [form.chapterId, t]);
+  }, [effectiveChapterId, t]);
 
   const handlePublish = useCallback(async () => {
     if (!quizId) return;
@@ -196,8 +236,11 @@ export function AiQuizPublishPage() {
           durationMinutes: form.timeLimitMinutes > 0 ? form.timeLimitMinutes : null,
         },
       });
-      if (form.chapterId && form.chapterId !== draftQuiz?.chapterId) {
-        await assignQuiz.mutateAsync({ quizId, chapterId: form.chapterId });
+      if (
+        effectiveChapterId &&
+        effectiveChapterId !== draftQuiz?.chapterId
+      ) {
+        await assignQuiz.mutateAsync({ quizId, chapterId: effectiveChapterId });
       }
       await publishQuiz.mutateAsync(quizId);
       setTimeout(() => {
@@ -206,7 +249,7 @@ export function AiQuizPublishPage() {
     } catch {
       dispatch({ type: 'SET_UI_STATE', value: 'idle' });
     }
-  }, [quizId, form.chapterId, form.quizTitle, form.timeLimitMinutes, draftQuiz, updateQuiz, assignQuiz, publishQuiz]);
+  }, [quizId, effectiveChapterId, form.quizTitle, form.timeLimitMinutes, draftQuiz, updateQuiz, assignQuiz, publishQuiz]);
 
   if (draftLoading) {
     return (
@@ -256,7 +299,9 @@ export function AiQuizPublishPage() {
           {t('teacher:publish.pageTitle')}
         </h1>
         <p className="text-sm text-gray-600">
-          {t('teacher:publish.pageSubtitle')}
+          {hasPresetScope
+            ? t('teacher:publish.pageSubtitlePreset')
+            : t('teacher:publish.pageSubtitle')}
         </p>
       </div>
 
@@ -265,48 +310,72 @@ export function AiQuizPublishPage() {
         <div className="flex flex-col gap-6">
           {/* Card 1 — Chapter Assignment */}
           <div className="rounded-[14px] bg-white p-6 shadow-card">
-            <SectionHead icon={<Link size={18} />} title={t('teacher:publish.chapterAssignment')} />
+            <SectionHead
+              icon={<Link size={18} />}
+              title={
+                hasPresetScope
+                  ? t('teacher:publish.chapterAssignmentPreset')
+                  : t('teacher:publish.chapterAssignment')
+              }
+            />
 
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-navy-900">
-                  {t('teacher:publish.stage')}
-                </label>
-                <select
-                  value={form.stageId}
-                  onChange={(e) => handleStageChange(e.target.value)}
-                  className="h-12 w-full rounded-input border border-gray-300 bg-gray-50 px-4 text-sm outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
-                >
-                  <option value="">{t('teacher:publish.stagePlaceholder')}</option>
-                  {stages.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-navy-900">
-                  {t('teacher:publish.chapter')}
-                </label>
-                <select
-                  value={form.chapterId}
-                  onChange={(e) => {
-                    dispatch({ type: 'SET_FIELD', field: 'chapterId', value: e.target.value });
-                    setValidationError('');
-                  }}
-                  disabled={!form.stageId}
-                  className="h-12 w-full rounded-input border border-gray-300 bg-gray-50 px-4 text-sm outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option value="">{t('teacher:publish.chapterPlaceholder')}</option>
-                  {chapterOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-                {validationError && (
-                  <p className="text-xs text-danger-500">{validationError}</p>
+            {hasPresetScope ? (
+              <div className="flex flex-col gap-4">
+                <p className="font-cairo text-xs text-gray-500">
+                  {t('teacher:publish.chapterAssignmentPresetHint')}
+                </p>
+                <PresetScopeRow label={t('teacher:publish.stage')} value={stageName} />
+                <PresetScopeRow label={t('teacher:publish.chapter')} value={chapterName} />
+                {scopeLabel && (
+                  <PresetScopeRow
+                    label={t('teacher:publish.contentScope')}
+                    value={scopeLabel}
+                    icon={<BookOpen size={14} className="text-cyan-500" />}
+                  />
                 )}
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-navy-900">
+                    {t('teacher:publish.stage')}
+                  </label>
+                  <select
+                    value={form.stageId}
+                    onChange={(e) => handleStageChange(e.target.value)}
+                    className="h-12 w-full rounded-input border border-gray-300 bg-gray-50 px-4 text-sm outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                  >
+                    <option value="">{t('teacher:publish.stagePlaceholder')}</option>
+                    {stages.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-navy-900">
+                    {t('teacher:publish.chapter')}
+                  </label>
+                  <select
+                    value={form.chapterId}
+                    onChange={(e) => {
+                      dispatch({ type: 'SET_FIELD', field: 'chapterId', value: e.target.value });
+                      setValidationError('');
+                    }}
+                    disabled={!form.stageId}
+                    className="h-12 w-full rounded-input border border-gray-300 bg-gray-50 px-4 text-sm outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="">{t('teacher:publish.chapterPlaceholder')}</option>
+                    {chapterOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  {validationError && (
+                    <p className="text-xs text-danger-500">{validationError}</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Card 2 — Quiz Settings */}
@@ -422,6 +491,12 @@ export function AiQuizPublishPage() {
                 label={t('teacher:publish.difficulty')}
                 value={difficultyLabel}
               />
+              {hasPresetScope && scopeLabel && (
+                <SummaryRow
+                  label={t('teacher:publish.contentScope')}
+                  value={scopeLabel}
+                />
+              )}
             </div>
 
             <hr className="my-4 border-gray-200" />
@@ -546,6 +621,9 @@ export function AiQuizPublishPage() {
 
             <div className="mt-4 rounded-[10px] bg-gray-200 p-3">
               <p className="text-sm font-medium text-navy-900">{publishedChapterLabel}</p>
+              {scopeLabel && (
+                <p className="mt-1 text-xs text-gray-600">{scopeLabel}</p>
+              )}
               <p className="text-xs text-gray-600">
                 {t('teacher:publish.confirmModal.questionsCount', { count: totalQuestions })} — {t('teacher:publish.confirmModal.pointsCount', { count: totalPoints })}
               </p>
@@ -579,6 +657,26 @@ export function AiQuizPublishPage() {
       {form.uiState === 'loading' && (
         <div className="fixed inset-0 z-[199] bg-white/60" />
       )}
+    </div>
+  );
+}
+
+function PresetScopeRow({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+      <span className="text-xs font-medium text-gray-500">{label}</span>
+      <span className="flex items-center gap-2 text-sm font-semibold text-navy-900">
+        {icon}
+        {value}
+      </span>
     </div>
   );
 }

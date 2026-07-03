@@ -4,9 +4,12 @@ import type { Lesson } from '@/shared/types/content';
 
 export type QuestionTypeKey = 'MCQ' | 'TF' | 'ESSAY';
 export type DifficultyLevel = 'easy' | 'medium' | 'hard' | '';
+export type QuizContentScope = 'CHAPTER' | 'SELECTED_LESSONS';
+
 export interface QuizGeneratorFormState {
   stageId: string;
   chapterId: string;
+  contentScope: QuizContentScope;
   lessonIds: string[];
   title: string;
   questionCount: number;
@@ -19,10 +22,13 @@ export interface QuizGeneratorFormState {
 
 export interface GenerateQuizPayload {
   chapterId: string;
-  lessonIds?: string[];
+  contentScope: QuizContentScope;
+  lessonIds: string[];
   questionCount: number;
   types: ('MCQ' | 'TF' | 'ESSAY')[];
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficultyMode: 'SINGLE' | 'MIXED';
+  difficulty?: 'easy' | 'medium' | 'hard';
+  difficultyDistribution?: { easy: number; medium: number; hard: number };
   topicFocus?: string;
 }
 

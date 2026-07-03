@@ -13,7 +13,9 @@ export interface BuildQuizGenerationPromptParams {
   chunks: QuizPromptSourceChunk[];
   questionCount: number;
   types: PublicQuestionType[];
-  difficulty: Difficulty;
+  difficultyMode: "SINGLE" | "MIXED";
+  difficulty?: Difficulty;
+  difficultyQuestionCounts?: Record<Difficulty, number>;
   topicFocus?: string | undefined;
   /** Safe human-readable titles of the source chapter/lessons (no IDs). */
   sourceTitles: string[];
@@ -44,11 +46,16 @@ const TYPE_LABEL_AR: Record<PublicQuestionType, string> = {
 export function buildQuizGenerationPrompt(
   params: BuildQuizGenerationPromptParams,
 ): string {
-  const { chunks, questionCount, types, difficulty, topicFocus, sourceTitles } =
+  const { chunks, questionCount, types, difficultyMode, difficulty, difficultyQuestionCounts, topicFocus, sourceTitles } =
     params;
 
   const typesList = types.map((t) => TYPE_LABEL_AR[t]).join("، ");
-  const difficultyLabel = DIFFICULTY_LABEL_AR[difficulty];
+  const difficultyRule =
+    difficultyMode === "SINGLE" && difficulty
+      ? `10. اجعل مستوى صعوبة جميع الأسئلة: ${DIFFICULTY_LABEL_AR[difficulty]}.`
+      : difficultyQuestionCounts
+        ? `10. وزّع مستويات الصعوبة على الأسئلة بالضبط كالتالي: ${DIFFICULTY_LABEL_AR.easy} = ${difficultyQuestionCounts.easy}، ${DIFFICULTY_LABEL_AR.medium} = ${difficultyQuestionCounts.medium}، ${DIFFICULTY_LABEL_AR.hard} = ${difficultyQuestionCounts.hard}.`
+        : "10. اجعل مستوى صعوبة جميع الأسئلة متوسطاً.";
 
   const sourceBlock = chunks
     .map(
@@ -80,7 +87,7 @@ export function buildQuizGenerationPrompt(
     "7. لا تكشف معرّفات المقاطع أو أي بيانات داخلية أو وصفية.",
     `8. أنشئ بالضبط ${questionCount} سؤالاً، لا أكثر ولا أقل.`,
     `9. استخدم أنواع الأسئلة المطلوبة فقط: ${typesList}. ووزّع الأسئلة على هذه الأنواع قدر الإمكان بحيث يظهر كل نوع مطلوب.`,
-    `10. اجعل مستوى صعوبة جميع الأسئلة: ${difficultyLabel}.`,
+    difficultyRule,
     `11. ${topicLine}`,
     "12. تجنّب الأسئلة المكررة أو شديدة التشابه، واجعل كل سؤال واضحاً وقابلاً للإجابة باستقلالية.",
     "13. أعد الإخراج على هيئة JSON صالح فقط، دون أي شرح أو نص إضافي خارج كائن JSON.",

@@ -97,6 +97,9 @@ export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;
   code?: string;
+  reason?: string;
+  details?: string;
+  suggestion?: string;
   attemptId?: string;
 }
 
@@ -105,6 +108,9 @@ function normalizeError(error: AxiosError): ApiError {
     message?: string | string[];
     errors?: Record<string, string[]>;
     code?: string;
+    reason?: string;
+    details?: string;
+    suggestion?: string;
     attemptId?: string;
   } | undefined;
   const raw = data?.message;
@@ -114,6 +120,9 @@ function normalizeError(error: AxiosError): ApiError {
     message,
     errors: data?.errors,
     code: data?.code,
+    reason: data?.reason,
+    details: data?.details,
+    suggestion: data?.suggestion,
     attemptId: typeof data?.attemptId === 'string' ? data.attemptId : undefined,
   };
 }
