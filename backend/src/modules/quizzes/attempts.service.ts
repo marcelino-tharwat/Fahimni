@@ -1414,7 +1414,7 @@ export class AttemptsService {
       prisma.question.findMany({
         where: { quizId },
         orderBy: { sortOrder: "asc" },
-        select: { id: true, text: true, type: true, points: true, sortOrder: true },
+        select: { id: true, text: true, type: true, points: true, sortOrder: true, correctAnswer: true },
       }),
       prisma.quizAttempt.findMany({
         where: { quizId, status: { in: ["COMPLETED", "GRADED"] } },
@@ -1426,7 +1426,7 @@ export class AttemptsService {
           totalPoints: true,
           completedAt: true,
           answers: true,
-          student: { select: { fullName: true } },
+          student: { select: { fullName: true, mobile: true } },
         },
       }),
     ]);
@@ -1443,6 +1443,8 @@ export class AttemptsService {
           result: r?.result ?? "pending",
           awardedPoints: r?.awardedPoints ?? null,
           maxPoints: q.points,
+          answer: r?.answer ?? "",
+          correctAnswer: q.correctAnswer ?? null,
           ...(r?.feedback ? { feedback: r.feedback } : {}),
         };
       });
@@ -1456,6 +1458,7 @@ export class AttemptsService {
         attemptId: a.id,
         studentId: a.studentId,
         studentName: a.student.fullName,
+        studentMobile: a.student.mobile,
         status: a.status,
         score,
         totalPoints: a.totalPoints,

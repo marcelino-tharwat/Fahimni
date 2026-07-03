@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Plus, MoreVertical, Eye, EyeOff, Pencil, Trash2,
-  ClipboardList, ChevronLeft, ChevronRight, Loader2,
+  ClipboardList, ChevronLeft, ChevronRight, Loader2, BarChart3,
 } from 'lucide-react';
 import { Button } from '@/shared/components/ui';
 import { Badge } from '@/shared/components/ui/Badge';
@@ -11,7 +11,6 @@ import { Modal } from '@/shared/components/ui/Modal';
 import { cn } from '@/shared/lib/utils/cn';
 import { useQuizList, useDeleteQuiz, useUnpublishQuiz } from '@/features/teacher/hooks/useQuizList';
 import { useStagesList, useChaptersByStage } from '@/features/teacher/hooks/useQuizGeneration';
-import type { QuizListItem } from '@/features/teacher/api/quizGeneration';
 
 type TabKey = 'all' | 'published' | 'draft';
 
@@ -234,6 +233,16 @@ export function QuizListPage() {
                             />
                             {quiz.status === 'PUBLISHED' && (
                               <DropdownItem
+                                icon={<BarChart3 size={16} />}
+                                label={t('teacher:quizList.dropdown.results')}
+                                onClick={() => {
+                                  setOpenMenuId(null);
+                                  navigate(`/teacher/quizzes/${quiz.id}/results`);
+                                }}
+                              />
+                            )}
+                            {quiz.status === 'PUBLISHED' && (
+                              <DropdownItem
                                 icon={<EyeOff size={16} />}
                                 label={t('teacher:quizList.dropdown.unpublish')}
                                 onClick={() => {
@@ -287,7 +296,7 @@ export function QuizListPage() {
                   disabled={safePage <= 1}
                   className="flex items-center gap-1 rounded-btn px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <ChevronRight size={16} />
+                  <ChevronLeft size={16} />
                   {t('teacher:quizList.pagination.previous')}
                 </button>
                 <button
@@ -297,7 +306,7 @@ export function QuizListPage() {
                   className="flex items-center gap-1 rounded-btn px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t('teacher:quizList.pagination.next')}
-                  <ChevronLeft size={16} />
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>

@@ -70,6 +70,7 @@ const config: Config = {
 
         // ─── Semantic Colors ───
         danger: {
+          400: '#F87171',
           500: '#EF4444',
           600: '#DC2626',
           50: '#FEF2F2',

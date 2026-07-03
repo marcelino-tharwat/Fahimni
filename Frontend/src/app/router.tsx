@@ -46,6 +46,8 @@ import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
 import { EssayGradingHubPage } from '@/features/teacher/pages/EssayGradingHubPage';
 import { EssaySubmissionsPage } from '@/features/teacher/pages/EssaySubmissionsPage';
 import { EssayGradingDetailPage } from '@/features/teacher/pages/EssayGradingDetailPage';
+import { QuizResultsOverviewPage } from '@/features/teacher/pages/QuizResultsOverviewPage';
+import { StudentQuestionBreakdownPage } from '@/features/teacher/pages/StudentQuestionBreakdownPage';
 
 // Support pages
 import { StudentLookupPage } from '@/features/support/pages/StudentLookupPage';
@@ -115,6 +117,8 @@ const router = createBrowserRouter([
               { path: '/teacher/dashboard', element: <TeacherDashboardPage /> },
               { path: '/teacher/content', element: <AllStagesPage /> },
               { path: '/teacher/quizzes', element: <QuizListPage /> },
+              { path: '/teacher/quizzes/:quizId/results', element: <QuizResultsOverviewPage /> },
+              { path: '/teacher/quizzes/:quizId/results/:studentId', element: <StudentQuestionBreakdownPage /> },
               { path: '/teacher/essay-grading', element: <EssayGradingHubPage /> },
               { path: '/teacher/essay-grading/:quizId', element: <EssaySubmissionsPage /> },
               { path: '/teacher/essay-grading/:quizId/:attemptId', element: <EssayGradingDetailPage /> },

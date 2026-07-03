@@ -112,6 +112,22 @@ export const quizGenerationApi = {
   deleteQuiz: async (quizId: string): Promise<void> => {
     await apiClient.delete(`/quizzes/${quizId}`);
   },
+
+  // ── STORY-68: quiz results ───────────────────────────────────────────────
+
+  /** GET /quizzes/:quizId/results — all attempts with per-question breakdown. */
+  getQuizResults: async (quizId: string): Promise<QuizResultsResponse> => {
+    const { data } = await apiClient.get<ApiResponse<QuizResultsResponse>>(`/quizzes/${quizId}/results`);
+    return data.data;
+  },
+
+  /** GET /quizzes/:quizId/results/export — CSV file download (blob). */
+  getQuizResultsExport: async (quizId: string): Promise<Blob> => {
+    const { data } = await apiClient.get<Blob>(`/quizzes/${quizId}/results/export`, {
+      responseType: 'blob',
+    });
+    return data;
+  },
 };
 
 export interface DraftQuestion {
@@ -166,4 +182,38 @@ export interface QuestionWriteBody {
   options: Record<string, string>;
   correctAnswer: string | null;
   sortOrder?: number;
+}
+
+// ── STORY-68: quiz results types ──────────────────────────────────────────
+
+export interface StudentResultQuestion {
+  questionId: string;
+  questionText: string;
+  type: string;
+  result: string;
+  awardedPoints: number | null;
+  maxPoints: number;
+  answer: string;
+  correctAnswer: string | null;
+  feedback?: string;
+}
+
+export interface StudentResultRow {
+  attemptId: string;
+  studentId: string;
+  studentName: string;
+  studentMobile: string;
+  status: string;
+  score: number;
+  totalPoints: number;
+  percentage: number;
+  pendingEssayCount: number;
+  submittedAt: string | null;
+  questions: StudentResultQuestion[];
+}
+
+export interface QuizResultsResponse {
+  quizId: string;
+  count: number;
+  results: StudentResultRow[];
 }

@@ -25,7 +25,8 @@
         "view": "عرض",
         "unpublish": "إلغاء النشر",
         "edit": "تعديل",
-        "delete": "حذف"
+        "delete": "حذف",
+        "results": "النتائج"
       },
       "deleteConfirm": {
         "title": "حذف الاختبار",
@@ -516,6 +517,78 @@
       "academyName": "أكاديمية المعلم",
       "navPreview": "معاينة شريط التنقل",
       "applyBtn": "تطبيق الهوية"
+    }
+  },
+  "teacherQuizResults": {
+    "pageTitle": "نتائج الاختبار",
+    "exportCSV": "تصدير CSV",
+    "breadcrumb": {
+      "quizzes": "الاختبارات",
+      "results": "النتائج"
+    },
+    "meta": {
+      "questions": "أسئلة",
+      "points": "نقاط",
+      "duration": "دقيقة"
+    },
+    "stats": {
+      "avgScore": "متوسط الدرجات",
+      "highest": "أعلى درجة",
+      "lowest": "أقل درجة",
+      "passRate": "نسبة النجاح",
+      "passedStudents": "{{count}} من {{total}} طالب اجتازوا"
+    },
+    "distribution": {
+      "title": "توزيع الدرجات",
+      "passed": "ناجح (≥50%)",
+      "failed": "راسب (<50%)"
+    },
+    "filters": {
+      "all": "الكل ({{count}})",
+      "passed": "ناجحون ({{count}})",
+      "failed": "راسبون ({{count}})"
+    },
+    "columns": {
+      "row": "#",
+      "studentName": "اسم الطالب",
+      "phone": "رقم الهاتف",
+      "score": "الدرجة",
+      "percentage": "النسبة",
+      "grade": "التقدير",
+      "details": "التفاصيل"
+    },
+    "detailsLink": "عرض التفاصيل",
+    "empty": {
+      "title": "لم يقم أي طالب بحل هذا الاختبار بعد",
+      "description": "سيظهر نتائج الطلاب هنا بمجرد حل الاختبار"
+    },
+    "gradeBadge": {
+      "excellent": "ممتاز",
+      "veryGood": "جيد جداً",
+      "good": "جيد",
+      "acceptable": "مقبول",
+      "fail": "راسب"
+    },
+    "studentBreakdown": {
+      "pageTitle": "نتائج الطالب",
+      "backLink": "الرجوع لنتائج الاختبار",
+      "columns": {
+        "question": "السؤال",
+        "type": "النوع",
+        "answer": "الإجابة",
+        "result": "النتيجة",
+        "points": "النقاط"
+      },
+      "correctPrefix": "الصحيح:",
+      "pendingGrade": "بانتظار التصحيح",
+      "types": {
+        "mcq": "اختيار من متعدد",
+        "tf": "صح/خطأ",
+        "essay": "إجابة قصيرة"
+      }
+    },
+    "pagination": {
+      "showing": "عرض {{start}}-{{end}} من {{total}} طالب"
     }
   },
   "essayGrading": {

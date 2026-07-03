@@ -21,12 +21,13 @@
       "published": "Published",
       "draft": "Draft"
     },
-    "dropdown": {
-      "view": "View",
-      "unpublish": "Unpublish",
-      "edit": "Edit",
-      "delete": "Delete"
-    },
+      "dropdown": {
+        "view": "View",
+        "unpublish": "Unpublish",
+        "edit": "Edit",
+        "delete": "Delete",
+        "results": "Results"
+      },
     "deleteConfirm": {
       "title": "Delete Quiz",
       "message": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
@@ -516,6 +517,78 @@
       "academyName": "Teacher Academy",
       "navPreview": "Navigation bar preview",
       "applyBtn": "Apply Branding"
+    }
+  },
+  "teacherQuizResults": {
+    "pageTitle": "Quiz Results",
+    "exportCSV": "Export CSV",
+    "breadcrumb": {
+      "quizzes": "Quizzes",
+      "results": "Results"
+    },
+    "meta": {
+      "questions": "questions",
+      "points": "points",
+      "duration": "min"
+    },
+    "stats": {
+      "avgScore": "Average Score",
+      "highest": "Highest Score",
+      "lowest": "Lowest Score",
+      "passRate": "Pass Rate",
+      "passedStudents": "{{count}} of {{total}} students passed"
+    },
+    "distribution": {
+      "title": "Score Distribution",
+      "passed": "Passed (≥50%)",
+      "failed": "Failed (<50%)"
+    },
+    "filters": {
+      "all": "All ({{count}})",
+      "passed": "Passed ({{count}})",
+      "failed": "Failed ({{count}})"
+    },
+    "columns": {
+      "row": "#",
+      "studentName": "Student Name",
+      "phone": "Phone",
+      "score": "Score",
+      "percentage": "Percentage",
+      "grade": "Grade",
+      "details": "Details"
+    },
+    "detailsLink": "View Details",
+    "empty": {
+      "title": "No students have taken this quiz yet",
+      "description": "Student results will appear here once the quiz is attempted"
+    },
+    "gradeBadge": {
+      "excellent": "Excellent",
+      "veryGood": "Very Good",
+      "good": "Good",
+      "acceptable": "Acceptable",
+      "fail": "Fail"
+    },
+    "studentBreakdown": {
+      "pageTitle": "Student Result",
+      "backLink": "Back to Quiz Results",
+      "columns": {
+        "question": "Question",
+        "type": "Type",
+        "answer": "Answer",
+        "result": "Result",
+        "points": "Points"
+      },
+      "correctPrefix": "Correct:",
+      "pendingGrade": "Awaiting Grading",
+      "types": {
+        "mcq": "Multiple Choice",
+        "tf": "True/False",
+        "essay": "Short Answer"
+      }
+    },
+    "pagination": {
+      "showing": "Showing {{start}}-{{end}} of {{total}} students"
     }
   },
   "essayGrading": {
