@@ -17,6 +17,8 @@ export interface Lesson {
   sortOrder: number;
   attachments: AttachmentDTO[];
   chapterId: string;
+  requiredQuizId?: string | null;
+  linkedQuizzes?: Array<{ id: string; title: string }>;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,9 +33,9 @@ export interface CreateLessonPayload {
 
 export interface UpdateLessonPayload {
   title?: string;
-  description?: string;
+  description?: string | null;
   durationMinutes?: number;
   youtubeUrl?: string | null;
   sortOrder?: number;
-  // at least one field required by the backend
+  requiredQuizId?: string | null;
 }

@@ -4,8 +4,11 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { ChapterService } from "./chapter.service.js";
 import { QuizService } from "../quizzes/quizzes.service.js";
+import { quizVisibilityService } from "../quizzes/quiz-visibility.service.js";
+import { assertStudentChapterAccess } from "../progression/student-chapter-access.js";
 import type { ChapterResponseDTO, StudentChapterResponseDTO } from "./chapter.types.js";
 import type { QuizDetailResponseDTO } from "../quizzes/quizzes.types.js";
+import type { StudentQuizVisibilityDTO } from "../quizzes/quiz-visibility.types.js";
 import type { CreateChapterInput, UpdateChapterInput, ReorderInput } from "./chapter.validation.js";
 
 const chapterService = new ChapterService();
@@ -128,6 +131,28 @@ export class ChapterController {
       const chapterId = req.params.chapterId;
       if (typeof chapterId !== "string") {
         throw new AppError("Invalid chapter ID", 400);
+      }
+
+      const lessonId =
+        typeof req.query.lessonId === "string" ? req.query.lessonId : undefined;
+
+      if (req.user!.role === "STUDENT") {
+        await assertStudentChapterAccess(req.user!.id, chapterId);
+        if (lessonId) {
+          await quizVisibilityService.assertLessonInChapter(lessonId, chapterId);
+        }
+        const quizzes = await quizVisibilityService.listChapterQuizzesForStudent(
+          req.user!.id,
+          chapterId,
+          lessonId,
+        );
+        res.status(200).json(
+          okResponse<StudentQuizVisibilityDTO[]>(
+            "Chapter quizzes fetched successfully",
+            quizzes,
+          ),
+        );
+        return;
       }
 
       const quizzes = await quizService.getChapterQuizzes(chapterId);

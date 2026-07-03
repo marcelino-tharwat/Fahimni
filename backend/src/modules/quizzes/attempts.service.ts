@@ -42,6 +42,11 @@ import {
   findGateLessonForQuiz,
 } from "../progression/lesson-progression.js";
 import { loadChapterProgressionContext } from "../progression/progression-context.js";
+import {
+  assertStudentChapterAccess,
+  listStudentAccessibleChapters,
+} from "../progression/student-chapter-access.js";
+import { deriveQuizDisplayStatus } from "./quiz-attempt-display.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import type { QuestionType, AttemptSubmissionReason } from "../../generated/prisma/client.js";
 
@@ -73,42 +78,31 @@ export type AttemptState =
 export class AttemptsService {
   /** GET /api/quizzes/student — grouped quiz list for the student quiz page. */
   public async getStudentQuizList(studentId: string) {
-    const enrollments = await prisma.enrollment.findMany({
-      where: { studentId, status: "ACTIVE", chapter: { deletedAt: null } },
+    const accessible = await listStudentAccessibleChapters(studentId);
+    if (accessible.length === 0) {
+      return { totalCount: 0, completedCount: 0, newCount: 0, chapters: [] };
+    }
+
+    const chapterIds = accessible.map((c) => c.id);
+    const quizzes = await prisma.quiz.findMany({
+      where: { chapterId: { in: chapterIds }, status: "PUBLISHED" },
       select: {
+        id: true,
+        title: true,
+        questionCount: true,
+        totalPoints: true,
+        durationMinutes: true,
         chapterId: true,
-        chapter: {
-          select: {
-            id: true,
-            name: true,
-            stage: { select: { id: true, name: true } },
-            quizzes: {
-              where: { status: "PUBLISHED" },
-              select: {
-                id: true,
-                title: true,
-                questionCount: true,
-                totalPoints: true,
-                durationMinutes: true,
-                chapterId: true,
-              },
-              orderBy: { id: "asc" },
-            },
-          },
-        },
+        passingScore: true,
       },
+      orderBy: { id: "asc" },
     });
-    if (enrollments.length === 0) {
+
+    if (quizzes.length === 0) {
       return { totalCount: 0, completedCount: 0, newCount: 0, chapters: [] };
     }
 
-    const allQuizIds = enrollments.flatMap((e) =>
-      e.chapter.quizzes.map((q) => q.id),
-    );
-    if (allQuizIds.length === 0) {
-      return { totalCount: 0, completedCount: 0, newCount: 0, chapters: [] };
-    }
-
+    const allQuizIds = quizzes.map((q) => q.id);
     const attempts = await prisma.quizAttempt.findMany({
       where: { studentId, quizId: { in: allQuizIds } },
       select: { id: true, quizId: true, status: true, score: true, totalPoints: true },
@@ -120,33 +114,33 @@ export class AttemptsService {
     let completedCount = 0;
     let newCount = 0;
 
-    const chapters = enrollments.map((e) => {
-      const quizzes = e.chapter.quizzes.map((q) => {
+    const quizzesByChapter = new Map<string, typeof quizzes>();
+    for (const q of quizzes) {
+      if (!q.chapterId) continue;
+      const list = quizzesByChapter.get(q.chapterId) ?? [];
+      list.push(q);
+      quizzesByChapter.set(q.chapterId, list);
+    }
+
+    const chapters = accessible.map((ch) => {
+      const chapterQuizzes = quizzesByChapter.get(ch.id) ?? [];
+      const mapped = chapterQuizzes.map((q) => {
         const attempt = attemptByQuiz.get(q.id);
-        let status: QuizStatus;
-        let score: number | undefined;
-        let retakeAllowed: boolean | undefined;
+        const display = deriveQuizDisplayStatus(
+          attempt
+            ? {
+                status: attempt.status,
+                score: attempt.score,
+                totalPoints: attempt.totalPoints,
+              }
+            : undefined,
+          q.passingScore,
+        );
 
-        if (!attempt) {
-          status = "new";
-          newCount++;
-        } else if (attempt.status === "IN_PROGRESS" || attempt.status === "COMPLETED") {
-          status = "pending";
-        } else {
-          const pct =
-            attempt.totalPoints > 0
-              ? ((attempt.score ?? 0) / attempt.totalPoints) * 100
-              : 0;
-          if (pct >= 50) {
-            status = "passed";
-          } else {
-            status = "failed";
-            retakeAllowed = true;
-          }
+        if (display.status === "new") newCount++;
+        if (display.status === "passed" || display.status === "failed") {
           completedCount++;
-          score = Math.round(pct);
         }
-
         totalCount++;
 
         return {
@@ -156,19 +150,19 @@ export class AttemptsService {
           points: q.totalPoints,
           durationMinutes: q.durationMinutes,
           difficulty: "medium" as const,
-          status,
+          status: display.status as QuizStatus,
           attemptId: attempt?.id ?? null,
           attemptStatus: attempt?.status ?? null,
-          ...(score !== undefined ? { score } : {}),
-          ...(retakeAllowed !== undefined ? { retakeAllowed } : {}),
+          ...(display.score !== undefined ? { score: display.score } : {}),
+          ...(display.retakeAllowed !== undefined ? { retakeAllowed: display.retakeAllowed } : {}),
         };
       });
 
       return {
-        id: e.chapter.id,
-        title: e.chapter.name,
-        stage: e.chapter.stage.name,
-        quizzes,
+        id: ch.id,
+        title: ch.name,
+        stage: ch.stage.name,
+        quizzes: mapped,
         defaultOpen: true,
       };
     });
@@ -176,13 +170,10 @@ export class AttemptsService {
     return { totalCount, completedCount, newCount, chapters };
   }
 
-  /** GET /api/quizzes/assigned — published quizzes for the student's enrolled chapters. */
+  /** GET /api/quizzes/assigned — published quizzes for accessible chapters. */
   public async getAssignedQuizzes(studentId: string) {
-    const enrollments = await prisma.enrollment.findMany({
-      where: { studentId, status: "ACTIVE", chapter: { deletedAt: null } },
-      select: { chapterId: true },
-    });
-    const chapterIds = enrollments.map((e) => e.chapterId);
+    const accessible = await listStudentAccessibleChapters(studentId);
+    const chapterIds = accessible.map((c) => c.id);
     if (chapterIds.length === 0) return [];
 
     const quizzes = await prisma.quiz.findMany({
@@ -277,36 +268,18 @@ export class AttemptsService {
       throw new AppError("Quiz is not published", 403, "QUIZ_NOT_PUBLISHED");
     }
 
-    const enrollment = await prisma.enrollment.findUnique({
-      where: { studentId_chapterId: { studentId, chapterId: quiz.chapterId } },
-      select: { status: true },
-    });
-    if (!enrollment) {
-      logger.warn("quiz_access_check_denied", {
-        ...accessLog,
-        chapterId: quiz.chapterId,
-        enrollmentFound: false,
-        safeReasonCode: "ENROLLMENT_REQUIRED",
-      });
-      throw new AppError(
-        "You are not enrolled in this chapter",
-        403,
-        "ENROLLMENT_REQUIRED",
-      );
-    }
-    if (enrollment.status !== "ACTIVE") {
-      logger.warn("quiz_access_check_denied", {
-        ...accessLog,
-        chapterId: quiz.chapterId,
-        enrollmentFound: true,
-        enrollmentStatus: enrollment.status,
-        safeReasonCode: "ENROLLMENT_INACTIVE",
-      });
-      throw new AppError(
-        "Your enrollment in this chapter is not active",
-        403,
-        "ENROLLMENT_INACTIVE",
-      );
+    try {
+      await assertStudentChapterAccess(studentId, quiz.chapterId);
+    } catch (err) {
+      if (err instanceof AppError) {
+        logger.warn("quiz_access_check_denied", {
+          ...accessLog,
+          chapterId: quiz.chapterId,
+          safeReasonCode: err.code ?? "ENROLLMENT_REQUIRED",
+        });
+        throw err;
+      }
+      throw err;
     }
 
     const chapterRecord = await prisma.chapter.findUnique({

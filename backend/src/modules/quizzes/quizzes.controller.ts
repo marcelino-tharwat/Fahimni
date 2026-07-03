@@ -116,7 +116,17 @@ export class QuizzesController {
         throw new AppError("Invalid quiz ID", 400);
       }
 
-      const quiz = await quizService.publishQuiz(id, req.user!.id);
+      const { progressionGateLessonIds } = (req.body ?? {}) as {
+        progressionGateLessonIds?: string[];
+      };
+
+      const quiz = await quizService.publishQuiz(
+        id,
+        req.user!.id,
+        progressionGateLessonIds && progressionGateLessonIds.length > 0
+          ? { progressionGateLessonIds }
+          : undefined,
+      );
 
       res.status(200).json(okResponse<QuizResponseDTO>(
         "Quiz published successfully",

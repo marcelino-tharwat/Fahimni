@@ -17,6 +17,7 @@ const lessonSelectWithMaterials = {
   youtubeUrl: true,
   sortOrder: true,
   chapterId: true,
+  requiredQuizId: true,
   createdAt: true,
   updatedAt: true,
   lessonMaterials: {
@@ -170,7 +171,19 @@ export class LessonsService {
       throw new AppError("Lesson not found", 404);
     }
 
-    return toFullDTO(lesson as unknown as Record<string, unknown>);
+    const linkedQuizzes = await prisma.quiz.findMany({
+      where: {
+        chapterId: lesson.chapterId,
+        status: "PUBLISHED",
+        contentScope: "SELECTED_LESSONS",
+        quizLessons: { some: { lessonId: id } },
+      },
+      select: { id: true, title: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    const dto = await toFullDTO(lesson as unknown as Record<string, unknown>);
+    return { ...dto, linkedQuizzes };
   }
 
   public async update(

@@ -18,6 +18,8 @@ export interface LessonResponseDTO {
   sortOrder: number;
   attachments: AttachmentDTO[];
   chapterId: string;
+  requiredQuizId?: string | null;
+  linkedQuizzes?: Array<{ id: string; title: string }>;
   createdAt: Date;
   updatedAt: Date;
 }

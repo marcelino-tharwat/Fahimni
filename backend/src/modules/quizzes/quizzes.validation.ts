@@ -104,9 +104,16 @@ export const assignQuizSchema = z.object({
   chapterId: z.string().min(1, "chapterId is required"),
 });
 
+export const publishQuizSchema = z.object({
+  progressionGateLessonIds: z
+    .array(z.string().uuid("Invalid progression gate lesson ID"))
+    .optional(),
+});
+
 export type CreateQuizInput = z.infer<typeof createQuizSchema>;
 export type UpdateQuizInput = z.infer<typeof updateQuizSchema>;
 export type AddQuestionInput = z.infer<typeof addQuestionSchema>;
 export type UpdateQuestionInput = z.infer<typeof updateQuestionSchema>;
 export type ReorderInput = z.infer<typeof reorderSchema>;
 export type AssignQuizInput = z.infer<typeof assignQuizSchema>;
+export type PublishQuizInput = z.infer<typeof publishQuizSchema>;

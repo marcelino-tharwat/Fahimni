@@ -98,6 +98,7 @@ export function AiQuizPublishPage() {
 
   const [form, dispatch] = useReducer(formReducer, defaultForm());
   const [validationError, setValidationError] = useState('');
+  const [requireForProgression, setRequireForProgression] = useState(false);
 
   const { data: stages = [] } = useStagesList();
   const { data: chapters = [] } = useChaptersByStage(form.stageId);
@@ -124,6 +125,15 @@ export function AiQuizPublishPage() {
       ''
     );
   }, [draftQuiz?.scope?.chapter?.title, chapterDetail?.name, chapters, effectiveChapterId]);
+
+  const scopeLessons = draftQuiz?.scope?.lessons ?? [];
+  const canSetProgressionGate =
+    draftQuiz?.scope?.contentScope === 'SELECTED_LESSONS' && scopeLessons.length === 1;
+
+  const progressionGateLessonIds = useMemo(() => {
+    if (!requireForProgression || !canSetProgressionGate) return undefined;
+    return scopeLessons[0] ? [scopeLessons[0].id] : undefined;
+  }, [requireForProgression, canSetProgressionGate, scopeLessons]);
 
   const scopeLabel = useMemo(() => {
     if (!draftQuiz?.scope) return null;
@@ -242,14 +252,14 @@ export function AiQuizPublishPage() {
       ) {
         await assignQuiz.mutateAsync({ quizId, chapterId: effectiveChapterId });
       }
-      await publishQuiz.mutateAsync(quizId);
+      await publishQuiz.mutateAsync({ quizId, progressionGateLessonIds });
       setTimeout(() => {
         dispatch({ type: 'SET_UI_STATE', value: 'success' });
       }, 2000);
     } catch {
       dispatch({ type: 'SET_UI_STATE', value: 'idle' });
     }
-  }, [quizId, effectiveChapterId, form.quizTitle, form.timeLimitMinutes, draftQuiz, updateQuiz, assignQuiz, publishQuiz]);
+  }, [quizId, effectiveChapterId, form.quizTitle, form.timeLimitMinutes, draftQuiz, updateQuiz, assignQuiz, publishQuiz, progressionGateLessonIds]);
 
   if (draftLoading) {
     return (
@@ -442,6 +452,21 @@ export function AiQuizPublishPage() {
                   <p className="text-[11px] text-gray-500">{t('teacher:publish.passingScoreHint')}</p>
                 </div>
               </div>
+
+              {canSetProgressionGate && (
+                <div className="rounded-lg border border-cyan-100 bg-cyan-50/40 p-4">
+                  <ToggleRow
+                    checked={requireForProgression}
+                    onChange={setRequireForProgression}
+                    label={t('teacher:publish.requireForProgression')}
+                  />
+                  <p className="mt-2 font-cairo text-[11px] text-gray-600">
+                    {t('teacher:publish.requireForProgressionHint', {
+                      lesson: scopeLessons[0]?.title ?? '',
+                    })}
+                  </p>
+                </div>
+              )}
 
               <div className="flex flex-col gap-3">
                 <ToggleRow

@@ -1,6 +1,31 @@
 export type QuizStatus = 'new' | 'passed' | 'failed' | 'pending';
 export type Difficulty = 'easy' | 'medium' | 'hard';
-export type QuizAttemptStatus = 'IN_PROGRESS' | 'COMPLETED' | 'GRADED';
+export type QuizAttemptStatus = 'IN_PROGRESS' | 'COMPLETED' | 'GRADED' | 'NOT_STARTED';
+
+/** Mirrors backend StudentQuizVisibilityDTO (lesson/chapter quiz surfaces). */
+export interface StudentQuizVisibility {
+  id: string;
+  title: string;
+  description: string | null;
+  chapterId: string;
+  contentScope: 'CHAPTER' | 'SELECTED_LESSONS';
+  linkedLessonIds: string[];
+  isRequiredForProgression: boolean;
+  requiredForLessonId: string | null;
+  questionCount: number;
+  totalPoints: number;
+  durationMinutes: number | null;
+  displayStatus: QuizStatus;
+  attemptId: string | null;
+  studentAttemptStatus: QuizAttemptStatus;
+  score?: number;
+  retakeAllowed?: boolean;
+}
+
+export interface LessonQuizzesSection {
+  available: StudentQuizVisibility[];
+  required: StudentQuizVisibility | null;
+}
 
 export interface QuizItem {
   id: string;
