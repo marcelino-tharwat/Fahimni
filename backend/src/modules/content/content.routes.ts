@@ -41,4 +41,11 @@ router.post(
   controller.incrementLessonView,
 );
 
+router.post(
+  "/student/lessons/:id/complete",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.completeStudentLesson,
+);
+
 export default router;

@@ -37,6 +37,11 @@ import type {
   SaveDraftAnswersInput,
   SubmitAttemptInput,
 } from "./attempts.validation.js";
+import {
+  canStartProgressionQuiz,
+  findGateLessonForQuiz,
+} from "../progression/lesson-progression.js";
+import { loadChapterProgressionContext } from "../progression/progression-context.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import type { QuestionType, AttemptSubmissionReason } from "../../generated/prisma/client.js";
 
@@ -301,6 +306,39 @@ export class AttemptsService {
         "Your enrollment in this chapter is not active",
         403,
         "ENROLLMENT_INACTIVE",
+      );
+    }
+
+    const chapterRecord = await prisma.chapter.findUnique({
+      where: { id: quiz.chapterId },
+      select: { price: true },
+    });
+    const chapterPrice =
+      chapterRecord?.price !== null && chapterRecord?.price !== undefined
+        ? Number(chapterRecord.price)
+        : null;
+    const progressionCtx = await loadChapterProgressionContext(
+      studentId,
+      quiz.chapterId,
+      chapterPrice,
+    );
+    const gateLessonId = findGateLessonForQuiz(quizId, progressionCtx.lessons);
+    const progressionStart = canStartProgressionQuiz(
+      quizId,
+      gateLessonId,
+      progressionCtx,
+    );
+    if (!progressionStart.allowed) {
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        chapterId: quiz.chapterId,
+        gateLessonId,
+        safeReasonCode: progressionStart.code,
+      });
+      throw new AppError(
+        "Complete the prerequisite lesson before starting this quiz",
+        403,
+        progressionStart.code ?? "QUIZ_PREREQUISITE_LESSON_INCOMPLETE",
       );
     }
 

@@ -186,7 +186,8 @@ exports.Prisma.LessonScalarFieldEnum = {
   updatedAt: 'updatedAt',
   chapterId: 'chapterId',
   deletedAt: 'deletedAt',
-  viewCount: 'viewCount'
+  viewCount: 'viewCount',
+  requiredQuizId: 'requiredQuizId'
 };
 
 exports.Prisma.OtpScalarFieldEnum = {
@@ -297,6 +298,7 @@ exports.Prisma.QuizScalarFieldEnum = {
   durationMinutes: 'durationMinutes',
   questionCount: 'questionCount',
   totalPoints: 'totalPoints',
+  passingScore: 'passingScore',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

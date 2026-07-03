@@ -48,7 +48,9 @@
     "durationNotConfiguredTitle": "Quiz duration not configured",
     "durationNotConfiguredMsg": "This quiz does not have a duration set yet. Please contact your teacher.",
     "noQuestionsTitle": "Quiz has no questions",
-    "noQuestionsMsg": "This quiz does not contain any questions yet."
+    "noQuestionsMsg": "This quiz does not contain any questions yet.",
+    "prerequisiteLessonTitle": "Complete the lesson first",
+    "prerequisiteLessonMsg": "Complete the prerequisite lesson before starting this quiz."
   },
   "err400Title": "Quiz already submitted",
   "err400Msg": "You've already submitted this quiz. You can view your results.",

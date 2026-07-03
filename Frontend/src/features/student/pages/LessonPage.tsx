@@ -15,7 +15,9 @@ import {
 } from 'lucide-react';
 import { Badge, Button, Card, Skeleton } from '@/shared/components/ui';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
-import { useLesson, useStudentTree } from '@/features/student/hooks/useStudentContent';
+import { useLesson, useStudentTree, useCompleteLesson } from '@/features/student/hooks/useStudentContent';
+import { resolveLessonLockMessage } from '@/features/student/lib/lessonAccessErrors';
+import type { StudentLessonNode } from '@/features/student/types/studentContent';
 import { useStudentQuizzes } from '@/features/student/hooks/useStudentQuizzes';
 import { resolveQuizStudentAction } from '@/features/student/lib/quizNavigation';
 import { contentApi } from '@/features/student/api/content';
@@ -61,6 +63,27 @@ function findChapterIdForLesson(
     }
   }
   return null;
+}
+
+function findTreeLessonNode(
+  tree: StudentContentTreeItem[],
+  lessonId: string,
+): StudentLessonNode | null {
+  for (const item of tree) {
+    for (const ch of item.chapters) {
+      const found = ch.lessons.find((l) => l.id === lessonId);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function findLessonTitle(
+  tree: StudentContentTreeItem[],
+  lessonId: string,
+): string | null {
+  const node = findTreeLessonNode(tree, lessonId);
+  return node?.title ?? null;
 }
 
 interface FlatLesson {
@@ -110,6 +133,7 @@ export function LessonPage() {
   const { t } = useTranslation();
 
   const { data: lesson, isLoading, isError, error } = useLesson(lessonId ?? '');
+  const completeLesson = useCompleteLesson();
   const apiError = error as ApiError | null;
   const { data: tree } = useStudentTree();
   const { data: studentQuizzes } = useStudentQuizzes();
@@ -139,7 +163,14 @@ export function LessonPage() {
     enabled: !!chapterId,
   });
 
-  const chapterQuiz = chapterQuizzes?.[0] ?? null;
+  const chapterQuiz = useMemo(() => {
+    if (!chapterQuizzes?.length) return null;
+    const requiredId = lesson?.requiredQuizId;
+    if (requiredId) {
+      return chapterQuizzes.find((q) => q.id === requiredId) ?? null;
+    }
+    return null;
+  }, [chapterQuizzes, lesson?.requiredQuizId]);
 
   const chapterQuizMeta = useMemo(() => {
     if (!chapterQuiz || !studentQuizzes) return null;
@@ -182,17 +213,57 @@ export function LessonPage() {
     return allLessons.findIndex((l) => l.id === lessonId);
   }, [allLessons, lessonId]);
 
+  const treeLesson = useMemo(() => {
+    if (!tree || !lessonId) return null;
+    return findTreeLessonNode(tree, lessonId);
+  }, [tree, lessonId]);
+
+  const nextLessonId = lesson?.nextLessonId ?? treeLesson?.nextLessonId ?? null;
+  const nextLessonTitle = nextLessonId && tree ? findLessonTitle(tree, nextLessonId) : null;
+
   const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
-  const nextLesson =
-    currentIndex >= 0 && currentIndex < allLessons.length - 1
-      ? allLessons[currentIndex + 1]
-      : null;
+
+  const showRequiredQuiz =
+    (lesson?.progressStatus === 'COMPLETED' || treeLesson?.progressStatus === 'COMPLETED') &&
+    !!lesson?.requiredQuizId &&
+    !!chapterQuiz;
+
+  const isLessonCompleted =
+    lesson?.progressStatus === 'COMPLETED' || treeLesson?.progressStatus === 'COMPLETED';
 
   if (isLoading) return <LessonSkeleton />;
 
   if (isError || !lesson) {
-    // 403 / NOT_ENROLLED → distinct enrollment required state
     if (apiError?.statusCode === 403 || apiError?.code === 'NOT_ENROLLED') {
+      const lockCode = apiError?.code;
+      const isEnrollment =
+        lockCode === 'NOT_ENROLLED' || lockCode === 'ENROLLMENT_REQUIRED';
+
+      if (!isEnrollment && lockCode) {
+        return (
+          <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 py-20 text-center">
+            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
+              <Lock size={40} className="text-gray-500" />
+            </span>
+            <h2 className="font-cairo text-xl font-bold text-navy-900">
+              {t('student:lesson.lock.title')}
+            </h2>
+            <p className="font-cairo text-sm text-gray-500">
+              {resolveLessonLockMessage(
+                lockCode as Parameters<typeof resolveLessonLockMessage>[0],
+                t,
+              )}
+            </p>
+            <Link
+              to="/student/dashboard"
+              className="mt-2 inline-flex min-h-[44px] items-center justify-center rounded-button bg-navy-800 px-6 font-cairo text-sm font-semibold text-white transition-colors hover:bg-navy-900"
+            >
+              {t('student:lesson.notFound.back')}
+            </Link>
+          </div>
+        );
+      }
+
       return (
         <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 py-20 text-center">
           <span className="flex h-20 w-20 items-center justify-center rounded-full bg-warning-50">
@@ -312,13 +383,19 @@ to="/student/dashboard"
               </span>
             </>
           )}
-          {lesson.progress && (
-            <span className="inline-flex items-center gap-1.5">
-              <Eye size={16} />
-              {toLocalNum(lesson.progress.percentWatched)}%
-            </span>
-          )}
         </div>
+        {!isLessonCompleted && (
+          <Button
+            variant="primary"
+            loading={completeLesson.isPending}
+            onClick={() => lessonId && completeLesson.mutate(lessonId)}
+            className="w-fit"
+          >
+            {completeLesson.isPending
+              ? t('student:lesson.completing')
+              : t('student:lesson.completeLesson')}
+          </Button>
+        )}
       </div>
 
       {/* PDF Materials */}
@@ -360,8 +437,8 @@ to="/student/dashboard"
         </Card>
       )}
 
-      {/* Quiz */}
-      {chapterQuiz && (
+      {/* Required progression quiz */}
+      {showRequiredQuiz && chapterQuiz && (
         <Card padding="md" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1">
             <span className="font-cairo text-base font-semibold text-navy-900">
@@ -440,10 +517,10 @@ to="/student/dashboard"
           <div />
         )}
 
-        {nextLesson ? (
+        {nextLessonId && nextLessonTitle ? (
           <Button
             variant="primary"
-            onClick={() => navigate(`/student/lessons/${nextLesson.id}`)}
+            onClick={() => navigate(`/student/lessons/${nextLessonId}`)}
             className="col-start-2 flex-col items-end gap-1 px-4 py-3"
           >
             <span className="inline-flex items-center gap-1 text-xs text-white/70">
@@ -451,9 +528,13 @@ to="/student/dashboard"
               <ChevronRight size={14} className="rtl:rotate-180" />
             </span>
             <span className="line-clamp-1 text-end font-cairo text-sm font-medium">
-              {nextLesson.title}
+              {nextLessonTitle}
             </span>
           </Button>
+        ) : !nextLessonId && isLessonCompleted && lesson.requiredQuizId ? (
+          <p className="col-start-2 text-end font-cairo text-xs text-gray-500">
+            {t('student:lesson.nextLessonLockedQuiz')}
+          </p>
         ) : (
           <div />
         )}
