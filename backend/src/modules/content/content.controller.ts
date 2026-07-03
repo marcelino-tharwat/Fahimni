@@ -11,9 +11,15 @@ import type {
   ContentTreeResponse,
   StudentContentTreeResponse,
   StudentChapterNode,
+  StudentLessonNode,
   EnrollmentStatus,
   MyCourseResponse,
 } from "./content.types.js";
+import {
+  evaluateChapterLessons,
+  assertLessonUnlocked,
+} from "../progression/lesson-progression.js";
+import { loadChapterProgressionContext } from "../progression/progression-context.js";
 
 const filesService = new FilesService();
 
@@ -163,49 +169,71 @@ export class ContentController {
       });
       const enrolledSet = new Set(enrolledChapterIds.map((e) => e.chapterId));
 
-      const result: StudentContentTreeResponse[] = stages.map((stage) => ({
-        stage: {
-          id: stage.id,
-          name: stage.name,
-          sortOrder: stage.sortOrder,
-          chapterCount: stage.chapters.length,
-        },
-        chapters: stage.chapters.map((chapter) => {
-          let enrollmentStatus: EnrollmentStatus;
-          const price = chapter.price ? Number(chapter.price) : null;
+      const result: StudentContentTreeResponse[] = await Promise.all(
+        stages.map(async (stage) => ({
+          stage: {
+            id: stage.id,
+            name: stage.name,
+            sortOrder: stage.sortOrder,
+            chapterCount: stage.chapters.length,
+          },
+          chapters: await Promise.all(
+            stage.chapters.map(async (chapter) => {
+              let enrollmentStatus: EnrollmentStatus;
+              const price = chapter.price ? Number(chapter.price) : null;
 
-          // Enrollment is the source of truth for "is this student in?" —
-          // check it first, regardless of price. Otherwise a free chapter the
-          // student has actively enrolled in short-circuits to "free" and never
-          // flips to "purchased" (same Subscribed path paid chapters use).
-          if (enrolledSet.has(chapter.id)) {
-            enrollmentStatus = "purchased";
-          } else if (price === null || price === 0) {
-            enrollmentStatus = "free";
-          } else {
-            enrollmentStatus = "locked";
-          }
+              if (enrolledSet.has(chapter.id)) {
+                enrollmentStatus = "purchased";
+              } else if (price === null || price === 0) {
+                enrollmentStatus = "free";
+              } else {
+                enrollmentStatus = "locked";
+              }
 
-          const studentChapter: StudentChapterNode = {
-            id: chapter.id,
-            name: chapter.name,
-            description: chapter.description,
-            sortOrder: chapter.sortOrder,
-            price,
-            lessonCount: chapter.lessons.length,
-            enrollmentStatus,
-          };
+              const activeLessons = chapter.lessons.filter((l) => l.deletedAt === null);
+              const progressionCtx = await loadChapterProgressionContext(
+                studentId,
+                chapter.id,
+                price,
+              );
+              progressionCtx.lessons = activeLessons.map((l) => ({
+                id: l.id,
+                sortOrder: l.sortOrder,
+                requiredQuizId: l.requiredQuizId ?? null,
+              }));
+              const accessEvaluations = evaluateChapterLessons(progressionCtx);
 
-          return {
-            chapter: studentChapter,
-            lessons: chapter.lessons.map((lesson) => ({
-              id: lesson.id,
-              title: lesson.title,
-              sortOrder: lesson.sortOrder,
-            })),
-          };
-        }),
-      }));
+              const studentChapter: StudentChapterNode = {
+                id: chapter.id,
+                name: chapter.name,
+                description: chapter.description,
+                sortOrder: chapter.sortOrder,
+                price,
+                lessonCount: activeLessons.length,
+                enrollmentStatus,
+              };
+
+              return {
+                chapter: studentChapter,
+                lessons: activeLessons.map((lesson, index): StudentLessonNode => {
+                  const access = accessEvaluations[index]!;
+                  return {
+                    id: lesson.id,
+                    title: lesson.title,
+                    sortOrder: lesson.sortOrder,
+                    accessStatus: access.accessStatus,
+                    isUnlocked: access.isUnlocked,
+                    lockReason: access.lockReason,
+                    progressStatus: access.progressStatus,
+                    requiredQuizId: access.requiredQuizId,
+                    nextLessonId: access.nextLessonId,
+                  };
+                }),
+              };
+            }),
+          ),
+        })),
+      );
 
       res.json(result);
     },
@@ -334,6 +362,24 @@ export class ContentController {
         return;
       }
 
+      const price = chapter.price !== null ? Number(chapter.price) : null;
+      const progressionCtx = await loadChapterProgressionContext(
+        studentId,
+        lessonFields.chapterId,
+        price,
+      );
+      const lessonIndex = progressionCtx.lessons.findIndex(
+        (l) => l.id === lessonId,
+      );
+      if (lessonIndex < 0) {
+        throw new AppError("Lesson not found", 404);
+      }
+      const access = evaluateChapterLessons(progressionCtx)[lessonIndex]!;
+      assertLessonUnlocked(access, {
+        studentId,
+        chapterId: lessonFields.chapterId,
+      });
+
       const materials = (
         lessonMaterials ?? []
       ) as Array<{
@@ -361,8 +407,90 @@ export class ContentController {
           okResponse("Lesson fetched successfully", {
             ...lessonFields,
             attachments,
+            accessStatus: access.accessStatus,
+            isUnlocked: access.isUnlocked,
+            lockReason: access.lockReason,
+            progressStatus: access.progressStatus,
+            requiredQuizId: access.requiredQuizId,
+            nextLessonId: access.nextLessonId,
           } as LessonResponseDTO),
         );
+    },
+  );
+
+  completeStudentLesson = asyncHandler(
+    async (req: Request, res: Response) => {
+      const studentId = req.user!.id;
+      const lessonId = req.params.id as string;
+
+      const lesson = await prisma.lesson.findFirst({
+        where: {
+          id: lessonId,
+          deletedAt: null,
+          chapter: { deletedAt: null, stage: { deletedAt: null } },
+        },
+        select: {
+          id: true,
+          chapterId: true,
+          chapter: { select: { id: true, price: true } },
+        },
+      });
+
+      if (!lesson) {
+        throw new AppError("Lesson not found", 404);
+      }
+
+      if (!(await this.ensureChapterAccess(res, studentId, lesson.chapter))) {
+        return;
+      }
+
+      const price =
+        lesson.chapter.price !== null ? Number(lesson.chapter.price) : null;
+      const progressionCtx = await loadChapterProgressionContext(
+        studentId,
+        lesson.chapterId,
+        price,
+      );
+      const lessonIndex = progressionCtx.lessons.findIndex(
+        (l) => l.id === lessonId,
+      );
+      if (lessonIndex < 0) {
+        throw new AppError("Lesson not found", 404);
+      }
+      const accessBefore = evaluateChapterLessons(progressionCtx)[lessonIndex]!;
+      assertLessonUnlocked(accessBefore, {
+        studentId,
+        chapterId: lesson.chapterId,
+      });
+
+      await prisma.lessonProgress.upsert({
+        where: {
+          studentId_lessonId: { studentId, lessonId },
+        },
+        create: { studentId, lessonId, completed: true },
+        update: { completed: true },
+      });
+
+      progressionCtx.completedLessonIds.add(lessonId);
+      const accessAfter = evaluateChapterLessons(progressionCtx)[lessonIndex]!;
+
+      logger.info("lesson_completed", {
+        studentId,
+        chapterId: lesson.chapterId,
+        lessonId,
+        requiredQuizId: accessAfter.requiredQuizId,
+        nextLessonId: accessAfter.nextLessonId,
+      });
+
+      res.status(200).json(
+        okResponse("Lesson marked complete", {
+          lessonId,
+          progressStatus: "COMPLETED",
+          requiredQuizId: accessAfter.requiredQuizId,
+          nextLessonId: accessAfter.nextLessonId,
+          access: accessAfter,
+        }),
+      );
     },
   );
 
@@ -388,6 +516,24 @@ export class ContentController {
       // lesson — otherwise paid lessons accrue fake views from blocked users.
       if (!(await this.ensureChapterAccess(res, studentId, lesson.chapter))) {
         return;
+      }
+
+      const price =
+        lesson.chapter.price !== null ? Number(lesson.chapter.price) : null;
+      const progressionCtx = await loadChapterProgressionContext(
+        studentId,
+        lesson.chapter.id,
+        price,
+      );
+      const lessonIndex = progressionCtx.lessons.findIndex(
+        (l) => l.id === lessonId,
+      );
+      if (lessonIndex >= 0) {
+        const access = evaluateChapterLessons(progressionCtx)[lessonIndex]!;
+        assertLessonUnlocked(access, {
+          studentId,
+          chapterId: lesson.chapter.id,
+        });
       }
 
       await prisma.lesson.update({

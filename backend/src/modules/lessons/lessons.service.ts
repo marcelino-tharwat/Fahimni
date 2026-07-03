@@ -184,7 +184,7 @@ export class LessonsService {
         deletedAt: null,
         chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
       },
-      select: { id: true },
+      select: { id: true, chapterId: true },
     });
 
     if (!existing) {
@@ -206,6 +206,28 @@ export class LessonsService {
     }
     if (input.sortOrder !== undefined) {
       data.sortOrder = input.sortOrder;
+    }
+    if (input.requiredQuizId !== undefined) {
+      if (input.requiredQuizId === null) {
+        data.requiredQuiz = { disconnect: true };
+      } else {
+        const quiz = await prisma.quiz.findFirst({
+          where: {
+            id: input.requiredQuizId,
+            chapterId: existing.chapterId,
+            status: "PUBLISHED",
+          },
+          select: { id: true },
+        });
+        if (!quiz) {
+          throw new AppError(
+            "Required quiz must be a published quiz in the same chapter",
+            422,
+            "INVALID_PROGRESSION_QUIZ",
+          );
+        }
+        data.requiredQuiz = { connect: { id: input.requiredQuizId } };
+      }
     }
     const lesson = await prisma.lesson.update({
       where: { id },

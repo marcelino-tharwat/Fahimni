@@ -18,6 +18,27 @@ export interface LessonNode {
   sortOrder: number;
 }
 
+export type LessonLockReason =
+  | "ENROLLMENT_REQUIRED"
+  | "PREVIOUS_LESSON_NOT_COMPLETED"
+  | "REQUIRED_QUIZ_NOT_COMPLETED"
+  | "REQUIRED_QUIZ_NOT_PASSED"
+  | "REQUIRED_QUIZ_AWAITING_GRADING"
+  | "ATTEMPT_LIMIT_REACHED"
+  | "LESSON_UNAVAILABLE";
+
+export type LessonAccessStatus = "UNLOCKED" | "LOCKED";
+export type LessonProgressStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+
+export interface StudentLessonNode extends LessonNode {
+  accessStatus: LessonAccessStatus;
+  isUnlocked: boolean;
+  lockReason: LessonLockReason | null;
+  progressStatus: LessonProgressStatus;
+  requiredQuizId: string | null;
+  nextLessonId: string | null;
+}
+
 export interface ContentTreeResponse {
   stage: StageNode;
   chapters: {
@@ -42,7 +63,7 @@ export interface StudentContentTreeResponse {
   stage: StageNode;
   chapters: {
     chapter: StudentChapterNode;
-    lessons: LessonNode[];
+    lessons: StudentLessonNode[];
   }[];
 }
 

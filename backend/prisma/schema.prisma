@@ -116,11 +116,13 @@ model Lesson {
   chapterId       String
   deletedAt       DateTime?
   viewCount       Int              @default(0)
+  requiredQuizId  String?          @map("required_quiz_id")
   lessonMaterials LessonMaterial[]
   lessonProgress  LessonProgress[]
   contentChunks   ContentChunk[]
   chapter         Chapter          @relation(fields: [chapterId], references: [id])
   quizLessons     QuizLesson[]
+  requiredQuiz    Quiz?            @relation("LessonProgressionQuiz", fields: [requiredQuizId], references: [id], onDelete: SetNull)
 
   @@index([chapterId])
   @@index([chapterId, sortOrder])
@@ -282,6 +284,7 @@ model Quiz {
   durationMinutes Int?             @map("duration_minutes")
   questionCount   Int              @default(0)
   totalPoints     Int              @default(0)
+  passingScore    Int?             @map("passing_score")
   createdBy       String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
@@ -289,6 +292,7 @@ model Quiz {
   questions     Question[]
   attempts      QuizAttempt[]
   quizLessons   QuizLesson[]
+  progressionGateLessons Lesson[] @relation("LessonProgressionQuiz")
   chapter       Chapter?      @relation(fields: [chapterId], references: [id])
   creator       User          @relation(fields: [createdBy], references: [id])
 

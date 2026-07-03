@@ -47,7 +47,9 @@
     "durationNotConfiguredTitle": "مدة الاختبار غير مضبوطة",
     "durationNotConfiguredMsg": "لم يضبط المعلم مدة هذا الاختبار بعد. يرجى التواصل مع المعلم.",
     "noQuestionsTitle": "الاختبار فارغ",
-    "noQuestionsMsg": "لا يحتوي هذا الاختبار على أسئلة بعد."
+    "noQuestionsMsg": "لا يحتوي هذا الاختبار على أسئلة بعد.",
+    "prerequisiteLessonTitle": "أكمل الدرس أولًا",
+    "prerequisiteLessonMsg": "أكمل الدرس المطلوب قبل بدء هذا الاختبار."
   },
   "err400Title": "تم إرسال هذا الاختبار من قبل",
   "err400Msg": "لقد قمت بإرسال هذا الاختبار بالفعل. يمكنك عرض نتيجتك.",

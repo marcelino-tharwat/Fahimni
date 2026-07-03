@@ -10,4 +10,6 @@ export const contentApi = {
   deleteLesson: (id: string) => apiClient.delete(`/lessons/${id}`),
   incrementViewCount: (lessonId: string) =>
     apiClient.post(`/content/student/lessons/${lessonId}/view`),
+  completeLesson: (lessonId: string) =>
+    apiClient.post(`/content/student/lessons/${lessonId}/complete`),
 };
