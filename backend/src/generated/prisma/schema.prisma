@@ -37,10 +37,13 @@ model User {
 model StudentProfile {
   id        String   @id @default(uuid())
   userId    String   @unique
+  stageId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage     Stage    @relation(fields: [stageId], references: [id])
 
+  @@index([stageId])
   @@map("student_profiles")
 }
 
@@ -62,16 +65,17 @@ model TeacherProfile {
 }
 
 model Stage {
-  id          String    @id @default(uuid())
-  name        String
-  description String?
-  sortOrder   Int
-  teacherId   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
-  chapters    Chapter[]
-  teacher     User      @relation(fields: [teacherId], references: [id])
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  sortOrder       Int
+  teacherId       String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  chapters        Chapter[]
+  studentProfiles StudentProfile[]
+  teacher         User             @relation(fields: [teacherId], references: [id])
 
   @@index([teacherId, sortOrder])
   @@map("stages")

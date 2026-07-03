@@ -127,8 +127,17 @@ export class ContentController {
     async (req: Request, res: Response, next: NextFunction) => {
       const studentId = req.user!.id;
 
+      const studentProfile = await prisma.studentProfile.findUnique({
+        where: { userId: studentId },
+        select: { stageId: true },
+      });
+
+      if (!studentProfile) {
+        throw new AppError("Student profile not found", 404);
+      }
+
       const stages = await prisma.stage.findMany({
-        where: { deletedAt: null },
+        where: { id: studentProfile.stageId, deletedAt: null },
         orderBy: { sortOrder: "asc" },
         include: {
           chapters: {
@@ -206,8 +215,21 @@ export class ContentController {
     async (req: Request, res: Response, next: NextFunction) => {
       const studentId = req.user!.id;
 
+      const studentProfile = await prisma.studentProfile.findUnique({
+        where: { userId: studentId },
+        select: { stageId: true },
+      });
+
+      if (!studentProfile) {
+        throw new AppError("Student profile not found", 404);
+      }
+
       const enrollments = await prisma.enrollment.findMany({
-        where: { studentId, status: "ACTIVE" },
+        where: {
+          studentId,
+          status: "ACTIVE",
+          chapter: { stageId: studentProfile.stageId },
+        },
         include: {
           chapter: {
             include: {

@@ -10,6 +10,18 @@ import type { CreateStageInput, UpdateStageInput } from "./stage.validation.js";
 const filesService = new FilesService();
 
 export class StageService {
+  /**
+   * Public listing — no auth, no teacher filter. Returns lightweight
+   * stage objects for the signup dropdown.
+   */
+  public async listPublic(): Promise<Pick<StageResponseDTO, "id" | "name" | "sortOrder">[]> {
+    return prisma.stage.findMany({
+      where: { deletedAt: null },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, name: true, sortOrder: true },
+    });
+  }
+
   private async attachCounts<T extends { id: string }>(
     stage: T,
   ): Promise<T & { chapterCount: number; lessonCount: number }> {

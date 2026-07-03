@@ -2985,10 +2985,12 @@ export namespace Prisma {
 
   export type StageCountOutputType = {
     chapters: number
+    studentProfiles: number
   }
 
   export type StageCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapters?: boolean | StageCountOutputTypeCountChaptersArgs
+    studentProfiles?: boolean | StageCountOutputTypeCountStudentProfilesArgs
   }
 
   // Custom InputTypes
@@ -3007,6 +3009,13 @@ export namespace Prisma {
    */
   export type StageCountOutputTypeCountChaptersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ChapterWhereInput
+  }
+
+  /**
+   * StageCountOutputType without action
+   */
+  export type StageCountOutputTypeCountStudentProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StudentProfileWhereInput
   }
 
 
@@ -4723,6 +4732,7 @@ export namespace Prisma {
   export type StudentProfileMinAggregateOutputType = {
     id: string | null
     userId: string | null
+    stageId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4730,6 +4740,7 @@ export namespace Prisma {
   export type StudentProfileMaxAggregateOutputType = {
     id: string | null
     userId: string | null
+    stageId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4737,6 +4748,7 @@ export namespace Prisma {
   export type StudentProfileCountAggregateOutputType = {
     id: number
     userId: number
+    stageId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -4746,6 +4758,7 @@ export namespace Prisma {
   export type StudentProfileMinAggregateInputType = {
     id?: true
     userId?: true
+    stageId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4753,6 +4766,7 @@ export namespace Prisma {
   export type StudentProfileMaxAggregateInputType = {
     id?: true
     userId?: true
+    stageId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4760,6 +4774,7 @@ export namespace Prisma {
   export type StudentProfileCountAggregateInputType = {
     id?: true
     userId?: true
+    stageId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -4840,6 +4855,7 @@ export namespace Prisma {
   export type StudentProfileGroupByOutputType = {
     id: string
     userId: string
+    stageId: string
     createdAt: Date
     updatedAt: Date
     _count: StudentProfileCountAggregateOutputType | null
@@ -4864,53 +4880,65 @@ export namespace Prisma {
   export type StudentProfileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    stageId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    stage?: boolean | StageDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["studentProfile"]>
 
   export type StudentProfileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    stageId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    stage?: boolean | StageDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["studentProfile"]>
 
   export type StudentProfileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    stageId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    stage?: boolean | StageDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["studentProfile"]>
 
   export type StudentProfileSelectScalar = {
     id?: boolean
     userId?: boolean
+    stageId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type StudentProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["studentProfile"]>
+  export type StudentProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "stageId" | "createdAt" | "updatedAt", ExtArgs["result"]["studentProfile"]>
   export type StudentProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    stage?: boolean | StageDefaultArgs<ExtArgs>
   }
   export type StudentProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    stage?: boolean | StageDefaultArgs<ExtArgs>
   }
   export type StudentProfileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    stage?: boolean | StageDefaultArgs<ExtArgs>
   }
 
   export type $StudentProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "StudentProfile"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      stage: Prisma.$StagePayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string
+      stageId: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["studentProfile"]>
@@ -5308,6 +5336,7 @@ export namespace Prisma {
   export interface Prisma__StudentProfileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    stage<T extends StageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StageDefaultArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5339,6 +5368,7 @@ export namespace Prisma {
   interface StudentProfileFieldRefs {
     readonly id: FieldRef<"StudentProfile", 'String'>
     readonly userId: FieldRef<"StudentProfile", 'String'>
+    readonly stageId: FieldRef<"StudentProfile", 'String'>
     readonly createdAt: FieldRef<"StudentProfile", 'DateTime'>
     readonly updatedAt: FieldRef<"StudentProfile", 'DateTime'>
   }
@@ -7132,6 +7162,7 @@ export namespace Prisma {
     updatedAt?: boolean
     deletedAt?: boolean
     chapters?: boolean | Stage$chaptersArgs<ExtArgs>
+    studentProfiles?: boolean | Stage$studentProfilesArgs<ExtArgs>
     teacher?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | StageCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["stage"]>
@@ -7174,6 +7205,7 @@ export namespace Prisma {
   export type StageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "teacherId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stage"]>
   export type StageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapters?: boolean | Stage$chaptersArgs<ExtArgs>
+    studentProfiles?: boolean | Stage$studentProfilesArgs<ExtArgs>
     teacher?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | StageCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -7188,6 +7220,7 @@ export namespace Prisma {
     name: "Stage"
     objects: {
       chapters: Prisma.$ChapterPayload<ExtArgs>[]
+      studentProfiles: Prisma.$StudentProfilePayload<ExtArgs>[]
       teacher: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -7594,6 +7627,7 @@ export namespace Prisma {
   export interface Prisma__StageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     chapters<T extends Stage$chaptersArgs<ExtArgs> = {}>(args?: Subset<T, Stage$chaptersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    studentProfiles<T extends Stage$studentProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Stage$studentProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     teacher<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8054,6 +8088,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ChapterScalarFieldEnum | ChapterScalarFieldEnum[]
+  }
+
+  /**
+   * Stage.studentProfiles
+   */
+  export type Stage$studentProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentProfile
+     */
+    select?: StudentProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentProfile
+     */
+    omit?: StudentProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentProfileInclude<ExtArgs> | null
+    where?: StudentProfileWhereInput
+    orderBy?: StudentProfileOrderByWithRelationInput | StudentProfileOrderByWithRelationInput[]
+    cursor?: StudentProfileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StudentProfileScalarFieldEnum | StudentProfileScalarFieldEnum[]
   }
 
   /**
@@ -27821,6 +27879,7 @@ export namespace Prisma {
   export const StudentProfileScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
+    stageId: 'stageId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -28553,17 +28612,21 @@ export namespace Prisma {
     NOT?: StudentProfileWhereInput | StudentProfileWhereInput[]
     id?: StringFilter<"StudentProfile"> | string
     userId?: StringFilter<"StudentProfile"> | string
+    stageId?: StringFilter<"StudentProfile"> | string
     createdAt?: DateTimeFilter<"StudentProfile"> | Date | string
     updatedAt?: DateTimeFilter<"StudentProfile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    stage?: XOR<StageScalarRelationFilter, StageWhereInput>
   }
 
   export type StudentProfileOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
+    stageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    stage?: StageOrderByWithRelationInput
   }
 
   export type StudentProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -28572,14 +28635,17 @@ export namespace Prisma {
     AND?: StudentProfileWhereInput | StudentProfileWhereInput[]
     OR?: StudentProfileWhereInput[]
     NOT?: StudentProfileWhereInput | StudentProfileWhereInput[]
+    stageId?: StringFilter<"StudentProfile"> | string
     createdAt?: DateTimeFilter<"StudentProfile"> | Date | string
     updatedAt?: DateTimeFilter<"StudentProfile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    stage?: XOR<StageScalarRelationFilter, StageWhereInput>
   }, "id" | "userId">
 
   export type StudentProfileOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
+    stageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: StudentProfileCountOrderByAggregateInput
@@ -28593,6 +28659,7 @@ export namespace Prisma {
     NOT?: StudentProfileScalarWhereWithAggregatesInput | StudentProfileScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"StudentProfile"> | string
     userId?: StringWithAggregatesFilter<"StudentProfile"> | string
+    stageId?: StringWithAggregatesFilter<"StudentProfile"> | string
     createdAt?: DateTimeWithAggregatesFilter<"StudentProfile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"StudentProfile"> | Date | string
   }
@@ -28687,6 +28754,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Stage"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
     chapters?: ChapterListRelationFilter
+    studentProfiles?: StudentProfileListRelationFilter
     teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -28700,6 +28768,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
     chapters?: ChapterOrderByRelationAggregateInput
+    studentProfiles?: StudentProfileOrderByRelationAggregateInput
     teacher?: UserOrderByWithRelationInput
   }
 
@@ -28716,6 +28785,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Stage"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
     chapters?: ChapterListRelationFilter
+    studentProfiles?: StudentProfileListRelationFilter
     teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -30266,11 +30336,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutStudentProfileInput
+    stage: StageCreateNestedOneWithoutStudentProfilesInput
   }
 
   export type StudentProfileUncheckedCreateInput = {
     id?: string
     userId: string
+    stageId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30280,11 +30352,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutStudentProfileNestedInput
+    stage?: StageUpdateOneRequiredWithoutStudentProfilesNestedInput
   }
 
   export type StudentProfileUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    stageId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30292,6 +30366,7 @@ export namespace Prisma {
   export type StudentProfileCreateManyInput = {
     id?: string
     userId: string
+    stageId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30305,6 +30380,7 @@ export namespace Prisma {
   export type StudentProfileUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    stageId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30401,6 +30477,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapters?: ChapterCreateNestedManyWithoutStageInput
+    studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
     teacher: UserCreateNestedOneWithoutStagesInput
   }
 
@@ -30414,6 +30491,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapters?: ChapterUncheckedCreateNestedManyWithoutStageInput
+    studentProfiles?: StudentProfileUncheckedCreateNestedManyWithoutStageInput
   }
 
   export type StageUpdateInput = {
@@ -30425,6 +30503,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUpdateManyWithoutStageNestedInput
+    studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
     teacher?: UserUpdateOneRequiredWithoutStagesNestedInput
   }
 
@@ -30438,6 +30517,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUncheckedUpdateManyWithoutStageNestedInput
+    studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
   }
 
   export type StageCreateManyInput = {
@@ -32204,9 +32284,15 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
+  export type StageScalarRelationFilter = {
+    is?: StageWhereInput
+    isNot?: StageWhereInput
+  }
+
   export type StudentProfileCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    stageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32214,6 +32300,7 @@ export namespace Prisma {
   export type StudentProfileMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    stageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32221,6 +32308,7 @@ export namespace Prisma {
   export type StudentProfileMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    stageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32351,7 +32439,17 @@ export namespace Prisma {
     none?: ChapterWhereInput
   }
 
+  export type StudentProfileListRelationFilter = {
+    every?: StudentProfileWhereInput
+    some?: StudentProfileWhereInput
+    none?: StudentProfileWhereInput
+  }
+
   export type ChapterOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StudentProfileOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -32419,11 +32517,6 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-  }
-
-  export type StageScalarRelationFilter = {
-    is?: StageWhereInput
-    isNot?: StageWhereInput
   }
 
   export type LessonListRelationFilter = {
@@ -34241,12 +34334,26 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type StageCreateNestedOneWithoutStudentProfilesInput = {
+    create?: XOR<StageCreateWithoutStudentProfilesInput, StageUncheckedCreateWithoutStudentProfilesInput>
+    connectOrCreate?: StageCreateOrConnectWithoutStudentProfilesInput
+    connect?: StageWhereUniqueInput
+  }
+
   export type UserUpdateOneRequiredWithoutStudentProfileNestedInput = {
     create?: XOR<UserCreateWithoutStudentProfileInput, UserUncheckedCreateWithoutStudentProfileInput>
     connectOrCreate?: UserCreateOrConnectWithoutStudentProfileInput
     upsert?: UserUpsertWithoutStudentProfileInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutStudentProfileInput, UserUpdateWithoutStudentProfileInput>, UserUncheckedUpdateWithoutStudentProfileInput>
+  }
+
+  export type StageUpdateOneRequiredWithoutStudentProfilesNestedInput = {
+    create?: XOR<StageCreateWithoutStudentProfilesInput, StageUncheckedCreateWithoutStudentProfilesInput>
+    connectOrCreate?: StageCreateOrConnectWithoutStudentProfilesInput
+    upsert?: StageUpsertWithoutStudentProfilesInput
+    connect?: StageWhereUniqueInput
+    update?: XOR<XOR<StageUpdateToOneWithWhereWithoutStudentProfilesInput, StageUpdateWithoutStudentProfilesInput>, StageUncheckedUpdateWithoutStudentProfilesInput>
   }
 
   export type UserCreateNestedOneWithoutTeacherProfileInput = {
@@ -34282,6 +34389,13 @@ export namespace Prisma {
     connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
   }
 
+  export type StudentProfileCreateNestedManyWithoutStageInput = {
+    create?: XOR<StudentProfileCreateWithoutStageInput, StudentProfileUncheckedCreateWithoutStageInput> | StudentProfileCreateWithoutStageInput[] | StudentProfileUncheckedCreateWithoutStageInput[]
+    connectOrCreate?: StudentProfileCreateOrConnectWithoutStageInput | StudentProfileCreateOrConnectWithoutStageInput[]
+    createMany?: StudentProfileCreateManyStageInputEnvelope
+    connect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+  }
+
   export type UserCreateNestedOneWithoutStagesInput = {
     create?: XOR<UserCreateWithoutStagesInput, UserUncheckedCreateWithoutStagesInput>
     connectOrCreate?: UserCreateOrConnectWithoutStagesInput
@@ -34293,6 +34407,13 @@ export namespace Prisma {
     connectOrCreate?: ChapterCreateOrConnectWithoutStageInput | ChapterCreateOrConnectWithoutStageInput[]
     createMany?: ChapterCreateManyStageInputEnvelope
     connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+  }
+
+  export type StudentProfileUncheckedCreateNestedManyWithoutStageInput = {
+    create?: XOR<StudentProfileCreateWithoutStageInput, StudentProfileUncheckedCreateWithoutStageInput> | StudentProfileCreateWithoutStageInput[] | StudentProfileUncheckedCreateWithoutStageInput[]
+    connectOrCreate?: StudentProfileCreateOrConnectWithoutStageInput | StudentProfileCreateOrConnectWithoutStageInput[]
+    createMany?: StudentProfileCreateManyStageInputEnvelope
+    connect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -34311,6 +34432,20 @@ export namespace Prisma {
     update?: ChapterUpdateWithWhereUniqueWithoutStageInput | ChapterUpdateWithWhereUniqueWithoutStageInput[]
     updateMany?: ChapterUpdateManyWithWhereWithoutStageInput | ChapterUpdateManyWithWhereWithoutStageInput[]
     deleteMany?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+  }
+
+  export type StudentProfileUpdateManyWithoutStageNestedInput = {
+    create?: XOR<StudentProfileCreateWithoutStageInput, StudentProfileUncheckedCreateWithoutStageInput> | StudentProfileCreateWithoutStageInput[] | StudentProfileUncheckedCreateWithoutStageInput[]
+    connectOrCreate?: StudentProfileCreateOrConnectWithoutStageInput | StudentProfileCreateOrConnectWithoutStageInput[]
+    upsert?: StudentProfileUpsertWithWhereUniqueWithoutStageInput | StudentProfileUpsertWithWhereUniqueWithoutStageInput[]
+    createMany?: StudentProfileCreateManyStageInputEnvelope
+    set?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+    disconnect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+    delete?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+    connect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+    update?: StudentProfileUpdateWithWhereUniqueWithoutStageInput | StudentProfileUpdateWithWhereUniqueWithoutStageInput[]
+    updateMany?: StudentProfileUpdateManyWithWhereWithoutStageInput | StudentProfileUpdateManyWithWhereWithoutStageInput[]
+    deleteMany?: StudentProfileScalarWhereInput | StudentProfileScalarWhereInput[]
   }
 
   export type UserUpdateOneRequiredWithoutStagesNestedInput = {
@@ -34333,6 +34468,20 @@ export namespace Prisma {
     update?: ChapterUpdateWithWhereUniqueWithoutStageInput | ChapterUpdateWithWhereUniqueWithoutStageInput[]
     updateMany?: ChapterUpdateManyWithWhereWithoutStageInput | ChapterUpdateManyWithWhereWithoutStageInput[]
     deleteMany?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+  }
+
+  export type StudentProfileUncheckedUpdateManyWithoutStageNestedInput = {
+    create?: XOR<StudentProfileCreateWithoutStageInput, StudentProfileUncheckedCreateWithoutStageInput> | StudentProfileCreateWithoutStageInput[] | StudentProfileUncheckedCreateWithoutStageInput[]
+    connectOrCreate?: StudentProfileCreateOrConnectWithoutStageInput | StudentProfileCreateOrConnectWithoutStageInput[]
+    upsert?: StudentProfileUpsertWithWhereUniqueWithoutStageInput | StudentProfileUpsertWithWhereUniqueWithoutStageInput[]
+    createMany?: StudentProfileCreateManyStageInputEnvelope
+    set?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+    disconnect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+    delete?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+    connect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+    update?: StudentProfileUpdateWithWhereUniqueWithoutStageInput | StudentProfileUpdateWithWhereUniqueWithoutStageInput[]
+    updateMany?: StudentProfileUpdateManyWithWhereWithoutStageInput | StudentProfileUpdateManyWithWhereWithoutStageInput[]
+    deleteMany?: StudentProfileScalarWhereInput | StudentProfileScalarWhereInput[]
   }
 
   export type StageCreateNestedOneWithoutChaptersInput = {
@@ -36030,6 +36179,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapters?: ChapterCreateNestedManyWithoutStageInput
+    studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
   }
 
   export type StageUncheckedCreateWithoutTeacherInput = {
@@ -36041,6 +36191,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapters?: ChapterUncheckedCreateNestedManyWithoutStageInput
+    studentProfiles?: StudentProfileUncheckedCreateNestedManyWithoutStageInput
   }
 
   export type StageCreateOrConnectWithoutTeacherInput = {
@@ -36057,10 +36208,12 @@ export namespace Prisma {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    stage: StageCreateNestedOneWithoutStudentProfilesInput
   }
 
   export type StudentProfileUncheckedCreateWithoutUserInput = {
     id?: string
+    stageId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -36503,10 +36656,12 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stage?: StageUpdateOneRequiredWithoutStudentProfilesNestedInput
   }
 
   export type StudentProfileUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    stageId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -36692,6 +36847,35 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutStudentProfileInput, UserUncheckedCreateWithoutStudentProfileInput>
   }
 
+  export type StageCreateWithoutStudentProfilesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    chapters?: ChapterCreateNestedManyWithoutStageInput
+    teacher: UserCreateNestedOneWithoutStagesInput
+  }
+
+  export type StageUncheckedCreateWithoutStudentProfilesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    teacherId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    chapters?: ChapterUncheckedCreateNestedManyWithoutStageInput
+  }
+
+  export type StageCreateOrConnectWithoutStudentProfilesInput = {
+    where: StageWhereUniqueInput
+    create: XOR<StageCreateWithoutStudentProfilesInput, StageUncheckedCreateWithoutStudentProfilesInput>
+  }
+
   export type UserUpsertWithoutStudentProfileInput = {
     update: XOR<UserUpdateWithoutStudentProfileInput, UserUncheckedUpdateWithoutStudentProfileInput>
     create: XOR<UserCreateWithoutStudentProfileInput, UserUncheckedCreateWithoutStudentProfileInput>
@@ -36753,6 +36937,41 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StageUpsertWithoutStudentProfilesInput = {
+    update: XOR<StageUpdateWithoutStudentProfilesInput, StageUncheckedUpdateWithoutStudentProfilesInput>
+    create: XOR<StageCreateWithoutStudentProfilesInput, StageUncheckedCreateWithoutStudentProfilesInput>
+    where?: StageWhereInput
+  }
+
+  export type StageUpdateToOneWithWhereWithoutStudentProfilesInput = {
+    where?: StageWhereInput
+    data: XOR<StageUpdateWithoutStudentProfilesInput, StageUncheckedUpdateWithoutStudentProfilesInput>
+  }
+
+  export type StageUpdateWithoutStudentProfilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapters?: ChapterUpdateManyWithoutStageNestedInput
+    teacher?: UserUpdateOneRequiredWithoutStagesNestedInput
+  }
+
+  export type StageUncheckedUpdateWithoutStudentProfilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    teacherId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapters?: ChapterUncheckedUpdateManyWithoutStageNestedInput
   }
 
   export type UserCreateWithoutTeacherProfileInput = {
@@ -36917,6 +37136,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StudentProfileCreateWithoutStageInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutStudentProfileInput
+  }
+
+  export type StudentProfileUncheckedCreateWithoutStageInput = {
+    id?: string
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StudentProfileCreateOrConnectWithoutStageInput = {
+    where: StudentProfileWhereUniqueInput
+    create: XOR<StudentProfileCreateWithoutStageInput, StudentProfileUncheckedCreateWithoutStageInput>
+  }
+
+  export type StudentProfileCreateManyStageInputEnvelope = {
+    data: StudentProfileCreateManyStageInput | StudentProfileCreateManyStageInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserCreateWithoutStagesInput = {
     id?: string
     fullName: string
@@ -37005,6 +37248,33 @@ export namespace Prisma {
     stageId?: StringFilter<"Chapter"> | string
   }
 
+  export type StudentProfileUpsertWithWhereUniqueWithoutStageInput = {
+    where: StudentProfileWhereUniqueInput
+    update: XOR<StudentProfileUpdateWithoutStageInput, StudentProfileUncheckedUpdateWithoutStageInput>
+    create: XOR<StudentProfileCreateWithoutStageInput, StudentProfileUncheckedCreateWithoutStageInput>
+  }
+
+  export type StudentProfileUpdateWithWhereUniqueWithoutStageInput = {
+    where: StudentProfileWhereUniqueInput
+    data: XOR<StudentProfileUpdateWithoutStageInput, StudentProfileUncheckedUpdateWithoutStageInput>
+  }
+
+  export type StudentProfileUpdateManyWithWhereWithoutStageInput = {
+    where: StudentProfileScalarWhereInput
+    data: XOR<StudentProfileUpdateManyMutationInput, StudentProfileUncheckedUpdateManyWithoutStageInput>
+  }
+
+  export type StudentProfileScalarWhereInput = {
+    AND?: StudentProfileScalarWhereInput | StudentProfileScalarWhereInput[]
+    OR?: StudentProfileScalarWhereInput[]
+    NOT?: StudentProfileScalarWhereInput | StudentProfileScalarWhereInput[]
+    id?: StringFilter<"StudentProfile"> | string
+    userId?: StringFilter<"StudentProfile"> | string
+    stageId?: StringFilter<"StudentProfile"> | string
+    createdAt?: DateTimeFilter<"StudentProfile"> | Date | string
+    updatedAt?: DateTimeFilter<"StudentProfile"> | Date | string
+  }
+
   export type UserUpsertWithoutStagesInput = {
     update: XOR<UserUpdateWithoutStagesInput, UserUncheckedUpdateWithoutStagesInput>
     create: XOR<UserCreateWithoutStagesInput, UserUncheckedCreateWithoutStagesInput>
@@ -37076,6 +37346,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
     teacher: UserCreateNestedOneWithoutStagesInput
   }
 
@@ -37088,6 +37359,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    studentProfiles?: StudentProfileUncheckedCreateNestedManyWithoutStageInput
   }
 
   export type StageCreateOrConnectWithoutChaptersInput = {
@@ -37304,6 +37576,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
     teacher?: UserUpdateOneRequiredWithoutStagesNestedInput
   }
 
@@ -37316,6 +37589,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
   }
 
   export type EnrollmentUpsertWithWhereUniqueWithoutChapterInput = {
@@ -40537,6 +40811,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUpdateManyWithoutStageNestedInput
+    studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
   }
 
   export type StageUncheckedUpdateWithoutTeacherInput = {
@@ -40548,6 +40823,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUncheckedUpdateManyWithoutStageNestedInput
+    studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
   }
 
   export type StageUncheckedUpdateManyWithoutTeacherInput = {
@@ -40666,6 +40942,13 @@ export namespace Prisma {
     deletedAt?: Date | string | null
   }
 
+  export type StudentProfileCreateManyStageInput = {
+    id?: string
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ChapterUpdateWithoutStageInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -40707,6 +40990,27 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type StudentProfileUpdateWithoutStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutStudentProfileNestedInput
+  }
+
+  export type StudentProfileUncheckedUpdateWithoutStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentProfileUncheckedUpdateManyWithoutStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EnrollmentCreateManyChapterInput = {

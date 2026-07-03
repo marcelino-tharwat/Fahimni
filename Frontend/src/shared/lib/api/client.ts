@@ -95,6 +95,7 @@ apiClient.interceptors.response.use(
 export interface ApiError {
   statusCode: number;
   message: string;
+  errors?: Record<string, string[]>;
   code?: string;
   attemptId?: string;
 }
@@ -102,6 +103,7 @@ export interface ApiError {
 function normalizeError(error: AxiosError): ApiError {
   const data = error.response?.data as {
     message?: string | string[];
+    errors?: Record<string, string[]>;
     code?: string;
     attemptId?: string;
   } | undefined;
@@ -110,6 +112,7 @@ function normalizeError(error: AxiosError): ApiError {
   return {
     statusCode: error.response?.status ?? 0,
     message,
+    errors: data?.errors,
     code: data?.code,
     attemptId: typeof data?.attemptId === 'string' ? data.attemptId : undefined,
   };

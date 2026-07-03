@@ -28,7 +28,7 @@ export class StudentService {
   }
 
   public async create(input: CreateStudentInput) {
-    const { fullName, email, password, mobile } = input;
+    const { fullName, email, password, mobile, stageId } = input;
 
     const existing = await prisma.user.findFirst({
       where: { OR: [{ email }, { mobile }] },
@@ -49,7 +49,7 @@ export class StudentService {
         mobile,
         password: hashedPassword,
         role: "STUDENT",
-        studentProfile: { create: {} },
+        studentProfile: { create: { stageId } },
       },
       select: { ...userPublicFields, studentProfile: true },
     });

@@ -135,6 +135,7 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.StudentProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  stageId: 'stageId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

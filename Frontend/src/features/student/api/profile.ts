@@ -37,13 +37,22 @@ export const studentProfileApi = {
         status: string;
         createdAt: string;
         updatedAt: string;
-        studentProfile: { id: string; userId: string; createdAt: string; updatedAt: string };
+        studentProfile: {
+          id: string;
+          userId: string;
+          stageId: string;
+          createdAt: string;
+          updatedAt: string;
+          stage: { name: string };
+        };
       }>
     >(`/students/${userId}`, input);
     const u = data.data;
     return {
       id: u.studentProfile.id,
       userId: u.id,
+      stageId: u.studentProfile.stageId,
+      stage: u.studentProfile.stage,
       createdAt: u.studentProfile.createdAt,
       updatedAt: u.studentProfile.updatedAt,
       user: {

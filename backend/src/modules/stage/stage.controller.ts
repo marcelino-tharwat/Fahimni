@@ -9,6 +9,23 @@ import type { CreateStageInput, UpdateStageInput, ReorderInput } from "./stage.v
 const stageService = new StageService();
 
 export class StageController {
+  /**
+   * GET /stages/public — no auth required. Returns all non-deleted stages
+   * in sort order for the signup dropdown.
+   */
+  public listPublic = asyncHandler(
+    async (_req: Request, res: Response, _next: NextFunction) => {
+      const stages = await stageService.listPublic();
+
+      res
+        .status(200)
+        .json(okResponse<Pick<StageResponseDTO, "id" | "name" | "sortOrder">[]>(
+          "Stages fetched successfully",
+          stages,
+        ));
+    },
+  );
+
   public list = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const stages = await stageService.list(req.user!.id);

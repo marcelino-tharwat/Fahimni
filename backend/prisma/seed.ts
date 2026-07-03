@@ -244,6 +244,9 @@ async function cleanup(): Promise<void> {
       },
     });
     await tx.chapter.deleteMany({ where: ownedChapter });
+    await tx.studentProfile.deleteMany({
+      where: { userId: { in: seedUserIds } },
+    });
     await tx.stage.deleteMany({ where: ownedStage });
     await tx.auditLog.deleteMany({
       where: {
@@ -254,9 +257,6 @@ async function cleanup(): Promise<void> {
       },
     });
     await tx.teacherProfile.deleteMany({
-      where: { userId: { in: seedUserIds } },
-    });
-    await tx.studentProfile.deleteMany({
       where: { userId: { in: seedUserIds } },
     });
     await tx.user.deleteMany({ where: { id: { in: seedUserIds } } });
@@ -325,13 +325,6 @@ async function seed(): Promise<void> {
           aiTutorDailyQueryLimit: 30,
         },
       });
-      await tx.studentProfile.createMany({
-        data: STUDENTS.map((s, i) => ({
-          id: seedId(`student-profile-${String(i + 1).padStart(2, "0")}`),
-          userId: s.id,
-        })),
-      });
-
       await tx.stage.create({
         data: {
           id: STAGE.id,
@@ -340,6 +333,13 @@ async function seed(): Promise<void> {
           sortOrder: 1,
           teacherId: TEACHER.id,
         },
+      });
+      await tx.studentProfile.createMany({
+        data: STUDENTS.map((s, i) => ({
+          id: seedId(`student-profile-${String(i + 1).padStart(2, "0")}`),
+          userId: s.id,
+          stageId: STAGE.id,
+        })),
       });
       await tx.chapter.createMany({ data: chapterRows });
       await tx.lesson.createMany({ data: lessonRows });

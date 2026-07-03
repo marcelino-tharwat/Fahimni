@@ -9,6 +9,7 @@ import {
   BookOpen,
   Lock,
   AlertCircle,
+  GraduationCap,
 } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/shared/store/hooks';
 import {
@@ -395,9 +396,11 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
   const { t, i18n } = useTranslation('student');
   const dispatch = useAppDispatch();
   const updateProfile = useUpdateStudentProfile();
-  const studentUser = useAppSelector((state) => state.student.profile?.user);
+  const studentProfile = useAppSelector((state) => state.student.profile);
+  const studentUser = studentProfile?.user;
   const authUser = useAppSelector((state) => state.auth.user);
   const profileUser = studentUser ?? authUser;
+  const stageName = studentProfile?.stage?.name;
 
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
@@ -552,6 +555,12 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
       <div className="my-4 border-t border-gray-300" />
 
       <div className="flex flex-col gap-3">
+        {stageName && (
+          <div className="flex items-center justify-between gap-2 text-end">
+            <span className="font-cairo text-body font-medium text-navy-900">{stageName}</span>
+            <GraduationCap size={16} className="shrink-0 text-gray-500" />
+          </div>
+        )}
         <div className="flex items-center justify-between gap-2 text-end">
           <span className="font-cairo text-body text-gray-700" dir="ltr">{displayEmail}</span>
           <Mail size={16} className="shrink-0 text-gray-500" />
