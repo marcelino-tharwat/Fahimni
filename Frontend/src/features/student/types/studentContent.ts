@@ -16,6 +16,20 @@ export interface StudentLessonNode {
   id: string;
   title: string;
   sortOrder: number;
+  accessStatus: 'UNLOCKED' | 'LOCKED';
+  isUnlocked: boolean;
+  lockReason:
+    | 'ENROLLMENT_REQUIRED'
+    | 'PREVIOUS_LESSON_NOT_COMPLETED'
+    | 'REQUIRED_QUIZ_NOT_COMPLETED'
+    | 'REQUIRED_QUIZ_NOT_PASSED'
+    | 'REQUIRED_QUIZ_AWAITING_GRADING'
+    | 'ATTEMPT_LIMIT_REACHED'
+    | 'LESSON_UNAVAILABLE'
+    | null;
+  progressStatus: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
+  requiredQuizId: string | null;
+  nextLessonId: string | null;
 }
 
 export interface StudentChapterNode {
@@ -56,4 +70,26 @@ export interface MyCourse {
   stageName: string;
   lessonCount: number;
   completionProgress: number;
+}
+
+export interface StudentLessonDetail {
+  id: string;
+  title: string;
+  description?: string | null;
+  durationMinutes: number;
+  youtubeUrl?: string | null;
+  sortOrder: number;
+  chapterId: string;
+  accessStatus?: StudentLessonNode['accessStatus'];
+  isUnlocked?: boolean;
+  lockReason?: StudentLessonNode['lockReason'];
+  progressStatus?: StudentLessonNode['progressStatus'];
+  requiredQuizId?: string | null;
+  nextLessonId?: string | null;
+  attachments?: Array<{
+    id: string;
+    displayName: string;
+    url: string;
+    fileSize: number;
+  }>;
 }

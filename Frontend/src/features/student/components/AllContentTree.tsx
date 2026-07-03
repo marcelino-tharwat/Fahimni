@@ -368,25 +368,50 @@ function ChapterRow({
 
       {config.accessible && expanded && lessons.length > 0 && (
         <ul className="mb-3 ms-7 me-1 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
-          {lessons.map((lesson, lessonIndex) => (
-            <li
-              key={lesson.id}
-              className="border-b border-gray-100 last:border-b-0"
-            >
-              <Link
-                to={`/student/lessons/${lesson.id}`}
-                className="flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-gray-50/60"
-              >
-                <FileText size={15} className="shrink-0 text-gray-400" />
-                <span className="min-w-0 flex-1 truncate font-cairo text-sm text-navy-700">
+          {lessons.map((lesson, lessonIndex) => {
+            const locked = !lesson.isUnlocked;
+            const row = (
+              <>
+                <FileText size={15} className={cn('shrink-0', locked ? 'text-gray-300' : 'text-gray-400')} />
+                <span
+                  className={cn(
+                    'min-w-0 flex-1 truncate font-cairo text-sm',
+                    locked ? 'text-gray-400' : 'text-navy-700',
+                  )}
+                >
                   {t('student:content.lesson', {
                     order: toLocalNum(lessonIndex + 1),
                     title: lesson.title,
                   })}
                 </span>
-              </Link>
-            </li>
-          ))}
+                {locked && <Lock size={14} className="shrink-0 text-gray-400" aria-hidden />}
+              </>
+            );
+
+            return (
+              <li
+                key={lesson.id}
+                className="border-b border-gray-100 last:border-b-0"
+              >
+                {locked ? (
+                  <div
+                    className="flex items-center gap-3 px-3 py-2.5"
+                    title={lesson.lockReason ?? undefined}
+                    aria-disabled
+                  >
+                    {row}
+                  </div>
+                ) : (
+                  <Link
+                    to={`/student/lessons/${lesson.id}`}
+                    className="flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-gray-50/60"
+                  >
+                    {row}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

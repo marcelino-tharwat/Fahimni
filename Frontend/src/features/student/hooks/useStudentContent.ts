@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { studentContentApi } from '@/features/student/api/studentContent';
 import { contentApi } from '@/features/student/api/content';
-import type { Lesson } from '@/shared/types/content';
+import type { StudentLessonDetail } from '@/features/student/types/studentContent';
 import type { ApiError } from '@/shared/lib/api/client';
 
 export const STUDENT_TREE_KEY = ['student', 'content', 'tree'] as const;
@@ -44,7 +44,7 @@ export function useLesson(lessonId: string) {
     queryKey: ['student', 'lesson', lessonId],
     queryFn: async () => {
       const { data } = await contentApi.getLesson(lessonId);
-      return data.data as Lesson | undefined;
+      return data.data as StudentLessonDetail | undefined;
     },
     enabled: !!lessonId,
     // Don't retry 4xx (e.g. 403 NOT_ENROLLED / 404) — those are terminal, so
@@ -53,6 +53,27 @@ export function useLesson(lessonId: string) {
       const status = (error as ApiError)?.statusCode ?? 0;
       if (status >= 400 && status < 500) return false;
       return failureCount < 3;
+    },
+  });
+}
+
+export function useCompleteLesson() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (lessonId: string) => {
+      const { data } = await contentApi.completeLesson(lessonId);
+      return data.data as {
+        lessonId: string;
+        progressStatus: string;
+        requiredQuizId: string | null;
+        nextLessonId: string | null;
+      };
+    },
+    onSuccess: (_data, lessonId) => {
+      void queryClient.invalidateQueries({ queryKey: STUDENT_TREE_KEY });
+      void queryClient.invalidateQueries({ queryKey: STUDENT_MY_COURSES_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['student', 'lesson', lessonId] });
+      void queryClient.invalidateQueries({ queryKey: ['student', 'quizzes'] });
     },
   });
 }

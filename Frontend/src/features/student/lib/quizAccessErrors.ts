@@ -65,14 +65,17 @@ const CODE_TO_VIEW: Record<string, Omit<QuizAccessErrorView, 'attemptId'>> = {
     messageKey: 'quiz:access.durationNotConfiguredMsg',
     primaryAction: 'viewQuizzes',
   },
+  QUIZ_PREREQUISITE_LESSON_INCOMPLETE: {
+    titleKey: 'quiz:access.prerequisiteLessonTitle',
+    messageKey: 'quiz:access.prerequisiteLessonMsg',
+    primaryAction: 'browseCourses',
+  },
   QUIZ_NO_QUESTIONS: {
     titleKey: 'quiz:access.noQuestionsTitle',
     messageKey: 'quiz:access.noQuestionsMsg',
     primaryAction: 'viewQuizzes',
   },
-};
-
-const GENERIC_FALLBACK: Omit<QuizAccessErrorView, 'attemptId'> = {
+}; Omit<QuizAccessErrorView, 'attemptId'> = {
   titleKey: 'quiz:err403Title',
   messageKey: 'quiz:err403Msg',
   primaryAction: 'browseCourses',

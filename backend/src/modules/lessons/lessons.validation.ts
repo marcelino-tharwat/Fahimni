@@ -77,6 +77,7 @@ export const updateLessonSchema = z
       .int("Sort order must be an integer")
       .min(1, "Sort order must be at least 1")
       .optional(),
+    requiredQuizId: z.string().uuid("Invalid required quiz ID").nullable().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided for update",

@@ -270,6 +270,20 @@
       "title": "Enrollment Required",
       "description": "You need to enroll in this chapter to access this lesson. Subscribe now to unlock all lessons and start learning.",
       "cta": "Browse Content"
+    },
+    "completeLesson": "Mark lesson complete",
+    "completing": "Saving…",
+    "completeSuccess": "Lesson marked complete",
+    "nextLessonLockedQuiz": "Complete the quiz first to unlock the next lesson.",
+    "lock": {
+      "title": "Lesson locked",
+      "enrollmentRequired": "Enroll in this chapter to access this lesson.",
+      "previousLesson": "Complete the previous lesson first to unlock this lesson.",
+      "requiredQuiz": "Complete the lesson quiz first to unlock the next lesson.",
+      "requiredQuizPass": "You must pass the lesson quiz to unlock the next lesson.",
+      "awaitingGrading": "Your quiz was submitted. The next lesson will unlock after grading if you pass.",
+      "attemptLimit": "You did not meet the pass requirement and have no attempts remaining.",
+      "unavailable": "This lesson is not available yet."
     }
   },
   "support": {
