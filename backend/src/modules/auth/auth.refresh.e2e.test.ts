@@ -175,4 +175,38 @@ describe("AUTH session/refresh lifecycle (E2E)", () => {
     // Exactly one active session row remains.
     expect(await prisma.refreshToken.count({ where: { userId: u.id } })).toBe(1);
   });
+
+  it("second login invalidates the first session — old access and refresh tokens are rejected", async () => {
+    const u = await createUser();
+
+    // First login — device A
+    const deviceA = await loginUser(u.email);
+    const accessA = cookieVal(deviceA.setCookie, "access_token")!;
+    const refreshA = cookieVal(deviceA.setCookie, "refresh_token")!;
+
+    // Second login from another device — increments tokenVersion
+    const deviceB = await loginUser(u.email);
+    expect(deviceB.status).toBe(200);
+
+    // Device A's access token should now be rejected (version mismatch)
+    const oldMe = await http("GET", "/api/v1/auth/me", {
+      cookie: cookieHeader({ access_token: accessA }),
+    });
+    expect(oldMe.status).toBe(401);
+
+    // Device A's refresh token should also be rejected (version mismatch before rotation)
+    const oldRefresh = await http("POST", "/api/v1/auth/refresh", {
+      cookie: cookieHeader({ refresh_token: refreshA }),
+    });
+    expect(oldRefresh.status).toBe(401);
+
+    // Device B's tokens should still work
+    const meB = await http("GET", "/api/v1/auth/me", {
+      cookie: cookieHeader({ access_token: cookieVal(deviceB.setCookie, "access_token")! }),
+    });
+    expect(meB.status).toBe(200);
+
+    // Exactly one refresh token row remains (device B's)
+    expect(await prisma.refreshToken.count({ where: { userId: u.id } })).toBe(1);
+  });
 });

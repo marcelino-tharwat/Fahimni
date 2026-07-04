@@ -15,6 +15,7 @@ model User {
   mobile              String               @unique
   role                Role                 @default(STUDENT)
   status              Status               @default(ACTIVE)
+  tokenVersion        Int                  @default(0)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   auditLogs           AuditLog[]
