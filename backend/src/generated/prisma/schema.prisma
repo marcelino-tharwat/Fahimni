@@ -12,12 +12,12 @@ model User {
   fullName            String
   email               String                   @unique
   password            String
-  mobile              String               @unique
-  role                Role                 @default(STUDENT)
-  status              Status               @default(ACTIVE)
-  tokenVersion        Int                  @default(0)
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  mobile              String                   @unique
+  role                Role                     @default(STUDENT)
+  status              Status                   @default(ACTIVE)
+  tokenVersion        Int                      @default(0)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
   auditLogs           AuditLog[]
   createdPromoCodes   PromoCode[]              @relation("PromoCodeCreatedBy")
   usedPromoCodes      PromoCode[]              @relation("PromoCodeUsedBy")

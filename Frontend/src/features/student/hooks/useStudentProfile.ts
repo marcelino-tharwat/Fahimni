@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppDispatch } from '@/shared/store/hooks';
-import { setStudentProfile, setStudentLoading, setStudentSaving } from '@/features/student/store/studentSlice';
+import { setStudentProfile, setStudentLoading } from '@/features/student/store/studentSlice';
 import { setCredentials } from '@/features/auth/store/authSlice';
 import { studentProfileApi } from '@/features/student/api/profile';
+import { STUDENT_PROFILE_OVERVIEW_KEY } from '@/features/student/hooks/useStudentProfileOverview';
 import type { UpdateStudentProfileInput, ChangePasswordInput } from '@/features/student/types/student';
 
 const STUDENT_PROFILE_KEY = ['student', 'profile'];
@@ -42,6 +43,9 @@ export function useUpdateStudentProfile() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: STUDENT_PROFILE_KEY });
+      // The profile page renders identity from the aggregated overview, so an
+      // edit must refresh that query too.
+      queryClient.invalidateQueries({ queryKey: STUDENT_PROFILE_OVERVIEW_KEY });
     },
   });
 }
