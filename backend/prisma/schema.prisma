@@ -8,18 +8,18 @@ datasource db {
 }
 
 model User {
-  id                  String               @id @default(uuid())
+  id                  String                   @id @default(uuid())
   fullName            String
-  email               String               @unique
+  email               String                   @unique
   password            String
-  mobile              String               @unique
-  role                Role                 @default(STUDENT)
-  status              Status               @default(ACTIVE)
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  mobile              String                   @unique
+  role                Role                     @default(STUDENT)
+  status              Status                   @default(ACTIVE)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
   auditLogs           AuditLog[]
-  createdPromoCodes   PromoCode[]          @relation("PromoCodeCreatedBy")
-  usedPromoCodes      PromoCode[]          @relation("PromoCodeUsedBy")
+  createdPromoCodes   PromoCode[]              @relation("PromoCodeCreatedBy")
+  usedPromoCodes      PromoCode[]              @relation("PromoCodeUsedBy")
   enrollments         Enrollment[]
   lessonProgress      LessonProgress[]
   otps                Otp[]
@@ -32,6 +32,7 @@ model User {
   paymentTransactions PaymentTransaction[]
   aiTutorUsage        AiTutorUsage[]
   aiConversations     AiConversation[]
+  materialDownloads   LessonMaterialDownload[]
 }
 
 model StudentProfile {
@@ -48,34 +49,34 @@ model StudentProfile {
 }
 
 model TeacherProfile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  subject   String?
-  bio       String?
-  photoUrl  String?
-  logoUrl   String?
+  id                     String   @id @default(uuid())
+  userId                 String   @unique
+  subject                String?
+  bio                    String?
+  photoUrl               String?
+  logoUrl                String?
   // STORY-65: teacher-configured daily AI-tutor question cap for this teacher's
   // students. Default 20 (matches AI_TUTOR_DAILY_QUERY_LIMIT platform default).
-  aiTutorDailyQueryLimit Int @default(20)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiTutorDailyQueryLimit Int      @default(20)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("teacher_profiles")
 }
 
 model Stage {
-  id          String    @id @default(uuid())
-  name        String
-  description String?
-  sortOrder   Int
-  teacherId   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
-  chapters         Chapter[]
-  studentProfiles  StudentProfile[]
-  teacher          User             @relation(fields: [teacherId], references: [id])
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  sortOrder       Int
+  teacherId       String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  chapters        Chapter[]
+  studentProfiles StudentProfile[]
+  teacher         User             @relation(fields: [teacherId], references: [id])
 
   @@index([teacherId, sortOrder])
   @@map("stages")
@@ -126,6 +127,7 @@ model Lesson {
 
   @@index([chapterId])
   @@index([chapterId, sortOrder])
+  @@index([requiredQuizId], map: "lessons_required_quiz_id_idx")
   @@map("lessons")
 }
 
@@ -199,18 +201,34 @@ model LessonProgress {
 }
 
 model LessonMaterial {
-  id          String    @id @default(cuid())
+  id          String                   @id @default(cuid())
   lessonId    String
   filePath    String
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime                 @default(now())
   deletedAt   DateTime?
   displayName String
-  fileSize    Int       @default(0)
-  mimeType    String    @default("application/pdf")
-  lesson      Lesson    @relation(fields: [lessonId], references: [id])
+  fileSize    Int                      @default(0)
+  mimeType    String                   @default("application/pdf")
+  lesson      Lesson                   @relation(fields: [lessonId], references: [id])
+  downloads   LessonMaterialDownload[]
 
   @@index([lessonId])
   @@map("lesson_materials")
+}
+
+model LessonMaterialDownload {
+  id                String         @id @default(cuid())
+  studentId         String         @map("student_id")
+  materialId        String         @map("material_id")
+  firstDownloadedAt DateTime       @default(now()) @map("first_downloaded_at")
+  lastDownloadedAt  DateTime       @updatedAt @map("last_downloaded_at")
+  student           User           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  material          LessonMaterial @relation(fields: [materialId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, materialId])
+  @@index([materialId])
+  @@index([studentId])
+  @@map("lesson_material_downloads")
 }
 
 model ContentChunk {
@@ -275,26 +293,26 @@ model RefreshToken {
 }
 
 model Quiz {
-  id              String           @id @default(uuid())
-  title           String
-  description     String?
-  chapterId       String?
-  contentScope    QuizContentScope @default(CHAPTER) @map("content_scope")
-  status          QuizStatus       @default(DRAFT)
-  durationMinutes Int?             @map("duration_minutes")
-  questionCount   Int              @default(0)
-  totalPoints     Int              @default(0)
-  passingScore    Int?             @map("passing_score")
-  createdBy       String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  publishedAt   DateTime?
-  questions     Question[]
-  attempts      QuizAttempt[]
-  quizLessons   QuizLesson[]
-  progressionGateLessons Lesson[] @relation("LessonProgressionQuiz")
-  chapter       Chapter?      @relation(fields: [chapterId], references: [id])
-  creator       User          @relation(fields: [createdBy], references: [id])
+  id                     String           @id @default(uuid())
+  title                  String
+  description            String?
+  chapterId              String?
+  contentScope           QuizContentScope @default(CHAPTER) @map("content_scope")
+  status                 QuizStatus       @default(DRAFT)
+  durationMinutes        Int?             @map("duration_minutes")
+  questionCount          Int              @default(0)
+  totalPoints            Int              @default(0)
+  passingScore           Int?             @map("passing_score")
+  createdBy              String
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  publishedAt            DateTime?
+  questions              Question[]
+  attempts               QuizAttempt[]
+  quizLessons            QuizLesson[]
+  progressionGateLessons Lesson[]         @relation("LessonProgressionQuiz")
+  chapter                Chapter?         @relation(fields: [chapterId], references: [id])
+  creator                User             @relation(fields: [createdBy], references: [id])
 
   @@index([chapterId, status])
   @@map("quizzes")
@@ -481,4 +499,3 @@ enum AiMessageStatus {
   COMPLETED
   FAILED
 }
-

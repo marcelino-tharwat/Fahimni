@@ -10,6 +10,8 @@
  * each shape so callers always receive a clean array.
  */
 
+import type { StudentLessonMaterial } from '@/features/student/api/materials';
+
 export type EnrollmentStatus = 'free' | 'purchased' | 'locked';
 
 export interface StudentLessonNode {
@@ -87,10 +89,5 @@ export interface StudentLessonDetail {
   requiredQuizId?: string | null;
   nextLessonId?: string | null;
   quizzes?: import('@/features/student/types/studentQuiz').LessonQuizzesSection;
-  attachments?: Array<{
-    id: string;
-    displayName: string;
-    url: string;
-    fileSize: number;
-  }>;
+  attachments?: StudentLessonMaterial[];
 }

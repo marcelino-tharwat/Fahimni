@@ -1,13 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ChevronLeft,
   ChevronRight,
   Clock,
   BookOpen,
   Layers,
-  FileText,
   AlertCircle,
   Lock,
 } from 'lucide-react';
@@ -20,6 +20,7 @@ import { contentApi } from '@/features/student/api/content';
 import type { StudentContentTreeItem } from '@/features/student/types/studentContent';
 import type { ApiError } from '@/shared/lib/api/client';
 import { LessonQuizSections } from '@/features/student/components/LessonQuizSections';
+import { LessonMaterialsSection } from '@/features/student/components/LessonMaterialsSection';
 
 function extractYouTubeId(url: string): string | null {
   const match = url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
@@ -110,6 +111,7 @@ export function LessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
   const { data: lesson, isLoading, isError, error } = useLesson(lessonId ?? '');
   const completeLesson = useCompleteLesson();
@@ -149,6 +151,15 @@ export function LessonPage() {
     lesson?.progressStatus === 'COMPLETED' || treeLesson?.progressStatus === 'COMPLETED';
 
   const lessonQuizzes = lesson?.quizzes ?? { available: [], required: null };
+  const gateQuizFailed = lessonQuizzes.required?.displayStatus === 'failed';
+
+  const handleMaterialDownloaded = useCallback(
+    (_materialId: string) => {
+      if (!lessonId) return;
+      void queryClient.invalidateQueries({ queryKey: ['student', 'lesson', lessonId] });
+    },
+    [lessonId, queryClient],
+  );
 
   if (isLoading) return <LessonSkeleton />;
 
@@ -277,7 +288,7 @@ export function LessonPage() {
           </div>
         </div>
         {lesson.description && (
-          <p className="font-cairo text-gray-500">{lesson.description}</p>
+          <p className="font-cairo whitespace-pre-line text-gray-500">{lesson.description}</p>
         )}
 
         <div className="flex flex-wrap items-center gap-4 font-cairo text-sm text-gray-500">
@@ -312,43 +323,11 @@ export function LessonPage() {
         )}
       </div>
 
-      {(lesson.attachments?.length ?? 0) > 0 && (
-        <Card padding="md" className="flex flex-col gap-3 shadow-lg border border-gray-200">
-          <div className="flex items-center gap-2 border-b border-border pb-3">
-            <FileText size={20} className="text-accent" />
-            <h2 className="font-cairo text-base font-semibold text-navy-900">
-              {t('student:lesson.pdfMaterials')}
-            </h2>
-          </div>
-          {(lesson.attachments ?? []).map((attachment) => (
-            <div
-              key={attachment.id}
-              className="flex items-center justify-between gap-3 rounded-input border border-border p-3"
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                <FileText size={20} className="shrink-0 text-accent" />
-                <div className="flex min-w-0 flex-col">
-                  <span className="truncate font-cairo text-sm font-medium text-navy-900">
-                    {attachment.displayName}
-                  </span>
-                </div>
-              </div>
-              <a
-                href={attachment.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-                className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-button bg-cyan-500 px-4 font-cairo text-sm font-medium text-white shadow-md transition-all hover:bg-cyan-600 hover:shadow-lg"
-              >
-                {t('student:lesson.download')}
-              </a>
-            </div>
-          ))}
-          <div className="border-t border-border pt-3 font-cairo text-xs text-gray-500">
-            {t('student:lesson.totalFiles', { n: toLocalNum(lesson.attachments?.length ?? 0) })}
-          </div>
-        </Card>
-      )}
+      <LessonMaterialsSection
+        lessonId={lesson.id}
+        materials={lesson.attachments ?? []}
+        onMaterialDownloaded={handleMaterialDownloaded}
+      />
 
       <LessonQuizSections
         available={lessonQuizzes.available}
@@ -414,7 +393,9 @@ export function LessonPage() {
           </Button>
         ) : !nextLessonId && isLessonCompleted && lesson.requiredQuizId ? (
           <p className="col-start-2 text-end font-cairo text-xs text-gray-500">
-            {t('student:lesson.nextLessonLockedQuiz')}
+            {gateQuizFailed
+              ? t('student:lesson.nextLessonLockedQuizFailed')
+              : t('student:lesson.nextLessonLockedQuiz')}
           </p>
         ) : (
           <div />

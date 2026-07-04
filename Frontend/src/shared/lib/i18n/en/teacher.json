@@ -453,6 +453,19 @@
         "storageUsed": "{{used}} MB / 500 MB used",
         "deleteConfirm": "Delete this file?"
       },
+      "materialStatus": {
+        "existingFiles": "Current lesson files",
+        "title": "Download status — {{name}}",
+        "loading": "Loading download status…",
+        "error": "Could not load download status",
+        "enrolled": "{{n}} enrolled students",
+        "downloaded": "{{n}} downloaded",
+        "notDownloaded": "{{n}} not downloaded",
+        "studentDownloaded": "Downloaded",
+        "studentNotDownloaded": "Not downloaded",
+        "firstDownload": "First download",
+        "lastDownload": "Last download"
+      },
       "pdfErrors": {
         "fileTooLarge": "File exceeds 50MB limit",
         "maxFiles": "Maximum 10 files allowed",

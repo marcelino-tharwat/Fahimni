@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../../config/database.js";
 import { FilesService } from "./files.service.js";
+import { assertMaterialPathOwnedByTeacher } from "../materials/material-access.service.js";
 
 const filesService = new FilesService();
 
@@ -51,7 +52,8 @@ export class FilesController {
         return;
       }
 
-      const signedUrl = await filesService.getSignedUrl(path);
+      await assertMaterialPathOwnedByTeacher(req.user!.id, path);
+      const signedUrl = await filesService.getSignedUrl(path, 600);
 
       res.status(200).json({ signedUrl });
     } catch (error) {

@@ -8,9 +8,26 @@ import {
   seedId,
 } from "../src/seed/chemistry-ids.js";
 import {
-  ALL_QUIZ_IDS,
-  buildQuestions,
-} from "../src/seed/chemistry-seed.fixtures.js";
+  ALL_CHEMISTRY_QUIZ_IDS,
+  buildChemistryQuizCatalog,
+  buildQuizLessonLinks,
+  chemistryGateQuestionMeta,
+} from "../src/seed/chemistry-quiz-catalog.js";
+import {
+  allChemistryChapterIds,
+  allChemistryLessonIds,
+  buildChemistryLessonCatalog,
+  CHEMISTRY_CHAPTER_DEFS,
+  chemistryLessonId,
+} from "../src/seed/chemistry-lesson-catalog.js";
+import { buildQuestions } from "../src/seed/chemistry-seed.fixtures.js";
+import {
+  ALL_CHEMISTRY_MATERIAL_IDS,
+  buildChemistryLessonMaterials,
+  CHEMISTRY_CH1_L1_MATERIAL_A,
+  ensureChemistryPdfFixturesInStorage,
+  SEED_REAL_PDF_MATERIALS_ENABLED,
+} from "../src/seed/chemistry-material-seed.js";
 import type { Prisma } from "../src/generated/prisma/client.js";
 
 /**
@@ -66,40 +83,14 @@ const STUDENTS = Array.from({ length: 8 }, (_v, i) => {
 const STAGE = {
   id: seedId("stage"),
   name: "كيمياء الصف الثالث الثانوي",
-  description: "محتوى تجريبي لكيمياء الصف الثالث الثانوي",
+  description: "محتوى تجريبي لكيمياء الصف الثالث الثانوي — دروس كاملة مع فيديو واختبارات تدريبية وبوابات تقدم.",
 };
 
-const CHAPTERS = [
-  {
-    id: seedId("chapter-01"),
-    name: "العناصر الانتقالية",
-    lessons: ["خواص العناصر الانتقالية", "حالات التأكسد", "الحديد وسبائكه"],
-  },
-  {
-    id: seedId("chapter-02"),
-    name: "التحليل الكيميائي",
-    lessons: ["التحليل النوعي", "التحليل الكمي", "المعايرة والحسابات"],
-  },
-  {
-    id: seedId("chapter-03"),
-    name: "الاتزان الكيميائي",
-    lessons: [
-      "مفهوم الاتزان الديناميكي",
-      "ثابت الاتزان",
-      "العوامل المؤثرة على الاتزان",
-    ],
-  },
-  {
-    id: seedId("chapter-04"),
-    name: "الكيمياء الكهربية",
-    lessons: ["الخلايا الجلفانية", "التحليل الكهربي", "قوانين فاراداي"],
-  },
-  {
-    id: seedId("chapter-05"),
-    name: "الكيمياء العضوية",
-    lessons: ["الهيدروكربونات", "الكحولات والأحماض", "البوليمرات"],
-  },
-];
+const CHAPTERS = CHEMISTRY_CHAPTER_DEFS.map((c) => ({
+  id: c.id,
+  name: c.name,
+  lessons: [...c.lessonTitles],
+}));
 
 const now = new Date();
 const daysAgo = (d: number) =>
@@ -107,14 +98,13 @@ const daysAgo = (d: number) =>
 const utcDate = (d: Date) =>
   new Date(`${d.toISOString().slice(0, 10)}T00:00:00.000Z`);
 
-const lessonId = (ci: number, li: number) =>
-  seedId(`lesson-ch${ci + 1}-${String(li + 1).padStart(2, "0")}`);
+const lessonId = chemistryLessonId;
 
+const ALL_CHAPTER_IDS = allChemistryChapterIds();
+const ALL_LESSON_IDS = allChemistryLessonIds();
+const ALL_QUIZ_IDS = ALL_CHEMISTRY_QUIZ_IDS;
 const ALL_SEED_USER_IDS = [ADMIN.id, TEACHER.id, ...STUDENTS.map((s) => s.id)];
-const ALL_CHAPTER_IDS = CHAPTERS.map((c) => c.id);
-const ALL_LESSON_IDS = CHAPTERS.flatMap((c, ci) =>
-  c.lessons.map((_t, li) => lessonId(ci, li)),
-);
+
 function result(
   questionId: string,
   type: string,
@@ -222,6 +212,7 @@ async function cleanup(): Promise<void> {
       },
     });
     await tx.question.deleteMany({ where: { quiz: ownedQuiz } });
+    await tx.quizLesson.deleteMany({ where: { quiz: ownedQuiz } });
     await tx.quiz.deleteMany({ where: ownedQuiz });
     await tx.$executeRaw`
       DELETE FROM content_chunks WHERE "lessonId" IN (
@@ -232,6 +223,14 @@ async function cleanup(): Promise<void> {
            OR l.id LIKE 'seed-chem-%'
            OR s."teacherId" = ANY(${seedUserIds}::text[])
       )`;
+    await tx.lessonMaterialDownload.deleteMany({
+      where: {
+        OR: [
+          { studentId: { in: seedUserIds } },
+          { materialId: { in: [...ALL_CHEMISTRY_MATERIAL_IDS] } },
+        ],
+      },
+    });
     await tx.lessonMaterial.deleteMany({ where: { lesson: ownedLesson } });
     await tx.lesson.deleteMany({ where: ownedLesson });
     await tx.promoCode.deleteMany({
@@ -287,6 +286,7 @@ async function seed(): Promise<void> {
   validateAllSeedIds();
   const passwordHash = await bcrypt.hash(LOCAL_PASSWORD, BCRYPT_ROUNDS);
 
+  const lessonCatalog = buildChemistryLessonCatalog();
   const chapterRows = CHAPTERS.map((c, ci) => ({
     id: c.id,
     name: c.name,
@@ -294,16 +294,18 @@ async function seed(): Promise<void> {
     stageId: STAGE.id,
     price: ci === 0 ? null : 150,
   }));
-  const lessonRows = CHAPTERS.flatMap((c, ci) =>
-    c.lessons.map((title, li) => ({
-      id: lessonId(ci, li),
-      title,
-      description: `درس تجريبي: ${title} — ${c.name}.`,
-      durationMinutes: 20 + li * 5,
-      sortOrder: li + 1,
-      chapterId: c.id,
-    })),
-  );
+  const lessonRows = lessonCatalog.map((l) => ({
+    id: l.id,
+    title: l.title,
+    description: l.description,
+    durationMinutes: l.durationMinutes,
+    youtubeUrl: l.youtubeUrl,
+    sortOrder: l.sortOrder,
+    chapterId: l.chapterId,
+  }));
+  const lessonsWithRequiredQuiz = lessonCatalog.filter((l) => l.requiredQuizId);
+  const quizCatalog = buildChemistryQuizCatalog();
+  const quizLessonLinks = buildQuizLessonLinks();
 
   logger.info("seed_insert_started");
 
@@ -344,27 +346,60 @@ async function seed(): Promise<void> {
       await tx.chapter.createMany({ data: chapterRows });
       await tx.lesson.createMany({ data: lessonRows });
 
-      for (let ci = 0; ci < CHAPTERS.length; ci++) {
-        const ch = CHAPTERS[ci]!;
-        const quizId = seedId(`quiz-ch${ci + 1}`);
-        const isDraft = ci === 4;
-        const questions = buildQuestions(quizId, ci);
-        const totalPoints = questions.reduce((s, q) => s + q.points, 0);
+      for (const quiz of quizCatalog) {
+        const totalPoints = quiz.questions.reduce((s, q) => s + q.points, 0);
         await tx.quiz.create({
           data: {
-            id: quizId,
-            title: `اختبار ${ch.name} (تجريبي)`,
-            description: `أسئلة تجريبية على وحدة ${ch.name}.`,
-            chapterId: ch.id,
-            status: isDraft ? "DRAFT" : "PUBLISHED",
-            durationMinutes: 30,
-            questionCount: questions.length,
+            id: quiz.id,
+            title: quiz.title,
+            description: quiz.description,
+            chapterId: quiz.chapterId,
+            contentScope: quiz.contentScope,
+            status: quiz.status,
+            durationMinutes: quiz.durationMinutes,
+            passingScore: quiz.passingScore,
+            questionCount: quiz.questions.length,
             totalPoints,
             createdBy: TEACHER.id,
-            publishedAt: isDraft ? null : daysAgo(20 - ci),
+            publishedAt: quiz.status === "PUBLISHED" ? daysAgo(20) : null,
           },
         });
-        await tx.question.createMany({ data: questions });
+        if (quiz.questions.length > 0) {
+          await tx.question.createMany({ data: quiz.questions });
+        }
+      }
+
+      if (quizLessonLinks.length > 0) {
+        await tx.quizLesson.createMany({ data: quizLessonLinks });
+      }
+
+      for (const lesson of lessonsWithRequiredQuiz) {
+        await tx.lesson.update({
+          where: { id: lesson.id },
+          data: { requiredQuizId: lesson.requiredQuizId },
+        });
+      }
+
+      if (SEED_REAL_PDF_MATERIALS_ENABLED) {
+        await ensureChemistryPdfFixturesInStorage(TEACHER.id);
+        await tx.lessonMaterial.createMany({
+          data: buildChemistryLessonMaterials(TEACHER.id),
+        });
+
+        const materialDownloadedAt = daysAgo(3);
+        await tx.lessonMaterialDownload.create({
+          data: {
+            id: seedId("material-download-student01-a"),
+            studentId: STUDENTS[0]!.id,
+            materialId: CHEMISTRY_CH1_L1_MATERIAL_A,
+            firstDownloadedAt: materialDownloadedAt,
+            lastDownloadedAt: materialDownloadedAt,
+          },
+        });
+      } else {
+        logger.info("seed_materials_skipped", {
+          reason: "SEED_REAL_PDF_MATERIALS is not true",
+        });
       }
 
       const enrollments: Prisma.EnrollmentCreateManyInput[] = [];
@@ -434,33 +469,37 @@ async function seed(): Promise<void> {
 
       await tx.lessonProgress.createMany({
         data: [
+          // S2 — completed lesson without required gate (ch2 lesson 1)
           {
-            id: seedId("lesson-progress-student01-a"),
-            studentId: STUDENTS[0]!.id,
-            lessonId: lessonId(0, 0),
-            completed: true,
-            updatedAt: daysAgo(1),
-          },
-          {
-            id: seedId("lesson-progress-student01-b"),
-            studentId: STUDENTS[0]!.id,
-            lessonId: lessonId(0, 1),
-            completed: true,
-            updatedAt: daysAgo(1),
-          },
-          {
-            id: seedId("lesson-progress-student02-a"),
+            id: seedId("lesson-progress-student02-ch2-l1"),
             studentId: STUDENTS[1]!.id,
-            lessonId: lessonId(0, 0),
-            completed: false,
-            updatedAt: daysAgo(4),
+            lessonId: lessonId(1, 0),
+            completed: true,
+            updatedAt: daysAgo(2),
           },
+          // S3 — completed ch1 lesson 1; required gate quiz not attempted
           {
-            id: seedId("lesson-progress-student03-a"),
+            id: seedId("lesson-progress-student03-ch1-l1"),
             studentId: STUDENTS[2]!.id,
             lessonId: lessonId(0, 0),
             completed: true,
-            updatedAt: daysAgo(6),
+            updatedAt: daysAgo(3),
+          },
+          // S4 — completed ch1 lesson 1; required gate failed
+          {
+            id: seedId("lesson-progress-student04-ch1-l1"),
+            studentId: STUDENTS[3]!.id,
+            lessonId: lessonId(0, 0),
+            completed: true,
+            updatedAt: daysAgo(4),
+          },
+          // S5 — completed ch1 lesson 1; required gate passed
+          {
+            id: seedId("lesson-progress-student05-ch1-l1"),
+            studentId: STUDENTS[4]!.id,
+            lessonId: lessonId(0, 0),
+            completed: true,
+            updatedAt: daysAgo(5),
           },
         ],
       });
@@ -511,6 +550,56 @@ async function seed(): Promise<void> {
           completedAt: daysAgo(3),
         });
       }
+      const gateMeta = chemistryGateQuestionMeta();
+      const gateQuizId = seedId("quiz-ch1-required-gate");
+
+      {
+        const ans = [
+          result(
+            gateMeta.questionId,
+            "TRUE_FALSE",
+            gateMeta.wrongAnswer,
+            "incorrect",
+            0,
+            10,
+          ),
+        ];
+        attempts.push({
+          id: seedId("attempt-gate-failed"),
+          quizId: gateQuizId,
+          studentId: STUDENTS[3]!.id,
+          answers: ans as unknown as Prisma.InputJsonValue,
+          score: 0,
+          totalPoints: 10,
+          status: "GRADED",
+          startedAt: daysAgo(4),
+          completedAt: daysAgo(4),
+        });
+      }
+      {
+        const ans = [
+          result(
+            gateMeta.questionId,
+            "TRUE_FALSE",
+            gateMeta.correctAnswer,
+            "correct",
+            10,
+            10,
+          ),
+        ];
+        attempts.push({
+          id: seedId("attempt-gate-passed"),
+          quizId: gateQuizId,
+          studentId: STUDENTS[4]!.id,
+          answers: ans as unknown as Prisma.InputJsonValue,
+          score: 10,
+          totalPoints: 10,
+          status: "GRADED",
+          startedAt: daysAgo(5),
+          completedAt: daysAgo(5),
+        });
+      }
+
       {
         const ans = q3.map((x) =>
           x.type === "ESSAY"
@@ -536,7 +625,7 @@ async function seed(): Promise<void> {
         attempts.push({
           id: seedId("attempt-pending"),
           quizId: quiz3,
-          studentId: STUDENTS[2]!.id,
+          studentId: STUDENTS[6]!.id,
           answers: ans as unknown as Prisma.InputJsonValue,
           score,
           totalPoints: total,
@@ -571,7 +660,7 @@ async function seed(): Promise<void> {
         attempts.push({
           id: seedId("attempt-graded-essay"),
           quizId: quiz3,
-          studentId: STUDENTS[3]!.id,
+          studentId: STUDENTS[5]!.id,
           answers: ans as unknown as Prisma.InputJsonValue,
           score,
           totalPoints: total,
@@ -606,7 +695,7 @@ async function seed(): Promise<void> {
         attempts.push({
           id: seedId("attempt-graded-low"),
           quizId: quiz4,
-          studentId: STUDENTS[4]!.id,
+          studentId: STUDENTS[6]!.id,
           answers: ans as unknown as Prisma.InputJsonValue,
           score,
           totalPoints: total,
