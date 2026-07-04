@@ -48,21 +48,31 @@ export class AuthService {
       throw error;
     }
 
-    await prisma.refreshToken.deleteMany({ where: { userId: user.id } });
+    // Atomic transaction: increment version, revoke all prior sessions, issue new
+    const result = await prisma.$transaction(async (tx) => {
+      const { tokenVersion } = await tx.user.update({
+        where: { id: user.id },
+        data: { tokenVersion: { increment: 1 } },
+        select: { tokenVersion: true },
+      });
 
-    const accessToken = this.tokenService.generateAccessToken(user.id);
-    const refreshToken = this.tokenService.generateRefreshToken(user.id);
+      await tx.refreshToken.deleteMany({ where: { userId: user.id } });
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-    // Persist only the SHA-256 hash — never the raw refresh token.
-    await prisma.refreshToken.create({
-      data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
+      const accessToken = this.tokenService.generateAccessToken(user.id, tokenVersion);
+      const refreshToken = this.tokenService.generateRefreshToken(user.id, tokenVersion);
+
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+      await tx.refreshToken.create({
+        data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
+      });
+
+      return { accessToken, refreshToken };
     });
 
     const { password: _, ...safeUser } = user;
 
-    return { user: safeUser, accessToken, refreshToken };
+    return { user: safeUser, ...result };
   }
 
   public async registerUser(input: RegisterInput) {
@@ -127,14 +137,19 @@ export class AuthService {
       return created;
     });
 
-    // Generate JWT: payload = { userId, role }, expiry from env (fallback 30d)
+    // Token version starts at 0 (schema default) for a brand-new user.
+    const { tokenVersion } = await prisma.user.findUniqueOrThrow({
+      where: { id: user.id },
+      select: { tokenVersion: true },
+    });
+
     const accessToken = this.tokenService.generateRegisterToken(
       user.id,
       user.role,
+      tokenVersion,
     );
 
-    // Generate and store refresh token
-    const refreshToken = this.tokenService.generateRefreshToken(user.id);
+    const refreshToken = this.tokenService.generateRefreshToken(user.id, tokenVersion);
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
@@ -142,7 +157,6 @@ export class AuthService {
       data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
     });
 
-    // Return user WITHOUT password + accessToken
     return { user, accessToken, refreshToken };
   }
 
@@ -305,12 +319,36 @@ export class AuthService {
     const userId = typeof payload.sub === "string" ? payload.sub : undefined;
     if (!userId) throw new AppError("Invalid refresh token", 401);
 
-    // 2. Rotate atomically IN PLACE — preserves the row id and createdAt so the
+    // 2. Extract and validate tokenVersion BEFORE any rotation.
+    //    If another login has superseded this session, reject immediately.
+    const payloadVersion = typeof payload.ver === "number" ? payload.ver : undefined;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true, fullName: true, email: true, mobile: true,
+        role: true, status: true, createdAt: true, updatedAt: true,
+        tokenVersion: true,
+      },
+    });
+    if (!user) {
+      throw new AppError("Invalid refresh token", 401);
+    }
+    if (payloadVersion !== undefined && user.tokenVersion !== payloadVersion) {
+      throw new AppError("Session superseded by new login", 401);
+    }
+    if (user.status === "INACTIVE" || user.status === "BANNED") {
+      const error = new Error("Account is inactive. Contact support.") as ApiError;
+      error.status = 403;
+      throw error;
+    }
+
+    // 3. Rotate atomically IN PLACE — preserves the row id and createdAt so the
     //    STORY-66 last-login proxy keeps reflecting the original login, not each
     //    refresh. A replayed/already-rotated/expired token matches zero rows, so
     //    concurrent reuse yields exactly one valid successor.
     const oldHash = hashRefreshToken(incomingRefreshToken);
-    const newRefreshToken = this.tokenService.generateRefreshToken(userId);
+    const newRefreshToken = this.tokenService.generateRefreshToken(userId, user.tokenVersion);
     const newHash = hashRefreshToken(newRefreshToken);
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
@@ -323,23 +361,7 @@ export class AuthService {
       throw new AppError("Invalid refresh token", 401);
     }
 
-    // 3. The user must still exist and be allowed to authenticate.
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: userPublicFields,
-    });
-    if (!user) {
-      await prisma.refreshToken.deleteMany({ where: { token: newHash } });
-      throw new AppError("Invalid refresh token", 401);
-    }
-    if (user.status === "INACTIVE" || user.status === "BANNED") {
-      await prisma.refreshToken.deleteMany({ where: { token: newHash } });
-      const error = new Error("Account is inactive. Contact support.") as ApiError;
-      error.status = 403;
-      throw error;
-    }
-
-    const newAccessToken = this.tokenService.generateAccessToken(userId);
+    const newAccessToken = this.tokenService.generateAccessToken(userId, user.tokenVersion);
     return { accessToken: newAccessToken, refreshToken: newRefreshToken, user };
   }
 

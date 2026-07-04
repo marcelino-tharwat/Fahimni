@@ -5,12 +5,9 @@ import { logger } from "../src/config/logger.js";
 import { assertLocalDatabase } from "../src/seed/local-guard.js";
 import { isValidUuid, seedId } from "../src/seed/chemistry-ids.js";
 import {
-  allChemistryChapterIds,
-  allChemistryLessonIds,
-  buildChemistryLessonShellCatalog,
-  CHEMISTRY_CHAPTER_DEFS,
-} from "../src/seed/chemistry-lesson-catalog.js";
-import { ALL_CHEMISTRY_MATERIAL_IDS } from "../src/seed/chemistry-material-seed.js";
+  ALL_QUIZ_IDS,
+  buildQuestions,
+} from "../src/seed/chemistry-seed.fixtures.js";
 import type { Prisma } from "../src/generated/prisma/client.js";
 
 /**
@@ -201,7 +198,9 @@ async function cleanup(): Promise<void> {
     });
     await tx.chapter.deleteMany({ where: ownedChapter });
     await tx.studentProfile.deleteMany({
-      where: { userId: { in: seedUserIds } },
+      where: {
+        OR: [{ userId: { in: seedUserIds } }, { stage: ownedStage }],
+      },
     });
     await tx.stage.deleteMany({ where: ownedStage });
     await tx.auditLog.deleteMany({

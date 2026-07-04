@@ -128,6 +128,7 @@ exports.Prisma.UserScalarFieldEnum = {
   mobile: 'mobile',
   role: 'role',
   status: 'status',
+  tokenVersion: 'tokenVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
