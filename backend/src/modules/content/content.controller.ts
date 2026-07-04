@@ -5,8 +5,6 @@ import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { logger } from "../../config/logger.js";
-import { FilesService } from "../files/files.service.js";
-import type { LessonResponseDTO } from "../lessons/lessons.types.js";
 import type {
   ContentTreeResponse,
   StudentContentTreeResponse,
@@ -21,8 +19,7 @@ import {
 } from "../progression/lesson-progression.js";
 import { loadChapterProgressionContext } from "../progression/progression-context.js";
 import { quizVisibilityService } from "../quizzes/quiz-visibility.service.js";
-
-const filesService = new FilesService();
+import { buildStudentMaterialsForLesson } from "../materials/materials.service.js";
 
 export class ContentController {
   getTree = asyncHandler(
@@ -393,38 +390,29 @@ export class ContentController {
         lessonMaterials ?? []
       ) as Array<{
         id: string;
-        filePath: string;
         displayName: string;
         fileSize: number;
         mimeType: string;
       }>;
 
-      const attachments = await Promise.all(
-        materials.map(async (m) => ({
-          id: m.id,
-          filePath: m.filePath,
-          displayName: m.displayName,
-          fileSize: m.fileSize,
-          mimeType: m.mimeType,
-          url: await filesService.getSignedUrl(m.filePath),
-        })),
+      const attachments = await buildStudentMaterialsForLesson(
+        studentId,
+        materials,
       );
 
-      res
-        .status(200)
-        .json(
-          okResponse("Lesson fetched successfully", {
-            ...lessonFields,
-            attachments,
-            accessStatus: access.accessStatus,
-            isUnlocked: access.isUnlocked,
-            lockReason: access.lockReason,
-            progressStatus: access.progressStatus,
-            requiredQuizId: access.requiredQuizId,
-            nextLessonId: access.nextLessonId,
-            quizzes,
-          } as LessonResponseDTO),
-        );
+      res.status(200).json(
+        okResponse("Lesson fetched successfully", {
+          ...lessonFields,
+          attachments,
+          accessStatus: access.accessStatus,
+          isUnlocked: access.isUnlocked,
+          lockReason: access.lockReason,
+          progressStatus: access.progressStatus,
+          requiredQuizId: access.requiredQuizId,
+          nextLessonId: access.nextLessonId,
+          quizzes,
+        }),
+      );
     },
   );
 

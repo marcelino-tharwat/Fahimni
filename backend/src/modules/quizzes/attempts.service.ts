@@ -39,6 +39,7 @@ import type {
 } from "./attempts.validation.js";
 import {
   canStartProgressionQuiz,
+  evaluateQuizRequirement,
   findGateLessonForQuiz,
 } from "../progression/lesson-progression.js";
 import { loadChapterProgressionContext } from "../progression/progression-context.js";
@@ -430,27 +431,72 @@ export class AttemptsService {
       resumed = true;
     } else {
       // A finished attempt (COMPLETED awaiting essays, or fully GRADED) blocks a
-      // new one — "no retakes in MVP" (STORY-48).
+      // new one — except failed progression gate quizzes may be retaken in place.
       const finished = await prisma.quizAttempt.findFirst({
         where: { quizId, studentId, status: { in: ["COMPLETED", "GRADED"] } },
-        select: { id: true },
+        select: {
+          id: true,
+          status: true,
+          score: true,
+          totalPoints: true,
+        },
       });
       if (finished) {
-        logger.warn("quiz_access_check_denied", {
-          ...accessLog,
-          chapterId: quiz.chapterId,
-          attemptId: finished.id,
-          safeReasonCode: "ATTEMPT_ALREADY_SUBMITTED",
-        });
-        throw new AppError(
-          "You have already attempted this quiz",
-          409,
-          "ATTEMPT_ALREADY_SUBMITTED",
-          { attemptId: finished.id },
-        );
-      }
+        const canRetakeFailedGate =
+          gateLessonId !== null &&
+          finished.status === "GRADED" &&
+          progressionCtx.quizzesById.has(quizId) &&
+          !evaluateQuizRequirement(quizId, progressionCtx).satisfied;
 
-      try {
+        if (canRetakeFailedGate) {
+          const startedAt = serverNow;
+          const expiresAt = computeExpiresAt(startedAt, durationSnapshot);
+          attempt = await prisma.quizAttempt.update({
+            where: { id: finished.id },
+            data: {
+              answers: emptyDraftPayload() as unknown as Prisma.InputJsonValue,
+              status: "IN_PROGRESS",
+              score: null,
+              totalPoints,
+              startedAt,
+              completedAt: null,
+              submissionReason: null,
+              durationMinutesSnapshot: durationSnapshot,
+              expiresAt,
+              lastSavedAt: null,
+            },
+            select: {
+              id: true,
+              status: true,
+              startedAt: true,
+              totalPoints: true,
+              answers: true,
+              durationMinutesSnapshot: true,
+              expiresAt: true,
+              lastSavedAt: true,
+            },
+          });
+          logger.info("quiz_gate_attempt_reset_for_retake", {
+            ...accessLog,
+            attemptId: finished.id,
+            gateLessonId,
+          });
+        } else {
+          logger.warn("quiz_access_check_denied", {
+            ...accessLog,
+            chapterId: quiz.chapterId,
+            attemptId: finished.id,
+            safeReasonCode: "ATTEMPT_ALREADY_SUBMITTED",
+          });
+          throw new AppError(
+            "You have already attempted this quiz",
+            409,
+            "ATTEMPT_ALREADY_SUBMITTED",
+            { attemptId: finished.id },
+          );
+        }
+      } else {
+        try {
         const startedAt = serverNow;
         const expiresAt = computeExpiresAt(startedAt, durationSnapshot);
         attempt = await prisma.quizAttempt.create({
@@ -484,7 +530,7 @@ export class AttemptsService {
           startedAt: startedAt.toISOString(),
           expiresAt: expiresAt.toISOString(),
         });
-      } catch (err) {
+        } catch (err) {
         // Concurrency: a simultaneous start won the @@unique([quizId,studentId])
         // race. Recover idempotently instead of leaking a P2002/500: return the
         // racing in-progress attempt (resume), or 409 if it was already finished.
@@ -523,6 +569,7 @@ export class AttemptsService {
           }
         } else {
           throw err;
+        }
         }
       }
     }

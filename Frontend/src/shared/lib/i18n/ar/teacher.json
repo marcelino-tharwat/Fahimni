@@ -453,6 +453,19 @@
         "storageUsed": "{{used}} ميجابايت / 500 ميجابايت مستخدم",
         "deleteConfirm": "حذف هذا الملف؟"
       },
+      "materialStatus": {
+        "existingFiles": "ملفات الدرس الحالية",
+        "title": "حالة التحميل — {{name}}",
+        "loading": "جارٍ تحميل حالة التحميل…",
+        "error": "تعذر تحميل حالة التحميل",
+        "enrolled": "{{n}} طالب مسجّل",
+        "downloaded": "{{n}} تم التحميل",
+        "notDownloaded": "{{n}} لم يتم التحميل",
+        "studentDownloaded": "تم التحميل",
+        "studentNotDownloaded": "لم يتم التحميل",
+        "firstDownload": "تاريخ أول تحميل",
+        "lastDownload": "آخر تحميل"
+      },
       "pdfErrors": {
         "fileTooLarge": "الملف يتجاوز الحد الأقصى 50 ميجابايت",
         "maxFiles": "الحد الأقصى 10 ملفات",

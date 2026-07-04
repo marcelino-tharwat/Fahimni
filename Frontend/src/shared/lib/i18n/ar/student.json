@@ -254,6 +254,8 @@
   "lesson": {
     "quizPrompt": "اختبر فهمك لمحتوى هذا الفصل",
     "quizAlreadyTaken": "لقد أنهيت هذا الاختبار — يمكنك مراجعة نتيجتك",
+    "quizGateFailedHint": "لم تجتز اختبار البوابة — يجب الحصول على درجة النجاح لفتح الدرس التالي",
+    "quizGateRetakeHint": "أعد المحاولة واجتز الاختبار لفتح الدرس التالي",
     "quizInProgress": "لديك محاولة قيد التنفيذ — أكمل الاختبار",
     "notFound": {
       "title": "الدرس غير موجود",
@@ -265,6 +267,19 @@
     "minutes": "دقيقة",
     "pdfMaterials": "ملفات الدرس",
     "download": "تحميل",
+    "materials": {
+      "empty": "لا توجد ملفات لهذا الدرس",
+      "preview": "معاينة",
+      "status": {
+        "notDownloaded": "لم يتم التحميل",
+        "downloading": "جارٍ التحميل…",
+        "downloaded": "تم التحميل",
+        "downloadedAt": "تم التحميل: {{date}}",
+        "error": "تعذر التحميل",
+        "previewError": "تعذرت المعاينة",
+        "unavailable": "غير متاح"
+      }
+    },
     "totalFiles": "{{n}} ملف",
     "totalSize": "{{size}} إجمالي",
     "previousLesson": "الدرس السابق",
@@ -283,6 +298,7 @@
     "requiredQuizHint": "يجب إكمال هذا الاختبار لفتح الدرس التالي.",
     "optionalQuizHint": "تدريب اختياري — إكمال الدرس كافٍ للمتابعة. هذا الاختبار لا يمنع الدرس التالي.",
     "nextLessonLockedQuiz": "أكمل الاختبار أولًا لفتح الدرس التالي.",
+    "nextLessonLockedQuizFailed": "يجب اجتياز اختبار البوابة لفتح الدرس التالي — اضغط «إعادة المحاولة».",
     "lock": {
       "title": "الدرس مغلق",
       "enrollmentRequired": "يجب الاشتراك في هذا الباب لفتح الدرس.",

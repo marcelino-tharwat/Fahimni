@@ -262,6 +262,23 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
               files={pdfUpload.files}
               onRemove={pdfUpload.removeFile}
             />
+            {(lesson.attachments ?? []).length > 0 && (
+              <div className="space-y-2 border-t border-gray-100 pt-3">
+                <p className="font-cairo text-xs font-medium text-gray-600">
+                  {t('contentTree.editor.materialStatus.existingFiles')}
+                </p>
+                <ul className="space-y-1">
+                  {(lesson.attachments ?? []).map((attachment) => (
+                    <li
+                      key={attachment.id}
+                      className="truncate font-cairo text-sm text-navy-900"
+                    >
+                      {attachment.displayName}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <div className="space-y-3">

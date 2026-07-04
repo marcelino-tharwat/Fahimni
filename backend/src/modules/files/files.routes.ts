@@ -17,7 +17,12 @@ router.post(
   uploadSingle,
   controller.uploadSingle,
 );
-router.get("/signed-url", controller.getSignedUrl);
+router.get(
+  "/signed-url",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  controller.getSignedUrl,
+);
 router.post(
   "/upload/pdf/batch",
   authenticateMiddleware,

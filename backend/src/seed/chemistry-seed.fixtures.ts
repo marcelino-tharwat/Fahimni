@@ -4,11 +4,9 @@ import {
   seedId,
 } from "./chemistry-ids.js";
 
-export const CHEMISTRY_CHAPTER_COUNT = 5;
+export { ALL_CHEMISTRY_QUIZ_IDS as ALL_QUIZ_IDS } from "./chemistry-quiz-catalog.js";
 
-export const ALL_QUIZ_IDS = Array.from({ length: CHEMISTRY_CHAPTER_COUNT }, (_c, ci) =>
-  seedId(`quiz-ch${ci + 1}`),
-);
+export const CHEMISTRY_CHAPTER_COUNT = 5;
 
 export interface SeedQuestion {
   id: string;
