@@ -9,6 +9,7 @@ import { TeacherStageLayout } from '@/shared/components/layout/TeacherStageLayou
 import { LessonLayout } from '@/shared/components/layout/LessonLayout';
 import { AdminLayout } from '@/shared/components/layout/AdminLayout';
 import { AuthGuard } from '@/shared/components/guards/AuthGuard';
+import { GuestGuard } from '@/shared/components/guards/GuestGuard';
 import { RoleGuard } from '@/shared/components/guards/RoleGuard';
 
 // Public / landing pages
@@ -64,10 +65,15 @@ const router = createBrowserRouter([
     element: <PublicLayout />,
     children: [
       { path: '/', element: <LandingPage /> },
-      { path: '/auth', element: <AuthPage /> },
       { path: '/forgot-password', element: <ResetPasswordPage /> },
       { path: '/t/:tenantSlug', element: <LandingPage /> },
-      { path: '/t/:tenantSlug/auth', element: <AuthPage /> },
+      {
+        element: <GuestGuard />,
+        children: [
+          { path: '/auth', element: <AuthPage /> },
+          { path: '/t/:tenantSlug/auth', element: <AuthPage /> },
+        ],
+      },
     ],
   },
   // Authenticated routes
