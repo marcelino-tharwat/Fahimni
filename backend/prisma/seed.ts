@@ -3,37 +3,20 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../src/config/database.js";
 import { logger } from "../src/config/logger.js";
 import { assertLocalDatabase } from "../src/seed/local-guard.js";
-import {
-  isValidUuid,
-  seedId,
-} from "../src/seed/chemistry-ids.js";
-import {
-  ALL_CHEMISTRY_QUIZ_IDS,
-  buildChemistryQuizCatalog,
-  buildQuizLessonLinks,
-  chemistryGateQuestionMeta,
-} from "../src/seed/chemistry-quiz-catalog.js";
+import { isValidUuid, seedId } from "../src/seed/chemistry-ids.js";
 import {
   allChemistryChapterIds,
   allChemistryLessonIds,
-  buildChemistryLessonCatalog,
+  buildChemistryLessonShellCatalog,
   CHEMISTRY_CHAPTER_DEFS,
-  chemistryLessonId,
 } from "../src/seed/chemistry-lesson-catalog.js";
-import { buildQuestions } from "../src/seed/chemistry-seed.fixtures.js";
-import {
-  ALL_CHEMISTRY_MATERIAL_IDS,
-  buildChemistryLessonMaterials,
-  CHEMISTRY_CH1_L1_MATERIAL_A,
-  ensureChemistryPdfFixturesInStorage,
-  SEED_REAL_PDF_MATERIALS_ENABLED,
-} from "../src/seed/chemistry-material-seed.js";
+import { ALL_CHEMISTRY_MATERIAL_IDS } from "../src/seed/chemistry-material-seed.js";
 import type { Prisma } from "../src/generated/prisma/client.js";
 
 /**
- * Fahimni development seed — محتوى تجريبي لكيمياء الصف الثالث الثانوي.
+ * Fahimni development seed — هيكل كيمياء فارغ (فصول + دروس بدون محتوى).
  *
- * Deterministic UUID v5 ids, idempotent, demo-only. NOT official curriculum.
+ * Deterministic UUID v5 ids, idempotent, demo-only. No quizzes or lesson content.
  */
 
 const BCRYPT_ROUNDS = 12;
@@ -52,8 +35,6 @@ const CHEMISTRY_SEED_EMAILS = [
   "chem.student07@fahimni.test",
   "chem.student08@fahimni.test",
 ] as const;
-
-const SEED_PROMO_CODES = ["CHEM2026", "CHEMREV", "ORGDEMO"] as const;
 
 const ADMIN = {
   id: seedId("admin"),
@@ -83,47 +64,21 @@ const STUDENTS = Array.from({ length: 8 }, (_v, i) => {
 const STAGE = {
   id: seedId("stage"),
   name: "كيمياء الصف الثالث الثانوي",
-  description: "محتوى تجريبي لكيمياء الصف الثالث الثانوي — دروس كاملة مع فيديو واختبارات تدريبية وبوابات تقدم.",
+  description: "هيكل تجريبي فارغ — أضف المحتوى والاختبارات من لوحة المعلم.",
 };
 
 const CHAPTERS = CHEMISTRY_CHAPTER_DEFS.map((c) => ({
   id: c.id,
   name: c.name,
-  lessons: [...c.lessonTitles],
 }));
 
 const now = new Date();
 const daysAgo = (d: number) =>
   new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
-const utcDate = (d: Date) =>
-  new Date(`${d.toISOString().slice(0, 10)}T00:00:00.000Z`);
-
-const lessonId = chemistryLessonId;
 
 const ALL_CHAPTER_IDS = allChemistryChapterIds();
 const ALL_LESSON_IDS = allChemistryLessonIds();
-const ALL_QUIZ_IDS = ALL_CHEMISTRY_QUIZ_IDS;
 const ALL_SEED_USER_IDS = [ADMIN.id, TEACHER.id, ...STUDENTS.map((s) => s.id)];
-
-function result(
-  questionId: string,
-  type: string,
-  answer: string,
-  r: string,
-  awarded: number | null,
-  max: number,
-  feedback: string | null = null,
-) {
-  return {
-    questionId,
-    type,
-    answer,
-    result: r,
-    awardedPoints: awarded,
-    maxPoints: max,
-    feedback,
-  };
-}
 
 async function resolveSeedUserIds(): Promise<string[]> {
   const rows = await prisma.user.findMany({
@@ -169,7 +124,6 @@ async function cleanup(): Promise<void> {
   };
   const ownedQuiz = {
     OR: [
-      { id: { in: ALL_QUIZ_IDS } },
       { id: { startsWith: LEGACY_SEED_PREFIX } },
       { createdBy: { in: seedUserIds } },
     ],
@@ -211,6 +165,10 @@ async function cleanup(): Promise<void> {
         OR: [{ studentId: { in: seedUserIds } }, { chapter: ownedChapter }],
       },
     });
+    await tx.lesson.updateMany({
+      where: { OR: [{ id: { in: ALL_LESSON_IDS } }, { chapter: ownedChapter }] },
+      data: { requiredQuizId: null },
+    });
     await tx.question.deleteMany({ where: { quiz: ownedQuiz } });
     await tx.quizLesson.deleteMany({ where: { quiz: ownedQuiz } });
     await tx.quiz.deleteMany({ where: ownedQuiz });
@@ -236,7 +194,6 @@ async function cleanup(): Promise<void> {
     await tx.promoCode.deleteMany({
       where: {
         OR: [
-          { code: { in: [...SEED_PROMO_CODES] } },
           { createdById: { in: seedUserIds } },
           { usedByStudentId: { in: seedUserIds } },
         ],
@@ -274,7 +231,6 @@ function validateAllSeedIds(): void {
     STAGE.id,
     ...ALL_CHAPTER_IDS,
     ...ALL_LESSON_IDS,
-    ...ALL_QUIZ_IDS,
   ]) {
     if (!isValidUuid(id)) {
       throw new Error(`Invalid seed entity id: ${id}`);
@@ -286,7 +242,7 @@ async function seed(): Promise<void> {
   validateAllSeedIds();
   const passwordHash = await bcrypt.hash(LOCAL_PASSWORD, BCRYPT_ROUNDS);
 
-  const lessonCatalog = buildChemistryLessonCatalog();
+  const lessonCatalog = buildChemistryLessonShellCatalog();
   const chapterRows = CHAPTERS.map((c, ci) => ({
     id: c.id,
     name: c.name,
@@ -297,15 +253,13 @@ async function seed(): Promise<void> {
   const lessonRows = lessonCatalog.map((l) => ({
     id: l.id,
     title: l.title,
-    description: l.description,
-    durationMinutes: l.durationMinutes,
-    youtubeUrl: l.youtubeUrl,
+    description: null,
+    durationMinutes: 0,
+    youtubeUrl: null,
     sortOrder: l.sortOrder,
     chapterId: l.chapterId,
+    requiredQuizId: null,
   }));
-  const lessonsWithRequiredQuiz = lessonCatalog.filter((l) => l.requiredQuizId);
-  const quizCatalog = buildChemistryQuizCatalog();
-  const quizLessonLinks = buildQuizLessonLinks();
 
   logger.info("seed_insert_started");
 
@@ -323,7 +277,7 @@ async function seed(): Promise<void> {
           id: seedId("teacher-profile"),
           userId: TEACHER.id,
           subject: "الكيمياء",
-          bio: "أستاذ كيمياء للصف الثالث الثانوي — محتوى تجريبي على فهمني.",
+          bio: "أستاذ كيمياء للصف الثالث الثانوي — أضف الدروس والاختبارات من لوحة التحكم.",
           aiTutorDailyQueryLimit: 30,
         },
       });
@@ -346,62 +300,6 @@ async function seed(): Promise<void> {
       await tx.chapter.createMany({ data: chapterRows });
       await tx.lesson.createMany({ data: lessonRows });
 
-      for (const quiz of quizCatalog) {
-        const totalPoints = quiz.questions.reduce((s, q) => s + q.points, 0);
-        await tx.quiz.create({
-          data: {
-            id: quiz.id,
-            title: quiz.title,
-            description: quiz.description,
-            chapterId: quiz.chapterId,
-            contentScope: quiz.contentScope,
-            status: quiz.status,
-            durationMinutes: quiz.durationMinutes,
-            passingScore: quiz.passingScore,
-            questionCount: quiz.questions.length,
-            totalPoints,
-            createdBy: TEACHER.id,
-            publishedAt: quiz.status === "PUBLISHED" ? daysAgo(20) : null,
-          },
-        });
-        if (quiz.questions.length > 0) {
-          await tx.question.createMany({ data: quiz.questions });
-        }
-      }
-
-      if (quizLessonLinks.length > 0) {
-        await tx.quizLesson.createMany({ data: quizLessonLinks });
-      }
-
-      for (const lesson of lessonsWithRequiredQuiz) {
-        await tx.lesson.update({
-          where: { id: lesson.id },
-          data: { requiredQuizId: lesson.requiredQuizId },
-        });
-      }
-
-      if (SEED_REAL_PDF_MATERIALS_ENABLED) {
-        await ensureChemistryPdfFixturesInStorage(TEACHER.id);
-        await tx.lessonMaterial.createMany({
-          data: buildChemistryLessonMaterials(TEACHER.id),
-        });
-
-        const materialDownloadedAt = daysAgo(3);
-        await tx.lessonMaterialDownload.create({
-          data: {
-            id: seedId("material-download-student01-a"),
-            studentId: STUDENTS[0]!.id,
-            materialId: CHEMISTRY_CH1_L1_MATERIAL_A,
-            firstDownloadedAt: materialDownloadedAt,
-            lastDownloadedAt: materialDownloadedAt,
-          },
-        });
-      } else {
-        logger.info("seed_materials_skipped", {
-          reason: "SEED_REAL_PDF_MATERIALS is not true",
-        });
-      }
-
       const enrollments: Prisma.EnrollmentCreateManyInput[] = [];
       STUDENTS.forEach((s, i) => {
         const n = String(i + 1).padStart(2, "0");
@@ -414,7 +312,7 @@ async function seed(): Promise<void> {
           paymentMethod: "FREE",
           enrolledAt: daysAgo(i < 4 ? 5 + i : 40 + i),
         });
-        if (i % 2 === 0)
+        if (i % 2 === 0) {
           enrollments.push({
             id: seedId(`enrollment-student${n}-ch2`),
             studentId: s.id,
@@ -424,6 +322,7 @@ async function seed(): Promise<void> {
             paymentMethod: "PROMO",
             enrolledAt: daysAgo(3 + i),
           });
+        }
       });
       enrollments.push({
         id: seedId("enrollment-student08-ch3-deact"),
@@ -435,293 +334,6 @@ async function seed(): Promise<void> {
         enrolledAt: daysAgo(60),
       });
       await tx.enrollment.createMany({ data: enrollments });
-
-      await tx.promoCode.createMany({
-        data: [
-          {
-            id: seedId("promo-chem2026"),
-            code: "CHEM2026",
-            isUsed: false,
-            createdById: TEACHER.id,
-            chapterId: CHAPTERS[0]!.id,
-            expiresAt: daysAgo(-90),
-          },
-          {
-            id: seedId("promo-chemrev"),
-            code: "CHEMREV",
-            isUsed: false,
-            createdById: TEACHER.id,
-            chapterId: CHAPTERS[0]!.id,
-            expiresAt: daysAgo(-30),
-          },
-          {
-            id: seedId("promo-orgdemo"),
-            code: "ORGDEMO",
-            isUsed: true,
-            usedByStudentId: STUDENTS[0]!.id,
-            usedAt: daysAgo(2),
-            createdById: TEACHER.id,
-            chapterId: CHAPTERS[0]!.id,
-            expiresAt: daysAgo(-30),
-          },
-        ],
-      });
-
-      await tx.lessonProgress.createMany({
-        data: [
-          // S2 — completed lesson without required gate (ch2 lesson 1)
-          {
-            id: seedId("lesson-progress-student02-ch2-l1"),
-            studentId: STUDENTS[1]!.id,
-            lessonId: lessonId(1, 0),
-            completed: true,
-            updatedAt: daysAgo(2),
-          },
-          // S3 — completed ch1 lesson 1; required gate quiz not attempted
-          {
-            id: seedId("lesson-progress-student03-ch1-l1"),
-            studentId: STUDENTS[2]!.id,
-            lessonId: lessonId(0, 0),
-            completed: true,
-            updatedAt: daysAgo(3),
-          },
-          // S4 — completed ch1 lesson 1; required gate failed
-          {
-            id: seedId("lesson-progress-student04-ch1-l1"),
-            studentId: STUDENTS[3]!.id,
-            lessonId: lessonId(0, 0),
-            completed: true,
-            updatedAt: daysAgo(4),
-          },
-          // S5 — completed ch1 lesson 1; required gate passed
-          {
-            id: seedId("lesson-progress-student05-ch1-l1"),
-            studentId: STUDENTS[4]!.id,
-            lessonId: lessonId(0, 0),
-            completed: true,
-            updatedAt: daysAgo(5),
-          },
-        ],
-      });
-
-      const quiz1 = seedId("quiz-ch1"),
-        quiz2 = seedId("quiz-ch2"),
-        quiz3 = seedId("quiz-ch3"),
-        quiz4 = seedId("quiz-ch4");
-      const q1 = buildQuestions(quiz1, 0),
-        q2 = buildQuestions(quiz2, 1),
-        q3 = buildQuestions(quiz3, 2),
-        q4 = buildQuestions(quiz4, 3);
-      const attempts: Prisma.QuizAttemptCreateManyInput[] = [];
-
-      attempts.push({
-        id: seedId("attempt-in-progress"),
-        quizId: quiz1,
-        studentId: STUDENTS[0]!.id,
-        answers: [] as unknown as Prisma.InputJsonValue,
-        score: null,
-        totalPoints: q1.reduce((s, x) => s + x.points, 0),
-        status: "IN_PROGRESS",
-        startedAt: daysAgo(0),
-      });
-
-      {
-        const ans = q2.map((x) =>
-          result(
-            x.id,
-            x.type,
-            x.correctAnswer ?? "",
-            x.type === "ESSAY" ? "graded" : "correct",
-            x.points,
-            x.points,
-            x.type === "ESSAY" ? "إجابة نموذجية." : null,
-          ),
-        );
-        const score = ans.reduce((s, a) => s + (a.awardedPoints ?? 0), 0);
-        attempts.push({
-          id: seedId("attempt-graded-100"),
-          quizId: quiz2,
-          studentId: STUDENTS[1]!.id,
-          answers: ans as unknown as Prisma.InputJsonValue,
-          score,
-          totalPoints: score,
-          status: "GRADED",
-          startedAt: daysAgo(3),
-          completedAt: daysAgo(3),
-        });
-      }
-      const gateMeta = chemistryGateQuestionMeta();
-      const gateQuizId = seedId("quiz-ch1-required-gate");
-
-      {
-        const ans = [
-          result(
-            gateMeta.questionId,
-            "TRUE_FALSE",
-            gateMeta.wrongAnswer,
-            "incorrect",
-            0,
-            10,
-          ),
-        ];
-        attempts.push({
-          id: seedId("attempt-gate-failed"),
-          quizId: gateQuizId,
-          studentId: STUDENTS[3]!.id,
-          answers: ans as unknown as Prisma.InputJsonValue,
-          score: 0,
-          totalPoints: 10,
-          status: "GRADED",
-          startedAt: daysAgo(4),
-          completedAt: daysAgo(4),
-        });
-      }
-      {
-        const ans = [
-          result(
-            gateMeta.questionId,
-            "TRUE_FALSE",
-            gateMeta.correctAnswer,
-            "correct",
-            10,
-            10,
-          ),
-        ];
-        attempts.push({
-          id: seedId("attempt-gate-passed"),
-          quizId: gateQuizId,
-          studentId: STUDENTS[4]!.id,
-          answers: ans as unknown as Prisma.InputJsonValue,
-          score: 10,
-          totalPoints: 10,
-          status: "GRADED",
-          startedAt: daysAgo(5),
-          completedAt: daysAgo(5),
-        });
-      }
-
-      {
-        const ans = q3.map((x) =>
-          x.type === "ESSAY"
-            ? result(
-                x.id,
-                x.type,
-                "إجابة الطالب المقالية بانتظار التصحيح.",
-                "pending",
-                null,
-                x.points,
-              )
-            : result(
-                x.id,
-                x.type,
-                x.correctAnswer ?? "",
-                "correct",
-                x.points,
-                x.points,
-              ),
-        );
-        const score = ans.reduce((s, a) => s + (a.awardedPoints ?? 0), 0);
-        const total = q3.reduce((s, x) => s + x.points, 0);
-        attempts.push({
-          id: seedId("attempt-pending"),
-          quizId: quiz3,
-          studentId: STUDENTS[6]!.id,
-          answers: ans as unknown as Prisma.InputJsonValue,
-          score,
-          totalPoints: total,
-          status: "COMPLETED",
-          startedAt: daysAgo(2),
-          completedAt: daysAgo(2),
-        });
-      }
-      {
-        const ans = q3.map((x, k) =>
-          x.type === "ESSAY"
-            ? result(
-                x.id,
-                x.type,
-                "إجابة الطالب المقالية.",
-                "graded",
-                Math.ceil(x.points / 2),
-                x.points,
-                "إجابة جيدة لكنها ناقصة بعض التفاصيل.",
-              )
-            : result(
-                x.id,
-                x.type,
-                k === 0 ? (x.correctAnswer ?? "") : "خطأ",
-                k === 0 ? "correct" : "incorrect",
-                k === 0 ? x.points : 0,
-                x.points,
-              ),
-        );
-        const score = ans.reduce((s, a) => s + (a.awardedPoints ?? 0), 0);
-        const total = q3.reduce((s, x) => s + x.points, 0);
-        attempts.push({
-          id: seedId("attempt-graded-essay"),
-          quizId: quiz3,
-          studentId: STUDENTS[5]!.id,
-          answers: ans as unknown as Prisma.InputJsonValue,
-          score,
-          totalPoints: total,
-          status: "GRADED",
-          startedAt: daysAgo(5),
-          completedAt: daysAgo(5),
-        });
-      }
-      {
-        const ans = q4.map((x, k) =>
-          x.type === "ESSAY"
-            ? result(
-                x.id,
-                x.type,
-                "محاولة.",
-                "graded",
-                0,
-                x.points,
-                "يحتاج مراجعة.",
-              )
-            : result(
-                x.id,
-                x.type,
-                k === 0 ? (x.correctAnswer ?? "") : "خطأ",
-                k === 0 ? "correct" : "incorrect",
-                k === 0 ? x.points : 0,
-                x.points,
-              ),
-        );
-        const score = ans.reduce((s, a) => s + (a.awardedPoints ?? 0), 0);
-        const total = q4.reduce((s, x) => s + x.points, 0);
-        attempts.push({
-          id: seedId("attempt-graded-low"),
-          quizId: quiz4,
-          studentId: STUDENTS[6]!.id,
-          answers: ans as unknown as Prisma.InputJsonValue,
-          score,
-          totalPoints: total,
-          status: "GRADED",
-          startedAt: daysAgo(7),
-          completedAt: daysAgo(7),
-        });
-      }
-      await tx.quizAttempt.createMany({ data: attempts });
-
-      await tx.aiTutorUsage.createMany({
-        data: [
-          {
-            id: seedId("ai-usage-student01"),
-            studentId: STUDENTS[0]!.id,
-            usageDate: utcDate(now),
-            count: 3,
-          },
-          {
-            id: seedId("ai-usage-student02"),
-            studentId: STUDENTS[1]!.id,
-            usageDate: utcDate(now),
-            count: 1,
-          },
-        ],
-      });
     },
     { timeout: 30_000 },
   );
@@ -740,8 +352,8 @@ async function countChemistrySeed(): Promise<Record<string, number>> {
     questions,
     enrollments,
     attempts,
-    promos,
     progress,
+    materials,
     legacyPrefix,
   ] = await Promise.all([
     prisma.user.count({ where: { id: { in: userIds } } }),
@@ -754,17 +366,19 @@ async function countChemistrySeed(): Promise<Record<string, number>> {
     prisma.stage.count({ where: { id: STAGE.id } }),
     prisma.chapter.count({ where: { id: { in: ALL_CHAPTER_IDS } } }),
     prisma.lesson.count({ where: { id: { in: ALL_LESSON_IDS } } }),
-    prisma.quiz.count({ where: { id: { in: ALL_QUIZ_IDS } } }),
-    prisma.question.count({ where: { quizId: { in: ALL_QUIZ_IDS } } }),
+    prisma.quiz.count({ where: { createdBy: TEACHER.id } }),
+    prisma.question.count({ where: { quiz: { createdBy: TEACHER.id } } }),
     prisma.enrollment.count({
       where: { studentId: { in: STUDENTS.map((s) => s.id) } },
     }),
     prisma.quizAttempt.count({
       where: { studentId: { in: STUDENTS.map((s) => s.id) } },
     }),
-    prisma.promoCode.count({ where: { code: { in: [...SEED_PROMO_CODES] } } }),
     prisma.lessonProgress.count({
       where: { studentId: { in: STUDENTS.map((s) => s.id) } },
+    }),
+    prisma.lessonMaterial.count({
+      where: { lesson: { chapter: { stageId: STAGE.id } } },
     }),
     prisma.question.count({
       where: { id: { startsWith: LEGACY_SEED_PREFIX } },
@@ -782,8 +396,8 @@ async function countChemistrySeed(): Promise<Record<string, number>> {
     questions,
     enrollments,
     attempts,
-    promos,
     progress,
+    materials,
     legacyPrefix,
   };
 }
@@ -807,13 +421,9 @@ async function main(): Promise<void> {
       ],
     },
   });
-  const legacyQuestions = await prisma.question.count({
-    where: { id: { startsWith: LEGACY_SEED_PREFIX } },
-  });
 
   logger.info("legacy_seed_audit", {
     legacyChemistryUsersFound: legacyUsers,
-    legacyChemistryQuestionsFound: legacyQuestions,
   });
 
   await cleanup();
@@ -828,15 +438,8 @@ async function main(): Promise<void> {
     );
   }
 
-  const sampleQuestions = await prisma.question.findMany({
-    where: { quizId: seedId("quiz-ch2") },
-    select: { id: true },
-    take: 3,
-  });
-  for (const q of sampleQuestions) {
-    if (!isValidUuid(q.id)) {
-      throw new Error(`Seeded question id is not a UUID: ${q.id}`);
-    }
+  if (counts.quizzes > 0) {
+    throw new Error(`Expected zero seed quizzes, found ${counts.quizzes}`);
   }
 }
 

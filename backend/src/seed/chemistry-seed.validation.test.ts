@@ -3,6 +3,7 @@ import { isValidUuid, seedId } from "./chemistry-ids.js";
 import { ALL_QUIZ_IDS, buildQuestions } from "./chemistry-seed.fixtures.js";
 import {
   buildChemistryLessonCatalog,
+  buildChemistryLessonShellCatalog,
   CHEMISTRY_REQUIRED_GATE_QUIZ_ID,
   chemistryLessonId,
 } from "./chemistry-lesson-catalog.js";
@@ -36,7 +37,28 @@ describe("Chemistry seed UUID validation", () => {
   });
 });
 
-describe("Chemistry lesson catalog", () => {
+describe("Chemistry lesson shell catalog (default seed)", () => {
+  it("provides 15 empty lesson shells", () => {
+    const lessons = buildChemistryLessonShellCatalog();
+    expect(lessons).toHaveLength(15);
+    for (const l of lessons) {
+      expect(l.title.length).toBeGreaterThan(3);
+      expect(l.description).toBe("");
+      expect(l.youtubeUrl).toBe("");
+      expect(l.durationMinutes).toBe(0);
+      expect(l.requiredQuizId).toBeNull();
+      expect(l.optionalQuizId).toBeNull();
+      expect(isValidUuid(l.id)).toBe(true);
+    }
+  });
+
+  it("has no gate quiz ids on shell lessons", () => {
+    const lessons = buildChemistryLessonShellCatalog();
+    expect(lessons.filter((l) => l.requiredQuizId)).toHaveLength(0);
+  });
+});
+
+describe("Chemistry lesson catalog (rich content — optional)", () => {
   it("provides 15 lessons with rich Arabic descriptions", () => {
     const lessons = buildChemistryLessonCatalog();
     expect(lessons).toHaveLength(15);

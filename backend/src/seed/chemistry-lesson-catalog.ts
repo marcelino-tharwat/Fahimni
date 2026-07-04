@@ -118,6 +118,32 @@ export function formatLessonDescription(
   ].join("\n");
 }
 
+export function buildChemistryLessonShellCatalog(): SeedLessonDefinition[] {
+  const lessons: SeedLessonDefinition[] = [];
+
+  for (let ci = 0; ci < CHEMISTRY_CHAPTER_DEFS.length; ci++) {
+    const chapter = CHEMISTRY_CHAPTER_DEFS[ci]!;
+
+    for (let li = 0; li < chapter.lessonTitles.length; li++) {
+      lessons.push({
+        id: chemistryLessonId(ci, li),
+        chapterId: chapter.id,
+        chapterIndex: ci,
+        lessonIndex: li,
+        title: chapter.lessonTitles[li]!,
+        description: "",
+        durationMinutes: 0,
+        youtubeUrl: "",
+        sortOrder: li + 1,
+        requiredQuizId: null,
+        optionalQuizId: null,
+      });
+    }
+  }
+
+  return lessons;
+}
+
 export function buildChemistryLessonCatalog(): SeedLessonDefinition[] {
   const lessons: SeedLessonDefinition[] = [];
 
