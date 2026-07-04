@@ -42427,6 +42427,7 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
@@ -42454,6 +42455,7 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
@@ -42524,6 +42526,7 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
@@ -42551,6 +42554,7 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput

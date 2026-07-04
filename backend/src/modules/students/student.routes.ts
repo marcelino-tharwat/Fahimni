@@ -11,6 +11,14 @@ import {
 const router = Router();
 const controller = new StudentController();
 
+// Authenticated student's own aggregated profile. Declared before "/:id" so the
+// literal "me" segment can never be captured as a student id param.
+router.get(
+  "/me/profile",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.getMyProfile,
+);
 router.get(
   "/",
   authenticateMiddleware,

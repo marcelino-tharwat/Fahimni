@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -11,41 +11,32 @@ import {
   AlertCircle,
   GraduationCap,
 } from 'lucide-react';
-import { useAppSelector, useAppDispatch } from '@/shared/store/hooks';
+import { useAppDispatch } from '@/shared/store/hooks';
+import { useUpdateStudentProfile } from '@/features/student/hooks/useStudentProfile';
+import { useStudentProfileOverview } from '@/features/student/hooks/useStudentProfileOverview';
+import type {
+  StudentProfileIdentity,
+  StudentAcademicProgress,
+  StudentCourseSummary,
+  StudentSubscriptionSummary,
+  StudentAchievement,
+} from '@/features/student/types/studentProfile';
 import {
-  useStudentProfile,
-  useStudentEnrollments,
-  useUpdateStudentProfile,
-} from '@/features/student/hooks/useStudentProfile';
-import { useMyCourses } from '@/features/student/hooks/useStudentContent';
-import { Skeleton } from '@/shared/components/ui';
+  ACHIEVEMENT_META,
+  roleLabelKey,
+  statusMeta,
+  clampPercent,
+  formatAverageGrade,
+} from '@/features/student/lib/studentProfilePresentation';
 import { cn } from '@/shared/lib/utils/cn';
 import { addToast } from '@/shared/store/slices/toastSlice';
-
-// TODO: replace with real endpoint when available
-const ACADEMIC_STATS = {
-  avgScore: 78,
-  quizzesDone: 3,
-  lessonsDone: 12,
-  overallProgress: 45,
-  overallDone: 21,
-  overallTotal: 48,
-} as const;
-
-// TODO: replace with real achievements endpoint when available
-const ACHIEVEMENTS = [
-  { nameKey: 'firstLesson', emoji: '📖', color: 'bg-warning-500', locked: false },
-  { nameKey: 'tenLessons', emoji: '📚', color: 'bg-cyan-500', locked: false },
-  { nameKey: 'firstQuiz', emoji: '✍️', color: 'bg-purple-500', locked: false },
-  { nameKey: 'twentyFiveLessons', emoji: '📚', color: 'bg-gray-400', locked: true },
-  { nameKey: 'perfectScore', emoji: '🏆', color: 'bg-gray-400', locked: true },
-] as const;
 
 function CircularProgress({ percent, size = 40 }: { percent: number; size?: number }) {
   const strokeWidth = 4;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percent / 100) * circumference;
+  const value = clampPercent(percent);
+  const offset = circumference - (value / 100) * circumference;
 
   return (
     <svg
@@ -82,24 +73,25 @@ function CircularProgress({ percent, size = 40 }: { percent: number; size?: numb
         dominantBaseline="central"
         className="fill-navy-900 text-caption font-bold"
       >
-        {percent}%
+        {value}%
       </text>
     </svg>
   );
 }
 
 function ProgressBar({ percent }: { percent: number }) {
+  const value = clampPercent(percent);
   return (
     <div
       role="progressbar"
-      aria-valuenow={percent}
+      aria-valuenow={value}
       aria-valuemin={0}
       aria-valuemax={100}
       className="h-2 w-full overflow-hidden rounded-full bg-gray-300"
     >
       <div
         className="h-full rounded-full bg-cyan-500 transition-all"
-        style={{ width: `${Math.min(100, Math.max(0, percent))}%` }}
+        style={{ width: `${value}%` }}
       />
     </div>
   );
@@ -118,8 +110,9 @@ function StatusBadge({ status }: { status: 'active' | 'ended' }) {
   );
 }
 
-function AcademicProgressCard() {
+function AcademicProgressCard({ progress }: { progress: StudentAcademicProgress }) {
   const { t } = useTranslation('student');
+  const avg = formatAverageGrade(progress.averageGrade);
 
   return (
     <div className="rounded-card bg-white p-4 shadow-card md:p-5">
@@ -129,15 +122,17 @@ function AcademicProgressCard() {
 
       <div className="mb-4 flex gap-4">
         <div className="flex-1 rounded-md bg-gray-100 p-3 text-center">
-          <p className="font-cairo text-h2 font-bold text-cyan-600">%{ACADEMIC_STATS.avgScore}</p>
+          <p className="font-cairo text-h2 font-bold text-cyan-600">
+            {progress.averageGrade === null ? avg : `%${avg}`}
+          </p>
           <p className="font-cairo text-caption text-gray-600">{t('profile.avgScore')}</p>
         </div>
         <div className="flex-1 rounded-md bg-gray-100 p-3 text-center">
-          <p className="font-cairo text-h2 font-bold text-cyan-600">{ACADEMIC_STATS.quizzesDone}</p>
+          <p className="font-cairo text-h2 font-bold text-cyan-600">{progress.completedQuizzes}</p>
           <p className="font-cairo text-caption text-gray-600">{t('profile.quizzesDone')}</p>
         </div>
         <div className="flex-1 rounded-md bg-gray-100 p-3 text-center">
-          <p className="font-cairo text-h2 font-bold text-cyan-600">{ACADEMIC_STATS.lessonsDone}</p>
+          <p className="font-cairo text-h2 font-bold text-cyan-600">{progress.completedLessons}</p>
           <p className="font-cairo text-caption text-gray-600">{t('profile.lessonsDone')}</p>
         </div>
       </div>
@@ -146,67 +141,28 @@ function AcademicProgressCard() {
         {t('profile.overallProgress')}
       </h3>
       <p className="mb-1 font-cairo text-h3 font-bold text-cyan-600">
-        %{ACADEMIC_STATS.overallProgress}
+        %{clampPercent(progress.overallProgressPercent)}
       </p>
-      <ProgressBar percent={ACADEMIC_STATS.overallProgress} />
+      <ProgressBar percent={progress.overallProgressPercent} />
       <p className="mt-1 font-cairo text-caption text-gray-600">
-        {t('profile.lessonsOf', { done: ACADEMIC_STATS.overallDone, total: ACADEMIC_STATS.overallTotal })}
+        {t('profile.lessonsOf', {
+          done: progress.completedLessons,
+          total: progress.totalLessons,
+        })}
       </p>
     </div>
   );
 }
 
-function MyCoursesCard() {
+function MyCoursesCard({ courses }: { courses: StudentCourseSummary[] }) {
   const { t } = useTranslation('student');
   const navigate = useNavigate();
-  // Real enrolled courses — same source as /student/courses (GET
-  // /content/student/my-courses), already invalidated on promo redeem.
-  const { data: courses, isLoading, isError } = useMyCourses();
 
-  if (isLoading) {
+  if (courses.length === 0) {
     return (
       <div className="rounded-card bg-white p-4 shadow-card md:p-5">
         <div className="mb-4 flex items-center justify-between">
-          <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
-          <div className="h-5 w-24 animate-pulse rounded bg-gray-200" />
-        </div>
-        <div className="flex flex-col gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex gap-3 rounded-md p-3">
-              <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-gray-200" />
-              <div className="flex flex-1 flex-col gap-2">
-                <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
-                <div className="h-3 w-2/3 animate-pulse rounded bg-gray-200" />
-                <div className="h-2 w-full animate-pulse rounded-full bg-gray-200" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
-        <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
-          {t('profile.myCourses')}
-        </h2>
-        <div className="flex items-center gap-2 font-cairo text-body text-danger-500">
-          <AlertCircle size={16} />
-          <span>{t('profile.enrollmentLoadError')}</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!courses || courses.length === 0) {
-    return (
-      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-cairo text-h3 font-bold text-navy-900">
-            {t('profile.myCourses')}
-          </h2>
+          <h2 className="font-cairo text-h3 font-bold text-navy-900">{t('profile.myCourses')}</h2>
         </div>
         <div className="flex flex-col items-center gap-2 py-6 text-center">
           <BookOpen size={32} className="text-gray-400" />
@@ -223,9 +179,7 @@ function MyCoursesCard() {
   return (
     <div className="rounded-card bg-white p-4 shadow-card md:p-5">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-cairo text-h3 font-bold text-navy-900">
-          {t('profile.myCourses')}
-        </h2>
+        <h2 className="font-cairo text-h3 font-bold text-navy-900">{t('profile.myCourses')}</h2>
         <button
           type="button"
           onClick={() => navigate('/student/courses')}
@@ -239,22 +193,22 @@ function MyCoursesCard() {
         {preview.map((course) => (
           <div key={course.id} className="flex gap-3 rounded-md border-r-4 border-cyan-500 p-3">
             <div className="flex shrink-0 items-start pt-1">
-              <CircularProgress percent={course.completionProgress} />
+              <CircularProgress percent={course.progressPercent} />
             </div>
             <div className="flex min-w-0 flex-1 flex-col">
               <div className="flex items-center justify-between gap-2">
                 <p className="truncate font-cairo text-body font-semibold text-navy-900">
-                  {course.name}
+                  {course.title}
                 </p>
                 <span className="shrink-0 rounded-badge bg-success-50 px-2.5 py-0.5 text-caption text-success-600">
                   {t('content.badges.subscribed')}
                 </span>
               </div>
-              {course.stageName && (
-                <p className="truncate font-cairo text-caption text-gray-600">{course.stageName}</p>
+              {course.subtitle && (
+                <p className="truncate font-cairo text-caption text-gray-600">{course.subtitle}</p>
               )}
               <div className="mt-1.5">
-                <ProgressBar percent={course.completionProgress} />
+                <ProgressBar percent={course.progressPercent} />
               </div>
             </div>
           </div>
@@ -288,43 +242,17 @@ function PaymentMethodBadge({ method }: { method: string }) {
   );
 }
 
-function SubscriptionHistoryCard() {
+function SubscriptionHistoryCard({
+  subscriptions,
+}: {
+  subscriptions: StudentSubscriptionSummary[];
+}) {
   const { t, i18n } = useTranslation('student');
   const navigate = useNavigate();
-  const { data: enrollments, isLoading, isError } = useStudentEnrollments();
   const locale = i18n.language === 'ar' ? 'ar-EG' : 'en';
 
-  if (isLoading) {
-    return (
-      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
-        <Skeleton className="mb-4 h-6 w-40" />
-        <div className="flex flex-col gap-3">
-          <Skeleton className="h-14 w-full" />
-          <Skeleton className="h-14 w-full" />
-          <Skeleton className="h-14 w-full" />
-          <Skeleton className="h-14 w-full" />
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
-        <h2 className="mb-4 font-cairo text-h3 font-bold text-navy-900">
-          {t('profile.subscriptionHistory')}
-        </h2>
-        <div className="flex items-center gap-2 font-cairo text-body text-danger-500">
-          <AlertCircle size={16} />
-          <span>{t('profile.enrollmentLoadError')}</span>
-        </div>
-      </div>
-    );
-  }
-
-  const all = enrollments ?? [];
   // Compact preview — first 3; full list lives on /student/courses.
-  const preview = all.slice(0, 3);
+  const preview = subscriptions.slice(0, 3);
 
   return (
     <div className="rounded-card bg-white p-4 shadow-card md:p-5">
@@ -341,7 +269,7 @@ function SubscriptionHistoryCard() {
         </button>
       </div>
 
-      {all.length === 0 ? (
+      {subscriptions.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-6 text-center">
           <BookOpen size={32} className="text-gray-400" />
           <p className="font-cairo text-body text-gray-600">{t('profile.noEnrollments')}</p>
@@ -349,22 +277,22 @@ function SubscriptionHistoryCard() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {preview.map((enr) => {
-            const dateLabel = new Date(enr.enrolledAt ?? enr.createdAt).toLocaleDateString(locale, {
+          {preview.map((sub) => {
+            const dateLabel = new Date(sub.startedAt).toLocaleDateString(locale, {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
             });
-            const isFree = enr.price <= 0;
+            const isFree = sub.price <= 0;
             const priceLabel = isFree
               ? t('payment.promo.free')
-              : t('content.badges.price', { price: enr.price.toLocaleString(locale) });
+              : t('content.badges.price', { price: sub.price.toLocaleString(locale) });
             return (
-              <div key={enr.id} className="flex items-center justify-between gap-2">
+              <div key={sub.id} className="flex items-center justify-between gap-2">
                 <div className="flex flex-col items-start gap-1.5">
-                  <StatusBadge status={enr.status === 'ACTIVE' ? 'active' : 'ended'} />
+                  <StatusBadge status={sub.status === 'ACTIVE' ? 'active' : 'ended'} />
                   <div className="flex items-center gap-1.5">
-                    <PaymentMethodBadge method={enr.paymentMethod} />
+                    <PaymentMethodBadge method={sub.planType} />
                     <span
                       className={cn(
                         'font-cairo text-caption font-semibold',
@@ -377,7 +305,7 @@ function SubscriptionHistoryCard() {
                   </div>
                 </div>
                 <div className="min-w-0 text-end">
-                  <p className="truncate font-cairo text-body text-navy-900">{enr.chapter.name}</p>
+                  <p className="truncate font-cairo text-body text-navy-900">{sub.title}</p>
                   <div className="flex items-center justify-end gap-1 font-cairo text-caption text-gray-600">
                     <Calendar size={12} />
                     <span>{dateLabel}</span>
@@ -392,55 +320,28 @@ function SubscriptionHistoryCard() {
   );
 }
 
-function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
+function ProfileInfoCard({ student }: { student: StudentProfileIdentity }) {
   const { t, i18n } = useTranslation('student');
   const dispatch = useAppDispatch();
   const updateProfile = useUpdateStudentProfile();
-  const studentProfile = useAppSelector((state) => state.student.profile);
-  const studentUser = studentProfile?.user;
-  const authUser = useAppSelector((state) => state.auth.user);
-  const profileUser = studentUser ?? authUser;
-  const stageName = studentProfile?.stage?.name;
 
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
 
-  useEffect(() => {
-    if (!isEditing) {
-      setForm({
-        name: profileUser?.fullName ?? '',
-        email: profileUser?.email ?? '',
-        phone: profileUser?.mobile ?? '',
-      });
-    }
-  }, [profileUser, isEditing]);
+  const initial = student.avatarInitial || '?';
+  const status = statusMeta(student.status);
 
-  if (isLoading) {
-    return (
-      <div className="rounded-card bg-white p-4 shadow-card md:p-6">
-        <div className="flex flex-col items-center">
-          <div className="mb-3 h-20 w-20 animate-pulse rounded-full bg-gray-200" />
-          <div className="mb-3 h-5 w-32 animate-pulse rounded bg-gray-200" />
-          <div className="flex gap-2">
-            <div className="h-6 w-16 animate-pulse rounded-full bg-gray-200" />
-            <div className="h-6 w-16 animate-pulse rounded-full bg-gray-200" />
-          </div>
-        </div>
-        <div className="my-4 border-t border-gray-300" />
-        <div className="flex flex-col gap-3">
-          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
-        </div>
-      </div>
-    );
-  }
-
-  const displayName = profileUser?.fullName ?? '';
-  const displayEmail = profileUser?.email ?? '';
-  const displayPhone = profileUser?.mobile ?? '';
-  const createdAt = profileUser?.createdAt ?? '';
-  const initial = displayName.trim().charAt(0) || '?';
+  // The display always reads from `student` (the live query data); the form is
+  // seeded from it only when the user opens the editor, so no effect-driven
+  // sync is needed.
+  const handleStartEdit = () => {
+    setForm({
+      name: student.fullName ?? '',
+      email: student.email ?? '',
+      phone: student.phone ?? '',
+    });
+    setIsEditing(true);
+  };
 
   const handleSave = () => {
     updateProfile.mutate(
@@ -462,11 +363,6 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
   };
 
   const handleCancel = () => {
-    setForm({
-      name: profileUser?.fullName ?? '',
-      email: profileUser?.email ?? '',
-      phone: profileUser?.mobile ?? '',
-    });
     setIsEditing(false);
   };
 
@@ -536,18 +432,33 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-navy-700">
             <span className="font-cairo text-h2 text-white">{initial}</span>
           </div>
-          <span className="absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white bg-success-500" />
+          <span
+            className={cn(
+              'absolute bottom-0 end-0 h-3 w-3 rounded-full border-2 border-white',
+              status.active ? 'bg-success-500' : 'bg-gray-400',
+            )}
+          />
         </div>
 
-        <h3 className="font-cairo text-h3 font-bold text-navy-900">{displayName}</h3>
+        <h3 className="font-cairo text-h3 font-bold text-navy-900">{student.fullName}</h3>
 
         <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
           <span className="rounded-badge bg-navy-100 px-3 py-0.5 text-small text-navy-700">
-            {t('profile.student')}
+            {t(`profile.${roleLabelKey(student.role)}`)}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-badge bg-success-50 px-3 py-0.5 text-small text-success-600">
-            <span className="h-1.5 w-1.5 rounded-full bg-success-500" />
-            {t('profile.active')}
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 rounded-badge px-3 py-0.5 text-small',
+              status.active ? 'bg-success-50 text-success-600' : 'bg-gray-200 text-gray-600',
+            )}
+          >
+            <span
+              className={cn(
+                'h-1.5 w-1.5 rounded-full',
+                status.active ? 'bg-success-500' : 'bg-gray-400',
+              )}
+            />
+            {t(`profile.${status.labelKey}`)}
           </span>
         </div>
       </div>
@@ -555,28 +466,34 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
       <div className="my-4 border-t border-gray-300" />
 
       <div className="flex flex-col gap-3">
-        {stageName && (
+        {student.stageName && (
           <div className="flex items-center justify-between gap-2 text-end">
-            <span className="font-cairo text-body font-medium text-navy-900">{stageName}</span>
+            <span className="font-cairo text-body font-medium text-navy-900">
+              {student.stageName}
+            </span>
             <GraduationCap size={16} className="shrink-0 text-gray-500" />
           </div>
         )}
         <div className="flex items-center justify-between gap-2 text-end">
-          <span className="font-cairo text-body text-gray-700" dir="ltr">{displayEmail}</span>
+          <span className="font-cairo text-body text-gray-700" dir="ltr">
+            {student.email ?? '—'}
+          </span>
           <Mail size={16} className="shrink-0 text-gray-500" />
         </div>
         <div className="flex items-center justify-between gap-2 text-end">
-          <span className="font-cairo text-body text-gray-700" dir="ltr">{displayPhone}</span>
+          <span className="font-cairo text-body text-gray-700" dir="ltr">
+            {student.phone ?? '—'}
+          </span>
           <Phone size={16} className="shrink-0 text-gray-500" />
         </div>
         <div className="flex items-center justify-between gap-2 text-end">
           <span className="font-cairo text-body text-gray-700">
-            {createdAt
+            {student.joinedAt
               ? t('profile.joinedAt', {
-                  date: new Date(createdAt).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en', {
-                    year: 'numeric',
-                    month: 'long',
-                  }),
+                  date: new Date(student.joinedAt).toLocaleDateString(
+                    i18n.language === 'ar' ? 'ar-EG' : 'en',
+                    { year: 'numeric', month: 'long' },
+                  ),
                 })
               : '—'}
           </span>
@@ -586,7 +503,7 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
 
       <button
         type="button"
-        onClick={() => setIsEditing(true)}
+        onClick={handleStartEdit}
         className="mt-5 flex w-full items-center justify-center gap-2 rounded-btn border border-gray-300 py-2 font-cairo text-body text-gray-700 transition-colors hover:bg-gray-50"
       >
         <Edit3 size={16} />
@@ -596,7 +513,7 @@ function ProfileInfoCard({ isLoading }: { isLoading: boolean }) {
   );
 }
 
-function AchievementsCard() {
+function AchievementsCard({ achievements }: { achievements: StudentAchievement[] }) {
   const { t } = useTranslation('student');
 
   return (
@@ -605,49 +522,116 @@ function AchievementsCard() {
         {t('profile.achievements')}
       </h2>
 
-      <div className="flex items-center justify-center gap-6">
-        {ACHIEVEMENTS.map((badge) => (
-          <div key={badge.nameKey} className="flex flex-col items-center gap-1.5">
-            <div
-              className={cn(
-                'relative flex h-[52px] w-[52px] items-center justify-center rounded-full',
-                badge.color,
-              )}
-            >
-              <span className="text-lg">{badge.emoji}</span>
-              {badge.locked && (
-                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
-                  <Lock size={16} className="text-white" />
-                </div>
-              )}
+      <div className="flex flex-wrap items-center justify-center gap-6">
+        {achievements.map((badge) => {
+          const meta = ACHIEVEMENT_META[badge.id];
+          if (!meta) return null;
+          const locked = !badge.unlocked;
+          return (
+            <div key={badge.id} className="flex flex-col items-center gap-1.5">
+              <div
+                className={cn(
+                  'relative flex h-[52px] w-[52px] items-center justify-center rounded-full',
+                  meta.color,
+                )}
+              >
+                <span className="text-lg">{meta.emoji}</span>
+                {locked && (
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
+                    <Lock size={16} className="text-white" />
+                  </div>
+                )}
+              </div>
+              <span className="font-cairo text-caption text-gray-600">
+                {t(`profile.${meta.nameKey}`)}
+              </span>
             </div>
-            <span className="font-cairo text-caption text-gray-600">
-              {t(`profile.${badge.nameKey}`)}
-            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ProfilePageSkeleton() {
+  return (
+    <div className="mx-auto w-full">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <div className="rounded-card bg-white p-4 shadow-card md:p-6">
+          <div className="flex flex-col items-center">
+            <div className="mb-3 h-20 w-20 animate-pulse rounded-full bg-gray-200" />
+            <div className="mb-3 h-5 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="flex gap-2">
+              <div className="h-6 w-16 animate-pulse rounded-full bg-gray-200" />
+              <div className="h-6 w-16 animate-pulse rounded-full bg-gray-200" />
+            </div>
           </div>
-        ))}
+          <div className="my-4 border-t border-gray-300" />
+          <div className="flex flex-col gap-3">
+            <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="rounded-card bg-white p-4 shadow-card md:p-5">
+              <div className="mb-4 h-6 w-40 animate-pulse rounded bg-gray-200" />
+              <div className="flex flex-col gap-3">
+                <div className="h-14 w-full animate-pulse rounded bg-gray-200" />
+                <div className="h-14 w-full animate-pulse rounded bg-gray-200" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
 export function StudentProfilePage() {
-  const { isLoading } = useStudentProfile();
+  const { t } = useTranslation('student');
+  const { data, isLoading, isError, refetch, isFetching } = useStudentProfileOverview();
+
+  if (isLoading) {
+    return <ProfilePageSkeleton />;
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="mx-auto w-full">
+        <div className="rounded-card bg-white p-8 shadow-card">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <AlertCircle size={40} className="text-danger-500" />
+            <p className="font-cairo text-body text-navy-900">{t('profile.loadError')}</p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="rounded-btn bg-cyan-500 px-6 py-2 font-cairo font-bold text-navy-900 transition-opacity hover:opacity-90 disabled:opacity-50"
+            >
+              {t('profile.retry')}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <ProfileInfoCard isLoading={isLoading} />
+        <ProfileInfoCard student={data.student} />
 
         <div className="flex flex-col gap-6">
-          <AcademicProgressCard />
-          <MyCoursesCard />
-          <SubscriptionHistoryCard />
+          <AcademicProgressCard progress={data.academicProgress} />
+          <MyCoursesCard courses={data.courses} />
+          <SubscriptionHistoryCard subscriptions={data.subscriptions} />
         </div>
       </div>
 
       <div className="mt-6">
-        <AchievementsCard />
+        <AchievementsCard achievements={data.achievements} />
       </div>
     </div>
   );

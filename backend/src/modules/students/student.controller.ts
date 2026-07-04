@@ -7,6 +7,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { userPublicFields } from "../users/user.types.js";
 import { studentPublicFields } from "./student.types.js";
+import { getStudentProfileOverview } from "./student-profile.service.js";
 import type {
   CreateStudentInput,
   UpdateStudentInput,
@@ -16,6 +17,23 @@ const Student = prisma.studentProfile;
 
 export class StudentController {
   public list = getAll(Student);
+
+  /**
+   * GET /api/students/me/profile — the authenticated student's aggregated
+   * profile overview (identity, academic progress, courses, subscriptions,
+   * achievements). The student id is taken from the auth context only; no id is
+   * ever accepted from the request, so a student can only see their own data.
+   */
+  public getMyProfile = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const studentId = req.user?.id;
+      if (!studentId) {
+        return next(new AppError("Unauthorized", 401));
+      }
+      const overview = await getStudentProfileOverview(studentId);
+      res.status(200).json(okResponse("Profile fetched successfully", overview));
+    },
+  );
 
   public getById = asyncHandler(
     async (req: Request, _res: Response, next: NextFunction) => {
