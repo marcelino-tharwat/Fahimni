@@ -4,9 +4,9 @@ import { env } from "../../config/env.js";
 import type { Role } from "../../generated/prisma/client.js";
 
 export class TokenService {
-  public generateAccessToken(userId: string) {
+  public generateAccessToken(userId: string, tokenVersion: number) {
     return jwt.sign(
-      { sub: userId },
+      { sub: userId, ver: tokenVersion },
       env.JWT_SECRET as never,
       {
         expiresIn: env.JWT_EXPIRES_IN as never,
@@ -14,15 +14,15 @@ export class TokenService {
     );
   }
 
-  public generateRegisterToken(userId: string, role: Role) {
-    return jwt.sign({ userId, role }, env.JWT_SECRET, {
+  public generateRegisterToken(userId: string, role: Role, tokenVersion: number) {
+    return jwt.sign({ userId, role, ver: tokenVersion }, env.JWT_SECRET, {
       expiresIn: (env.JWT_EXPIRES_IN ?? "30d") as never,
     });
   }
 
-  public generateRefreshToken(userId: string) {
+  public generateRefreshToken(userId: string, tokenVersion: number) {
     return jwt.sign(
-      { sub: userId },
+      { sub: userId, ver: tokenVersion },
       env.JWT_REFRESH_SECRET as never,
       {
         expiresIn: env.JWT_REFRESH_EXPIRES_IN as never,

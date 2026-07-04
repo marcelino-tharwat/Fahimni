@@ -49,7 +49,7 @@ export const authenticateMiddleware = asyncHandler(
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, role: true, status: true },
+      select: { id: true, role: true, status: true, tokenVersion: true },
     });
 
     if (!user) {
@@ -64,6 +64,17 @@ export const authenticateMiddleware = asyncHandler(
     if (user.status !== "ACTIVE") {
       return next(
         new AppError("Your account is inactive. Please contact support.", 401),
+      );
+    }
+
+    // If the token carries a version, verify it matches the current DB version.
+    // Tokens minted before this feature was deployed lack `ver` — accept them
+    // until they naturally expire (backward compatibility window).
+    const tokenVersion =
+      typeof decoded.ver === "number" ? decoded.ver : undefined;
+    if (tokenVersion !== undefined && user.tokenVersion !== tokenVersion) {
+      return next(
+        new AppError("Session superseded by new login", 401),
       );
     }
 

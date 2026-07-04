@@ -3,10 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../src/config/database.js";
 import { logger } from "../src/config/logger.js";
 import { assertLocalDatabase } from "../src/seed/local-guard.js";
-import {
-  isValidUuid,
-  seedId,
-} from "../src/seed/chemistry-ids.js";
+import { isValidUuid, seedId } from "../src/seed/chemistry-ids.js";
 import {
   ALL_QUIZ_IDS,
   buildQuestions,
@@ -245,7 +242,9 @@ async function cleanup(): Promise<void> {
     });
     await tx.chapter.deleteMany({ where: ownedChapter });
     await tx.studentProfile.deleteMany({
-      where: { userId: { in: seedUserIds } },
+      where: {
+        OR: [{ userId: { in: seedUserIds } }, { stage: ownedStage }],
+      },
     });
     await tx.stage.deleteMany({ where: ownedStage });
     await tx.auditLog.deleteMany({
