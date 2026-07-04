@@ -69,6 +69,11 @@ export type LessonProgress = $Result.DefaultSelection<Prisma.$LessonProgressPayl
  */
 export type LessonMaterial = $Result.DefaultSelection<Prisma.$LessonMaterialPayload>
 /**
+ * Model LessonMaterialDownload
+ * 
+ */
+export type LessonMaterialDownload = $Result.DefaultSelection<Prisma.$LessonMaterialDownloadPayload>
+/**
  * Model ContentChunk
  * 
  */
@@ -525,6 +530,16 @@ export class PrismaClient<
     * ```
     */
   get lessonMaterial(): Prisma.LessonMaterialDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.lessonMaterialDownload`: Exposes CRUD operations for the **LessonMaterialDownload** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LessonMaterialDownloads
+    * const lessonMaterialDownloads = await prisma.lessonMaterialDownload.findMany()
+    * ```
+    */
+  get lessonMaterialDownload(): Prisma.LessonMaterialDownloadDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.contentChunk`: Exposes CRUD operations for the **ContentChunk** model.
@@ -1080,6 +1095,7 @@ export namespace Prisma {
     PaymentTransaction: 'PaymentTransaction',
     LessonProgress: 'LessonProgress',
     LessonMaterial: 'LessonMaterial',
+    LessonMaterialDownload: 'LessonMaterialDownload',
     ContentChunk: 'ContentChunk',
     AiTutorUsage: 'AiTutorUsage',
     AuditLog: 'AuditLog',
@@ -1106,7 +1122,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "aiConversation" | "aiMessage"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "aiConversation" | "aiMessage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1921,6 +1937,80 @@ export namespace Prisma {
           count: {
             args: Prisma.LessonMaterialCountArgs<ExtArgs>
             result: $Utils.Optional<LessonMaterialCountAggregateOutputType> | number
+          }
+        }
+      }
+      LessonMaterialDownload: {
+        payload: Prisma.$LessonMaterialDownloadPayload<ExtArgs>
+        fields: Prisma.LessonMaterialDownloadFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LessonMaterialDownloadFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LessonMaterialDownloadFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>
+          }
+          findFirst: {
+            args: Prisma.LessonMaterialDownloadFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LessonMaterialDownloadFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>
+          }
+          findMany: {
+            args: Prisma.LessonMaterialDownloadFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>[]
+          }
+          create: {
+            args: Prisma.LessonMaterialDownloadCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>
+          }
+          createMany: {
+            args: Prisma.LessonMaterialDownloadCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LessonMaterialDownloadCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>[]
+          }
+          delete: {
+            args: Prisma.LessonMaterialDownloadDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>
+          }
+          update: {
+            args: Prisma.LessonMaterialDownloadUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>
+          }
+          deleteMany: {
+            args: Prisma.LessonMaterialDownloadDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LessonMaterialDownloadUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LessonMaterialDownloadUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>[]
+          }
+          upsert: {
+            args: Prisma.LessonMaterialDownloadUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LessonMaterialDownloadPayload>
+          }
+          aggregate: {
+            args: Prisma.LessonMaterialDownloadAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLessonMaterialDownload>
+          }
+          groupBy: {
+            args: Prisma.LessonMaterialDownloadGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LessonMaterialDownloadGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LessonMaterialDownloadCountArgs<ExtArgs>
+            result: $Utils.Optional<LessonMaterialDownloadCountAggregateOutputType> | number
           }
         }
       }
@@ -2857,6 +2947,7 @@ export namespace Prisma {
     paymentTransaction?: PaymentTransactionOmit
     lessonProgress?: LessonProgressOmit
     lessonMaterial?: LessonMaterialOmit
+    lessonMaterialDownload?: LessonMaterialDownloadOmit
     contentChunk?: ContentChunkOmit
     aiTutorUsage?: AiTutorUsageOmit
     auditLog?: AuditLogOmit
@@ -2961,6 +3052,7 @@ export namespace Prisma {
     paymentTransactions: number
     aiTutorUsage: number
     aiConversations: number
+    materialDownloads: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2977,6 +3069,7 @@ export namespace Prisma {
     paymentTransactions?: boolean | UserCountOutputTypeCountPaymentTransactionsArgs
     aiTutorUsage?: boolean | UserCountOutputTypeCountAiTutorUsageArgs
     aiConversations?: boolean | UserCountOutputTypeCountAiConversationsArgs
+    materialDownloads?: boolean | UserCountOutputTypeCountMaterialDownloadsArgs
   }
 
   // Custom InputTypes
@@ -3079,6 +3172,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAiConversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AiConversationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountMaterialDownloadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonMaterialDownloadWhereInput
   }
 
 
@@ -3244,6 +3344,37 @@ export namespace Prisma {
    */
   export type LessonCountOutputTypeCountQuizLessonsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: QuizLessonWhereInput
+  }
+
+
+  /**
+   * Count Type LessonMaterialCountOutputType
+   */
+
+  export type LessonMaterialCountOutputType = {
+    downloads: number
+  }
+
+  export type LessonMaterialCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    downloads?: boolean | LessonMaterialCountOutputTypeCountDownloadsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * LessonMaterialCountOutputType without action
+   */
+  export type LessonMaterialCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialCountOutputType
+     */
+    select?: LessonMaterialCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * LessonMaterialCountOutputType without action
+   */
+  export type LessonMaterialCountOutputTypeCountDownloadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonMaterialDownloadWhereInput
   }
 
 
@@ -3593,6 +3724,7 @@ export namespace Prisma {
     paymentTransactions?: boolean | User$paymentTransactionsArgs<ExtArgs>
     aiTutorUsage?: boolean | User$aiTutorUsageArgs<ExtArgs>
     aiConversations?: boolean | User$aiConversationsArgs<ExtArgs>
+    materialDownloads?: boolean | User$materialDownloadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3652,6 +3784,7 @@ export namespace Prisma {
     paymentTransactions?: boolean | User$paymentTransactionsArgs<ExtArgs>
     aiTutorUsage?: boolean | User$aiTutorUsageArgs<ExtArgs>
     aiConversations?: boolean | User$aiConversationsArgs<ExtArgs>
+    materialDownloads?: boolean | User$materialDownloadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3675,6 +3808,7 @@ export namespace Prisma {
       paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
       aiTutorUsage: Prisma.$AiTutorUsagePayload<ExtArgs>[]
       aiConversations: Prisma.$AiConversationPayload<ExtArgs>[]
+      materialDownloads: Prisma.$LessonMaterialDownloadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4096,6 +4230,7 @@ export namespace Prisma {
     paymentTransactions<T extends User$paymentTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiTutorUsage<T extends User$aiTutorUsageArgs<ExtArgs> = {}>(args?: Subset<T, User$aiTutorUsageArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiTutorUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiConversations<T extends User$aiConversationsArgs<ExtArgs> = {}>(args?: Subset<T, User$aiConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    materialDownloads<T extends User$materialDownloadsArgs<ExtArgs> = {}>(args?: Subset<T, User$materialDownloadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4875,6 +5010,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AiConversationScalarFieldEnum | AiConversationScalarFieldEnum[]
+  }
+
+  /**
+   * User.materialDownloads
+   */
+  export type User$materialDownloadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    where?: LessonMaterialDownloadWhereInput
+    orderBy?: LessonMaterialDownloadOrderByWithRelationInput | LessonMaterialDownloadOrderByWithRelationInput[]
+    cursor?: LessonMaterialDownloadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LessonMaterialDownloadScalarFieldEnum | LessonMaterialDownloadScalarFieldEnum[]
   }
 
   /**
@@ -15722,6 +15881,8 @@ export namespace Prisma {
     fileSize?: boolean
     mimeType?: boolean
     lesson?: boolean | LessonDefaultArgs<ExtArgs>
+    downloads?: boolean | LessonMaterial$downloadsArgs<ExtArgs>
+    _count?: boolean | LessonMaterialCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lessonMaterial"]>
 
   export type LessonMaterialSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15762,6 +15923,8 @@ export namespace Prisma {
   export type LessonMaterialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lessonId" | "filePath" | "createdAt" | "deletedAt" | "displayName" | "fileSize" | "mimeType", ExtArgs["result"]["lessonMaterial"]>
   export type LessonMaterialInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     lesson?: boolean | LessonDefaultArgs<ExtArgs>
+    downloads?: boolean | LessonMaterial$downloadsArgs<ExtArgs>
+    _count?: boolean | LessonMaterialCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LessonMaterialIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     lesson?: boolean | LessonDefaultArgs<ExtArgs>
@@ -15774,6 +15937,7 @@ export namespace Prisma {
     name: "LessonMaterial"
     objects: {
       lesson: Prisma.$LessonPayload<ExtArgs>
+      downloads: Prisma.$LessonMaterialDownloadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16179,6 +16343,7 @@ export namespace Prisma {
   export interface Prisma__LessonMaterialClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     lesson<T extends LessonDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LessonDefaultArgs<ExtArgs>>): Prisma__LessonClient<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    downloads<T extends LessonMaterial$downloadsArgs<ExtArgs> = {}>(args?: Subset<T, LessonMaterial$downloadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16617,6 +16782,30 @@ export namespace Prisma {
   }
 
   /**
+   * LessonMaterial.downloads
+   */
+  export type LessonMaterial$downloadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    where?: LessonMaterialDownloadWhereInput
+    orderBy?: LessonMaterialDownloadOrderByWithRelationInput | LessonMaterialDownloadOrderByWithRelationInput[]
+    cursor?: LessonMaterialDownloadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LessonMaterialDownloadScalarFieldEnum | LessonMaterialDownloadScalarFieldEnum[]
+  }
+
+  /**
    * LessonMaterial without action
    */
   export type LessonMaterialDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16632,6 +16821,1077 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: LessonMaterialInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model LessonMaterialDownload
+   */
+
+  export type AggregateLessonMaterialDownload = {
+    _count: LessonMaterialDownloadCountAggregateOutputType | null
+    _min: LessonMaterialDownloadMinAggregateOutputType | null
+    _max: LessonMaterialDownloadMaxAggregateOutputType | null
+  }
+
+  export type LessonMaterialDownloadMinAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    materialId: string | null
+    firstDownloadedAt: Date | null
+    lastDownloadedAt: Date | null
+  }
+
+  export type LessonMaterialDownloadMaxAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    materialId: string | null
+    firstDownloadedAt: Date | null
+    lastDownloadedAt: Date | null
+  }
+
+  export type LessonMaterialDownloadCountAggregateOutputType = {
+    id: number
+    studentId: number
+    materialId: number
+    firstDownloadedAt: number
+    lastDownloadedAt: number
+    _all: number
+  }
+
+
+  export type LessonMaterialDownloadMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    materialId?: true
+    firstDownloadedAt?: true
+    lastDownloadedAt?: true
+  }
+
+  export type LessonMaterialDownloadMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    materialId?: true
+    firstDownloadedAt?: true
+    lastDownloadedAt?: true
+  }
+
+  export type LessonMaterialDownloadCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    materialId?: true
+    firstDownloadedAt?: true
+    lastDownloadedAt?: true
+    _all?: true
+  }
+
+  export type LessonMaterialDownloadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LessonMaterialDownload to aggregate.
+     */
+    where?: LessonMaterialDownloadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonMaterialDownloads to fetch.
+     */
+    orderBy?: LessonMaterialDownloadOrderByWithRelationInput | LessonMaterialDownloadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LessonMaterialDownloadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonMaterialDownloads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonMaterialDownloads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LessonMaterialDownloads
+    **/
+    _count?: true | LessonMaterialDownloadCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LessonMaterialDownloadMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LessonMaterialDownloadMaxAggregateInputType
+  }
+
+  export type GetLessonMaterialDownloadAggregateType<T extends LessonMaterialDownloadAggregateArgs> = {
+        [P in keyof T & keyof AggregateLessonMaterialDownload]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLessonMaterialDownload[P]>
+      : GetScalarType<T[P], AggregateLessonMaterialDownload[P]>
+  }
+
+
+
+
+  export type LessonMaterialDownloadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LessonMaterialDownloadWhereInput
+    orderBy?: LessonMaterialDownloadOrderByWithAggregationInput | LessonMaterialDownloadOrderByWithAggregationInput[]
+    by: LessonMaterialDownloadScalarFieldEnum[] | LessonMaterialDownloadScalarFieldEnum
+    having?: LessonMaterialDownloadScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LessonMaterialDownloadCountAggregateInputType | true
+    _min?: LessonMaterialDownloadMinAggregateInputType
+    _max?: LessonMaterialDownloadMaxAggregateInputType
+  }
+
+  export type LessonMaterialDownloadGroupByOutputType = {
+    id: string
+    studentId: string
+    materialId: string
+    firstDownloadedAt: Date
+    lastDownloadedAt: Date
+    _count: LessonMaterialDownloadCountAggregateOutputType | null
+    _min: LessonMaterialDownloadMinAggregateOutputType | null
+    _max: LessonMaterialDownloadMaxAggregateOutputType | null
+  }
+
+  type GetLessonMaterialDownloadGroupByPayload<T extends LessonMaterialDownloadGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LessonMaterialDownloadGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LessonMaterialDownloadGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LessonMaterialDownloadGroupByOutputType[P]>
+            : GetScalarType<T[P], LessonMaterialDownloadGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LessonMaterialDownloadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    materialId?: boolean
+    firstDownloadedAt?: boolean
+    lastDownloadedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    material?: boolean | LessonMaterialDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonMaterialDownload"]>
+
+  export type LessonMaterialDownloadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    materialId?: boolean
+    firstDownloadedAt?: boolean
+    lastDownloadedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    material?: boolean | LessonMaterialDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonMaterialDownload"]>
+
+  export type LessonMaterialDownloadSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    materialId?: boolean
+    firstDownloadedAt?: boolean
+    lastDownloadedAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    material?: boolean | LessonMaterialDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lessonMaterialDownload"]>
+
+  export type LessonMaterialDownloadSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    materialId?: boolean
+    firstDownloadedAt?: boolean
+    lastDownloadedAt?: boolean
+  }
+
+  export type LessonMaterialDownloadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "materialId" | "firstDownloadedAt" | "lastDownloadedAt", ExtArgs["result"]["lessonMaterialDownload"]>
+  export type LessonMaterialDownloadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    material?: boolean | LessonMaterialDefaultArgs<ExtArgs>
+  }
+  export type LessonMaterialDownloadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    material?: boolean | LessonMaterialDefaultArgs<ExtArgs>
+  }
+  export type LessonMaterialDownloadIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    material?: boolean | LessonMaterialDefaultArgs<ExtArgs>
+  }
+
+  export type $LessonMaterialDownloadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LessonMaterialDownload"
+    objects: {
+      student: Prisma.$UserPayload<ExtArgs>
+      material: Prisma.$LessonMaterialPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      studentId: string
+      materialId: string
+      firstDownloadedAt: Date
+      lastDownloadedAt: Date
+    }, ExtArgs["result"]["lessonMaterialDownload"]>
+    composites: {}
+  }
+
+  type LessonMaterialDownloadGetPayload<S extends boolean | null | undefined | LessonMaterialDownloadDefaultArgs> = $Result.GetResult<Prisma.$LessonMaterialDownloadPayload, S>
+
+  type LessonMaterialDownloadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LessonMaterialDownloadFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LessonMaterialDownloadCountAggregateInputType | true
+    }
+
+  export interface LessonMaterialDownloadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LessonMaterialDownload'], meta: { name: 'LessonMaterialDownload' } }
+    /**
+     * Find zero or one LessonMaterialDownload that matches the filter.
+     * @param {LessonMaterialDownloadFindUniqueArgs} args - Arguments to find a LessonMaterialDownload
+     * @example
+     * // Get one LessonMaterialDownload
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LessonMaterialDownloadFindUniqueArgs>(args: SelectSubset<T, LessonMaterialDownloadFindUniqueArgs<ExtArgs>>): Prisma__LessonMaterialDownloadClient<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LessonMaterialDownload that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LessonMaterialDownloadFindUniqueOrThrowArgs} args - Arguments to find a LessonMaterialDownload
+     * @example
+     * // Get one LessonMaterialDownload
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LessonMaterialDownloadFindUniqueOrThrowArgs>(args: SelectSubset<T, LessonMaterialDownloadFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LessonMaterialDownloadClient<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LessonMaterialDownload that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonMaterialDownloadFindFirstArgs} args - Arguments to find a LessonMaterialDownload
+     * @example
+     * // Get one LessonMaterialDownload
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LessonMaterialDownloadFindFirstArgs>(args?: SelectSubset<T, LessonMaterialDownloadFindFirstArgs<ExtArgs>>): Prisma__LessonMaterialDownloadClient<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LessonMaterialDownload that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonMaterialDownloadFindFirstOrThrowArgs} args - Arguments to find a LessonMaterialDownload
+     * @example
+     * // Get one LessonMaterialDownload
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LessonMaterialDownloadFindFirstOrThrowArgs>(args?: SelectSubset<T, LessonMaterialDownloadFindFirstOrThrowArgs<ExtArgs>>): Prisma__LessonMaterialDownloadClient<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LessonMaterialDownloads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonMaterialDownloadFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LessonMaterialDownloads
+     * const lessonMaterialDownloads = await prisma.lessonMaterialDownload.findMany()
+     * 
+     * // Get first 10 LessonMaterialDownloads
+     * const lessonMaterialDownloads = await prisma.lessonMaterialDownload.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const lessonMaterialDownloadWithIdOnly = await prisma.lessonMaterialDownload.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LessonMaterialDownloadFindManyArgs>(args?: SelectSubset<T, LessonMaterialDownloadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LessonMaterialDownload.
+     * @param {LessonMaterialDownloadCreateArgs} args - Arguments to create a LessonMaterialDownload.
+     * @example
+     * // Create one LessonMaterialDownload
+     * const LessonMaterialDownload = await prisma.lessonMaterialDownload.create({
+     *   data: {
+     *     // ... data to create a LessonMaterialDownload
+     *   }
+     * })
+     * 
+     */
+    create<T extends LessonMaterialDownloadCreateArgs>(args: SelectSubset<T, LessonMaterialDownloadCreateArgs<ExtArgs>>): Prisma__LessonMaterialDownloadClient<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LessonMaterialDownloads.
+     * @param {LessonMaterialDownloadCreateManyArgs} args - Arguments to create many LessonMaterialDownloads.
+     * @example
+     * // Create many LessonMaterialDownloads
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LessonMaterialDownloadCreateManyArgs>(args?: SelectSubset<T, LessonMaterialDownloadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LessonMaterialDownloads and returns the data saved in the database.
+     * @param {LessonMaterialDownloadCreateManyAndReturnArgs} args - Arguments to create many LessonMaterialDownloads.
+     * @example
+     * // Create many LessonMaterialDownloads
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LessonMaterialDownloads and only return the `id`
+     * const lessonMaterialDownloadWithIdOnly = await prisma.lessonMaterialDownload.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LessonMaterialDownloadCreateManyAndReturnArgs>(args?: SelectSubset<T, LessonMaterialDownloadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LessonMaterialDownload.
+     * @param {LessonMaterialDownloadDeleteArgs} args - Arguments to delete one LessonMaterialDownload.
+     * @example
+     * // Delete one LessonMaterialDownload
+     * const LessonMaterialDownload = await prisma.lessonMaterialDownload.delete({
+     *   where: {
+     *     // ... filter to delete one LessonMaterialDownload
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LessonMaterialDownloadDeleteArgs>(args: SelectSubset<T, LessonMaterialDownloadDeleteArgs<ExtArgs>>): Prisma__LessonMaterialDownloadClient<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LessonMaterialDownload.
+     * @param {LessonMaterialDownloadUpdateArgs} args - Arguments to update one LessonMaterialDownload.
+     * @example
+     * // Update one LessonMaterialDownload
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LessonMaterialDownloadUpdateArgs>(args: SelectSubset<T, LessonMaterialDownloadUpdateArgs<ExtArgs>>): Prisma__LessonMaterialDownloadClient<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LessonMaterialDownloads.
+     * @param {LessonMaterialDownloadDeleteManyArgs} args - Arguments to filter LessonMaterialDownloads to delete.
+     * @example
+     * // Delete a few LessonMaterialDownloads
+     * const { count } = await prisma.lessonMaterialDownload.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LessonMaterialDownloadDeleteManyArgs>(args?: SelectSubset<T, LessonMaterialDownloadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LessonMaterialDownloads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonMaterialDownloadUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LessonMaterialDownloads
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LessonMaterialDownloadUpdateManyArgs>(args: SelectSubset<T, LessonMaterialDownloadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LessonMaterialDownloads and returns the data updated in the database.
+     * @param {LessonMaterialDownloadUpdateManyAndReturnArgs} args - Arguments to update many LessonMaterialDownloads.
+     * @example
+     * // Update many LessonMaterialDownloads
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LessonMaterialDownloads and only return the `id`
+     * const lessonMaterialDownloadWithIdOnly = await prisma.lessonMaterialDownload.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LessonMaterialDownloadUpdateManyAndReturnArgs>(args: SelectSubset<T, LessonMaterialDownloadUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LessonMaterialDownload.
+     * @param {LessonMaterialDownloadUpsertArgs} args - Arguments to update or create a LessonMaterialDownload.
+     * @example
+     * // Update or create a LessonMaterialDownload
+     * const lessonMaterialDownload = await prisma.lessonMaterialDownload.upsert({
+     *   create: {
+     *     // ... data to create a LessonMaterialDownload
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LessonMaterialDownload we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LessonMaterialDownloadUpsertArgs>(args: SelectSubset<T, LessonMaterialDownloadUpsertArgs<ExtArgs>>): Prisma__LessonMaterialDownloadClient<$Result.GetResult<Prisma.$LessonMaterialDownloadPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LessonMaterialDownloads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonMaterialDownloadCountArgs} args - Arguments to filter LessonMaterialDownloads to count.
+     * @example
+     * // Count the number of LessonMaterialDownloads
+     * const count = await prisma.lessonMaterialDownload.count({
+     *   where: {
+     *     // ... the filter for the LessonMaterialDownloads we want to count
+     *   }
+     * })
+    **/
+    count<T extends LessonMaterialDownloadCountArgs>(
+      args?: Subset<T, LessonMaterialDownloadCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LessonMaterialDownloadCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LessonMaterialDownload.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonMaterialDownloadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LessonMaterialDownloadAggregateArgs>(args: Subset<T, LessonMaterialDownloadAggregateArgs>): Prisma.PrismaPromise<GetLessonMaterialDownloadAggregateType<T>>
+
+    /**
+     * Group by LessonMaterialDownload.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LessonMaterialDownloadGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LessonMaterialDownloadGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LessonMaterialDownloadGroupByArgs['orderBy'] }
+        : { orderBy?: LessonMaterialDownloadGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LessonMaterialDownloadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLessonMaterialDownloadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LessonMaterialDownload model
+   */
+  readonly fields: LessonMaterialDownloadFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LessonMaterialDownload.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LessonMaterialDownloadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    material<T extends LessonMaterialDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LessonMaterialDefaultArgs<ExtArgs>>): Prisma__LessonMaterialClient<$Result.GetResult<Prisma.$LessonMaterialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LessonMaterialDownload model
+   */
+  interface LessonMaterialDownloadFieldRefs {
+    readonly id: FieldRef<"LessonMaterialDownload", 'String'>
+    readonly studentId: FieldRef<"LessonMaterialDownload", 'String'>
+    readonly materialId: FieldRef<"LessonMaterialDownload", 'String'>
+    readonly firstDownloadedAt: FieldRef<"LessonMaterialDownload", 'DateTime'>
+    readonly lastDownloadedAt: FieldRef<"LessonMaterialDownload", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LessonMaterialDownload findUnique
+   */
+  export type LessonMaterialDownloadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonMaterialDownload to fetch.
+     */
+    where: LessonMaterialDownloadWhereUniqueInput
+  }
+
+  /**
+   * LessonMaterialDownload findUniqueOrThrow
+   */
+  export type LessonMaterialDownloadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonMaterialDownload to fetch.
+     */
+    where: LessonMaterialDownloadWhereUniqueInput
+  }
+
+  /**
+   * LessonMaterialDownload findFirst
+   */
+  export type LessonMaterialDownloadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonMaterialDownload to fetch.
+     */
+    where?: LessonMaterialDownloadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonMaterialDownloads to fetch.
+     */
+    orderBy?: LessonMaterialDownloadOrderByWithRelationInput | LessonMaterialDownloadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LessonMaterialDownloads.
+     */
+    cursor?: LessonMaterialDownloadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonMaterialDownloads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonMaterialDownloads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LessonMaterialDownloads.
+     */
+    distinct?: LessonMaterialDownloadScalarFieldEnum | LessonMaterialDownloadScalarFieldEnum[]
+  }
+
+  /**
+   * LessonMaterialDownload findFirstOrThrow
+   */
+  export type LessonMaterialDownloadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonMaterialDownload to fetch.
+     */
+    where?: LessonMaterialDownloadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonMaterialDownloads to fetch.
+     */
+    orderBy?: LessonMaterialDownloadOrderByWithRelationInput | LessonMaterialDownloadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LessonMaterialDownloads.
+     */
+    cursor?: LessonMaterialDownloadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonMaterialDownloads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonMaterialDownloads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LessonMaterialDownloads.
+     */
+    distinct?: LessonMaterialDownloadScalarFieldEnum | LessonMaterialDownloadScalarFieldEnum[]
+  }
+
+  /**
+   * LessonMaterialDownload findMany
+   */
+  export type LessonMaterialDownloadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * Filter, which LessonMaterialDownloads to fetch.
+     */
+    where?: LessonMaterialDownloadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LessonMaterialDownloads to fetch.
+     */
+    orderBy?: LessonMaterialDownloadOrderByWithRelationInput | LessonMaterialDownloadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LessonMaterialDownloads.
+     */
+    cursor?: LessonMaterialDownloadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LessonMaterialDownloads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LessonMaterialDownloads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LessonMaterialDownloads.
+     */
+    distinct?: LessonMaterialDownloadScalarFieldEnum | LessonMaterialDownloadScalarFieldEnum[]
+  }
+
+  /**
+   * LessonMaterialDownload create
+   */
+  export type LessonMaterialDownloadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LessonMaterialDownload.
+     */
+    data: XOR<LessonMaterialDownloadCreateInput, LessonMaterialDownloadUncheckedCreateInput>
+  }
+
+  /**
+   * LessonMaterialDownload createMany
+   */
+  export type LessonMaterialDownloadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LessonMaterialDownloads.
+     */
+    data: LessonMaterialDownloadCreateManyInput | LessonMaterialDownloadCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LessonMaterialDownload createManyAndReturn
+   */
+  export type LessonMaterialDownloadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * The data used to create many LessonMaterialDownloads.
+     */
+    data: LessonMaterialDownloadCreateManyInput | LessonMaterialDownloadCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LessonMaterialDownload update
+   */
+  export type LessonMaterialDownloadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LessonMaterialDownload.
+     */
+    data: XOR<LessonMaterialDownloadUpdateInput, LessonMaterialDownloadUncheckedUpdateInput>
+    /**
+     * Choose, which LessonMaterialDownload to update.
+     */
+    where: LessonMaterialDownloadWhereUniqueInput
+  }
+
+  /**
+   * LessonMaterialDownload updateMany
+   */
+  export type LessonMaterialDownloadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LessonMaterialDownloads.
+     */
+    data: XOR<LessonMaterialDownloadUpdateManyMutationInput, LessonMaterialDownloadUncheckedUpdateManyInput>
+    /**
+     * Filter which LessonMaterialDownloads to update
+     */
+    where?: LessonMaterialDownloadWhereInput
+    /**
+     * Limit how many LessonMaterialDownloads to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LessonMaterialDownload updateManyAndReturn
+   */
+  export type LessonMaterialDownloadUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * The data used to update LessonMaterialDownloads.
+     */
+    data: XOR<LessonMaterialDownloadUpdateManyMutationInput, LessonMaterialDownloadUncheckedUpdateManyInput>
+    /**
+     * Filter which LessonMaterialDownloads to update
+     */
+    where?: LessonMaterialDownloadWhereInput
+    /**
+     * Limit how many LessonMaterialDownloads to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LessonMaterialDownload upsert
+   */
+  export type LessonMaterialDownloadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LessonMaterialDownload to update in case it exists.
+     */
+    where: LessonMaterialDownloadWhereUniqueInput
+    /**
+     * In case the LessonMaterialDownload found by the `where` argument doesn't exist, create a new LessonMaterialDownload with this data.
+     */
+    create: XOR<LessonMaterialDownloadCreateInput, LessonMaterialDownloadUncheckedCreateInput>
+    /**
+     * In case the LessonMaterialDownload was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LessonMaterialDownloadUpdateInput, LessonMaterialDownloadUncheckedUpdateInput>
+  }
+
+  /**
+   * LessonMaterialDownload delete
+   */
+  export type LessonMaterialDownloadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
+    /**
+     * Filter which LessonMaterialDownload to delete.
+     */
+    where: LessonMaterialDownloadWhereUniqueInput
+  }
+
+  /**
+   * LessonMaterialDownload deleteMany
+   */
+  export type LessonMaterialDownloadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LessonMaterialDownloads to delete
+     */
+    where?: LessonMaterialDownloadWhereInput
+    /**
+     * Limit how many LessonMaterialDownloads to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LessonMaterialDownload without action
+   */
+  export type LessonMaterialDownloadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LessonMaterialDownload
+     */
+    select?: LessonMaterialDownloadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LessonMaterialDownload
+     */
+    omit?: LessonMaterialDownloadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LessonMaterialDownloadInclude<ExtArgs> | null
   }
 
 
@@ -29388,6 +30648,17 @@ export namespace Prisma {
   export type LessonMaterialScalarFieldEnum = (typeof LessonMaterialScalarFieldEnum)[keyof typeof LessonMaterialScalarFieldEnum]
 
 
+  export const LessonMaterialDownloadScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    materialId: 'materialId',
+    firstDownloadedAt: 'firstDownloadedAt',
+    lastDownloadedAt: 'lastDownloadedAt'
+  };
+
+  export type LessonMaterialDownloadScalarFieldEnum = (typeof LessonMaterialDownloadScalarFieldEnum)[keyof typeof LessonMaterialDownloadScalarFieldEnum]
+
+
   export const ContentChunkScalarFieldEnum: {
     id: 'id',
     content: 'content',
@@ -29907,6 +31178,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionListRelationFilter
     aiTutorUsage?: AiTutorUsageListRelationFilter
     aiConversations?: AiConversationListRelationFilter
+    materialDownloads?: LessonMaterialDownloadListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -29935,6 +31207,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionOrderByRelationAggregateInput
     aiTutorUsage?: AiTutorUsageOrderByRelationAggregateInput
     aiConversations?: AiConversationOrderByRelationAggregateInput
+    materialDownloads?: LessonMaterialDownloadOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -29966,6 +31239,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionListRelationFilter
     aiTutorUsage?: AiTutorUsageListRelationFilter
     aiConversations?: AiConversationListRelationFilter
+    materialDownloads?: LessonMaterialDownloadListRelationFilter
   }, "id" | "email" | "mobile">
 
   export type UserOrderByWithAggregationInput = {
@@ -30747,6 +32021,7 @@ export namespace Prisma {
     fileSize?: IntFilter<"LessonMaterial"> | number
     mimeType?: StringFilter<"LessonMaterial"> | string
     lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
+    downloads?: LessonMaterialDownloadListRelationFilter
   }
 
   export type LessonMaterialOrderByWithRelationInput = {
@@ -30759,6 +32034,7 @@ export namespace Prisma {
     fileSize?: SortOrder
     mimeType?: SortOrder
     lesson?: LessonOrderByWithRelationInput
+    downloads?: LessonMaterialDownloadOrderByRelationAggregateInput
   }
 
   export type LessonMaterialWhereUniqueInput = Prisma.AtLeast<{
@@ -30774,6 +32050,7 @@ export namespace Prisma {
     fileSize?: IntFilter<"LessonMaterial"> | number
     mimeType?: StringFilter<"LessonMaterial"> | string
     lesson?: XOR<LessonScalarRelationFilter, LessonWhereInput>
+    downloads?: LessonMaterialDownloadListRelationFilter
   }, "id">
 
   export type LessonMaterialOrderByWithAggregationInput = {
@@ -30804,6 +32081,65 @@ export namespace Prisma {
     displayName?: StringWithAggregatesFilter<"LessonMaterial"> | string
     fileSize?: IntWithAggregatesFilter<"LessonMaterial"> | number
     mimeType?: StringWithAggregatesFilter<"LessonMaterial"> | string
+  }
+
+  export type LessonMaterialDownloadWhereInput = {
+    AND?: LessonMaterialDownloadWhereInput | LessonMaterialDownloadWhereInput[]
+    OR?: LessonMaterialDownloadWhereInput[]
+    NOT?: LessonMaterialDownloadWhereInput | LessonMaterialDownloadWhereInput[]
+    id?: StringFilter<"LessonMaterialDownload"> | string
+    studentId?: StringFilter<"LessonMaterialDownload"> | string
+    materialId?: StringFilter<"LessonMaterialDownload"> | string
+    firstDownloadedAt?: DateTimeFilter<"LessonMaterialDownload"> | Date | string
+    lastDownloadedAt?: DateTimeFilter<"LessonMaterialDownload"> | Date | string
+    student?: XOR<UserScalarRelationFilter, UserWhereInput>
+    material?: XOR<LessonMaterialScalarRelationFilter, LessonMaterialWhereInput>
+  }
+
+  export type LessonMaterialDownloadOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    materialId?: SortOrder
+    firstDownloadedAt?: SortOrder
+    lastDownloadedAt?: SortOrder
+    student?: UserOrderByWithRelationInput
+    material?: LessonMaterialOrderByWithRelationInput
+  }
+
+  export type LessonMaterialDownloadWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    studentId_materialId?: LessonMaterialDownloadStudentIdMaterialIdCompoundUniqueInput
+    AND?: LessonMaterialDownloadWhereInput | LessonMaterialDownloadWhereInput[]
+    OR?: LessonMaterialDownloadWhereInput[]
+    NOT?: LessonMaterialDownloadWhereInput | LessonMaterialDownloadWhereInput[]
+    studentId?: StringFilter<"LessonMaterialDownload"> | string
+    materialId?: StringFilter<"LessonMaterialDownload"> | string
+    firstDownloadedAt?: DateTimeFilter<"LessonMaterialDownload"> | Date | string
+    lastDownloadedAt?: DateTimeFilter<"LessonMaterialDownload"> | Date | string
+    student?: XOR<UserScalarRelationFilter, UserWhereInput>
+    material?: XOR<LessonMaterialScalarRelationFilter, LessonMaterialWhereInput>
+  }, "id" | "studentId_materialId">
+
+  export type LessonMaterialDownloadOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    materialId?: SortOrder
+    firstDownloadedAt?: SortOrder
+    lastDownloadedAt?: SortOrder
+    _count?: LessonMaterialDownloadCountOrderByAggregateInput
+    _max?: LessonMaterialDownloadMaxOrderByAggregateInput
+    _min?: LessonMaterialDownloadMinOrderByAggregateInput
+  }
+
+  export type LessonMaterialDownloadScalarWhereWithAggregatesInput = {
+    AND?: LessonMaterialDownloadScalarWhereWithAggregatesInput | LessonMaterialDownloadScalarWhereWithAggregatesInput[]
+    OR?: LessonMaterialDownloadScalarWhereWithAggregatesInput[]
+    NOT?: LessonMaterialDownloadScalarWhereWithAggregatesInput | LessonMaterialDownloadScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"LessonMaterialDownload"> | string
+    studentId?: StringWithAggregatesFilter<"LessonMaterialDownload"> | string
+    materialId?: StringWithAggregatesFilter<"LessonMaterialDownload"> | string
+    firstDownloadedAt?: DateTimeWithAggregatesFilter<"LessonMaterialDownload"> | Date | string
+    lastDownloadedAt?: DateTimeWithAggregatesFilter<"LessonMaterialDownload"> | Date | string
   }
 
   export type ContentChunkWhereInput = {
@@ -31680,6 +33016,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -31708,6 +33045,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserUpdateInput = {
@@ -31736,6 +33074,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -31764,6 +33103,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -32593,6 +33933,7 @@ export namespace Prisma {
     fileSize?: number
     mimeType?: string
     lesson: LessonCreateNestedOneWithoutLessonMaterialsInput
+    downloads?: LessonMaterialDownloadCreateNestedManyWithoutMaterialInput
   }
 
   export type LessonMaterialUncheckedCreateInput = {
@@ -32604,6 +33945,7 @@ export namespace Prisma {
     displayName: string
     fileSize?: number
     mimeType?: string
+    downloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutMaterialInput
   }
 
   export type LessonMaterialUpdateInput = {
@@ -32615,6 +33957,7 @@ export namespace Prisma {
     fileSize?: IntFieldUpdateOperationsInput | number
     mimeType?: StringFieldUpdateOperationsInput | string
     lesson?: LessonUpdateOneRequiredWithoutLessonMaterialsNestedInput
+    downloads?: LessonMaterialDownloadUpdateManyWithoutMaterialNestedInput
   }
 
   export type LessonMaterialUncheckedUpdateInput = {
@@ -32626,6 +33969,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     fileSize?: IntFieldUpdateOperationsInput | number
     mimeType?: StringFieldUpdateOperationsInput | string
+    downloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutMaterialNestedInput
   }
 
   export type LessonMaterialCreateManyInput = {
@@ -32658,6 +34002,60 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     fileSize?: IntFieldUpdateOperationsInput | number
     mimeType?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type LessonMaterialDownloadCreateInput = {
+    id?: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
+    student: UserCreateNestedOneWithoutMaterialDownloadsInput
+    material: LessonMaterialCreateNestedOneWithoutDownloadsInput
+  }
+
+  export type LessonMaterialDownloadUncheckedCreateInput = {
+    id?: string
+    studentId: string
+    materialId: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
+  }
+
+  export type LessonMaterialDownloadUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutMaterialDownloadsNestedInput
+    material?: LessonMaterialUpdateOneRequiredWithoutDownloadsNestedInput
+  }
+
+  export type LessonMaterialDownloadUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    materialId?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LessonMaterialDownloadCreateManyInput = {
+    id?: string
+    studentId: string
+    materialId: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
+  }
+
+  export type LessonMaterialDownloadUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LessonMaterialDownloadUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    materialId?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ContentChunkCreateInput = {
@@ -33694,6 +35092,12 @@ export namespace Prisma {
     none?: AiConversationWhereInput
   }
 
+  export type LessonMaterialDownloadListRelationFilter = {
+    every?: LessonMaterialDownloadWhereInput
+    some?: LessonMaterialDownloadWhereInput
+    none?: LessonMaterialDownloadWhereInput
+  }
+
   export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -33739,6 +35143,10 @@ export namespace Prisma {
   }
 
   export type AiConversationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LessonMaterialDownloadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -34610,6 +36018,40 @@ export namespace Prisma {
   export type LessonMaterialSumOrderByAggregateInput = {
     fileSize?: SortOrder
   }
+
+  export type LessonMaterialScalarRelationFilter = {
+    is?: LessonMaterialWhereInput
+    isNot?: LessonMaterialWhereInput
+  }
+
+  export type LessonMaterialDownloadStudentIdMaterialIdCompoundUniqueInput = {
+    studentId: string
+    materialId: string
+  }
+
+  export type LessonMaterialDownloadCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    materialId?: SortOrder
+    firstDownloadedAt?: SortOrder
+    lastDownloadedAt?: SortOrder
+  }
+
+  export type LessonMaterialDownloadMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    materialId?: SortOrder
+    firstDownloadedAt?: SortOrder
+    lastDownloadedAt?: SortOrder
+  }
+
+  export type LessonMaterialDownloadMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    materialId?: SortOrder
+    firstDownloadedAt?: SortOrder
+    lastDownloadedAt?: SortOrder
+  }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -35419,6 +36861,13 @@ export namespace Prisma {
     connect?: AiConversationWhereUniqueInput | AiConversationWhereUniqueInput[]
   }
 
+  export type LessonMaterialDownloadCreateNestedManyWithoutStudentInput = {
+    create?: XOR<LessonMaterialDownloadCreateWithoutStudentInput, LessonMaterialDownloadUncheckedCreateWithoutStudentInput> | LessonMaterialDownloadCreateWithoutStudentInput[] | LessonMaterialDownloadUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: LessonMaterialDownloadCreateOrConnectWithoutStudentInput | LessonMaterialDownloadCreateOrConnectWithoutStudentInput[]
+    createMany?: LessonMaterialDownloadCreateManyStudentInputEnvelope
+    connect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+  }
+
   export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -35520,6 +36969,13 @@ export namespace Prisma {
     connectOrCreate?: AiConversationCreateOrConnectWithoutStudentInput | AiConversationCreateOrConnectWithoutStudentInput[]
     createMany?: AiConversationCreateManyStudentInputEnvelope
     connect?: AiConversationWhereUniqueInput | AiConversationWhereUniqueInput[]
+  }
+
+  export type LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<LessonMaterialDownloadCreateWithoutStudentInput, LessonMaterialDownloadUncheckedCreateWithoutStudentInput> | LessonMaterialDownloadCreateWithoutStudentInput[] | LessonMaterialDownloadUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: LessonMaterialDownloadCreateOrConnectWithoutStudentInput | LessonMaterialDownloadCreateOrConnectWithoutStudentInput[]
+    createMany?: LessonMaterialDownloadCreateManyStudentInputEnvelope
+    connect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -35748,6 +37204,20 @@ export namespace Prisma {
     deleteMany?: AiConversationScalarWhereInput | AiConversationScalarWhereInput[]
   }
 
+  export type LessonMaterialDownloadUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<LessonMaterialDownloadCreateWithoutStudentInput, LessonMaterialDownloadUncheckedCreateWithoutStudentInput> | LessonMaterialDownloadCreateWithoutStudentInput[] | LessonMaterialDownloadUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: LessonMaterialDownloadCreateOrConnectWithoutStudentInput | LessonMaterialDownloadCreateOrConnectWithoutStudentInput[]
+    upsert?: LessonMaterialDownloadUpsertWithWhereUniqueWithoutStudentInput | LessonMaterialDownloadUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: LessonMaterialDownloadCreateManyStudentInputEnvelope
+    set?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    disconnect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    delete?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    connect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    update?: LessonMaterialDownloadUpdateWithWhereUniqueWithoutStudentInput | LessonMaterialDownloadUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: LessonMaterialDownloadUpdateManyWithWhereWithoutStudentInput | LessonMaterialDownloadUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: LessonMaterialDownloadScalarWhereInput | LessonMaterialDownloadScalarWhereInput[]
+  }
+
   export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -35948,6 +37418,20 @@ export namespace Prisma {
     update?: AiConversationUpdateWithWhereUniqueWithoutStudentInput | AiConversationUpdateWithWhereUniqueWithoutStudentInput[]
     updateMany?: AiConversationUpdateManyWithWhereWithoutStudentInput | AiConversationUpdateManyWithWhereWithoutStudentInput[]
     deleteMany?: AiConversationScalarWhereInput | AiConversationScalarWhereInput[]
+  }
+
+  export type LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<LessonMaterialDownloadCreateWithoutStudentInput, LessonMaterialDownloadUncheckedCreateWithoutStudentInput> | LessonMaterialDownloadCreateWithoutStudentInput[] | LessonMaterialDownloadUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: LessonMaterialDownloadCreateOrConnectWithoutStudentInput | LessonMaterialDownloadCreateOrConnectWithoutStudentInput[]
+    upsert?: LessonMaterialDownloadUpsertWithWhereUniqueWithoutStudentInput | LessonMaterialDownloadUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: LessonMaterialDownloadCreateManyStudentInputEnvelope
+    set?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    disconnect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    delete?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    connect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    update?: LessonMaterialDownloadUpdateWithWhereUniqueWithoutStudentInput | LessonMaterialDownloadUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: LessonMaterialDownloadUpdateManyWithWhereWithoutStudentInput | LessonMaterialDownloadUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: LessonMaterialDownloadScalarWhereInput | LessonMaterialDownloadScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutStudentProfileInput = {
@@ -36660,12 +38144,82 @@ export namespace Prisma {
     connect?: LessonWhereUniqueInput
   }
 
+  export type LessonMaterialDownloadCreateNestedManyWithoutMaterialInput = {
+    create?: XOR<LessonMaterialDownloadCreateWithoutMaterialInput, LessonMaterialDownloadUncheckedCreateWithoutMaterialInput> | LessonMaterialDownloadCreateWithoutMaterialInput[] | LessonMaterialDownloadUncheckedCreateWithoutMaterialInput[]
+    connectOrCreate?: LessonMaterialDownloadCreateOrConnectWithoutMaterialInput | LessonMaterialDownloadCreateOrConnectWithoutMaterialInput[]
+    createMany?: LessonMaterialDownloadCreateManyMaterialInputEnvelope
+    connect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+  }
+
+  export type LessonMaterialDownloadUncheckedCreateNestedManyWithoutMaterialInput = {
+    create?: XOR<LessonMaterialDownloadCreateWithoutMaterialInput, LessonMaterialDownloadUncheckedCreateWithoutMaterialInput> | LessonMaterialDownloadCreateWithoutMaterialInput[] | LessonMaterialDownloadUncheckedCreateWithoutMaterialInput[]
+    connectOrCreate?: LessonMaterialDownloadCreateOrConnectWithoutMaterialInput | LessonMaterialDownloadCreateOrConnectWithoutMaterialInput[]
+    createMany?: LessonMaterialDownloadCreateManyMaterialInputEnvelope
+    connect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+  }
+
   export type LessonUpdateOneRequiredWithoutLessonMaterialsNestedInput = {
     create?: XOR<LessonCreateWithoutLessonMaterialsInput, LessonUncheckedCreateWithoutLessonMaterialsInput>
     connectOrCreate?: LessonCreateOrConnectWithoutLessonMaterialsInput
     upsert?: LessonUpsertWithoutLessonMaterialsInput
     connect?: LessonWhereUniqueInput
     update?: XOR<XOR<LessonUpdateToOneWithWhereWithoutLessonMaterialsInput, LessonUpdateWithoutLessonMaterialsInput>, LessonUncheckedUpdateWithoutLessonMaterialsInput>
+  }
+
+  export type LessonMaterialDownloadUpdateManyWithoutMaterialNestedInput = {
+    create?: XOR<LessonMaterialDownloadCreateWithoutMaterialInput, LessonMaterialDownloadUncheckedCreateWithoutMaterialInput> | LessonMaterialDownloadCreateWithoutMaterialInput[] | LessonMaterialDownloadUncheckedCreateWithoutMaterialInput[]
+    connectOrCreate?: LessonMaterialDownloadCreateOrConnectWithoutMaterialInput | LessonMaterialDownloadCreateOrConnectWithoutMaterialInput[]
+    upsert?: LessonMaterialDownloadUpsertWithWhereUniqueWithoutMaterialInput | LessonMaterialDownloadUpsertWithWhereUniqueWithoutMaterialInput[]
+    createMany?: LessonMaterialDownloadCreateManyMaterialInputEnvelope
+    set?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    disconnect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    delete?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    connect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    update?: LessonMaterialDownloadUpdateWithWhereUniqueWithoutMaterialInput | LessonMaterialDownloadUpdateWithWhereUniqueWithoutMaterialInput[]
+    updateMany?: LessonMaterialDownloadUpdateManyWithWhereWithoutMaterialInput | LessonMaterialDownloadUpdateManyWithWhereWithoutMaterialInput[]
+    deleteMany?: LessonMaterialDownloadScalarWhereInput | LessonMaterialDownloadScalarWhereInput[]
+  }
+
+  export type LessonMaterialDownloadUncheckedUpdateManyWithoutMaterialNestedInput = {
+    create?: XOR<LessonMaterialDownloadCreateWithoutMaterialInput, LessonMaterialDownloadUncheckedCreateWithoutMaterialInput> | LessonMaterialDownloadCreateWithoutMaterialInput[] | LessonMaterialDownloadUncheckedCreateWithoutMaterialInput[]
+    connectOrCreate?: LessonMaterialDownloadCreateOrConnectWithoutMaterialInput | LessonMaterialDownloadCreateOrConnectWithoutMaterialInput[]
+    upsert?: LessonMaterialDownloadUpsertWithWhereUniqueWithoutMaterialInput | LessonMaterialDownloadUpsertWithWhereUniqueWithoutMaterialInput[]
+    createMany?: LessonMaterialDownloadCreateManyMaterialInputEnvelope
+    set?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    disconnect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    delete?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    connect?: LessonMaterialDownloadWhereUniqueInput | LessonMaterialDownloadWhereUniqueInput[]
+    update?: LessonMaterialDownloadUpdateWithWhereUniqueWithoutMaterialInput | LessonMaterialDownloadUpdateWithWhereUniqueWithoutMaterialInput[]
+    updateMany?: LessonMaterialDownloadUpdateManyWithWhereWithoutMaterialInput | LessonMaterialDownloadUpdateManyWithWhereWithoutMaterialInput[]
+    deleteMany?: LessonMaterialDownloadScalarWhereInput | LessonMaterialDownloadScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutMaterialDownloadsInput = {
+    create?: XOR<UserCreateWithoutMaterialDownloadsInput, UserUncheckedCreateWithoutMaterialDownloadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutMaterialDownloadsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type LessonMaterialCreateNestedOneWithoutDownloadsInput = {
+    create?: XOR<LessonMaterialCreateWithoutDownloadsInput, LessonMaterialUncheckedCreateWithoutDownloadsInput>
+    connectOrCreate?: LessonMaterialCreateOrConnectWithoutDownloadsInput
+    connect?: LessonMaterialWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutMaterialDownloadsNestedInput = {
+    create?: XOR<UserCreateWithoutMaterialDownloadsInput, UserUncheckedCreateWithoutMaterialDownloadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutMaterialDownloadsInput
+    upsert?: UserUpsertWithoutMaterialDownloadsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutMaterialDownloadsInput, UserUpdateWithoutMaterialDownloadsInput>, UserUncheckedUpdateWithoutMaterialDownloadsInput>
+  }
+
+  export type LessonMaterialUpdateOneRequiredWithoutDownloadsNestedInput = {
+    create?: XOR<LessonMaterialCreateWithoutDownloadsInput, LessonMaterialUncheckedCreateWithoutDownloadsInput>
+    connectOrCreate?: LessonMaterialCreateOrConnectWithoutDownloadsInput
+    upsert?: LessonMaterialUpsertWithoutDownloadsInput
+    connect?: LessonMaterialWhereUniqueInput
+    update?: XOR<XOR<LessonMaterialUpdateToOneWithWhereWithoutDownloadsInput, LessonMaterialUpdateWithoutDownloadsInput>, LessonMaterialUncheckedUpdateWithoutDownloadsInput>
   }
 
   export type LessonCreateNestedOneWithoutContentChunksInput = {
@@ -38157,6 +39711,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LessonMaterialDownloadCreateWithoutStudentInput = {
+    id?: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
+    material: LessonMaterialCreateNestedOneWithoutDownloadsInput
+  }
+
+  export type LessonMaterialDownloadUncheckedCreateWithoutStudentInput = {
+    id?: string
+    materialId: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
+  }
+
+  export type LessonMaterialDownloadCreateOrConnectWithoutStudentInput = {
+    where: LessonMaterialDownloadWhereUniqueInput
+    create: XOR<LessonMaterialDownloadCreateWithoutStudentInput, LessonMaterialDownloadUncheckedCreateWithoutStudentInput>
+  }
+
+  export type LessonMaterialDownloadCreateManyStudentInputEnvelope = {
+    data: LessonMaterialDownloadCreateManyStudentInput | LessonMaterialDownloadCreateManyStudentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AuditLogUpsertWithWhereUniqueWithoutUserInput = {
     where: AuditLogWhereUniqueInput
     update: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
@@ -38605,6 +40183,33 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"AiConversation"> | Date | string | null
   }
 
+  export type LessonMaterialDownloadUpsertWithWhereUniqueWithoutStudentInput = {
+    where: LessonMaterialDownloadWhereUniqueInput
+    update: XOR<LessonMaterialDownloadUpdateWithoutStudentInput, LessonMaterialDownloadUncheckedUpdateWithoutStudentInput>
+    create: XOR<LessonMaterialDownloadCreateWithoutStudentInput, LessonMaterialDownloadUncheckedCreateWithoutStudentInput>
+  }
+
+  export type LessonMaterialDownloadUpdateWithWhereUniqueWithoutStudentInput = {
+    where: LessonMaterialDownloadWhereUniqueInput
+    data: XOR<LessonMaterialDownloadUpdateWithoutStudentInput, LessonMaterialDownloadUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type LessonMaterialDownloadUpdateManyWithWhereWithoutStudentInput = {
+    where: LessonMaterialDownloadScalarWhereInput
+    data: XOR<LessonMaterialDownloadUpdateManyMutationInput, LessonMaterialDownloadUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type LessonMaterialDownloadScalarWhereInput = {
+    AND?: LessonMaterialDownloadScalarWhereInput | LessonMaterialDownloadScalarWhereInput[]
+    OR?: LessonMaterialDownloadScalarWhereInput[]
+    NOT?: LessonMaterialDownloadScalarWhereInput | LessonMaterialDownloadScalarWhereInput[]
+    id?: StringFilter<"LessonMaterialDownload"> | string
+    studentId?: StringFilter<"LessonMaterialDownload"> | string
+    materialId?: StringFilter<"LessonMaterialDownload"> | string
+    firstDownloadedAt?: DateTimeFilter<"LessonMaterialDownload"> | Date | string
+    lastDownloadedAt?: DateTimeFilter<"LessonMaterialDownload"> | Date | string
+  }
+
   export type UserCreateWithoutStudentProfileInput = {
     id?: string
     fullName: string
@@ -38630,6 +40235,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -38657,6 +40263,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -38729,6 +40336,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -38756,6 +40364,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StageUpsertWithoutStudentProfilesInput = {
@@ -38818,6 +40427,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutTeacherProfileInput = {
@@ -38845,6 +40455,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutTeacherProfileInput = {
@@ -38888,6 +40499,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherProfileInput = {
@@ -38915,6 +40527,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterCreateWithoutStageInput = {
@@ -39008,6 +40621,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutStagesInput = {
@@ -39035,6 +40649,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutStagesInput = {
@@ -39136,6 +40751,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStagesInput = {
@@ -39163,6 +40779,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StageCreateWithoutChaptersInput = {
@@ -39538,6 +41155,7 @@ export namespace Prisma {
     displayName: string
     fileSize?: number
     mimeType?: string
+    downloads?: LessonMaterialDownloadCreateNestedManyWithoutMaterialInput
   }
 
   export type LessonMaterialUncheckedCreateWithoutLessonInput = {
@@ -39548,6 +41166,7 @@ export namespace Prisma {
     displayName: string
     fileSize?: number
     mimeType?: string
+    downloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutMaterialInput
   }
 
   export type LessonMaterialCreateOrConnectWithoutLessonInput = {
@@ -39929,6 +41548,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutOtpsInput = {
@@ -39956,6 +41576,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutOtpsInput = {
@@ -39999,6 +41620,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOtpsInput = {
@@ -40026,6 +41648,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterCreateWithoutEnrollmentsInput = {
@@ -40090,6 +41713,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -40117,6 +41741,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -40203,6 +41828,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -40230,6 +41856,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutPaymentTransactionsInput = {
@@ -40257,6 +41884,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
@@ -40284,6 +41912,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutPaymentTransactionsInput = {
@@ -40364,6 +41993,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
@@ -40391,6 +42021,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterUpsertWithoutPaymentTransactionsInput = {
@@ -40504,6 +42135,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -40531,6 +42163,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -40623,6 +42256,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -40650,6 +42284,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type LessonCreateWithoutLessonMaterialsInput = {
@@ -40693,6 +42328,30 @@ export namespace Prisma {
   export type LessonCreateOrConnectWithoutLessonMaterialsInput = {
     where: LessonWhereUniqueInput
     create: XOR<LessonCreateWithoutLessonMaterialsInput, LessonUncheckedCreateWithoutLessonMaterialsInput>
+  }
+
+  export type LessonMaterialDownloadCreateWithoutMaterialInput = {
+    id?: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
+    student: UserCreateNestedOneWithoutMaterialDownloadsInput
+  }
+
+  export type LessonMaterialDownloadUncheckedCreateWithoutMaterialInput = {
+    id?: string
+    studentId: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
+  }
+
+  export type LessonMaterialDownloadCreateOrConnectWithoutMaterialInput = {
+    where: LessonMaterialDownloadWhereUniqueInput
+    create: XOR<LessonMaterialDownloadCreateWithoutMaterialInput, LessonMaterialDownloadUncheckedCreateWithoutMaterialInput>
+  }
+
+  export type LessonMaterialDownloadCreateManyMaterialInputEnvelope = {
+    data: LessonMaterialDownloadCreateManyMaterialInput | LessonMaterialDownloadCreateManyMaterialInput[]
+    skipDuplicates?: boolean
   }
 
   export type LessonUpsertWithoutLessonMaterialsInput = {
@@ -40742,6 +42401,206 @@ export namespace Prisma {
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutLessonNestedInput
     contentChunks?: ContentChunkUncheckedUpdateManyWithoutLessonNestedInput
     quizLessons?: QuizLessonUncheckedUpdateManyWithoutLessonNestedInput
+  }
+
+  export type LessonMaterialDownloadUpsertWithWhereUniqueWithoutMaterialInput = {
+    where: LessonMaterialDownloadWhereUniqueInput
+    update: XOR<LessonMaterialDownloadUpdateWithoutMaterialInput, LessonMaterialDownloadUncheckedUpdateWithoutMaterialInput>
+    create: XOR<LessonMaterialDownloadCreateWithoutMaterialInput, LessonMaterialDownloadUncheckedCreateWithoutMaterialInput>
+  }
+
+  export type LessonMaterialDownloadUpdateWithWhereUniqueWithoutMaterialInput = {
+    where: LessonMaterialDownloadWhereUniqueInput
+    data: XOR<LessonMaterialDownloadUpdateWithoutMaterialInput, LessonMaterialDownloadUncheckedUpdateWithoutMaterialInput>
+  }
+
+  export type LessonMaterialDownloadUpdateManyWithWhereWithoutMaterialInput = {
+    where: LessonMaterialDownloadScalarWhereInput
+    data: XOR<LessonMaterialDownloadUpdateManyMutationInput, LessonMaterialDownloadUncheckedUpdateManyWithoutMaterialInput>
+  }
+
+  export type UserCreateWithoutMaterialDownloadsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserUncheckedCreateWithoutMaterialDownloadsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserCreateOrConnectWithoutMaterialDownloadsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutMaterialDownloadsInput, UserUncheckedCreateWithoutMaterialDownloadsInput>
+  }
+
+  export type LessonMaterialCreateWithoutDownloadsInput = {
+    id?: string
+    filePath: string
+    createdAt?: Date | string
+    deletedAt?: Date | string | null
+    displayName: string
+    fileSize?: number
+    mimeType?: string
+    lesson: LessonCreateNestedOneWithoutLessonMaterialsInput
+  }
+
+  export type LessonMaterialUncheckedCreateWithoutDownloadsInput = {
+    id?: string
+    lessonId: string
+    filePath: string
+    createdAt?: Date | string
+    deletedAt?: Date | string | null
+    displayName: string
+    fileSize?: number
+    mimeType?: string
+  }
+
+  export type LessonMaterialCreateOrConnectWithoutDownloadsInput = {
+    where: LessonMaterialWhereUniqueInput
+    create: XOR<LessonMaterialCreateWithoutDownloadsInput, LessonMaterialUncheckedCreateWithoutDownloadsInput>
+  }
+
+  export type UserUpsertWithoutMaterialDownloadsInput = {
+    update: XOR<UserUpdateWithoutMaterialDownloadsInput, UserUncheckedUpdateWithoutMaterialDownloadsInput>
+    create: XOR<UserCreateWithoutMaterialDownloadsInput, UserUncheckedCreateWithoutMaterialDownloadsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutMaterialDownloadsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutMaterialDownloadsInput, UserUncheckedUpdateWithoutMaterialDownloadsInput>
+  }
+
+  export type UserUpdateWithoutMaterialDownloadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutMaterialDownloadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type LessonMaterialUpsertWithoutDownloadsInput = {
+    update: XOR<LessonMaterialUpdateWithoutDownloadsInput, LessonMaterialUncheckedUpdateWithoutDownloadsInput>
+    create: XOR<LessonMaterialCreateWithoutDownloadsInput, LessonMaterialUncheckedCreateWithoutDownloadsInput>
+    where?: LessonMaterialWhereInput
+  }
+
+  export type LessonMaterialUpdateToOneWithWhereWithoutDownloadsInput = {
+    where?: LessonMaterialWhereInput
+    data: XOR<LessonMaterialUpdateWithoutDownloadsInput, LessonMaterialUncheckedUpdateWithoutDownloadsInput>
+  }
+
+  export type LessonMaterialUpdateWithoutDownloadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    lesson?: LessonUpdateOneRequiredWithoutLessonMaterialsNestedInput
+  }
+
+  export type LessonMaterialUncheckedUpdateWithoutDownloadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    lessonId?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    displayName?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
   }
 
   export type LessonCreateWithoutContentChunksInput = {
@@ -40861,6 +42720,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutAiTutorUsageInput = {
@@ -40888,6 +42748,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutAiTutorUsageInput = {
@@ -40931,6 +42792,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiTutorUsageInput = {
@@ -40958,6 +42820,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -40985,6 +42848,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -41012,6 +42876,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -41055,6 +42920,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -41082,6 +42948,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutRefreshTokensInput = {
@@ -41109,6 +42976,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -41136,6 +43004,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -41179,6 +43048,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -41206,6 +43076,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type QuestionCreateWithoutQuizInput = {
@@ -41416,6 +43287,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutQuizzesInput = {
@@ -41443,6 +43315,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutQuizzesInput = {
@@ -41610,6 +43483,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizzesInput = {
@@ -41637,6 +43511,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type QuizCreateWithoutQuizLessonsInput = {
@@ -41993,6 +43868,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -42020,6 +43896,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -42114,6 +43991,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -42141,6 +44019,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutUsedPromoCodesInput = {
@@ -42168,6 +44047,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutUsedPromoCodesInput = {
@@ -42195,6 +44075,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutUsedPromoCodesInput = {
@@ -42227,6 +44108,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutCreatedPromoCodesInput = {
@@ -42254,6 +44136,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutCreatedPromoCodesInput = {
@@ -42334,6 +44217,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsedPromoCodesInput = {
@@ -42361,6 +44245,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUpsertWithoutCreatedPromoCodesInput = {
@@ -42399,6 +44284,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedPromoCodesInput = {
@@ -42426,6 +44312,7 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type ChapterUpsertWithoutPromoCodesInput = {
@@ -42496,6 +44383,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
   }
 
   export type UserUncheckedCreateWithoutAiConversationsInput = {
@@ -42523,6 +44411,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type UserCreateOrConnectWithoutAiConversationsInput = {
@@ -42600,6 +44489,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiConversationsInput = {
@@ -42627,6 +44517,7 @@ export namespace Prisma {
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type AiMessageUpsertWithWhereUniqueWithoutConversationInput = {
@@ -42860,6 +44751,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+  }
+
+  export type LessonMaterialDownloadCreateManyStudentInput = {
+    id?: string
+    materialId: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
   }
 
   export type AuditLogUpdateWithoutUserInput = {
@@ -43311,6 +45209,27 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type LessonMaterialDownloadUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    material?: LessonMaterialUpdateOneRequiredWithoutDownloadsNestedInput
+  }
+
+  export type LessonMaterialDownloadUncheckedUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    materialId?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LessonMaterialDownloadUncheckedUpdateManyWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    materialId?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ChapterCreateManyStageInput = {
     id?: string
     name: string
@@ -43719,6 +45638,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     fileSize?: IntFieldUpdateOperationsInput | number
     mimeType?: StringFieldUpdateOperationsInput | string
+    downloads?: LessonMaterialDownloadUpdateManyWithoutMaterialNestedInput
   }
 
   export type LessonMaterialUncheckedUpdateWithoutLessonInput = {
@@ -43729,6 +45649,7 @@ export namespace Prisma {
     displayName?: StringFieldUpdateOperationsInput | string
     fileSize?: IntFieldUpdateOperationsInput | number
     mimeType?: StringFieldUpdateOperationsInput | string
+    downloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutMaterialNestedInput
   }
 
   export type LessonMaterialUncheckedUpdateManyWithoutLessonInput = {
@@ -43799,6 +45720,34 @@ export namespace Prisma {
 
   export type QuizLessonUncheckedUpdateManyWithoutLessonInput = {
     quizId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type LessonMaterialDownloadCreateManyMaterialInput = {
+    id?: string
+    studentId: string
+    firstDownloadedAt?: Date | string
+    lastDownloadedAt?: Date | string
+  }
+
+  export type LessonMaterialDownloadUpdateWithoutMaterialInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutMaterialDownloadsNestedInput
+  }
+
+  export type LessonMaterialDownloadUncheckedUpdateWithoutMaterialInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LessonMaterialDownloadUncheckedUpdateManyWithoutMaterialInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    firstDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastDownloadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type QuestionCreateManyQuizInput = {

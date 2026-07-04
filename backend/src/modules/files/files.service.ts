@@ -24,16 +24,36 @@ export class FilesService {
     return key;
   }
 
-  async getSignedUrl(filePath: string): Promise<string> {
+  async getSignedUrl(filePath: string, expiresInSeconds = 3600): Promise<string> {
     const { data, error } = await supabase.storage
       .from(process.env.SUPABASE_BUCKET_NAME!)
-      .createSignedUrl(filePath, 3600);
+      .createSignedUrl(filePath, expiresInSeconds);
 
     if (error || !data) {
       throw new AppError(`Failed to generate signed URL: ${error.message}`, 500);
     }
 
     return data.signedUrl;
+  }
+
+  async downloadFileBuffer(
+    filePath: string,
+  ): Promise<{ buffer: Buffer; contentType: string }> {
+    const { data, error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET_NAME!)
+      .download(filePath);
+
+    if (error || !data) {
+      throw new AppError("Failed to retrieve file", 404);
+    }
+
+    const buffer = Buffer.from(await data.arrayBuffer());
+    const contentType =
+      typeof data.type === "string" && data.type.length > 0
+        ? data.type
+        : "application/pdf";
+
+    return { buffer, contentType };
   }
 
   async deleteFile(filePath: string): Promise<void> {

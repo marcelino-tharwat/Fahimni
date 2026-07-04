@@ -250,6 +250,8 @@
   "lesson": {
     "quizPrompt": "Test your understanding of this chapter",
     "quizAlreadyTaken": "You already completed this quiz — review your result",
+    "quizGateFailedHint": "You did not pass the gate quiz — reach the passing score to unlock the next lesson",
+    "quizGateRetakeHint": "Retake the quiz and pass to unlock the next lesson",
     "quizInProgress": "You have an attempt in progress — continue the quiz",
     "notFound": {
       "title": "Lesson Not Found",
@@ -261,6 +263,19 @@
     "minutes": "minutes",
     "pdfMaterials": "Lesson files",
     "download": "Download",
+    "materials": {
+      "empty": "No files for this lesson",
+      "preview": "Preview",
+      "status": {
+        "notDownloaded": "Not downloaded",
+        "downloading": "Downloading…",
+        "downloaded": "Downloaded",
+        "downloadedAt": "Downloaded: {{date}}",
+        "error": "Download failed",
+        "previewError": "Preview failed",
+        "unavailable": "Unavailable"
+      }
+    },
     "totalFiles": "{{n}} files",
     "totalSize": "{{size}} total",
     "previousLesson": "Previous Lesson",
@@ -279,6 +294,7 @@
     "requiredQuizHint": "You must complete this quiz to unlock the next lesson.",
     "optionalQuizHint": "Optional practice — completing this lesson is enough to continue. This quiz does not block the next lesson.",
     "nextLessonLockedQuiz": "Complete the quiz first to unlock the next lesson.",
+    "nextLessonLockedQuizFailed": "Pass the gate quiz to unlock the next lesson — tap Retake.",
     "lock": {
       "title": "Lesson locked",
       "enrollmentRequired": "Enroll in this chapter to access this lesson.",

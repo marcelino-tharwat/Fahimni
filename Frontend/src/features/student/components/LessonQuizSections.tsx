@@ -38,11 +38,15 @@ function QuizActionCard({
   const action = resolveQuizStudentAction(meta);
 
   const subtitle =
-    action === 'viewResult'
-      ? t('student:lesson.quizAlreadyTaken')
-      : action === 'resume'
-        ? t('student:lesson.quizInProgress')
-        : (quiz.description ?? t('student:lesson.quizPrompt'));
+    action === 'retake'
+      ? t('student:lesson.quizGateRetakeHint')
+      : action === 'viewResult' && variant === 'required' && meta.status === 'failed'
+        ? t('student:lesson.quizGateFailedHint')
+        : action === 'viewResult'
+          ? t('student:lesson.quizAlreadyTaken')
+          : action === 'resume'
+            ? t('student:lesson.quizInProgress')
+            : (quiz.description ?? t('student:lesson.quizPrompt'));
 
   return (
     <Card
@@ -72,11 +76,13 @@ function QuizActionCard({
         variant={action === 'viewResult' ? 'outline' : 'primary'}
         onClick={() => onNavigate(quiz.id, action, quiz.attemptId)}
       >
-        {action === 'viewResult'
-          ? t('quiz:quiz.action.viewResult')
-          : action === 'resume'
-            ? t('quiz:quiz.action.continue')
-            : t('student:takeQuiz')}
+        {action === 'retake'
+          ? t('quiz:quiz.action.retake')
+          : action === 'viewResult'
+            ? t('quiz:quiz.action.viewResult')
+            : action === 'resume'
+              ? t('quiz:quiz.action.continue')
+              : t('student:takeQuiz')}
       </Button>
     </Card>
   );
