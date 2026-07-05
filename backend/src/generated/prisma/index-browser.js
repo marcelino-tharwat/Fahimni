@@ -312,7 +312,14 @@ exports.Prisma.QuizScalarFieldEnum = {
   createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  publishedAt: 'publishedAt'
+  publishedAt: 'publishedAt',
+  resultSettingsConfigured: 'resultSettingsConfigured',
+  showCorrectAnswers: 'showCorrectAnswers',
+  showPerQuestionScores: 'showPerQuestionScores',
+  showFinalScore: 'showFinalScore',
+  showStudentAnswers: 'showStudentAnswers',
+  showExplanations: 'showExplanations',
+  pendingEssayResultMode: 'pendingEssayResultMode'
 };
 
 exports.Prisma.QuizLessonScalarFieldEnum = {
@@ -459,6 +466,12 @@ exports.QuizContentScope = exports.$Enums.QuizContentScope = {
 exports.QuizStatus = exports.$Enums.QuizStatus = {
   DRAFT: 'DRAFT',
   PUBLISHED: 'PUBLISHED'
+};
+
+exports.PendingEssayResultMode = exports.$Enums.PendingEssayResultMode = {
+  HIDE_ALL_RESULTS: 'HIDE_ALL_RESULTS',
+  SHOW_OBJECTIVE_ONLY: 'SHOW_OBJECTIVE_ONLY',
+  SHOW_OBJECTIVE_WITH_PENDING_MESSAGE: 'SHOW_OBJECTIVE_WITH_PENDING_MESSAGE'
 };
 
 exports.QuestionType = exports.$Enums.QuestionType = {

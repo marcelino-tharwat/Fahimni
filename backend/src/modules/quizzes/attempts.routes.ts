@@ -53,6 +53,14 @@ attemptsRouter.get(
   controller.getEssayGradingDetail,
 );
 
+// Teacher triggers AI-suggested essay scores/feedback (advisory only).
+attemptsRouter.post(
+  "/:attemptId/essay-suggestions",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  controller.generateEssaySuggestions,
+);
+
 // Student re-fetches their own submitted attempt results. Registered AFTER the
 // more specific /:attemptId/* routes above so it never shadows them.
 attemptsRouter.get(

@@ -31,6 +31,8 @@ const SESSION_KEY = 'quizGeneratorFormState_v2';
 const DEFAULT_FORM: QuizGeneratorFormState = {
   stageId: '',
   chapterId: '',
+  sourceScope: 'SINGLE_CHAPTER',
+  chapterIds: [],
   contentScope: 'CHAPTER',
   lessonIds: [],
   title: '',
@@ -115,10 +117,18 @@ export function AiQuizGeneratorPage() {
   const validate = useCallback((): boolean => {
     const errs: Record<string, string> = {};
     if (!form.stageId) errs.stageId = t('teacher:quizGenerator.validationStage');
-    if (!form.chapterId) errs.chapterId = t('teacher:quizGenerator.validationChapter');
-    if (form.contentScope === 'SELECTED_LESSONS' && form.lessonIds.length === 0) {
-      errs.lessonIds = t('teacher:quizGenerator.validationLessons');
+    const scope = form.sourceScope ?? 'SINGLE_CHAPTER';
+    if (scope === 'SINGLE_CHAPTER') {
+      if (!form.chapterId) errs.chapterId = t('teacher:quizGenerator.validationChapter');
+      if (form.contentScope === 'SELECTED_LESSONS' && form.lessonIds.length === 0) {
+        errs.lessonIds = t('teacher:quizGenerator.validationLessons');
+      }
+    } else if (scope === 'MULTI_CHAPTER') {
+      if (new Set(form.chapterIds).size < 2) {
+        errs.chapterIds = t('teacher:quizGenerator.validationMultiChapters');
+      }
     }
+    // FULL_CURRICULUM only needs a stage, already validated above.
     if (form.questionTypes.length === 0) errs.questionTypes = t('teacher:quizGenerator.validationQuestionType');
     if (form.questionCount < 1) errs.questionCount = t('teacher:quizGenerator.requiredQuestionCount');
     Object.assign(errs, validateQuizGeneratorDifficulty(form, t));
@@ -195,11 +205,23 @@ export function AiQuizGeneratorPage() {
         <ContentSelector
           stageId={form.stageId}
           chapterId={form.chapterId}
+          sourceScope={form.sourceScope}
+          chapterIds={form.chapterIds}
           contentScope={form.contentScope}
           lessonIds={form.lessonIds}
+          onSourceScopeChange={(scope) => {
+            setField('sourceScope', scope);
+            // Reset scope-specific selections so a switch never carries stale IDs.
+            setField('chapterId', '');
+            setField('chapterIds', []);
+            setField('lessonIds', []);
+            setField('contentScope', 'CHAPTER');
+          }}
+          onChaptersChange={(ids) => setField('chapterIds', ids)}
           onStageChange={(id) => {
             setField('stageId', id);
             setField('chapterId', '');
+            setField('chapterIds', []);
             setField('lessonIds', []);
           }}
           onChapterChange={(id) => {
@@ -228,6 +250,9 @@ export function AiQuizGeneratorPage() {
         />
         {errors.lessonIds && (
           <p className="font-cairo text-xs text-danger-500">{errors.lessonIds}</p>
+        )}
+        {errors.chapterIds && (
+          <p className="font-cairo text-xs text-danger-500">{errors.chapterIds}</p>
         )}
 
         <div className="mt-3 flex flex-col gap-1">
