@@ -1,4 +1,126 @@
 {
+  "students": {
+    "pageTitle": "Student Engagement",
+    "pageSubtitle": "Track enrolled students' activity and participation",
+    "enrolledBadge": "{{count}} enrolled",
+    "export": {
+      "successToast": "Exported {{count}} students successfully",
+      "emptyToast": "No students to export",
+      "errorToast": "Export failed, please try again"
+    },
+    "summaryCards": {
+      "totalStudents": "Total Students",
+      "active": "Active",
+      "inactive": "Inactive",
+      "averageEngagement": "Average Engagement"
+    },
+    "table": {
+      "searchPlaceholder": "Search by student name...",
+      "exportButton": "Export",
+      "columns": {
+        "name": "Student",
+        "phone": "Phone",
+        "status": "Status",
+        "chapters": "Chapters",
+        "lessons": "Lessons",
+        "avgScore": "Avg. Score",
+        "lastActivity": "Last Activity"
+      }
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "pagination": {
+      "showing": "Showing {{from}}-{{to}} of {{total}} students",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "empty": {
+      "noStudents": {
+        "title": "No students yet",
+        "description": "Students will appear here once they enroll in your chapters"
+      },
+      "noResults": {
+        "title": "No results for \"{{query}}\"",
+        "action": "Clear search"
+      }
+    },
+    "error": {
+      "title": "Failed to load student data",
+      "description": "Check your internet connection and try again",
+      "retry": "Try again"
+    },
+    "detail": {
+      "breadcrumb": "Student Engagement",
+      "whatsappButton": "Contact via WhatsApp",
+      "summaryCards": {
+        "chapters": "Enrolled Chapters",
+        "lessonsWatched": "Lessons Watched",
+        "avgScore": "Avg. Quiz Score",
+        "lastActivity": "Last Activity"
+      },
+      "activityTitle": "Activity Details",
+      "chapterFilter": {
+        "all": "All chapters",
+        "label": "Chapter"
+      },
+      "table": {
+        "columns": {
+          "lessonName": "Lesson",
+          "chapter": "Chapter",
+          "video": "Video",
+          "pdf": "PDF",
+          "lastViewed": "Last Viewed"
+        }
+      },
+      "video": {
+        "watched": "Watched",
+        "notWatched": "Not watched"
+      },
+      "pdf": {
+        "downloaded": "Downloaded",
+        "notDownloaded": "Not downloaded"
+      },
+      "quizzes": {
+        "sectionTitle": "Quizzes",
+        "columns": {
+          "quizName": "Quiz",
+          "scope": "Linked to",
+          "score": "Score",
+          "status": "Status"
+        },
+        "scope": {
+          "chapter": "{{name}} (chapter)",
+          "lesson": "Lesson: {{name}}"
+        },
+        "status": {
+          "not_started": "Not started",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "graded": "Graded"
+        },
+        "empty": "This student has no quizzes"
+      },
+      "empty": {
+        "title": "No lessons viewed yet",
+        "description": "The student's activity will appear here once they start watching"
+      },
+      "lessonsPagination": {
+        "showing": "Showing {{from}}-{{to}} of {{total}} lessons"
+      },
+      "backButton": "Back to students list",
+      "error": {
+        "title": "Failed to load student details",
+        "description": "Please check your connection and try again",
+        "retry": "Try again"
+      },
+      "notFound": {
+        "title": "Student not found",
+        "description": "This student may not be enrolled in your chapters"
+      }
+    }
+  },
   "quizList": {
     "pageTitle": "My Quizzes",
     "pageSubtitle": "Manage and review all your created quizzes",

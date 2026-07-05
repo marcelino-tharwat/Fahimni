@@ -2,6 +2,8 @@ import { Router } from "express";
 import { DashboardController } from "./dashboard.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
+import { teacherStudentDetailParamSchema } from "./student-engagement.validation.js";
 
 const router = Router();
 const controller = new DashboardController();
@@ -21,6 +23,15 @@ router.get(
   authenticateMiddleware,
   authorizeMiddleware("OPERATION"),
   controller.getTeacherStudents,
+);
+
+// STORY-75 — teacher single-student engagement detail.
+router.get(
+  "/teacher/students/:studentId",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(teacherStudentDetailParamSchema, "params"),
+  controller.getTeacherStudentDetail,
 );
 
 export default router;

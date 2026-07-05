@@ -237,22 +237,25 @@ describe("STORY-66 student engagement (E2E)", () => {
     expect(m.studentId).toBe(metric.id);
     expect(m.studentName).toBe(METRIC_NAME);
     expect(m.enrolledChapterCount).toBe(1);
-    expect(m.totalLessonsWatched).toBe(2); // l1,l2 completed; l3 not; lT2 other-teacher
+    expect(m.lessonsWatched).toBe(2); // l1,l2 completed; l3 not; lT2 other-teacher
     expect(m.averageQuizScore).toBe(90); // (80 + 100) / 2; quizC in-progress + quizT2 excluded
-    expect(m.status).toBe("inactive"); // enrolled ~95 days ago
+    expect(m.status).toBe("active"); // G2: last activity (quiz -1d) within the 7-day window
     expect(m.enrollmentMonths).toBeGreaterThanOrEqual(3);
     // lastActivity = newest of login(-20d), lesson(-9d), quiz(-1d) → quiz.
     expect(new Date(m.lastActivityAt as string).getTime()).toBeGreaterThan(Date.now() - 2 * DAY);
   });
 
-  it("returns active/inactive by the 30-day rule and null metrics for no-activity", async () => {
+  it("returns active/inactive by the 7-day activity rule and null metrics for no-activity", async () => {
     const r = await http("GET", "/api/dashboard/teacher/students?limit=100", t1Cookie);
     const list = students(r);
-    expect(list.find((s) => s.studentName === "Recent Active")!.status).toBe("active");
+    // G2: status now keys off last activity, not enrollment recency. Both of
+    // these students only have an enrollment (no login/quiz/lesson activity),
+    // so a null lastActivityAt makes them inactive regardless of enrolled-when.
+    expect(list.find((s) => s.studentName === "Recent Active")!.status).toBe("inactive");
     expect(list.find((s) => s.studentName === "Old Inactive")!.status).toBe("inactive");
     const n = list.find((s) => s.studentName === "Null Activity")!;
     expect(n.averageQuizScore).toBeNull();
-    expect(n.totalLessonsWatched).toBe(0);
+    expect(n.lessonsWatched).toBe(0);
     expect(n.lastActivityAt).toBeNull();
   });
 

@@ -1,11 +1,14 @@
 import { prisma } from "../../config/database.js";
 import type {
+  EngagementSummaryDTO,
   StudentEngagementDTO,
   StudentEngagementPageDTO,
 } from "./dashboard.types.js";
 import type { StudentEngagementQuery } from "./student-engagement.validation.js";
 
-const ACTIVE_WINDOW_DAYS = 30;
+/** A student is "active" when their last activity is within this many days. */
+const ACTIVE_WINDOW_DAYS = 7;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** Allowlisted ORDER BY fragments — never built from client text. */
 const SORT_COLUMNS: Record<StudentEngagementQuery["sortBy"], string> = {
@@ -20,11 +23,18 @@ interface EngagementRow {
   studentName: string;
   studentPhone: string | null;
   enrolledChapterCount: number;
-  totalLessonsWatched: number;
+  lessonsWatched: number;
+  totalLessons: number;
   averageQuizScore: number | null;
   lastActivityAt: Date | null;
   firstEnroll: Date;
-  lastEnroll: Date;
+}
+
+/** Aggregate summary row (one row) returned by the roster summary query. */
+interface SummaryRow {
+  totalStudents: number;
+  activeCount: number;
+  avgEngagement: number;
 }
 
 /**
@@ -72,6 +82,16 @@ const BASE_CTE = `
     SELECT rt."userId" AS sid, MAX(rt."createdAt") AS last_login
     FROM "refresh_tokens" rt
     GROUP BY rt."userId"
+  ),
+  tl AS (
+    SELECT e."studentId" AS sid,
+           COUNT(DISTINCT l."id")::int AS total_lessons
+    FROM "lessons" l
+    JOIN "chapters" c ON c."id" = l."chapterId" AND c."deletedAt" IS NULL
+    JOIN "enrollments" e ON e."chapterId" = c."id" AND e."status" = 'ACTIVE'
+    JOIN "stages" s ON s."id" = c."stageId" AND s."deletedAt" IS NULL
+    WHERE l."deletedAt" IS NULL AND s."teacherId" = $1
+    GROUP BY e."studentId"
   )
 `;
 
@@ -103,16 +123,17 @@ export class StudentEngagementService {
              u."fullName" AS "studentName",
              u."mobile" AS "studentPhone",
              ts.chapters AS "enrolledChapterCount",
-             COALESCE(lp.watched, 0) AS "totalLessonsWatched",
+             COALESCE(lp.watched, 0) AS "lessonsWatched",
+             COALESCE(tl.total_lessons, 0) AS "totalLessons",
              ROUND(qa.avg_pct::numeric, 2)::float8 AS "averageQuizScore",
              GREATEST(lg.last_login, qa.last_attempt, lp.last_view) AS "lastActivityAt",
-             ts.first_enroll AS "firstEnroll",
-             ts.last_enroll AS "lastEnroll"
+             ts.first_enroll AS "firstEnroll"
       FROM ts
       JOIN "User" u ON u."id" = ts.sid
       LEFT JOIN lp ON lp.sid = ts.sid
       LEFT JOIN qa ON qa.sid = ts.sid
       LEFT JOIN lg ON lg.sid = ts.sid
+      LEFT JOIN tl ON tl.sid = ts.sid
       WHERE ($2::text IS NULL OR u."fullName" ILIKE $2 ESCAPE '\\')
       ORDER BY ${orderBy}
       LIMIT $3 OFFSET $4
@@ -126,15 +147,17 @@ export class StudentEngagementService {
       WHERE ($2::text IS NULL OR u."fullName" ILIKE $2 ESCAPE '\\')
     `;
 
-    const [rows, countRows] = await Promise.all([
+    const [rows, countRows, summary] = await Promise.all([
       prisma.$queryRawUnsafe<EngagementRow[]>(pageSql, teacherId, pattern, limit, offset),
       prisma.$queryRawUnsafe<Array<{ total: number }>>(countSql, teacherId, pattern),
+      this.getSummary(teacherId, now),
     ]);
 
     const total = Number(countRows[0]?.total ?? 0);
     const students = rows.map((r) => this.toDTO(r, now));
 
     return {
+      summary,
       students,
       pagination: {
         page,
@@ -142,6 +165,74 @@ export class StudentEngagementService {
         total,
         totalPages: total === 0 ? 0 : Math.ceil(total / limit),
       },
+    };
+  }
+
+  /**
+   * Engagement summary over the teacher's **full, unpaginated, unfiltered**
+   * roster (G9/G10). Computed as a single aggregate query: one roster row per
+   * student, then COUNT/AVG in SQL.
+   *
+   * `activeCount` uses the same 7-day activity window as {@link computeStatus};
+   * the cutoff is passed as a bound parameter ($2) so it stays consistent with
+   * the server-computed `now` (a client timezone cannot shift it).
+   *
+   * `averageEngagement` is a 50/50 blend of lesson-progress % and quiz-average %
+   * per student, averaged across the roster, rounded to 1 decimal. Zero students
+   * yields an all-zero summary.
+   */
+  public async getSummary(
+    teacherId: string,
+    now: Date = new Date(),
+  ): Promise<EngagementSummaryDTO> {
+    const cutoff = new Date(now.getTime() - ACTIVE_WINDOW_DAYS * DAY_MS);
+
+    const summarySql = `
+      ${BASE_CTE}
+      , roster AS (
+        SELECT ts.sid AS sid,
+               GREATEST(lg.last_login, qa.last_attempt, lp.last_view) AS last_activity,
+               COALESCE(lp.watched, 0) AS watched,
+               COALESCE(tl.total_lessons, 0) AS total_lessons,
+               qa.avg_pct AS avg_pct
+        FROM ts
+        LEFT JOIN lp ON lp.sid = ts.sid
+        LEFT JOIN qa ON qa.sid = ts.sid
+        LEFT JOIN lg ON lg.sid = ts.sid
+        LEFT JOIN tl ON tl.sid = ts.sid
+      )
+      SELECT COUNT(*)::int AS "totalStudents",
+             COUNT(*) FILTER (WHERE last_activity >= $2)::int AS "activeCount",
+             COALESCE(
+               AVG(
+                 0.5 * (CASE WHEN total_lessons > 0
+                             THEN watched::float8 / total_lessons * 100
+                             ELSE 0 END)
+                 + 0.5 * COALESCE(avg_pct, 0)
+               ),
+               0
+             )::float8 AS "avgEngagement"
+      FROM roster
+    `;
+
+    const rows = await prisma.$queryRawUnsafe<SummaryRow[]>(
+      summarySql,
+      teacherId,
+      cutoff,
+    );
+
+    const totalStudents = Number(rows[0]?.totalStudents ?? 0);
+    const activeCount = Number(rows[0]?.activeCount ?? 0);
+    const averageEngagement =
+      totalStudents === 0
+        ? 0
+        : Math.round(Number(rows[0]?.avgEngagement ?? 0) * 10) / 10;
+
+    return {
+      totalStudents,
+      activeCount,
+      inactiveCount: totalStudents - activeCount,
+      averageEngagement,
     };
   }
 
@@ -159,9 +250,10 @@ export class StudentEngagementService {
       studentId: row.studentId,
       studentName: row.studentName,
       studentPhone: row.studentPhone,
-      status: computeStatus(row.lastEnroll, now),
+      status: computeStatus(row.lastActivityAt, now),
       enrolledChapterCount: Number(row.enrolledChapterCount),
-      totalLessonsWatched: Number(row.totalLessonsWatched),
+      lessonsWatched: Number(row.lessonsWatched),
+      totalLessons: Number(row.totalLessons),
       averageQuizScore:
         row.averageQuizScore === null ? null : Number(row.averageQuizScore),
       lastActivityAt: row.lastActivityAt
@@ -173,16 +265,17 @@ export class StudentEngagementService {
 }
 
 /**
- * Active when the most recent teacher-scoped enrollment is within the last 30
- * days (inclusive of the boundary). Cutoff is server-computed, so a client's
- * timezone cannot shift it.
+ * Active when the student's last activity is within the last 7 days (inclusive
+ * of the boundary). A `null` last-activity (never active) is always inactive.
+ * Cutoff is server-computed, so a client's timezone cannot shift it.
  */
 export function computeStatus(
-  lastEnroll: Date,
+  lastActivityAt: Date | null,
   now: Date = new Date(),
 ): "active" | "inactive" {
-  const cutoff = now.getTime() - ACTIVE_WINDOW_DAYS * 24 * 60 * 60 * 1000;
-  return new Date(lastEnroll).getTime() >= cutoff ? "active" : "inactive";
+  if (lastActivityAt === null) return "inactive";
+  const cutoff = now.getTime() - ACTIVE_WINDOW_DAYS * DAY_MS;
+  return new Date(lastActivityAt).getTime() >= cutoff ? "active" : "inactive";
 }
 
 /**
