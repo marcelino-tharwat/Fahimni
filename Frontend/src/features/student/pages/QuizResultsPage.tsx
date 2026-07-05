@@ -95,8 +95,33 @@ export function QuizResultsPage() {
     return <ErrorFallback />;
   }
 
+  // HIDE_ALL_RESULTS: the backend returned no questions and a review message —
+  // show only the message until the teacher completes essay review.
+  if (data.results.length === 0 && data.reviewMessage) {
+    return (
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+        <div
+          role="status"
+          className="rounded-card border border-warning-300 bg-warning-50 p-8 text-center text-body font-medium text-warning-700 shadow-card"
+        >
+          {data.reviewMessage}
+        </div>
+        <ResultFooterActions onDashboard={() => navigate('/student/dashboard')} />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+      {data.reviewMessage && (
+        <div
+          role="status"
+          className="rounded-card border border-warning-300 bg-warning-50 px-4 py-3 text-center text-body font-medium text-warning-700 shadow-card"
+        >
+          {data.reviewMessage}
+        </div>
+      )}
+
       <ScoreHeroCard data={data} />
 
       <ResultQuestionNavigator results={data.results} />

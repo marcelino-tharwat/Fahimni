@@ -12,6 +12,8 @@ import { QuizStepper } from '@/features/teacher/components/quiz-generator';
 import { useDraftQuiz } from '@/features/teacher/hooks/useQuizReview';
 import { useStagesList, useChaptersByStage } from '@/features/teacher/hooks/useQuizGeneration';
 import { useAssignQuiz, usePublishQuiz, useUpdateQuiz } from '@/features/teacher/hooks/useQuizList';
+import { useResultSettings, useUpdateResultSettings } from '@/features/teacher/hooks/useResultSettings';
+import type { PendingEssayResultMode } from '@/features/teacher/api/resultSettings';
 import { chaptersApi } from '@/features/teacher/api/chapters';
 import { formatQuizScopeLabel } from '@/features/teacher/lib/quizScopeLabel';
 import type { DraftQuestion } from '@/features/teacher/api/quizGeneration';
@@ -28,6 +30,12 @@ interface PublishFormState {
   shuffleAnswers: boolean;
   showResultImmediately: boolean;
   showCorrectAnswers: boolean;
+  // Result-visibility settings persisted to the backend on publish.
+  showPerQuestionScores: boolean;
+  showFinalScore: boolean;
+  showStudentAnswers: boolean;
+  showExplanations: boolean;
+  pendingEssayResultMode: PendingEssayResultMode;
   uiState: PublishUIState;
 }
 
@@ -46,6 +54,11 @@ const defaultForm = (overrides?: Partial<PublishFormState>): PublishFormState =>
   shuffleAnswers: false,
   showResultImmediately: true,
   showCorrectAnswers: true,
+  showPerQuestionScores: true,
+  showFinalScore: true,
+  showStudentAnswers: true,
+  showExplanations: true,
+  pendingEssayResultMode: 'SHOW_OBJECTIVE_WITH_PENDING_MESSAGE',
   uiState: 'idle' as PublishUIState,
   ...overrides,
 });
@@ -95,6 +108,8 @@ export function AiQuizPublishPage() {
   const assignQuiz = useAssignQuiz();
   const publishQuiz = usePublishQuiz();
   const updateQuiz = useUpdateQuiz();
+  const { data: resultSettings } = useResultSettings(quizId);
+  const updateResultSettings = useUpdateResultSettings(quizId ?? '');
 
   const [form, dispatch] = useReducer(formReducer, defaultForm());
   const [validationError, setValidationError] = useState('');
@@ -178,6 +193,17 @@ export function AiQuizPublishPage() {
     }
   }, [draftQuiz]);
 
+  // Seed the visibility toggles from the quiz's saved (or default) settings.
+  useEffect(() => {
+    if (!resultSettings) return;
+    dispatch({ type: 'SET_FIELD', field: 'showCorrectAnswers', value: resultSettings.showCorrectAnswers });
+    dispatch({ type: 'SET_FIELD', field: 'showPerQuestionScores', value: resultSettings.showPerQuestionScores });
+    dispatch({ type: 'SET_FIELD', field: 'showFinalScore', value: resultSettings.showFinalScore });
+    dispatch({ type: 'SET_FIELD', field: 'showStudentAnswers', value: resultSettings.showStudentAnswers });
+    dispatch({ type: 'SET_FIELD', field: 'showExplanations', value: resultSettings.showExplanations });
+    dispatch({ type: 'SET_FIELD', field: 'pendingEssayResultMode', value: resultSettings.pendingEssayResultMode });
+  }, [resultSettings]);
+
   useEffect(() => {
     if (chapterDetail?.stageId && form.stageId !== chapterDetail.stageId) {
       dispatch({ type: 'SET_FIELD', field: 'stageId', value: chapterDetail.stageId });
@@ -246,6 +272,15 @@ export function AiQuizPublishPage() {
           durationMinutes: form.timeLimitMinutes > 0 ? form.timeLimitMinutes : null,
         },
       });
+      // Persist result-visibility settings (additive; enforced server-side).
+      await updateResultSettings.mutateAsync({
+        showCorrectAnswers: form.showCorrectAnswers,
+        showPerQuestionScores: form.showPerQuestionScores,
+        showFinalScore: form.showFinalScore,
+        showStudentAnswers: form.showStudentAnswers,
+        showExplanations: form.showExplanations,
+        pendingEssayResultMode: form.pendingEssayResultMode,
+      });
       if (
         effectiveChapterId &&
         effectiveChapterId !== draftQuiz?.chapterId
@@ -259,7 +294,7 @@ export function AiQuizPublishPage() {
     } catch {
       dispatch({ type: 'SET_UI_STATE', value: 'idle' });
     }
-  }, [quizId, effectiveChapterId, form.quizTitle, form.timeLimitMinutes, draftQuiz, updateQuiz, assignQuiz, publishQuiz, progressionGateLessonIds]);
+  }, [quizId, effectiveChapterId, form.quizTitle, form.timeLimitMinutes, form.showCorrectAnswers, form.showPerQuestionScores, form.showFinalScore, form.showStudentAnswers, form.showExplanations, form.pendingEssayResultMode, draftQuiz, updateQuiz, updateResultSettings, assignQuiz, publishQuiz, progressionGateLessonIds]);
 
   if (draftLoading) {
     return (
@@ -489,6 +524,61 @@ export function AiQuizPublishPage() {
                   onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'showCorrectAnswers', value: v })}
                   label={t('teacher:publish.showCorrectAnswers')}
                 />
+                <ToggleRow
+                  checked={form.showPerQuestionScores}
+                  onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'showPerQuestionScores', value: v })}
+                  label={t('teacher:publish.showPerQuestionScores')}
+                />
+                <ToggleRow
+                  checked={form.showFinalScore}
+                  onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'showFinalScore', value: v })}
+                  label={t('teacher:publish.showFinalScore')}
+                />
+                <ToggleRow
+                  checked={form.showStudentAnswers}
+                  onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'showStudentAnswers', value: v })}
+                  label={t('teacher:publish.showStudentAnswers')}
+                />
+                <ToggleRow
+                  checked={form.showExplanations}
+                  onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'showExplanations', value: v })}
+                  label={t('teacher:publish.showExplanations')}
+                />
+              </div>
+
+              {/* Pending-essay result behavior */}
+              <div className="mt-4 flex flex-col gap-2">
+                <label className="font-cairo text-sm font-medium text-navy-900">
+                  {t('teacher:publish.pendingEssayLabel')}
+                </label>
+                <div className="flex flex-col gap-2">
+                  {(
+                    [
+                      'HIDE_ALL_RESULTS',
+                      'SHOW_OBJECTIVE_ONLY',
+                      'SHOW_OBJECTIVE_WITH_PENDING_MESSAGE',
+                    ] as const
+                  ).map((mode) => {
+                    const selected = form.pendingEssayResultMode === mode;
+                    return (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() =>
+                          dispatch({ type: 'SET_FIELD', field: 'pendingEssayResultMode', value: mode })
+                        }
+                        className={cn(
+                          'rounded-lg border p-3 text-start font-cairo text-sm transition-all',
+                          selected
+                            ? 'border-cyan-500 bg-cyan-50 text-navy-900 shadow-glow'
+                            : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300',
+                        )}
+                      >
+                        {t(`teacher:publish.pendingEssayMode.${mode}`)}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

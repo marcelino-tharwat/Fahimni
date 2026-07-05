@@ -40,6 +40,11 @@ export interface QuizResultsData {
   wrongCount: number;
   pendingCount: number;
   results: QuestionResult[];
+  // Additive result-visibility state (from the backend policy). Absent for
+  // legacy quizzes, so existing behavior is unchanged.
+  finalScoreHidden?: boolean;
+  hasPendingEssayReview?: boolean;
+  reviewMessage?: string | null;
 }
 
 export type ResultFilterKey = 'all' | 'correct' | 'wrong' | 'pending';

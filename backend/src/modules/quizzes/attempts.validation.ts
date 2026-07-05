@@ -106,6 +106,26 @@ export const essayGradingListQuerySchema = z
   })
   .strip();
 
+/** PUT /api/quizzes/:id/result-settings — teacher result-visibility settings. */
+export const PENDING_ESSAY_RESULT_MODES = [
+  "HIDE_ALL_RESULTS",
+  "SHOW_OBJECTIVE_ONLY",
+  "SHOW_OBJECTIVE_WITH_PENDING_MESSAGE",
+] as const;
+
+export const resultSettingsSchema = z
+  .object({
+    showCorrectAnswers: z.boolean().optional(),
+    showPerQuestionScores: z.boolean().optional(),
+    showFinalScore: z.boolean().optional(),
+    showStudentAnswers: z.boolean().optional(),
+    showExplanations: z.boolean().optional(),
+    pendingEssayResultMode: z.enum(PENDING_ESSAY_RESULT_MODES).optional(),
+  })
+  .strict();
+
+export type ResultSettingsInput = z.infer<typeof resultSettingsSchema>;
+
 export type SubmitAttemptInput = z.infer<typeof submitAttemptSchema>;
 export type SaveDraftAnswersInput = z.infer<typeof saveDraftAnswersSchema>;
 export type GradeEssaysInput = z.infer<typeof gradeEssaysSchema>;

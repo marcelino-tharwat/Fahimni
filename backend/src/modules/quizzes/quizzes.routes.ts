@@ -14,6 +14,7 @@ import {
   publishQuizSchema,
 } from "./quizzes.validation.js";
 import { generateQuizSchema } from "./dto/generate-quiz.dto.js";
+import { resultSettingsSchema } from "./attempts.validation.js";
 import { AttemptsController } from "./attempts.controller.js";
 
 const quizController = new QuizzesController();
@@ -146,6 +147,23 @@ quizStandaloneRouter.get(
   authenticateMiddleware,
   authorizeMiddleware("OPERATION"),
   attemptsController.getResults,
+);
+
+// ── Result-visibility settings (teacher) ───────────────────────────────
+// Registered before the parameterized /:id routes so the sub-path wins.
+quizStandaloneRouter.get(
+  "/:id/result-settings",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  attemptsController.getResultSettings,
+);
+
+quizStandaloneRouter.put(
+  "/:id/result-settings",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(resultSettingsSchema),
+  attemptsController.updateResultSettings,
 );
 
 // ── Publish & Assign ────────────────────────────────────────────────────

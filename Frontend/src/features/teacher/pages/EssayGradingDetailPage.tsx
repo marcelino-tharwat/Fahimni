@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Sparkles } from 'lucide-react';
 import {
   EssayAvatar,
   EssayBreadcrumb,
@@ -13,6 +13,7 @@ import { ESSAY_GRADING_CYAN, ESSAY_CARD_SHADOW } from '@/features/teacher/compon
 import {
   useEssayGradingDetail,
   useGradeEssays,
+  useGenerateEssaySuggestions,
 } from '@/features/teacher/hooks/useEssayGrading';
 import type { EssayAnswerDetail } from '@/features/teacher/types/essayGrading';
 import { cn } from '@/shared/lib/utils/cn';
@@ -128,6 +129,42 @@ function EssayQuestionCard({
           </div>
         ) : (
           <div className="flex flex-col gap-4">
+            {essay.aiSuggestedScore !== null && essay.aiSuggestedScore !== undefined && (
+              <div
+                className="rounded-[10px] px-4 py-3"
+                style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}
+              >
+                <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-[#2563EB]">
+                    {t('essayGrading.aiSuggestion')}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onChange({
+                        awardedPoints: String(essay.aiSuggestedScore),
+                        feedback: essay.aiSuggestedFeedback ?? field.feedback,
+                      })
+                    }
+                    className="rounded-lg bg-[#2563EB] px-3 py-1 text-xs font-semibold text-white transition-all hover:bg-[#1D4ED8]"
+                  >
+                    {t('essayGrading.aiAccept')}
+                  </button>
+                </div>
+                <p className="text-sm font-bold text-[#1A103D]">
+                  {t('essayGrading.aiSuggestedScore', {
+                    score: essay.aiSuggestedScore,
+                    max: essay.maximumPoints,
+                  })}
+                </p>
+                {essay.aiSuggestedFeedback && (
+                  <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-[#1A103D]">
+                    {essay.aiSuggestedFeedback}
+                  </p>
+                )}
+                <p className="mt-1.5 text-[11px] text-[#6B7280]">{t('essayGrading.aiSuggestionHint')}</p>
+              </div>
+            )}
             <div className="flex flex-col gap-1.5">
               <label htmlFor={`grade-${essay.questionId}`} className="text-sm font-medium text-[#1A103D]">
                 {t('essayGrading.markLabel')}
@@ -195,6 +232,7 @@ export function EssayGradingDetailPage() {
   const { quizId = '', attemptId = '' } = useParams<{ quizId: string; attemptId: string }>();
   const { data, isLoading, isError, refetch } = useEssayGradingDetail(attemptId);
   const gradeMutation = useGradeEssays(attemptId, quizId);
+  const suggestMutation = useGenerateEssaySuggestions(attemptId);
 
   const readOnly = data?.attempt.status === 'GRADED';
   const initialFields = useMemo(
@@ -315,18 +353,45 @@ export function EssayGradingDetailPage() {
             onNavigate={(href) => navigate(href)}
           />
 
-          <div className="flex items-center gap-3.5">
-            <EssayAvatar name={data.student.displayName} size={48} />
-            <div>
-              <h1 className="text-xl font-bold text-[#1A103D]">{data.student.displayName}</h1>
-              <p className="mt-0.5 text-xs text-[#9CA3AF]">{data.quiz.title}</p>
-              <p className="mt-0.5 text-sm text-[#9CA3AF]">
-                {t('essayGrading.detailMeta', {
-                  count: data.essayAnswers.length,
-                  points: maxPts,
-                })}
-              </p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3.5">
+              <EssayAvatar name={data.student.displayName} size={48} />
+              <div>
+                <h1 className="text-xl font-bold text-[#1A103D]">{data.student.displayName}</h1>
+                <p className="mt-0.5 text-xs text-[#9CA3AF]">{data.quiz.title}</p>
+                <p className="mt-0.5 text-sm text-[#9CA3AF]">
+                  {t('essayGrading.detailMeta', {
+                    count: data.essayAnswers.length,
+                    points: maxPts,
+                  })}
+                </p>
+              </div>
             </div>
+            {!readOnly && data.essayAnswers.length > 0 && (
+              <div className="flex flex-col items-end gap-1">
+                <button
+                  type="button"
+                  onClick={() => suggestMutation.mutate()}
+                  disabled={suggestMutation.isPending}
+                  className={cn(
+                    'flex h-10 items-center gap-2 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] px-4 text-sm font-semibold text-[#2563EB] transition-all hover:bg-[#DBEAFE]',
+                    suggestMutation.isPending && 'cursor-not-allowed opacity-60',
+                  )}
+                >
+                  {suggestMutation.isPending ? (
+                    <Loader2 size={15} className="animate-spin" />
+                  ) : (
+                    <Sparkles size={15} />
+                  )}
+                  {suggestMutation.isPending
+                    ? t('essayGrading.aiGenerating')
+                    : t('essayGrading.aiGenerate')}
+                </button>
+                {suggestMutation.data && !suggestMutation.data.aiAvailable && (
+                  <p className="text-[11px] text-[#9CA3AF]">{t('essayGrading.aiUnavailable')}</p>
+                )}
+              </div>
+            )}
           </div>
 
           {data.essayAnswers.length === 0 ? (

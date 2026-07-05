@@ -143,6 +143,15 @@ export namespace $Enums {
 export type QuizContentScope = (typeof QuizContentScope)[keyof typeof QuizContentScope]
 
 
+export const PendingEssayResultMode: {
+  HIDE_ALL_RESULTS: 'HIDE_ALL_RESULTS',
+  SHOW_OBJECTIVE_ONLY: 'SHOW_OBJECTIVE_ONLY',
+  SHOW_OBJECTIVE_WITH_PENDING_MESSAGE: 'SHOW_OBJECTIVE_WITH_PENDING_MESSAGE'
+};
+
+export type PendingEssayResultMode = (typeof PendingEssayResultMode)[keyof typeof PendingEssayResultMode]
+
+
 export const Role: {
   ADMIN: 'ADMIN',
   STUDENT: 'STUDENT',
@@ -251,6 +260,10 @@ export type AiMessageStatus = (typeof AiMessageStatus)[keyof typeof AiMessageSta
 export type QuizContentScope = $Enums.QuizContentScope
 
 export const QuizContentScope: typeof $Enums.QuizContentScope
+
+export type PendingEssayResultMode = $Enums.PendingEssayResultMode
+
+export const PendingEssayResultMode: typeof $Enums.PendingEssayResultMode
 
 export type Role = $Enums.Role
 
@@ -22305,6 +22318,13 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     publishedAt: Date | null
+    resultSettingsConfigured: boolean | null
+    showCorrectAnswers: boolean | null
+    showPerQuestionScores: boolean | null
+    showFinalScore: boolean | null
+    showStudentAnswers: boolean | null
+    showExplanations: boolean | null
+    pendingEssayResultMode: $Enums.PendingEssayResultMode | null
   }
 
   export type QuizMaxAggregateOutputType = {
@@ -22322,6 +22342,13 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     publishedAt: Date | null
+    resultSettingsConfigured: boolean | null
+    showCorrectAnswers: boolean | null
+    showPerQuestionScores: boolean | null
+    showFinalScore: boolean | null
+    showStudentAnswers: boolean | null
+    showExplanations: boolean | null
+    pendingEssayResultMode: $Enums.PendingEssayResultMode | null
   }
 
   export type QuizCountAggregateOutputType = {
@@ -22339,6 +22366,13 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     publishedAt: number
+    resultSettingsConfigured: number
+    showCorrectAnswers: number
+    showPerQuestionScores: number
+    showFinalScore: number
+    showStudentAnswers: number
+    showExplanations: number
+    pendingEssayResultMode: number
     _all: number
   }
 
@@ -22372,6 +22406,13 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     publishedAt?: true
+    resultSettingsConfigured?: true
+    showCorrectAnswers?: true
+    showPerQuestionScores?: true
+    showFinalScore?: true
+    showStudentAnswers?: true
+    showExplanations?: true
+    pendingEssayResultMode?: true
   }
 
   export type QuizMaxAggregateInputType = {
@@ -22389,6 +22430,13 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     publishedAt?: true
+    resultSettingsConfigured?: true
+    showCorrectAnswers?: true
+    showPerQuestionScores?: true
+    showFinalScore?: true
+    showStudentAnswers?: true
+    showExplanations?: true
+    pendingEssayResultMode?: true
   }
 
   export type QuizCountAggregateInputType = {
@@ -22406,6 +22454,13 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     publishedAt?: true
+    resultSettingsConfigured?: true
+    showCorrectAnswers?: true
+    showPerQuestionScores?: true
+    showFinalScore?: true
+    showStudentAnswers?: true
+    showExplanations?: true
+    pendingEssayResultMode?: true
     _all?: true
   }
 
@@ -22510,6 +22565,13 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     publishedAt: Date | null
+    resultSettingsConfigured: boolean
+    showCorrectAnswers: boolean | null
+    showPerQuestionScores: boolean | null
+    showFinalScore: boolean | null
+    showStudentAnswers: boolean | null
+    showExplanations: boolean | null
+    pendingEssayResultMode: $Enums.PendingEssayResultMode | null
     _count: QuizCountAggregateOutputType | null
     _avg: QuizAvgAggregateOutputType | null
     _sum: QuizSumAggregateOutputType | null
@@ -22546,6 +22608,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean
+    showPerQuestionScores?: boolean
+    showFinalScore?: boolean
+    showStudentAnswers?: boolean
+    showExplanations?: boolean
+    pendingEssayResultMode?: boolean
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
     quizLessons?: boolean | Quiz$quizLessonsArgs<ExtArgs>
@@ -22570,6 +22639,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean
+    showPerQuestionScores?: boolean
+    showFinalScore?: boolean
+    showStudentAnswers?: boolean
+    showExplanations?: boolean
+    pendingEssayResultMode?: boolean
     chapter?: boolean | Quiz$chapterArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["quiz"]>
@@ -22589,6 +22665,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean
+    showPerQuestionScores?: boolean
+    showFinalScore?: boolean
+    showStudentAnswers?: boolean
+    showExplanations?: boolean
+    pendingEssayResultMode?: boolean
     chapter?: boolean | Quiz$chapterArgs<ExtArgs>
     creator?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["quiz"]>
@@ -22608,9 +22691,16 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean
+    showPerQuestionScores?: boolean
+    showFinalScore?: boolean
+    showStudentAnswers?: boolean
+    showExplanations?: boolean
+    pendingEssayResultMode?: boolean
   }
 
-  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "contentScope" | "status" | "durationMinutes" | "questionCount" | "totalPoints" | "passingScore" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt", ExtArgs["result"]["quiz"]>
+  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "contentScope" | "status" | "durationMinutes" | "questionCount" | "totalPoints" | "passingScore" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt" | "resultSettingsConfigured" | "showCorrectAnswers" | "showPerQuestionScores" | "showFinalScore" | "showStudentAnswers" | "showExplanations" | "pendingEssayResultMode", ExtArgs["result"]["quiz"]>
   export type QuizInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
@@ -22654,6 +22744,13 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       publishedAt: Date | null
+      resultSettingsConfigured: boolean
+      showCorrectAnswers: boolean | null
+      showPerQuestionScores: boolean | null
+      showFinalScore: boolean | null
+      showStudentAnswers: boolean | null
+      showExplanations: boolean | null
+      pendingEssayResultMode: $Enums.PendingEssayResultMode | null
     }, ExtArgs["result"]["quiz"]>
     composites: {}
   }
@@ -23097,6 +23194,13 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Quiz", 'DateTime'>
     readonly updatedAt: FieldRef<"Quiz", 'DateTime'>
     readonly publishedAt: FieldRef<"Quiz", 'DateTime'>
+    readonly resultSettingsConfigured: FieldRef<"Quiz", 'Boolean'>
+    readonly showCorrectAnswers: FieldRef<"Quiz", 'Boolean'>
+    readonly showPerQuestionScores: FieldRef<"Quiz", 'Boolean'>
+    readonly showFinalScore: FieldRef<"Quiz", 'Boolean'>
+    readonly showStudentAnswers: FieldRef<"Quiz", 'Boolean'>
+    readonly showExplanations: FieldRef<"Quiz", 'Boolean'>
+    readonly pendingEssayResultMode: FieldRef<"Quiz", 'PendingEssayResultMode'>
   }
     
 
@@ -30724,7 +30828,14 @@ export namespace Prisma {
     createdBy: 'createdBy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    publishedAt: 'publishedAt'
+    publishedAt: 'publishedAt',
+    resultSettingsConfigured: 'resultSettingsConfigured',
+    showCorrectAnswers: 'showCorrectAnswers',
+    showPerQuestionScores: 'showPerQuestionScores',
+    showFinalScore: 'showFinalScore',
+    showStudentAnswers: 'showStudentAnswers',
+    showExplanations: 'showExplanations',
+    pendingEssayResultMode: 'pendingEssayResultMode'
   };
 
   export type QuizScalarFieldEnum = (typeof QuizScalarFieldEnum)[keyof typeof QuizScalarFieldEnum]
@@ -31073,6 +31184,20 @@ export namespace Prisma {
    * Reference to a field of type 'QuizStatus[]'
    */
   export type ListEnumQuizStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuizStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PendingEssayResultMode'
+   */
+  export type EnumPendingEssayResultModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PendingEssayResultMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'PendingEssayResultMode[]'
+   */
+  export type ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PendingEssayResultMode[]'>
     
 
 
@@ -32418,6 +32543,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
     publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
+    resultSettingsConfigured?: BoolFilter<"Quiz"> | boolean
+    showCorrectAnswers?: BoolNullableFilter<"Quiz"> | boolean | null
+    showPerQuestionScores?: BoolNullableFilter<"Quiz"> | boolean | null
+    showFinalScore?: BoolNullableFilter<"Quiz"> | boolean | null
+    showStudentAnswers?: BoolNullableFilter<"Quiz"> | boolean | null
+    showExplanations?: BoolNullableFilter<"Quiz"> | boolean | null
+    pendingEssayResultMode?: EnumPendingEssayResultModeNullableFilter<"Quiz"> | $Enums.PendingEssayResultMode | null
     questions?: QuestionListRelationFilter
     attempts?: QuizAttemptListRelationFilter
     quizLessons?: QuizLessonListRelationFilter
@@ -32441,6 +32573,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
+    resultSettingsConfigured?: SortOrder
+    showCorrectAnswers?: SortOrderInput | SortOrder
+    showPerQuestionScores?: SortOrderInput | SortOrder
+    showFinalScore?: SortOrderInput | SortOrder
+    showStudentAnswers?: SortOrderInput | SortOrder
+    showExplanations?: SortOrderInput | SortOrder
+    pendingEssayResultMode?: SortOrderInput | SortOrder
     questions?: QuestionOrderByRelationAggregateInput
     attempts?: QuizAttemptOrderByRelationAggregateInput
     quizLessons?: QuizLessonOrderByRelationAggregateInput
@@ -32467,6 +32606,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
     publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
+    resultSettingsConfigured?: BoolFilter<"Quiz"> | boolean
+    showCorrectAnswers?: BoolNullableFilter<"Quiz"> | boolean | null
+    showPerQuestionScores?: BoolNullableFilter<"Quiz"> | boolean | null
+    showFinalScore?: BoolNullableFilter<"Quiz"> | boolean | null
+    showStudentAnswers?: BoolNullableFilter<"Quiz"> | boolean | null
+    showExplanations?: BoolNullableFilter<"Quiz"> | boolean | null
+    pendingEssayResultMode?: EnumPendingEssayResultModeNullableFilter<"Quiz"> | $Enums.PendingEssayResultMode | null
     questions?: QuestionListRelationFilter
     attempts?: QuizAttemptListRelationFilter
     quizLessons?: QuizLessonListRelationFilter
@@ -32490,6 +32636,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
+    resultSettingsConfigured?: SortOrder
+    showCorrectAnswers?: SortOrderInput | SortOrder
+    showPerQuestionScores?: SortOrderInput | SortOrder
+    showFinalScore?: SortOrderInput | SortOrder
+    showStudentAnswers?: SortOrderInput | SortOrder
+    showExplanations?: SortOrderInput | SortOrder
+    pendingEssayResultMode?: SortOrderInput | SortOrder
     _count?: QuizCountOrderByAggregateInput
     _avg?: QuizAvgOrderByAggregateInput
     _max?: QuizMaxOrderByAggregateInput
@@ -32515,6 +32668,13 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
     publishedAt?: DateTimeNullableWithAggregatesFilter<"Quiz"> | Date | string | null
+    resultSettingsConfigured?: BoolWithAggregatesFilter<"Quiz"> | boolean
+    showCorrectAnswers?: BoolNullableWithAggregatesFilter<"Quiz"> | boolean | null
+    showPerQuestionScores?: BoolNullableWithAggregatesFilter<"Quiz"> | boolean | null
+    showFinalScore?: BoolNullableWithAggregatesFilter<"Quiz"> | boolean | null
+    showStudentAnswers?: BoolNullableWithAggregatesFilter<"Quiz"> | boolean | null
+    showExplanations?: BoolNullableWithAggregatesFilter<"Quiz"> | boolean | null
+    pendingEssayResultMode?: EnumPendingEssayResultModeNullableWithAggregatesFilter<"Quiz"> | $Enums.PendingEssayResultMode | null
   }
 
   export type QuizLessonWhereInput = {
@@ -34340,6 +34500,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonCreateNestedManyWithoutQuizInput
@@ -34363,6 +34530,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonUncheckedCreateNestedManyWithoutQuizInput
@@ -34382,6 +34556,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUpdateManyWithoutQuizNestedInput
@@ -34405,6 +34586,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUncheckedUpdateManyWithoutQuizNestedInput
@@ -34426,6 +34614,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
   }
 
   export type QuizUpdateManyMutationInput = {
@@ -34441,6 +34636,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
   }
 
   export type QuizUncheckedUpdateManyInput = {
@@ -34458,6 +34660,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
   }
 
   export type QuizLessonCreateInput = {
@@ -36253,6 +36462,18 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type EnumPendingEssayResultModeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.PendingEssayResultMode | EnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PendingEssayResultMode[] | ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PendingEssayResultMode[] | ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPendingEssayResultModeNullableFilter<$PrismaModel> | $Enums.PendingEssayResultMode | null
+  }
+
   export type QuestionListRelationFilter = {
     every?: QuestionWhereInput
     some?: QuestionWhereInput
@@ -36283,6 +36504,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrder
+    resultSettingsConfigured?: SortOrder
+    showCorrectAnswers?: SortOrder
+    showPerQuestionScores?: SortOrder
+    showFinalScore?: SortOrder
+    showStudentAnswers?: SortOrder
+    showExplanations?: SortOrder
+    pendingEssayResultMode?: SortOrder
   }
 
   export type QuizAvgOrderByAggregateInput = {
@@ -36307,6 +36535,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrder
+    resultSettingsConfigured?: SortOrder
+    showCorrectAnswers?: SortOrder
+    showPerQuestionScores?: SortOrder
+    showFinalScore?: SortOrder
+    showStudentAnswers?: SortOrder
+    showExplanations?: SortOrder
+    pendingEssayResultMode?: SortOrder
   }
 
   export type QuizMinOrderByAggregateInput = {
@@ -36324,6 +36559,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrder
+    resultSettingsConfigured?: SortOrder
+    showCorrectAnswers?: SortOrder
+    showPerQuestionScores?: SortOrder
+    showFinalScore?: SortOrder
+    showStudentAnswers?: SortOrder
+    showExplanations?: SortOrder
+    pendingEssayResultMode?: SortOrder
   }
 
   export type QuizSumOrderByAggregateInput = {
@@ -36367,6 +36609,24 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
+  export type EnumPendingEssayResultModeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PendingEssayResultMode | EnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PendingEssayResultMode[] | ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PendingEssayResultMode[] | ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPendingEssayResultModeNullableWithAggregatesFilter<$PrismaModel> | $Enums.PendingEssayResultMode | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumPendingEssayResultModeNullableFilter<$PrismaModel>
+    _max?: NestedEnumPendingEssayResultModeNullableFilter<$PrismaModel>
   }
 
   export type QuizScalarRelationFilter = {
@@ -38362,6 +38622,14 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
+  }
+
+  export type NullableEnumPendingEssayResultModeFieldUpdateOperationsInput = {
+    set?: $Enums.PendingEssayResultMode | null
+  }
+
   export type QuestionUpdateManyWithoutQuizNestedInput = {
     create?: XOR<QuestionCreateWithoutQuizInput, QuestionUncheckedCreateWithoutQuizInput> | QuestionCreateWithoutQuizInput[] | QuestionUncheckedCreateWithoutQuizInput[]
     connectOrCreate?: QuestionCreateOrConnectWithoutQuizInput | QuestionCreateOrConnectWithoutQuizInput[]
@@ -39083,6 +39351,18 @@ export namespace Prisma {
     not?: NestedEnumQuizStatusFilter<$PrismaModel> | $Enums.QuizStatus
   }
 
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedEnumPendingEssayResultModeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.PendingEssayResultMode | EnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PendingEssayResultMode[] | ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PendingEssayResultMode[] | ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPendingEssayResultModeNullableFilter<$PrismaModel> | $Enums.PendingEssayResultMode | null
+  }
+
   export type NestedEnumQuizContentScopeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.QuizContentScope | EnumQuizContentScopeFieldRefInput<$PrismaModel>
     in?: $Enums.QuizContentScope[] | ListEnumQuizContentScopeFieldRefInput<$PrismaModel>
@@ -39128,6 +39408,24 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPendingEssayResultModeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PendingEssayResultMode | EnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PendingEssayResultMode[] | ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PendingEssayResultMode[] | ListEnumPendingEssayResultModeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPendingEssayResultModeNullableWithAggregatesFilter<$PrismaModel> | $Enums.PendingEssayResultMode | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumPendingEssayResultModeNullableFilter<$PrismaModel>
+    _max?: NestedEnumPendingEssayResultModeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumQuestionTypeFilter<$PrismaModel = never> = {
@@ -39476,6 +39774,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonCreateNestedManyWithoutQuizInput
@@ -39497,6 +39802,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonUncheckedCreateNestedManyWithoutQuizInput
@@ -39975,6 +40287,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
     publishedAt?: DateTimeNullableFilter<"Quiz"> | Date | string | null
+    resultSettingsConfigured?: BoolFilter<"Quiz"> | boolean
+    showCorrectAnswers?: BoolNullableFilter<"Quiz"> | boolean | null
+    showPerQuestionScores?: BoolNullableFilter<"Quiz"> | boolean | null
+    showFinalScore?: BoolNullableFilter<"Quiz"> | boolean | null
+    showStudentAnswers?: BoolNullableFilter<"Quiz"> | boolean | null
+    showExplanations?: BoolNullableFilter<"Quiz"> | boolean | null
+    pendingEssayResultMode?: EnumPendingEssayResultModeNullableFilter<"Quiz"> | $Enums.PendingEssayResultMode | null
   }
 
   export type RefreshTokenUpsertWithWhereUniqueWithoutUserInput = {
@@ -40906,6 +41225,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonCreateNestedManyWithoutQuizInput
@@ -40927,6 +41253,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonUncheckedCreateNestedManyWithoutQuizInput
@@ -41299,6 +41632,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonCreateNestedManyWithoutQuizInput
@@ -41321,6 +41661,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonUncheckedCreateNestedManyWithoutQuizInput
@@ -41496,6 +41843,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUpdateManyWithoutQuizNestedInput
@@ -41518,6 +41872,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUncheckedUpdateManyWithoutQuizNestedInput
@@ -43531,6 +43892,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     progressionGateLessons?: LessonCreateNestedManyWithoutRequiredQuizInput
@@ -43553,6 +43921,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
     progressionGateLessons?: LessonUncheckedCreateNestedManyWithoutRequiredQuizInput
@@ -43630,6 +44005,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     progressionGateLessons?: LessonUpdateManyWithoutRequiredQuizNestedInput
@@ -43652,6 +44034,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
     progressionGateLessons?: LessonUncheckedUpdateManyWithoutRequiredQuizNestedInput
@@ -43719,6 +44108,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     attempts?: QuizAttemptCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonCreateNestedManyWithoutQuizInput
     progressionGateLessons?: LessonCreateNestedManyWithoutRequiredQuizInput
@@ -43741,6 +44137,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     attempts?: QuizAttemptUncheckedCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonUncheckedCreateNestedManyWithoutQuizInput
     progressionGateLessons?: LessonUncheckedCreateNestedManyWithoutRequiredQuizInput
@@ -43775,6 +44178,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUpdateManyWithoutQuizNestedInput
     progressionGateLessons?: LessonUpdateManyWithoutRequiredQuizNestedInput
@@ -43797,6 +44207,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUncheckedUpdateManyWithoutQuizNestedInput
     progressionGateLessons?: LessonUncheckedUpdateManyWithoutRequiredQuizNestedInput
@@ -43815,6 +44232,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonCreateNestedManyWithoutQuizInput
     progressionGateLessons?: LessonCreateNestedManyWithoutRequiredQuizInput
@@ -43837,6 +44261,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedCreateNestedManyWithoutQuizInput
     quizLessons?: QuizLessonUncheckedCreateNestedManyWithoutQuizInput
     progressionGateLessons?: LessonUncheckedCreateNestedManyWithoutRequiredQuizInput
@@ -43932,6 +44363,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUpdateManyWithoutQuizNestedInput
     progressionGateLessons?: LessonUpdateManyWithoutRequiredQuizNestedInput
@@ -43954,6 +44392,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUncheckedUpdateManyWithoutQuizNestedInput
     progressionGateLessons?: LessonUncheckedUpdateManyWithoutRequiredQuizNestedInput
@@ -44707,6 +45152,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
   }
 
   export type RefreshTokenCreateManyUserInput = {
@@ -45020,6 +45472,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUpdateManyWithoutQuizNestedInput
@@ -45041,6 +45500,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUncheckedUpdateManyWithoutQuizNestedInput
@@ -45061,6 +45527,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
   }
 
   export type RefreshTokenUpdateWithoutUserInput = {
@@ -45357,6 +45830,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
+    resultSettingsConfigured?: boolean
+    showCorrectAnswers?: boolean | null
+    showPerQuestionScores?: boolean | null
+    showFinalScore?: boolean | null
+    showStudentAnswers?: boolean | null
+    showExplanations?: boolean | null
+    pendingEssayResultMode?: $Enums.PendingEssayResultMode | null
   }
 
   export type PaymentTransactionCreateManyChapterInput = {
@@ -45486,6 +45966,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUpdateManyWithoutQuizNestedInput
@@ -45507,6 +45994,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
     questions?: QuestionUncheckedUpdateManyWithoutQuizNestedInput
     attempts?: QuizAttemptUncheckedUpdateManyWithoutQuizNestedInput
     quizLessons?: QuizLessonUncheckedUpdateManyWithoutQuizNestedInput
@@ -45527,6 +46021,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resultSettingsConfigured?: BoolFieldUpdateOperationsInput | boolean
+    showCorrectAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showPerQuestionScores?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showFinalScore?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showStudentAnswers?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    showExplanations?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    pendingEssayResultMode?: NullableEnumPendingEssayResultModeFieldUpdateOperationsInput | $Enums.PendingEssayResultMode | null
   }
 
   export type PaymentTransactionUpdateWithoutChapterInput = {

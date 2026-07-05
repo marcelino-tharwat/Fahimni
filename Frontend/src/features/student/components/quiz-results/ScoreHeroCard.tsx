@@ -12,6 +12,7 @@ interface ScoreHeroCardProps {
 export function ScoreHeroCard({ data }: ScoreHeroCardProps) {
   const { t } = useTranslation();
   const pass = data.percentage >= PASS_THRESHOLD;
+  const scoreHidden = data.finalScoreHidden === true;
 
   const stats = [
     {
@@ -43,29 +44,42 @@ export function ScoreHeroCard({ data }: ScoreHeroCardProps) {
 
   return (
     <div className="flex flex-col items-center gap-4 rounded-card border border-gray-300 bg-white p-6 text-center shadow-card sm:p-8">
-      <ScoreRing percentage={data.percentage} pass={pass} />
-
-      <p className={`text-lg font-semibold ${pass ? 'text-success-500' : 'text-danger-500'}`}>
-        {pass ? t('quiz:results.passMessage') : t('quiz:results.failMessage')}
-      </p>
-
-      {pass ? (
-        <div className="flex flex-col gap-1 text-sm text-gray-600">
-          <span>
-            {t('quiz:results.correctAnswersSummary', {
-              correct: toLocalNum(data.correctCount),
-              total: toLocalNum(data.totalQuestions),
-            })}
-          </span>
-          <span>
-            {t('quiz:results.pointsSummary', {
-              score: toLocalNum(data.score),
-              total: toLocalNum(data.totalPoints),
-            })}
-          </span>
-        </div>
+      {scoreHidden ? (
+        <>
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-warning-50">
+            <Clock size={36} className="text-warning-500" />
+          </div>
+          <p className="text-lg font-semibold text-warning-700">
+            {t('quiz:results.scoreUnderReview')}
+          </p>
+        </>
       ) : (
-        <p className="text-sm text-gray-600">{t('quiz:results.failEncouragement')}</p>
+        <>
+          <ScoreRing percentage={data.percentage} pass={pass} />
+
+          <p className={`text-lg font-semibold ${pass ? 'text-success-500' : 'text-danger-500'}`}>
+            {pass ? t('quiz:results.passMessage') : t('quiz:results.failMessage')}
+          </p>
+
+          {pass ? (
+            <div className="flex flex-col gap-1 text-sm text-gray-600">
+              <span>
+                {t('quiz:results.correctAnswersSummary', {
+                  correct: toLocalNum(data.correctCount),
+                  total: toLocalNum(data.totalQuestions),
+                })}
+              </span>
+              <span>
+                {t('quiz:results.pointsSummary', {
+                  score: toLocalNum(data.score),
+                  total: toLocalNum(data.totalPoints),
+                })}
+              </span>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-600">{t('quiz:results.failEncouragement')}</p>
+          )}
+        </>
       )}
 
       <div
