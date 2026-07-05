@@ -25,11 +25,24 @@ import promoCodeRoutes from "./modules/promo-code/promo-code.routes.js";
 import quizRoutes from "./modules/quizzes/quizzes.routes.js";
 import attemptsRoutes from "./modules/quizzes/attempts.routes.js";
 import materialsRoutes from "./modules/materials/materials.routes.js";
+import contentProtectionRoutes from "./modules/content-protection/contentProtection.routes.js";
 
 export function createApp(): Application {
   const app = express();
   app.set("trust proxy", 1);
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          "frame-ancestors": ["'none'"],
+        },
+      },
+      referrerPolicy: {
+        policy: "strict-origin-when-cross-origin",
+      },
+    }),
+  );
   app.use(
     cors({
       origin: "http://localhost:5173",
@@ -69,6 +82,7 @@ export function createApp(): Application {
   app.use("/api/quizzes", quizRoutes);
   app.use("/api/attempts", attemptsRoutes);
   app.use("/api", materialsRoutes);
+  app.use("/api", contentProtectionRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

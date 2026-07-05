@@ -14,6 +14,7 @@ import {
   type QuizResultsData,
   type ResultFilterKey,
 } from '@/features/student/types/quizResults';
+import { ProtectedContent } from '@/shared/components/content-protection';
 import { getAttemptResults, buildQuizResults } from '@/features/student/api/quiz';
 import { resolveResultTone } from '@/features/student/lib/quizResultStats';
 
@@ -96,27 +97,37 @@ export function QuizResultsPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
-      <ScoreHeroCard data={data} />
+    <ProtectedContent
+      policy={{
+        disableCopy: true,
+        disableContextMenu: true,
+        disablePrint: true,
+        disableSelection: true,
+      }}
+      className="print-protected"
+    >
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+        <ScoreHeroCard data={data} />
 
-      <ResultQuestionNavigator results={data.results} />
+        <ResultQuestionNavigator results={data.results} />
 
-      <ResultFilterBar active={filter} counts={counts} onChange={setFilter} />
+        <ResultFilterBar active={filter} counts={counts} onChange={setFilter} />
 
-      {filtered.length > 0 ? (
-        <div className="flex flex-col gap-5">
-          {filtered.map((result) => {
-            const index = data.results.indexOf(result);
-            return <ResultQuestionCard key={result.question.id} result={result} index={index} />;
-          })}
-        </div>
-      ) : (
-        <p className="rounded-card border border-gray-300 bg-white p-8 text-center text-body text-gray-500 shadow-card">
-          {t('quiz:results.noQuestionsInFilter')}
-        </p>
-      )}
+        {filtered.length > 0 ? (
+          <div className="flex flex-col gap-5">
+            {filtered.map((result) => {
+              const index = data.results.indexOf(result);
+              return <ResultQuestionCard key={result.question.id} result={result} index={index} />;
+            })}
+          </div>
+        ) : (
+          <p className="rounded-card border border-gray-300 bg-white p-8 text-center text-body text-gray-500 shadow-card">
+            {t('quiz:results.noQuestionsInFilter')}
+          </p>
+        )}
 
-      <ResultFooterActions onDashboard={() => navigate('/student/dashboard')} />
-    </div>
+        <ResultFooterActions onDashboard={() => navigate('/student/dashboard')} />
+      </div>
+    </ProtectedContent>
   );
 }
