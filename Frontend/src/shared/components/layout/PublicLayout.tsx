@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { Topbar } from './Topbar';
+import { AppHeader } from './AppHeader';
 
 /**
  * The landing page ('/' and tenant landing '/t/:slug') ships its own full-width
@@ -30,7 +30,7 @@ export function PublicLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Topbar showMenu={false} />
+      <AppHeader showMenu={false} />
       <main className="mx-auto max-w-7xl px-3 py-6 md:px-4 md:py-8 lg:px-6">
         <Outlet />
       </main>

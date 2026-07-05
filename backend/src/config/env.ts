@@ -49,6 +49,7 @@ const envSchema = z.object({
   PAYMOB_HMAC_SECRET: z.string().min(1),
   PAYMOB_CURRENCY: z.string().min(1).default("EGP"),
   PAYMOB_BASE_URL: z.string().url().default("https://accept.paymob.com"),
+  GOOGLE_CLIENT_ID: z.string().default(""),
   FRONTEND_BASE_URL: z.string().url().default("http://localhost:5173"),
   TUTOR_RAG_SIMILARITY_THRESHOLD: z.coerce.number().min(0).max(1).default(0),
   TUTOR_RAG_MAX_CHUNKS: z.coerce.number().int().positive().default(5),

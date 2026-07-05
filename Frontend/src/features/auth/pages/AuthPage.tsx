@@ -3,14 +3,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import {
   GraduationCap, User, Mail, Phone, Lock, Eye, EyeOff, Check, Loader2, ChevronDown,
   type LucideIcon,
 } from "lucide-react";
-import { AuthNavbar } from "../components/AuthNavbar";
+import { AppHeader } from "@/shared/components/layout/AppHeader";
 import { useAppDispatch } from "@/shared/store/hooks";
 import { apiClient } from "@/shared/lib/api/client";
-import { login as loginThunk, register as registerThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
+import { login as loginThunk, register as registerThunk, googleLogin as googleLoginThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
 import type { PublicStage } from "@/features/student/types/student";
 
 /* ------------------------------------------------------------------ */
@@ -364,7 +365,8 @@ function StageSelect({
   error?: string;
   onChange: (id: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === 'ar';
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<PublicStage | null>(null);
   const ref = useRef<HTMLDivElement>(null);
@@ -385,13 +387,15 @@ function StageSelect({
         type="button"
         onClick={() => !loading && setOpen((o) => !o)}
         disabled={loading}
-        className={`flex w-full items-center gap-3 rounded-input border py-3 pl-11 pr-4 text-right outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 ${
-          error ? "border-red-400" : "border-gray-300"
-        } ${loading ? "cursor-not-allowed opacity-60" : ""}`}
-        style={{ direction: 'rtl' }}
+        dir={isRtl ? "rtl" : "ltr"}
+        className={`relative flex w-full items-center rounded-input border py-3 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 ${
+          isRtl ? "pr-11 pl-4" : "pl-11 pr-4"
+        } ${error ? "border-red-400" : "border-gray-300"} ${loading ? "cursor-not-allowed opacity-60" : ""}`}
       >
-        <GraduationCap size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <span className={`flex-1 font-cairo text-body ${selected ? "text-navy-900" : "text-gray-400"}`}>
+        <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
+          <GraduationCap size={18} />
+        </span>
+        <span className={`flex-1 font-cairo text-body ${isRtl ? "text-right" : "text-left"} ${selected ? "text-navy-900" : "text-gray-400"}`}>
           {loading
             ? t("auth:loading")
             : selected
@@ -422,11 +426,13 @@ function StageSelect({
                   onChange(stage.id);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center gap-3 px-4 py-2.5 text-right font-cairo text-body transition hover:bg-gray-50 ${
-                  selected?.id === stage.id ? "bg-cyan-50 font-semibold text-cyan-700" : "text-navy-900"
-                }`}
+                className={`relative flex w-full items-center py-2.5 font-cairo text-body transition hover:bg-gray-50 ${
+                  isRtl ? "pr-11 pl-4 text-right" : "pl-11 pr-4 text-left"
+                } ${selected?.id === stage.id ? "bg-cyan-50 font-semibold text-cyan-700" : "text-navy-900"}`}
               >
-                <GraduationCap size={16} className="shrink-0 text-gray-400" />
+                <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
+                  <GraduationCap size={16} />
+                </span>
                 <span className="flex-1">{stage.name}</span>
               </button>
             ))
@@ -438,17 +444,80 @@ function StageSelect({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Google Button                                                      */
+/* ------------------------------------------------------------------ */
+
+function GoogleButton() {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const googleLogin = useGoogleLogin({
+    scope: "openid email profile",
+    onSuccess: async (tokenResponse) => {
+      setError(null);
+      setLoading(true);
+      if (!tokenResponse.access_token) {
+        setError("No access token returned from Google.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await dispatch(googleLoginThunk({ credential: tokenResponse.access_token })).unwrap();
+        navigate(dashboardPathByRole[res.user.role]);
+      } catch (err) {
+        console.error("[GoogleButton] API error:", err);
+        setError(String(err));
+        setLoading(false);
+      }
+    },
+    onError: (errorResponse) => {
+      console.error("[GoogleButton] OAuth error:", errorResponse);
+      setError("Google sign-in failed. Please try again.");
+      setLoading(false);
+    },
+    onNonOAuthError: (nonOAuthError) => {
+      console.error("[GoogleButton] Non-OAuth error:", nonOAuthError);
+      setError("Sign-in popup was blocked or closed. Please try again.");
+      setLoading(false);
+    },
+  });
+
+  return (
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        onClick={() => googleLogin()}
+        disabled={loading}
+        className="flex items-center justify-center gap-2 rounded-btn border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {loading ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
+        {loading ? t("auth:loading") : t("auth:google")}
+      </button>
+      {error && (
+        <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Auth Page                                                          */
 /* ------------------------------------------------------------------ */
 
 export function AuthPage() {
   const { t } = useTranslation();
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const [mode, setMode] = useState<"login" | "register">("login");
   const isLogin = mode === "login";
 
   return (
-    <>
-      <AuthNavbar />
+    <GoogleOAuthProvider clientId={googleClientId || "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"}>
+      <AppHeader variant="auth" />
       <div className="flex min-h-[calc(100vh-73px)] flex-col lg:flex-row">
         {/* Form Panel */}
         <main className="flex w-full items-center justify-center bg-gray-100 px-4 py-8 lg:w-3/5 lg:p-8">
@@ -488,13 +557,7 @@ export function AuthPage() {
             >
               <FacebookIcon /> {t("auth:facebook")}
             </button>
-            <button
-              type="button"
-              onClick={() => {}}
-              className="flex items-center justify-center gap-2 rounded-btn border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-            >
-              <GoogleIcon /> {t("auth:google")}
-            </button>
+            <GoogleButton />
           </div>
         </div>
       </main>
@@ -544,6 +607,6 @@ export function AuthPage() {
         </div>
       </aside>
     </div>
-    </>
+    </GoogleOAuthProvider>
   );
 }

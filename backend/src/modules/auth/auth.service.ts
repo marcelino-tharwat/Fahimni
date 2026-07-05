@@ -21,6 +21,30 @@ import type { ApiError } from "../../shared/types/common.types.js";
 export class AuthService {
   constructor(private readonly tokenService = new TokenService()) {}
 
+  /** Generate tokens and create a refresh token session for the given user. */
+  private async generateSession(userId: string) {
+    return prisma.$transaction(async (tx) => {
+      const { tokenVersion } = await tx.user.update({
+        where: { id: userId },
+        data: { tokenVersion: { increment: 1 } },
+        select: { tokenVersion: true },
+      });
+
+      await tx.refreshToken.deleteMany({ where: { userId } });
+
+      const accessToken = this.tokenService.generateAccessToken(userId, tokenVersion);
+      const refreshToken = this.tokenService.generateRefreshToken(userId, tokenVersion);
+
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+      await tx.refreshToken.create({
+        data: { token: hashRefreshToken(refreshToken), userId, expiresAt },
+      });
+
+      return { accessToken, refreshToken };
+    });
+  }
+
   public async loginUser(input: LoginInput) {
     const user = await prisma.user.findUnique({
       where: { email: input.email },
@@ -48,27 +72,7 @@ export class AuthService {
       throw error;
     }
 
-    // Atomic transaction: increment version, revoke all prior sessions, issue new
-    const result = await prisma.$transaction(async (tx) => {
-      const { tokenVersion } = await tx.user.update({
-        where: { id: user.id },
-        data: { tokenVersion: { increment: 1 } },
-        select: { tokenVersion: true },
-      });
-
-      await tx.refreshToken.deleteMany({ where: { userId: user.id } });
-
-      const accessToken = this.tokenService.generateAccessToken(user.id, tokenVersion);
-      const refreshToken = this.tokenService.generateRefreshToken(user.id, tokenVersion);
-
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7);
-      await tx.refreshToken.create({
-        data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
-      });
-
-      return { accessToken, refreshToken };
-    });
+    const result = await this.generateSession(user.id);
 
     const { password: _, ...safeUser } = user;
 
@@ -390,6 +394,94 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  public async googleAuth(credential: string) {
+    if (!env.GOOGLE_CLIENT_ID) {
+      throw new AppError("Google sign-in is not configured", 501);
+    }
+
+    // Verify the access token by calling Google's userinfo endpoint
+    let userInfo: { email?: string; name?: string; sub?: string };
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${credential}`,
+      );
+      userInfo = await response.json();
+      if (!response.ok || !userInfo.email) {
+        throw new AppError("Invalid Google access token", 401);
+      }
+    } catch {
+      // Fallback: try userinfo endpoint which requires a valid token
+      const response = await fetch(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        { headers: { Authorization: `Bearer ${credential}` } },
+      );
+      if (!response.ok) {
+        throw new AppError("Invalid Google access token", 401);
+      }
+      userInfo = await response.json();
+    }
+
+    if (!userInfo.email) {
+      throw new AppError("Failed to get email from Google", 400);
+    }
+
+    const email = userInfo.email.toLowerCase();
+    const fullName = userInfo.name ?? email.split("@")[0]!;
+    const googleSub = userInfo.sub ?? email;
+
+    // Check if user already exists
+    const existing = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, status: true },
+    });
+
+    if (existing) {
+      if (existing.status === "INACTIVE" || existing.status === "BANNED") {
+        throw new AppError("Account is inactive. Contact support.", 403);
+      }
+      const result = await this.generateSession(existing.id);
+      const user = await prisma.user.findUniqueOrThrow({
+        where: { id: existing.id },
+        select: userPublicFields,
+      });
+      return { user, ...result };
+    }
+
+    // Create new user via Google
+    const mobile = `010${crypto.createHash("sha256").update(googleSub).digest("hex").slice(0, 8)}`;
+    const randomPassword = crypto.randomUUID();
+
+    const hashedPassword = await bcrypt.hash(randomPassword, 12);
+
+    const user = await prisma.$transaction(async (tx) => {
+      const stage = await tx.stage.findFirst({ orderBy: { createdAt: "asc" }, select: { id: true } });
+      if (!stage) {
+        throw new AppError("No stages available. Contact support.", 500);
+      }
+
+      const created = await tx.user.create({
+        data: {
+          fullName,
+          email,
+          mobile,
+          password: hashedPassword,
+          role: Role.STUDENT,
+          status: Status.ACTIVE,
+        },
+        select: userPublicFields,
+      });
+
+      await tx.studentProfile.create({
+        data: { userId: created.id, stageId: stage.id },
+      });
+
+      return created;
+    });
+
+    const result = await this.generateSession(user.id);
+    return { user, ...result };
   }
 
   public async changePassword(userId: string, input: ChangePasswordInput) {

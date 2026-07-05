@@ -224,6 +224,31 @@ export class AuthController {
     }
   };
 
+  public googleAuth = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { credential } = req.body;
+      if (!credential || typeof credential !== "string") {
+        res.status(400).json({ success: false, message: "Google credential is required" });
+        return;
+      }
+
+      const result = await authService.googleAuth(credential);
+
+      setAuthCookies(res, result.accessToken, result.refreshToken);
+
+      res.status(200).json({
+        message: "Google sign-in successful",
+        data: { user: result.user },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public changePassword = async (
     req: Request,
     res: Response,

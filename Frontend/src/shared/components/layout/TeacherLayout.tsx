@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { LayoutDashboard, FolderOpen, Brain, ClipboardList, Users, User, Ticket, PenSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Topbar } from './Topbar';
+import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
 
 export function TeacherLayout() {
@@ -23,7 +23,7 @@ export function TeacherLayout() {
       <Sidebar items={items} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="shrink-0">
-          <Topbar />
+          <AppHeader />
         </header>
         <main className="flex-1 overflow-y-auto px-3 py-4 md:px-4 md:py-6 lg:px-6 lg:py-8">
           <Outlet />

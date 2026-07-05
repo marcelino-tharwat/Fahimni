@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import { LayoutDashboard, Bot, User, ClipboardList } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Topbar } from './Topbar';
+import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
 import { cn } from '@/shared/lib/utils/cn';
 
@@ -22,7 +22,7 @@ export function StudentLayout() {
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Student mobile nav is the bottom tab bar, so no hamburger here. */}
         <header className="shrink-0">
-          <Topbar showMenu={false} />
+          <AppHeader showMenu={false} />
         </header>
         <main className="flex-1 overflow-y-auto p-3 pb-20 md:p-4 md:pb-6 lg:p-6">
           <Outlet />

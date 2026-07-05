@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Ticket, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Topbar } from './Topbar';
+import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
 
 export function SupportLayout() {
@@ -16,7 +16,7 @@ export function SupportLayout() {
     <div className="flex min-h-screen bg-background">
       <Sidebar items={items} />
       <div className="flex flex-1 flex-col">
-        <Topbar />
+        <AppHeader />
         <main className="flex-1 px-3 py-4 md:px-4 md:py-6 lg:px-6 lg:py-8">
           <Outlet />
         </main>

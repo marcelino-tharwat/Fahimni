@@ -1,12 +1,12 @@
 import { Outlet } from 'react-router-dom';
-import { Topbar } from './Topbar';
+import { AppHeader } from './AppHeader';
 
 export function LessonLayout() {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="shrink-0">
-          <Topbar showMenu={true} />
+          <AppHeader />
         </header>
         <main className="flex-1 overflow-y-auto p-3 md:p-4 lg:p-6">
           <Outlet />
