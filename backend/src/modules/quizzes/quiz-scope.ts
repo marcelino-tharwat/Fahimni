@@ -190,6 +190,161 @@ export async function resolveAndValidateQuizContentScope(
   return resolved;
 }
 
+function normalizeUuidList(ids: string[], label: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of ids) {
+    const id = raw.trim();
+    if (!UUID_RE.test(id)) {
+      throw new AppError(`Invalid ${label} ID`, 400, "QUIZ_SCOPE_INVALID");
+    }
+    if (seen.has(id)) {
+      throw new AppError(`Duplicate ${label} IDs are not allowed`, 400, "QUIZ_SCOPE_INVALID");
+    }
+    seen.add(id);
+    out.push(id);
+  }
+  return out;
+}
+
+/**
+ * Resolve + authorize MULTI_CHAPTER generation content. Every chapter must be
+ * owned by the teacher (proven via chapter.stage.teacherId). Lessons across all
+ * chapters are gathered. The returned `chapterId` is the first chapter as a safe
+ * default placement — generation source is independent of lesson placement.
+ */
+export async function resolveMultiChapterScope(
+  chapterIds: string[],
+  teacherId: string,
+  db: PrismaLike = defaultPrisma,
+  options: { requireUsableContent?: boolean } = {},
+): Promise<ResolvedQuizScope> {
+  const requireUsableContent = options.requireUsableContent ?? true;
+  const ids = normalizeUuidList(chapterIds ?? [], "chapter");
+  if (ids.length < 2) {
+    throw new AppError("At least two chapters are required", 400, "QUIZ_SCOPE_INVALID");
+  }
+
+  const chapters = await db.chapter.findMany({
+    where: {
+      id: { in: ids },
+      deletedAt: null,
+      stage: { teacherId, deletedAt: null },
+    },
+    select: { id: true, name: true },
+    orderBy: { sortOrder: "asc" },
+  });
+
+  if (chapters.length !== ids.length) {
+    // A chapter the teacher does not own (or a deleted one) is simply "not found".
+    throw new AppError("One or more chapters not found", 404, "CHAPTER_NOT_FOUND");
+  }
+
+  const chapterIdList = chapters.map((c) => c.id);
+  const lessons = await db.lesson.findMany({
+    where: { chapterId: { in: chapterIdList }, deletedAt: null },
+    select: { id: true, title: true },
+    orderBy: [{ chapterId: "asc" }, { sortOrder: "asc" }],
+  });
+
+  if (lessons.length === 0) {
+    if (requireUsableContent) {
+      throw new ContentNotIndexedError(
+        "لا تحتوي الفصول المحددة على دروس قابلة للاستخدام.",
+      );
+    }
+    return {
+      chapterId: chapters[0]!.id,
+      contentScope: "CHAPTER",
+      lessonIds: [],
+      sourceTitles: chapters.map((c) => c.name),
+    };
+  }
+
+  logger.info("quiz_generation_sources_resolved", {
+    teacherId,
+    sourceScope: "MULTI_CHAPTER",
+    chapterCount: chapters.length,
+    resolvedLessonCount: lessons.length,
+  });
+
+  return {
+    chapterId: chapters[0]!.id,
+    contentScope: "CHAPTER",
+    lessonIds: lessons.map((l) => l.id),
+    sourceTitles: [...chapters.map((c) => c.name), ...lessons.map((l) => l.title)],
+  };
+}
+
+/**
+ * Resolve + authorize FULL_CURRICULUM generation content. The stage must be
+ * owned by the teacher; all of its chapters + lessons are gathered.
+ */
+export async function resolveFullCurriculumScope(
+  stageId: string,
+  teacherId: string,
+  db: Pick<typeof defaultPrisma, "stage" | "chapter" | "lesson"> = defaultPrisma,
+  options: { requireUsableContent?: boolean } = {},
+): Promise<ResolvedQuizScope> {
+  const requireUsableContent = options.requireUsableContent ?? true;
+  if (!UUID_RE.test(stageId)) {
+    throw new AppError("Invalid stage ID", 400, "QUIZ_SCOPE_INVALID");
+  }
+
+  const stage = await db.stage.findFirst({
+    where: { id: stageId, deletedAt: null, teacherId },
+    select: { id: true, name: true },
+  });
+  if (!stage) {
+    throw new AppError("Stage not found", 404, "STAGE_NOT_FOUND");
+  }
+
+  const chapters = await db.chapter.findMany({
+    where: { stageId: stage.id, deletedAt: null },
+    select: { id: true, name: true },
+    orderBy: { sortOrder: "asc" },
+  });
+  if (chapters.length === 0) {
+    throw new ContentNotIndexedError("لا يحتوي هذا الصف على فصول قابلة للاستخدام.");
+  }
+
+  const chapterIdList = chapters.map((c) => c.id);
+  const lessons = await db.lesson.findMany({
+    where: { chapterId: { in: chapterIdList }, deletedAt: null },
+    select: { id: true, title: true },
+    orderBy: [{ chapterId: "asc" }, { sortOrder: "asc" }],
+  });
+
+  if (lessons.length === 0) {
+    if (requireUsableContent) {
+      throw new ContentNotIndexedError(
+        "لا تحتوي فصول هذا الصف على دروس قابلة للاستخدام.",
+      );
+    }
+    return {
+      chapterId: chapters[0]!.id,
+      contentScope: "CHAPTER",
+      lessonIds: [],
+      sourceTitles: [stage.name, ...chapters.map((c) => c.name)],
+    };
+  }
+
+  logger.info("quiz_generation_sources_resolved", {
+    teacherId,
+    sourceScope: "FULL_CURRICULUM",
+    stageId: stage.id,
+    chapterCount: chapters.length,
+    resolvedLessonCount: lessons.length,
+  });
+
+  return {
+    chapterId: chapters[0]!.id,
+    contentScope: "CHAPTER",
+    lessonIds: lessons.map((l) => l.id),
+    sourceTitles: [stage.name, ...chapters.map((c) => c.name)],
+  };
+}
+
 /** Persist quiz ↔ lesson relations for SELECTED_LESSONS scope. */
 export async function persistQuizLessonRelations(
   tx: Prisma.TransactionClient,

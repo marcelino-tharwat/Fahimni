@@ -6,7 +6,7 @@ import { cn } from '@/shared/lib/utils/cn';
 import type { Stage, Chapter } from '@/shared/types/content';
 import type { Lesson } from '@/features/teacher/types/lesson';
 
-import type { QuizContentScope } from '@/features/teacher/types/quizGeneration';
+import type { QuizContentScope, SourceScope } from '@/features/teacher/types/quizGeneration';
 
 interface ContentSelectorProps {
   stageId: string;
@@ -29,6 +29,12 @@ interface ContentSelectorProps {
   onRetryStages: () => void;
   onRetryChapters: () => void;
   onRetryLessons: () => void;
+  // Additive: source-scope selection (single/multi/full). When these are omitted
+  // the component behaves exactly as before (single-chapter only).
+  sourceScope?: SourceScope;
+  chapterIds?: string[];
+  onSourceScopeChange?: (scope: SourceScope) => void;
+  onChaptersChange?: (ids: string[]) => void;
 }
 
 export function ContentSelector({
@@ -52,8 +58,23 @@ export function ContentSelector({
   onRetryStages,
   onRetryChapters,
   onRetryLessons,
+  sourceScope,
+  chapterIds = [],
+  onSourceScopeChange,
+  onChaptersChange,
 }: ContentSelectorProps) {
   const { t } = useTranslation();
+  const effectiveScope: SourceScope = sourceScope ?? 'SINGLE_CHAPTER';
+  const showSourceScopeSelector = Boolean(onSourceScopeChange);
+
+  const toggleChapter = (id: string) => {
+    if (!onChaptersChange) return;
+    if (chapterIds.includes(id)) {
+      onChaptersChange(chapterIds.filter((c) => c !== id));
+    } else {
+      onChaptersChange([...chapterIds, id]);
+    }
+  };
   const [open, setOpen] = useState(false);
   const [stageFocused, setStageFocused] = useState(false);
   const [chapterFocused, setChapterFocused] = useState(false);
@@ -264,10 +285,47 @@ export function ContentSelector({
   };
 
   const showLessonPicker = contentScope === 'SELECTED_LESSONS';
+  const isSingle = effectiveScope === 'SINGLE_CHAPTER';
+  const isMulti = effectiveScope === 'MULTI_CHAPTER';
+  const isFull = effectiveScope === 'FULL_CURRICULUM';
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      {showSourceScopeSelector && (
+        <div className="flex w-full flex-col gap-2">
+          <label className="font-cairo text-sm font-medium text-text-primary">
+            {t('teacher:quizGenerator.sourceScopeLabel')}
+          </label>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {(
+              [
+                { value: 'SINGLE_CHAPTER' as const, label: t('teacher:quizGenerator.sourceSingle') },
+                { value: 'MULTI_CHAPTER' as const, label: t('teacher:quizGenerator.sourceMulti') },
+                { value: 'FULL_CURRICULUM' as const, label: t('teacher:quizGenerator.sourceFull') },
+              ] as const
+            ).map((option) => {
+              const selected = effectiveScope === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onSourceScopeChange?.(option.value)}
+                  className={cn(
+                    'rounded-xl border p-3 text-center font-cairo text-sm font-medium transition-all',
+                    selected
+                      ? 'border-cyan-500 bg-cyan-50 text-text-primary shadow-glow'
+                      : 'border-gray-200 bg-gray-50 text-text-secondary hover:border-gray-300',
+                  )}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className={cn('grid grid-cols-1 gap-4', isSingle && 'md:grid-cols-2')}>
         {renderSelect(
           t('teacher:quizGenerator.stage'),
           stageId,
@@ -282,22 +340,87 @@ export function ContentSelector({
           () => setStageFocused(true),
           () => setStageFocused(false),
         )}
-        {renderSelect(
-          t('teacher:quizGenerator.chapter'),
-          chapterId,
-          onChapterChange,
-          chapters.map((c) => ({ value: c.id, label: c.name })),
-          t('teacher:quizGenerator.chapterPlaceholder'),
-          !stageId,
-          chaptersLoading,
-          chaptersError,
-          onRetryChapters,
-          chapterFocused,
-          () => setChapterFocused(true),
-          () => setChapterFocused(false),
-        )}
+        {isSingle &&
+          renderSelect(
+            t('teacher:quizGenerator.chapter'),
+            chapterId,
+            onChapterChange,
+            chapters.map((c) => ({ value: c.id, label: c.name })),
+            t('teacher:quizGenerator.chapterPlaceholder'),
+            !stageId,
+            chaptersLoading,
+            chaptersError,
+            onRetryChapters,
+            chapterFocused,
+            () => setChapterFocused(true),
+            () => setChapterFocused(false),
+          )}
       </div>
 
+      {isFull && (
+        <p className="rounded-xl border border-cyan-200 bg-cyan-50 p-3 font-cairo text-xs text-text-secondary">
+          {t('teacher:quizGenerator.sourceFullHint')}
+        </p>
+      )}
+
+      {isMulti && (
+        <div className="flex w-full flex-col gap-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <label className="font-cairo text-sm font-medium text-text-primary">
+              {t('teacher:quizGenerator.chaptersLabel')}
+            </label>
+            {chapterIds.length > 0 && (
+              <span className="font-cairo text-xs text-text-secondary">
+                {t('teacher:quizGenerator.selectedChaptersCount', { count: chapterIds.length })}
+              </span>
+            )}
+          </div>
+          {!stageId ? (
+            <div className="flex h-[48px] items-center rounded-input border border-border bg-surface px-3 opacity-50">
+              <span className="font-cairo text-sm text-text-secondary">
+                {t('teacher:quizGenerator.chaptersDisabled')}
+              </span>
+            </div>
+          ) : chaptersLoading ? (
+            <div className="flex h-[48px] items-center gap-2 rounded-input border border-border bg-surface px-3">
+              <Spinner size="sm" />
+              <span className="font-cairo text-sm text-text-secondary">{t('teacher:quizGenerator.loading')}</span>
+            </div>
+          ) : chapters.length === 0 ? (
+            <div className="flex h-[48px] items-center rounded-input border border-border bg-surface px-3">
+              <span className="font-cairo text-sm text-text-secondary">{t('teacher:quizGenerator.chaptersEmpty')}</span>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2">
+              {chapters.map((c) => {
+                const checked = chapterIds.includes(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => toggleChapter(c.id)}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm transition-colors hover:bg-white"
+                  >
+                    <span
+                      className={cn(
+                        'flex h-4 w-4 shrink-0 items-center justify-center rounded transition-all',
+                        checked ? 'bg-accent text-white' : 'border border-border bg-surface',
+                      )}
+                    >
+                      {checked && <Check size={10} />}
+                    </span>
+                    <span className={cn('font-cairo', checked ? 'font-medium text-text-primary' : 'text-text-secondary')}>
+                      {c.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {isSingle && (
       <div className="flex w-full flex-col gap-2">
         <label className="font-cairo text-sm font-medium text-text-primary">
           {t('teacher:quizGenerator.scopeLabel')}
@@ -341,8 +464,9 @@ export function ContentSelector({
           })}
         </div>
       </div>
+      )}
 
-      {showLessonPicker && (
+      {showLessonPicker && isSingle && (
         <div className="flex w-full flex-col gap-1.5">
           <div className="flex items-center justify-between gap-2">
             <label className="font-cairo text-sm font-medium text-text-primary">

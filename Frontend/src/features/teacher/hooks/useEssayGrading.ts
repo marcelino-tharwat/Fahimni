@@ -40,3 +40,13 @@ export function useGradeEssays(attemptId: string, quizId: string) {
     },
   });
 }
+
+export function useGenerateEssaySuggestions(attemptId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => essayGradingApi.generateSuggestions(attemptId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: essayGradingKeys.detail(attemptId) });
+    },
+  });
+}

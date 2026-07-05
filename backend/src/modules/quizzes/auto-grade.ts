@@ -26,6 +26,17 @@ export interface QuestionResult {
   awardedPoints: number | null;
   maxPoints: number;
   feedback: string | null;
+  // ── Essay AI-suggestion + review metadata (all optional, additive) ────────
+  // Stored inside the attempt `answers` JSON. Old stored results simply lack
+  // these keys and are treated as "no suggestion / not reviewed". The AI
+  // suggestion is advisory only — it NEVER sets awardedPoints, so an essay stays
+  // `pending` (and the attempt stays COMPLETED, gating progression) until a
+  // teacher approves it through the existing gradeEssays path.
+  aiSuggestedPoints?: number | null;
+  aiSuggestedFeedback?: string | null;
+  aiSuggestedAt?: string | null;
+  reviewedById?: string | null;
+  reviewedAt?: string | null;
 }
 
 export interface GradeOutcome {

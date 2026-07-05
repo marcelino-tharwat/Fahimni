@@ -25,6 +25,14 @@ import {
   type DraftAnswerItem,
 } from "./attempt-draft.js";
 import {
+  applyStudentResultPolicy,
+  resolveEffectiveVisibility,
+  type FullResultEntry,
+  type FullSubmissionResult,
+  type QuizResultSettingsRow,
+} from "./quiz-result-policy.js";
+import { deriveReviewStatus } from "./essay-ai-grading.js";
+import {
   buildAttemptTimingResponse,
   computeExpiresAt,
   isAttemptExpired,
@@ -33,6 +41,7 @@ import {
 import type {
   GradeEssaysInput,
   EssayGradingListQueryInput,
+  ResultSettingsInput,
   ResultsQueryInput,
   SaveDraftAnswersInput,
   SubmitAttemptInput,
@@ -880,7 +889,7 @@ export class AttemptsService {
       status,
     });
 
-    return this.toSubmissionResponse(
+    const full = this.toSubmissionResponse(
       attemptId,
       attempt.quizId,
       attempt.quiz.title,
@@ -888,6 +897,8 @@ export class AttemptsService {
       outcome.results,
       questions,
     );
+    const settings = await this.loadQuizResultSettings(attempt.quizId);
+    return applyStudentResultPolicy(full, settings);
   }
 
   /** POST /api/attempts/:attemptId/grade-essays — teacher grades pending essays. */
@@ -968,14 +979,19 @@ export class AttemptsService {
     }
 
     const gradeByQuestion = new Map(input.grades.map((g) => [g.questionId, g]));
+    const reviewedAt = new Date().toISOString();
     const newResults: QuestionResult[] = storedResults.map((r) => {
       if (r.result !== "pending") return r;
       const g = gradeByQuestion.get(r.questionId)!;
+      // Spread preserves any AI-suggestion fields (aiSuggested*) for the audit
+      // trail; the teacher's awardedPoints/feedback remain authoritative.
       return {
         ...r,
         awardedPoints: g.awardedPoints,
         feedback: g.feedback ?? null,
         result: "graded",
+        reviewedById: teacherId,
+        reviewedAt,
       };
     });
 
@@ -1261,6 +1277,15 @@ export class AttemptsService {
         awardedPoints,
         feedback: r?.feedback ?? null,
         gradingStatus,
+        // Additive AI-review metadata (advisory; teacher approval is authoritative).
+        reviewStatus: deriveReviewStatus({
+          type: "ESSAY",
+          awardedPoints,
+          aiSuggestedAt: r?.aiSuggestedAt ?? null,
+        }),
+        aiSuggestedScore: r?.aiSuggestedPoints ?? null,
+        aiSuggestedFeedback: r?.aiSuggestedFeedback ?? null,
+        aiSuggestedAt: r?.aiSuggestedAt ?? null,
       };
     });
 
@@ -1369,7 +1394,7 @@ export class AttemptsService {
 
     const storedResults = (attempt.answers as unknown as QuestionResult[]) ?? [];
 
-    return this.toSubmissionResponse(
+    const full = this.toSubmissionResponse(
       attempt.id,
       attempt.quizId,
       attempt.quiz.title,
@@ -1377,6 +1402,8 @@ export class AttemptsService {
       storedResults,
       questions,
     );
+    const settings = await this.loadQuizResultSettings(attempt.quizId);
+    return applyStudentResultPolicy(full, settings);
   }
 
   // ── STORY-68: teacher results & CSV export ───────────────────────────────
@@ -1451,6 +1478,50 @@ export class AttemptsService {
       .map((cols) => cols.map((c) => this.escapeCsv(c)).join(","))
       .join("\r\n");
     return `﻿${body}\r\n`;
+  }
+
+  // ── Teacher result-visibility settings ───────────────────────────────────
+
+  /**
+   * GET /api/quizzes/:id/result-settings — the teacher's current (resolved)
+   * result-visibility settings for a quiz they own. Returns permissive
+   * defaults for a quiz whose settings were never configured.
+   */
+  public async getResultSettings(quizId: string, teacherId: string) {
+    await this.assertQuizOwnership(quizId, teacherId);
+    const row = await this.loadQuizResultSettings(quizId);
+    return { quizId, ...resolveEffectiveVisibility(row) };
+  }
+
+  /**
+   * PUT /api/quizzes/:id/result-settings — persist result-visibility settings.
+   * Marks the quiz as configured; any omitted flag defaults to the permissive
+   * value so a partial save never accidentally hides more than intended.
+   */
+  public async updateResultSettings(
+    quizId: string,
+    teacherId: string,
+    input: ResultSettingsInput,
+  ) {
+    await this.assertQuizOwnership(quizId, teacherId);
+    const row = await this.loadQuizResultSettings(quizId);
+    const current = resolveEffectiveVisibility(row);
+
+    const next = {
+      resultSettingsConfigured: true,
+      showCorrectAnswers: input.showCorrectAnswers ?? current.showCorrectAnswers,
+      showPerQuestionScores:
+        input.showPerQuestionScores ?? current.showPerQuestionScores,
+      showFinalScore: input.showFinalScore ?? current.showFinalScore,
+      showStudentAnswers: input.showStudentAnswers ?? current.showStudentAnswers,
+      showExplanations: input.showExplanations ?? current.showExplanations,
+      pendingEssayResultMode:
+        input.pendingEssayResultMode ?? current.pendingEssayResultMode,
+    };
+
+    await prisma.quiz.update({ where: { id: quizId }, data: next });
+    logger.info("quiz_result_settings_updated", { teacherId, quizId });
+    return { quizId, configured: true, ...next };
   }
 
   /** Verify the quiz exists and is owned by this teacher. */
@@ -1572,7 +1643,7 @@ export class AttemptsService {
     status: string,
     results: QuestionResult[],
     questions: ResultQuestion[],
-  ) {
+  ): FullSubmissionResult {
     const outcome = finalizeOutcome(results);
     const questionMap = new Map(questions.map((q) => [q.id, q]));
 
@@ -1586,9 +1657,9 @@ export class AttemptsService {
       percentage: outcome.percentage,
       pendingEssayCount: outcome.pendingEssayCount,
       isFinal: outcome.isFinal,
-      results: results.map((r) => {
+      results: results.map((r): FullResultEntry => {
         const question = questionMap.get(r.questionId);
-        return {
+        const entry: FullResultEntry = {
           questionId: r.questionId,
           type: r.type,
           questionText: question?.text ?? "",
@@ -1598,11 +1669,46 @@ export class AttemptsService {
           result: r.result,
           awardedPoints: r.awardedPoints,
           maxPoints: r.maxPoints,
-          ...(r.feedback ? { feedback: r.feedback } : {}),
-          ...(question?.explanation ? { explanation: question.explanation } : {}),
         };
+        if (r.feedback) entry.feedback = r.feedback;
+        if (question?.explanation) entry.explanation = question.explanation;
+        return entry;
       }),
     };
+  }
+
+  /**
+   * Load a quiz's result-visibility settings columns. Used only by the
+   * student-facing result endpoints to enforce hiding server-side.
+   */
+  private async loadQuizResultSettings(
+    quizId: string,
+  ): Promise<QuizResultSettingsRow> {
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: quizId },
+      select: {
+        resultSettingsConfigured: true,
+        showCorrectAnswers: true,
+        showPerQuestionScores: true,
+        showFinalScore: true,
+        showStudentAnswers: true,
+        showExplanations: true,
+        pendingEssayResultMode: true,
+      },
+    });
+    // A missing row (should not happen for an existing attempt) falls back to
+    // the legacy, nothing-hidden behavior.
+    return (
+      quiz ?? {
+        resultSettingsConfigured: false,
+        showCorrectAnswers: null,
+        showPerQuestionScores: null,
+        showFinalScore: null,
+        showStudentAnswers: null,
+        showExplanations: null,
+        pendingEssayResultMode: null,
+      }
+    );
   }
 }
 

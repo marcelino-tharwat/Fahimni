@@ -47,6 +47,12 @@ export interface EssaySubmissionsResponse {
   meta: EssayGradingListMeta;
 }
 
+export type EssayReviewStatus =
+  | 'NOT_REQUIRED'
+  | 'PENDING_REVIEW'
+  | 'AI_SUGGESTED'
+  | 'APPROVED';
+
 export interface EssayAnswerDetail {
   questionId: string;
   order: number;
@@ -56,6 +62,24 @@ export interface EssayAnswerDetail {
   awardedPoints: number | null;
   feedback: string | null;
   gradingStatus: EssayGradingStatus;
+  // Additive AI-review metadata (advisory; teacher approval is authoritative).
+  reviewStatus?: EssayReviewStatus;
+  aiSuggestedScore?: number | null;
+  aiSuggestedFeedback?: string | null;
+  aiSuggestedAt?: string | null;
+}
+
+export interface EssaySuggestionEntry {
+  questionId: string;
+  status: 'AI_SUGGESTED' | 'AI_UNAVAILABLE' | 'ALREADY_GRADED';
+  suggestedScore: number | null;
+  feedback: string | null;
+}
+
+export interface EssaySuggestionsResponse {
+  attemptId: string;
+  aiAvailable: boolean;
+  suggestions: EssaySuggestionEntry[];
 }
 
 export interface EssayGradingDetail {

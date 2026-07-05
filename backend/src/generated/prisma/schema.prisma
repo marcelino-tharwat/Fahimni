@@ -294,26 +294,38 @@ model RefreshToken {
 }
 
 model Quiz {
-  id                     String           @id @default(uuid())
-  title                  String
-  description            String?
-  chapterId              String?
-  contentScope           QuizContentScope @default(CHAPTER) @map("content_scope")
-  status                 QuizStatus       @default(DRAFT)
-  durationMinutes        Int?             @map("duration_minutes")
-  questionCount          Int              @default(0)
-  totalPoints            Int              @default(0)
-  passingScore           Int?             @map("passing_score")
-  createdBy              String
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime         @updatedAt
-  publishedAt            DateTime?
-  questions              Question[]
-  attempts               QuizAttempt[]
-  quizLessons            QuizLesson[]
-  progressionGateLessons Lesson[]         @relation("LessonProgressionQuiz")
-  chapter                Chapter?         @relation(fields: [chapterId], references: [id])
-  creator                User             @relation(fields: [createdBy], references: [id])
+  id                       String                  @id @default(uuid())
+  title                    String
+  description              String?
+  chapterId                String?
+  contentScope             QuizContentScope        @default(CHAPTER) @map("content_scope")
+  status                   QuizStatus              @default(DRAFT)
+  durationMinutes          Int?                    @map("duration_minutes")
+  questionCount            Int                     @default(0)
+  totalPoints              Int                     @default(0)
+  passingScore             Int?                    @map("passing_score")
+  createdBy                String
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+  publishedAt              DateTime?
+  // ── Result visibility settings (additive, opt-in) ──────────────────────
+  // resultSettingsConfigured=false (default) => legacy behavior: the student
+  // result endpoint returns the full response exactly as before. When a teacher
+  // saves settings the flag flips to true and the nullable columns below take
+  // effect. Nullable booleans are resolved to safe defaults in the policy layer.
+  resultSettingsConfigured Boolean                 @default(false) @map("result_settings_configured")
+  showCorrectAnswers       Boolean?                @map("show_correct_answers")
+  showPerQuestionScores    Boolean?                @map("show_per_question_scores")
+  showFinalScore           Boolean?                @map("show_final_score")
+  showStudentAnswers       Boolean?                @map("show_student_answers")
+  showExplanations         Boolean?                @map("show_explanations")
+  pendingEssayResultMode   PendingEssayResultMode? @map("pending_essay_result_mode")
+  questions                Question[]
+  attempts                 QuizAttempt[]
+  quizLessons              QuizLesson[]
+  progressionGateLessons   Lesson[]                @relation("LessonProgressionQuiz")
+  chapter                  Chapter?                @relation(fields: [chapterId], references: [id])
+  creator                  User                    @relation(fields: [createdBy], references: [id])
 
   @@index([chapterId, status])
   @@map("quizzes")
@@ -333,6 +345,15 @@ model QuizLesson {
 enum QuizContentScope {
   CHAPTER
   SELECTED_LESSONS
+}
+
+/// Controls what a student sees on the result page while a quiz still has
+/// essay answers awaiting teacher review. Additive; only consulted when
+/// Quiz.resultSettingsConfigured is true.
+enum PendingEssayResultMode {
+  HIDE_ALL_RESULTS
+  SHOW_OBJECTIVE_ONLY
+  SHOW_OBJECTIVE_WITH_PENDING_MESSAGE
 }
 
 model Question {

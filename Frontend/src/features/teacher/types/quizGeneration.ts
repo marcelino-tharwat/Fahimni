@@ -6,9 +6,15 @@ export type QuestionTypeKey = 'MCQ' | 'TF' | 'ESSAY';
 export type DifficultyLevel = 'easy' | 'medium' | 'hard' | '';
 export type QuizContentScope = 'CHAPTER' | 'SELECTED_LESSONS';
 
+/** Content source scope for AI generation. Defaults to SINGLE_CHAPTER (legacy). */
+export type SourceScope = 'SINGLE_CHAPTER' | 'MULTI_CHAPTER' | 'FULL_CURRICULUM';
+
 export interface QuizGeneratorFormState {
   stageId: string;
   chapterId: string;
+  // Additive: generation source scope + multi-chapter selection.
+  sourceScope: SourceScope;
+  chapterIds: string[];
   contentScope: QuizContentScope;
   lessonIds: string[];
   title: string;
@@ -21,7 +27,11 @@ export interface QuizGeneratorFormState {
 }
 
 export interface GenerateQuizPayload {
-  chapterId: string;
+  // Optional so a legacy chapterId-only body still validates as SINGLE_CHAPTER.
+  chapterId?: string;
+  sourceScope?: SourceScope;
+  chapterIds?: string[];
+  stageId?: string;
   contentScope: QuizContentScope;
   lessonIds: string[];
   questionCount: number;
