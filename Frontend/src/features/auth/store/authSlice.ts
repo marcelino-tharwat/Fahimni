@@ -113,6 +113,24 @@ export interface RegisterReject {
   fieldErrors?: Record<string, string[]>;
 }
 
+export const googleLogin = createAsyncThunk<
+  { user: User },
+  { credential: string },
+  { rejectValue: string }
+>('auth/googleLogin', async ({ credential }, { rejectWithValue }) => {
+  try {
+    const { data } = await apiClient.post<{
+      message: string;
+      data: { user: User };
+    }>('/v1/auth/google', { credential });
+    saveUser(data.data.user);
+    return { user: data.data.user };
+  } catch (err) {
+    const apiErr = err as ApiError;
+    return rejectWithValue(apiErr.message ?? 'Google sign-in failed.');
+  }
+});
+
 export const register = createAsyncThunk<
   { user: User },
   { fullName: string; email: string; mobile: string; password: string; stageId?: string; role?: string },
@@ -242,6 +260,22 @@ const authSlice = createSlice({
       .addCase(initAuth.rejected, (state) => {
         state.user = null;
         state.isAuthenticated = false;
+        state.status = 'failed';
+      });
+
+    // ---- googleLogin ----
+    builder
+      .addCase(googleLogin.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.error = action.payload ?? 'Google sign-in failed.';
         state.status = 'failed';
       });
 

@@ -14,6 +14,8 @@ type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 function isAuthFlow(url: string | undefined): boolean {
   const u = url ?? "";
   return (
+    u.includes("/auth/me") ||
+    u.includes("/auth/google") ||
     u.includes("/auth/refresh") ||
     u.includes("/auth/login") ||
     u.includes("/auth/logout") ||
