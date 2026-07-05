@@ -1,4 +1,126 @@
 {
+    "students": {
+      "pageTitle": "تفاعل الطلاب",
+      "pageSubtitle": "متابعة نشاط ومشاركة الطلاب المسجلين",
+      "enrolledBadge": "{{count}} طالب مسجل",
+      "export": {
+        "successToast": "تم تصدير {{count}} طالب بنجاح",
+        "emptyToast": "لا يوجد طلاب للتصدير",
+        "errorToast": "حدث خطأ أثناء التصدير، حاول مرة أخرى"
+      },
+      "summaryCards": {
+        "totalStudents": "إجمالي الطلاب",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "averageEngagement": "متوسط التفاعل"
+      },
+      "table": {
+        "searchPlaceholder": "ابحث باسم الطالب...",
+        "exportButton": "تصدير",
+        "columns": {
+          "name": "اسم الطالب",
+          "phone": "رقم الهاتف",
+          "status": "الحالة",
+          "chapters": "الفصول",
+          "lessons": "الدروس",
+          "avgScore": "متوسط الاختبارات",
+          "lastActivity": "آخر نشاط"
+        }
+      },
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "pagination": {
+        "showing": "عرض {{from}}-{{to}} من {{total}} طالب",
+        "previous": "السابق",
+        "next": "التالي"
+      },
+      "empty": {
+        "noStudents": {
+          "title": "لم يسجل أي طالب بعد",
+          "description": "سيظهر الطلاب هنا بمجرد اشتراكهم في فصولك"
+        },
+        "noResults": {
+          "title": "لا توجد نتائج لـ \"{{query}}\"",
+          "action": "مسح البحث"
+        }
+      },
+      "error": {
+        "title": "حدث خطأ في تحميل بيانات الطلاب",
+        "description": "تأكد من اتصالك بالإنترنت وحاول مرة أخرى",
+        "retry": "إعادة المحاولة"
+      },
+      "detail": {
+        "breadcrumb": "تفاعل الطلاب",
+        "whatsappButton": "تواصل عبر واتساب",
+        "summaryCards": {
+          "chapters": "الفصول المشترك فيها",
+          "lessonsWatched": "الدروس المشاهدة",
+          "avgScore": "متوسط الاختبارات",
+          "lastActivity": "آخر نشاط"
+        },
+        "activityTitle": "تفاصيل النشاط",
+        "chapterFilter": {
+          "all": "كل الفصول",
+          "label": "الفصل"
+        },
+        "table": {
+          "columns": {
+            "lessonName": "اسم الدرس",
+            "chapter": "الفصل",
+            "video": "الفيديو",
+            "pdf": "ملف PDF",
+            "lastViewed": "آخر مشاهدة"
+          }
+        },
+        "video": {
+          "watched": "تمت المشاهدة",
+          "notWatched": "لم تتم"
+        },
+        "pdf": {
+          "downloaded": "تم التحميل",
+          "notDownloaded": "لم يتم"
+        },
+        "quizzes": {
+          "sectionTitle": "الاختبارات",
+          "columns": {
+            "quizName": "اسم الاختبار",
+            "scope": "مربوط بـ",
+            "score": "الدرجة",
+            "status": "الحالة"
+          },
+          "scope": {
+            "chapter": "{{name}} (فصل)",
+            "lesson": "درس: {{name}}"
+          },
+          "status": {
+            "not_started": "لم يبدأ",
+            "in_progress": "قيد الحل",
+            "completed": "مكتمل",
+            "graded": "تم التقييم"
+          },
+          "empty": "لا توجد اختبارات لهذا الطالب"
+        },
+        "empty": {
+          "title": "لم يتم عرض أي دروس بعد",
+          "description": "سيظهر نشاط الطالب هنا بمجرد بدء المشاهدة"
+        },
+        "lessonsPagination": {
+          "showing": "عرض {{from}}-{{to}} من {{total}} درس"
+        },
+        "backButton": "الرجوع لقائمة الطلاب",
+        "error": {
+          "title": "حدث خطأ في تحميل تفاصيل الطالب",
+          "description": "تأكد من اتصالك بالإنترنت وحاول مرة أخرى",
+          "retry": "إعادة المحاولة"
+        },
+        "notFound": {
+          "title": "الطالب غير موجود",
+          "description": "قد يكون الطالب غير مسجل في فصولك"
+        }
+      }
+    },
     "quizList": {
       "pageTitle": "اختباراتي",
       "pageSubtitle": "إدارة ومراجعة جميع الاختبارات التي أنشأتها",

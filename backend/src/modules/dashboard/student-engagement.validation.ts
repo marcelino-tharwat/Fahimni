@@ -30,3 +30,51 @@ export const studentEngagementQuerySchema = z
   .strip();
 
 export type StudentEngagementQuery = z.infer<typeof studentEngagementQuerySchema>;
+
+/** UUID (v4-ish) matcher, matching the pattern used across the other modules. */
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * STORY-75 — path params for GET /api/dashboard/teacher/students/:studentId.
+ *
+ * IDs in this project are plain strings (uuid in prod, custom slugs in seed
+ * data), so we validate non-empty rather than a strict uuid format — matching
+ * the existing id validation used across the other modules. A malformed or
+ * foreign id simply resolves to a 404 in the service (foreign and non-existent
+ * ids are deliberately indistinguishable).
+ */
+export const teacherStudentDetailParamSchema = z.object({
+  studentId: z.string().trim().min(1, "Student ID is required"),
+});
+
+export type TeacherStudentDetailParam = z.infer<
+  typeof teacherStudentDetailParamSchema
+>;
+
+/**
+ * STORY-75 — query params for the detail endpoint. `chapterId` filters the
+ * lessons array to one chapter; `page`/`pageSize` paginate the lessons only.
+ * Validated in the controller via safeParse (Express 5 exposes req.query as a
+ * read-only getter). Unknown keys are stripped, matching the list contract.
+ */
+export const teacherStudentDetailQuerySchema = z
+  .object({
+    chapterId: z
+      .string()
+      .trim()
+      .regex(UUID_RE, "Chapter ID must be a valid UUID")
+      .optional(),
+    page: z.coerce.number().int().positive().default(1),
+    pageSize: z.coerce
+      .number()
+      .int()
+      .positive()
+      .max(MAX_PAGE_SIZE)
+      .default(DEFAULT_PAGE_SIZE),
+  })
+  .strip();
+
+export type TeacherStudentDetailQuery = z.infer<
+  typeof teacherStudentDetailQuerySchema
+>;

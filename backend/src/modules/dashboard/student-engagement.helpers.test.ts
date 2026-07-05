@@ -9,22 +9,26 @@ const DAY = 24 * 60 * 60 * 1000;
 describe("computeStatus", () => {
   const now = new Date("2026-06-29T12:00:00.000Z");
 
-  it("is active exactly on the 30-day boundary (inclusive)", () => {
-    expect(computeStatus(new Date(now.getTime() - 30 * DAY), now)).toBe("active");
+  it("is active exactly on the 7-day boundary (inclusive)", () => {
+    expect(computeStatus(new Date(now.getTime() - 7 * DAY), now)).toBe("active");
   });
 
   it("is active within the window", () => {
-    expect(computeStatus(new Date(now.getTime() - 5 * DAY), now)).toBe("active");
+    expect(computeStatus(new Date(now.getTime() - 3 * DAY), now)).toBe("active");
   });
 
-  it("is inactive past 30 days", () => {
-    expect(computeStatus(new Date(now.getTime() - 31 * DAY), now)).toBe("inactive");
+  it("is inactive past 7 days", () => {
+    expect(computeStatus(new Date(now.getTime() - 8 * DAY), now)).toBe("inactive");
+  });
+
+  it("is inactive when last activity is null", () => {
+    expect(computeStatus(null, now)).toBe("inactive");
   });
 
   it("uses the server-provided now, so a client timezone cannot shift the cutoff", () => {
-    // Same enrollment instant, evaluated against a fixed server 'now'.
-    const enroll = new Date("2026-06-10T23:00:00.000Z");
-    expect(computeStatus(enroll, now)).toBe("active");
+    // Same activity instant, evaluated against a fixed server 'now'.
+    const lastActivity = new Date("2026-06-25T23:00:00.000Z");
+    expect(computeStatus(lastActivity, now)).toBe("active");
   });
 });
 

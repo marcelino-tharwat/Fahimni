@@ -1,55 +1,107 @@
-import { useTranslation } from 'react-i18next';
-import { Progress, Table } from '@/shared/components/ui';
-import { mockStudents } from '@/shared/mocks/users';
-import { mockEnrollments } from '@/shared/mocks/enrollment';
-import { formatDate } from '@/shared/lib/utils/formatDate';
-import type { User } from '@/shared/types';
+import { useNavigate } from 'react-router-dom';
+import { useTeacherStudents } from '@/features/teacher/hooks/useTeacherStudents';
+import { useStudentsListState } from '@/features/teacher/hooks/useStudentsListState';
+import { useStudentsExport } from '@/features/teacher/hooks/useStudentsExport';
+import {
+  StudentsPageHeader,
+  EngagementSummaryCards,
+  StudentsTableToolbar,
+  StudentsTable,
+  StudentsPagination,
+  StudentsTableSkeleton,
+  StudentsTableEmpty,
+  StudentsErrorState,
+} from '@/features/teacher/components/students';
+import type { TeacherStudentsSummary } from '@/features/teacher/types/students';
 
-// Deterministic mock engagement progress per student.
-const progressByStudent: Record<string, number> = {
-  'user-1': 65,
-  'user-5': 40,
-  'user-6': 80,
-  'user-7': 25,
-  'user-8': 55,
+/** Neutral summary shown while loading, so the cards keep their layout. */
+const placeholderSummary: TeacherStudentsSummary = {
+  totalStudents: 0,
+  activeCount: 0,
+  inactiveCount: 0,
+  averageEngagement: 0,
 };
 
-function enrollmentCount(studentId: string): number {
-  return mockEnrollments.filter((enrollment) => enrollment.studentId === studentId).length;
-}
-
 export function StudentEngagementPage() {
-  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const state = useStudentsListState();
+
+  const { data, isLoading, isError, refetch } = useTeacherStudents({
+    page: state.page,
+    limit: state.pageSize,
+    search: state.search || undefined,
+    sortBy: state.sortBy,
+    sortOrder: state.sortOrder,
+  });
+
+  const { exportCsv, isExporting } = useStudentsExport({
+    search: state.search,
+    sortBy: state.sortBy,
+    sortOrder: state.sortOrder,
+  });
+
+  // Initial load failed — show the error state (design's "error" frame).
+  if (isError && !data) {
+    return (
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5">
+        <StudentsPageHeader totalStudents={undefined} />
+        <div className="rounded-card border border-gray-300 bg-white shadow-card">
+          <StudentsErrorState onRetry={refetch} />
+        </div>
+      </div>
+    );
+  }
+
+  const students = data?.students ?? [];
+  const isEmpty = !isLoading && students.length === 0;
+  const isEmptySearch = isEmpty && Boolean(state.search);
+  const isEmptyNoData = isEmpty && !state.search;
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="font-cairo text-2xl font-bold text-text-primary">{t('nav.students')}</h1>
-
-      <Table<User>
-        data={mockStudents}
-        columns={[
-          { key: 'name', header: 'الاسم', render: (student) => student.name },
-          {
-            key: 'chapters',
-            header: 'الأبواب المشتركة',
-            render: (student) => enrollmentCount(student.id),
-          },
-          {
-            key: 'lastActivity',
-            header: 'آخر نشاط',
-            render: (student) => formatDate(student.createdAt),
-          },
-          {
-            key: 'progress',
-            header: 'التقدم',
-            render: (student) => (
-              <div className="min-w-[120px]">
-                <Progress value={progressByStudent[student.id] ?? 0} size="sm" showLabel />
-              </div>
-            ),
-          },
-        ]}
+    <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5">
+      <StudentsPageHeader totalStudents={data?.summary.totalStudents} />
+      <EngagementSummaryCards
+        summary={data?.summary ?? placeholderSummary}
+        isLoading={isLoading}
       />
+
+      <div className="rounded-card border border-gray-300 bg-white shadow-card">
+        <StudentsTableToolbar
+          search={state.searchInput}
+          onSearchChange={state.setSearchInput}
+          onExport={exportCsv}
+          isExporting={isExporting}
+        />
+
+        {isLoading && <StudentsTableSkeleton />}
+        {isEmptyNoData && <StudentsTableEmpty variant="noStudents" />}
+        {isEmptySearch && (
+          <StudentsTableEmpty
+            variant="noResults"
+            query={state.search}
+            onClearSearch={() => state.setSearchInput('')}
+          />
+        )}
+        {!isLoading && students.length > 0 && (
+          <StudentsTable
+            students={students}
+            sortBy={state.sortBy}
+            sortOrder={state.sortOrder}
+            onSortChange={state.setSort}
+            onRowClick={(id) => navigate(`/teacher/students/${id}`)}
+          />
+        )}
+
+        {data && data.pagination.total > 0 && !isEmpty && (
+          <StudentsPagination
+            page={data.pagination.page}
+            pageSize={data.pagination.pageSize}
+            total={data.pagination.total}
+            totalPages={data.pagination.totalPages}
+            onPageChange={state.setPage}
+          />
+        )}
+      </div>
     </div>
   );
 }
