@@ -30,6 +30,7 @@ import {
 } from '@/features/student/lib/quizAccessErrors';
 import type { PageStatus, QuizQuestion, QuizMeta } from '@/shared/types';
 import type { ApiError } from '@/shared/lib/api/client';
+import { ProtectedContent } from '@/shared/components/content-protection';
 
 type AutoSubmitState = 'idle' | 'submitting' | 'retrying';
 
@@ -465,37 +466,49 @@ export function QuizPage() {
       />
 
       <main className="px-4 py-5 pb-32 sm:px-6 sm:pb-8">
-        <div className="mx-auto flex max-w-3xl flex-col gap-5">
-          {meta && <QuizHeaderCard meta={meta} />}
+        <ProtectedContent
+          policy={{
+            disableCopy: true,
+            disableCut: true,
+            disablePaste: true,
+            disableContextMenu: true,
+            disablePrint: true,
+            blurOnHidden: true,
+          }}
+          className="print-protected"
+        >
+          <div className="mx-auto flex max-w-3xl flex-col gap-5">
+            {meta && <QuizHeaderCard meta={meta} />}
 
-          <ProgressAndNavigatorCard
-            questions={questions}
-            answers={answers}
-            validationErrors={validationErrors}
-            showValidationBanner={showValidationBanner}
-            currentId={currentId}
-          />
+            <ProgressAndNavigatorCard
+              questions={questions}
+              answers={answers}
+              validationErrors={validationErrors}
+              showValidationBanner={showValidationBanner}
+              currentId={currentId}
+            />
 
-          {questions.map((q, idx) => (
-            <QuestionCard
-              key={q.id}
-              question={q}
-              index={idx}
-              answer={answers[q.id] ?? ''}
-              onAnswer={setAnswer}
-              hasError={validationErrors.has(q.id)}
-              isPulsing={pulsingErrors.has(q.id)}
+            {questions.map((q, idx) => (
+              <QuestionCard
+                key={q.id}
+                question={q}
+                index={idx}
+                answer={answers[q.id] ?? ''}
+                onAnswer={setAnswer}
+                hasError={validationErrors.has(q.id)}
+                isPulsing={pulsingErrors.has(q.id)}
+                disabled={inputsLocked}
+              />
+            ))}
+
+            <SubmitSectionCard
+              answeredCount={answeredCount}
+              totalCount={questions.length}
+              onOpenModal={handleOpenModal}
               disabled={inputsLocked}
             />
-          ))}
-
-          <SubmitSectionCard
-            answeredCount={answeredCount}
-            totalCount={questions.length}
-            onOpenModal={handleOpenModal}
-            disabled={inputsLocked}
-          />
-        </div>
+          </div>
+        </ProtectedContent>
       </main>
 
       <MobileStickySubmitBar

@@ -19,6 +19,7 @@ import type { StudentLessonNode } from '@/features/student/types/studentContent'
 import { contentApi } from '@/features/student/api/content';
 import type { StudentContentTreeItem } from '@/features/student/types/studentContent';
 import type { ApiError } from '@/shared/lib/api/client';
+import { ProtectedContent } from '@/shared/components/content-protection';
 import { LessonQuizSections } from '@/features/student/components/LessonQuizSections';
 import { LessonMaterialsSection } from '@/features/student/components/LessonMaterialsSection';
 
@@ -258,7 +259,10 @@ export function LessonPage() {
       </nav>
 
       {showVideo ? (
-        <div className="relative w-full overflow-hidden rounded-card pb-[56.25%] bg-gray-200">
+        <div
+          className="relative w-full overflow-hidden rounded-card pb-[56.25%] bg-gray-200"
+          onContextMenu={(e) => e.preventDefault()}
+        >
           <iframe
             src={`https://www.youtube.com/embed/${youtubeId}`}
             title={lesson.title}
@@ -266,6 +270,7 @@ export function LessonPage() {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
+          {/* Right-click inside the cross-origin iframe itself cannot be blocked. */}
         </div>
       ) : (
         <div className="flex w-full items-center justify-center rounded-card bg-gray-100 py-20">
@@ -278,50 +283,60 @@ export function LessonPage() {
         </div>
       )}
 
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div className="flex flex-col gap-1">
-            <Badge variant="default" className="w-fit">
-              {t('student:lesson.lessonLabel', { order: toLocalNum(lesson.sortOrder) })}
-            </Badge>
-            <h1 className="font-cairo text-2xl font-bold text-navy-900">{lesson.title}</h1>
+      <ProtectedContent
+        policy={{
+          disableCopy: true,
+          disableContextMenu: true,
+          disablePrint: true,
+          disableSelection: true,
+        }}
+        className="print-protected"
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <Badge variant="default" className="w-fit">
+                {t('student:lesson.lessonLabel', { order: toLocalNum(lesson.sortOrder) })}
+              </Badge>
+              <h1 className="font-cairo text-2xl font-bold text-navy-900">{lesson.title}</h1>
+            </div>
           </div>
-        </div>
-        {lesson.description && (
-          <p className="font-cairo whitespace-pre-line text-gray-500">{lesson.description}</p>
-        )}
+          {lesson.description && (
+            <p className="font-cairo whitespace-pre-line text-gray-500">{lesson.description}</p>
+          )}
 
-        <div className="flex flex-wrap items-center gap-4 font-cairo text-sm text-gray-500">
-          <span className="inline-flex items-center gap-1.5">
-            <Clock size={16} />
-            {toLocalNum(lesson.durationMinutes)} {t('student:lesson.minutes')}
-          </span>
-          {parentInfo && (
-            <>
-              <span className="inline-flex items-center gap-1.5">
-                <BookOpen size={16} />
-                {parentInfo.chapterName}
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Layers size={16} />
-                {parentInfo.stageName}
-              </span>
-            </>
+          <div className="flex flex-wrap items-center gap-4 font-cairo text-sm text-gray-500">
+            <span className="inline-flex items-center gap-1.5">
+              <Clock size={16} />
+              {toLocalNum(lesson.durationMinutes)} {t('student:lesson.minutes')}
+            </span>
+            {parentInfo && (
+              <>
+                <span className="inline-flex items-center gap-1.5">
+                  <BookOpen size={16} />
+                  {parentInfo.chapterName}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Layers size={16} />
+                  {parentInfo.stageName}
+                </span>
+              </>
+            )}
+          </div>
+          {!isLessonCompleted && (
+            <Button
+              variant="primary"
+              loading={completeLesson.isPending}
+              onClick={() => lessonId && completeLesson.mutate(lessonId)}
+              className="w-fit"
+            >
+              {completeLesson.isPending
+                ? t('student:lesson.completing')
+                : t('student:lesson.completeLesson')}
+            </Button>
           )}
         </div>
-        {!isLessonCompleted && (
-          <Button
-            variant="primary"
-            loading={completeLesson.isPending}
-            onClick={() => lessonId && completeLesson.mutate(lessonId)}
-            className="w-fit"
-          >
-            {completeLesson.isPending
-              ? t('student:lesson.completing')
-              : t('student:lesson.completeLesson')}
-          </Button>
-        )}
-      </div>
+      </ProtectedContent>
 
       <LessonMaterialsSection
         lessonId={lesson.id}
