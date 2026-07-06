@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import {
-  BrainCircuit, BookOpen, ListChecks, Gauge, Minus, Plus, AlertCircle,
+  BrainCircuit, BookOpen, ListChecks, Gauge, Minus, Plus, AlertCircle, AlertTriangle,
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/shared/components/ui';
+import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
 import {
   useStagesList,
   useChaptersByStage,
@@ -96,6 +98,16 @@ export function AiQuizGeneratorPage() {
   const { data: lessons = [], isLoading: lessonsLoading, isError: lessonsIsError, refetch: refetchLessons } = useLessonsByChapter(form.chapterId);
   const generateQuiz = useGenerateQuiz();
 
+  const { data: subscriptionData } = useQuery({
+    queryKey: ['teacher', 'subscription', 'me'],
+    queryFn: () => teacherPlansApi.getMySubscription(),
+    staleTime: 60_000,
+  });
+
+  const quotaExhausted = subscriptionData
+    ? subscriptionData.usage.aiQuizGenerations.remaining <= 0
+    : false;
+
   const generationError = useMemo(() => {
     if (!generateQuiz.isError || !generateQuiz.error) return null;
     return resolveQuizGenerationError(generateQuiz.error, t, i18n.language);
@@ -165,6 +177,22 @@ export function AiQuizGeneratorPage() {
       </div>
 
       <QuizStepper activeStep={0} />
+
+      {quotaExhausted && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <AlertTriangle size={20} className="mt-0.5 shrink-0 text-amber-600" />
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <p className="font-cairo text-sm font-bold text-amber-800">
+                {t('teacher:quizGenerator.quotaExhaustedTitle')}
+              </p>
+              <p className="font-cairo text-sm text-amber-700">
+                {t('teacher:quizGenerator.quotaExhaustedDetails')}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {generationError && (
         <div
@@ -417,6 +445,7 @@ export function AiQuizGeneratorPage() {
             variant="primary"
             onClick={handleSubmit}
             loading={generateQuiz.isPending}
+            disabled={quotaExhausted}
             className="min-w-[200px] h-12 px-8 gap-2.5 transition-all duration-200 bg-[linear-gradient(135deg,#00C9DB,#0EA5E9)] text-white font-bold text-base rounded-full active:scale-[0.98] disabled:opacity-90 shadow-[0_8px_24px_-6px_rgba(0,201,219,0.5)] hover:shadow-[0_0_20px_rgba(0,201,219,0.6),0_8px_24px_-6px_rgba(0,201,219,0.5)]"
           >
             {generateQuiz.isPending ? t('teacher:quizGenerator.generating') : t('teacher:quizGenerator.generateBtn')}

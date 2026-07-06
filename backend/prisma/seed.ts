@@ -20,6 +20,13 @@ const BCRYPT_ROUNDS = 12;
 const LEGACY_SEED_PREFIX = "seed-chem-";
 const LOCAL_PASSWORD = process.env.SEED_LOCAL_PASSWORD ?? "ChemDemo#2026";
 
+const TEACHER_PLANS = [
+  { code: "FREE", name: "free", displayName: "الباقة المجانية", description: "ابدأ رحلتك التعليمية مع الباقة المجانية", monthlyPrice: 0, yearlyPrice: null, isRecommended: false, sortOrder: 0, features: ["إنشاء اختبارات بالذكاء الاصطناعي (محدود)", "تصحيح مقالات بالذكاء الاصطناعي (محدود)", "دروس غير محدودة", "محتوى محمي ضد النسخ", "دعم عبر واتساب"], limits: { aiQuizGenerationsPerMonth: 5, aiEssayGradingsPerMonth: 10, aiContentGenerationsPerMonth: 0, aiLessonSummariesPerMonth: 0, aiQuestionExplanationsPerMonth: 0, maxStudents: 50, maxCourses: 3, maxQuizzes: 20, storageMb: 500, analyticsAccess: false, studentEngagementAnalytics: false, pdfDownloadTracking: true, contentProtection: true, prioritySupport: false } },
+  { code: "BASIC", name: "basic", displayName: "الباقة الأساسية", description: "مناسبة للمدرسين الجدد", monthlyPrice: 199, yearlyPrice: 1990, isRecommended: false, sortOrder: 1, features: ["إنشاء اختبارات بالذكاء الاصطناعي", "تصحيح مقالات بالذكاء الاصطناعي", "إنشاء محتوى تعليمي بالذكاء الاصطناعي", "دروس غير محدودة", "تخزين 5 جيجابايت", "محتوى محمي ضد النسخ", "تحليلات أساسية", "دعم عبر واتساب"], limits: { aiQuizGenerationsPerMonth: 30, aiEssayGradingsPerMonth: 100, aiContentGenerationsPerMonth: 10, aiLessonSummariesPerMonth: 10, aiQuestionExplanationsPerMonth: 10, maxStudents: 200, maxCourses: 10, maxQuizzes: 100, storageMb: 5120, analyticsAccess: true, studentEngagementAnalytics: false, pdfDownloadTracking: true, contentProtection: true, prioritySupport: false } },
+  { code: "PRO", name: "pro", displayName: "الباقة الاحترافية", description: "مناسبة للمدرسين النشطين", monthlyPrice: 499, yearlyPrice: 4990, isRecommended: true, sortOrder: 2, features: ["إنشاء اختبارات بالذكاء الاصطناعي (غير محدود تقريباً)", "تصحيح مقالات بالذكاء الاصطناعي", "إنشاء محتوى تعليمي بالذكاء الاصطناعي", "ملخصات دروس بالذكاء الاصطناعي", "شروحات ذكية للأسئلة", "دروس غير محدودة", "تخزين 10 جيجابايت", "تحليلات الطلاب", "تحليلات تفاعل الطلاب", "تتبع تحميل PDF", "محتوى محمي ضد النسخ", "العلامة المائية للمحتوى", "دعم أولوية عبر واتساب"], limits: { aiQuizGenerationsPerMonth: 100, aiEssayGradingsPerMonth: 500, aiContentGenerationsPerMonth: 50, aiLessonSummariesPerMonth: 50, aiQuestionExplanationsPerMonth: 50, maxStudents: 500, maxCourses: 20, maxQuizzes: 500, storageMb: 10240, analyticsAccess: true, studentEngagementAnalytics: true, pdfDownloadTracking: true, contentProtection: true, prioritySupport: true } },
+  { code: "PREMIUM", name: "premium", displayName: "الباقة المميزة", description: "للأكاديميات الكبرى", monthlyPrice: 999, yearlyPrice: 9990, isRecommended: false, sortOrder: 3, features: ["إنشاء اختبارات بالذكاء الاصطناعي (غير محدود)", "تصحيح مقالات بالذكاء الاصطناعي (غير محدود)", "إنشاء محتوى تعليمي بالذكاء الاصطناعي", "ملخصات دروس بالذكاء الاصطناعي", "شروحات ذكية للأسئلة", "دروس غير محدودة", "تخزين 50 جيجابايت", "عدد غير محدود من الطلاب", "تحليلات الطلاب المتقدمة", "تحليلات تفاعل الطلاب", "تتبع تحميل PDF", "محتوى محمي ضد النسخ", "العلامة المائية للمحتوى", "دعم VIP عبر واتساب"], limits: { aiQuizGenerationsPerMonth: -1, aiEssayGradingsPerMonth: -1, aiContentGenerationsPerMonth: 200, aiLessonSummariesPerMonth: 200, aiQuestionExplanationsPerMonth: 200, maxStudents: -1, maxCourses: 100, maxQuizzes: -1, storageMb: 51200, analyticsAccess: true, studentEngagementAnalytics: true, pdfDownloadTracking: true, contentProtection: true, prioritySupport: true } },
+];
+
 const CHEMISTRY_SEED_EMAILS = [
   "admin.chemistry@fahimni.test",
   "teacher.chemistry@fahimni.test",
@@ -264,6 +271,36 @@ async function seed(): Promise<void> {
 
   await prisma.$transaction(
     async (tx) => {
+      for (const plan of TEACHER_PLANS) {
+        await tx.teacherPlan.upsert({
+          where: { code: plan.code },
+          update: {
+            name: plan.name,
+            displayName: plan.displayName,
+            description: plan.description,
+            monthlyPrice: plan.monthlyPrice,
+            yearlyPrice: plan.yearlyPrice,
+            isRecommended: plan.isRecommended,
+            sortOrder: plan.sortOrder,
+            features: JSON.stringify(plan.features),
+            limits: JSON.stringify(plan.limits),
+          },
+          create: {
+            code: plan.code,
+            name: plan.name,
+            displayName: plan.displayName,
+            description: plan.description,
+            monthlyPrice: plan.monthlyPrice,
+            yearlyPrice: plan.yearlyPrice,
+            isRecommended: plan.isRecommended,
+            sortOrder: plan.sortOrder,
+            features: JSON.stringify(plan.features),
+            limits: JSON.stringify(plan.limits),
+          },
+        });
+      }
+      logger.info("teacher_plans_seeded", { count: TEACHER_PLANS.length });
+
       await tx.user.createMany({
         data: [ADMIN, TEACHER, ...STUDENTS].map((u) => ({
           ...u,

@@ -14,7 +14,7 @@ function isLandingRoute(pathname: string): boolean {
 }
 
 function isAuthRoute(pathname: string): boolean {
-  return pathname === '/auth' || pathname === '/forgot-password' || /^\/t\/[^/]+\/auth\/?$/.test(pathname);
+  return pathname === '/auth' || pathname === '/forgot-password' || pathname === '/become-teacher' || /^\/t\/[^/]+\/auth\/?$/.test(pathname);
 }
 
 export function PublicLayout() {

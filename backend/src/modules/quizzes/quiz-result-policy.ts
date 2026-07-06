@@ -2,6 +2,16 @@ import type { PendingEssayResultMode, QuestionType } from "../../generated/prism
 import type { ResultStatus } from "./auto-grade.js";
 
 /**
+ * The per-question status a STUDENT is allowed to see. It is a superset of the
+ * internal {@link ResultStatus}: when correctness is hidden the correctness-
+ * revealing values ("correct" / "incorrect" / "graded") are replaced with the
+ * neutral "answered" so the client can render the student's answer without any
+ * right/wrong signal. "pending" is a grading-state (essay not yet graded), NOT
+ * a correctness signal, so it is preserved.
+ */
+export type StudentResultStatus = ResultStatus | "answered";
+
+/**
  * Centralized, backward-compatible policy for what a STUDENT is allowed to see
  * on the quiz result page. This is the single authority — the student result
  * endpoint enforces hiding HERE (server side); hidden fields are never sent over
@@ -85,7 +95,9 @@ export interface StudentVisibleEntry {
   type: QuestionType;
   questionText: string;
   options: string[] | null;
-  result: ResultStatus;
+  // Neutralized to "answered" whenever per-question correctness is not allowed
+  // (see resolveShowQuestionCorrectness) so no right/wrong signal is exposed.
+  result: StudentResultStatus;
   studentAnswer?: string;
   correctAnswer?: string | null;
   awardedPoints?: number | null;
@@ -128,6 +140,33 @@ export function resolveEffectiveVisibility(
     pendingEssayResultMode:
       settings.pendingEssayResultMode ?? DEFAULT_PENDING_ESSAY_RESULT_MODE,
   };
+}
+
+/**
+ * Whether the student may see a per-question right/wrong signal. There is no
+ * dedicated "show correctness" column, so correctness rides with the two
+ * settings that inherently reveal it: the correct answer itself, or the
+ * per-question score (0 vs full points ⇒ wrong vs right). If neither is
+ * enabled, correctness stays hidden and `showStudentAnswers` only exposes the
+ * student's own answer.
+ */
+export function resolveShowQuestionCorrectness(vis: EffectiveVisibility): boolean {
+  return vis.showCorrectAnswers || vis.showPerQuestionScores;
+}
+
+/**
+ * Project an internal grading status onto what the student may see.
+ *   - correctness allowed  → status passes through unchanged.
+ *   - correctness hidden    → "correct"/"incorrect"/"graded" collapse to the
+ *                             neutral "answered"; "pending" is preserved (it is
+ *                             a grading state, not a correctness signal).
+ */
+function projectResultStatus(
+  status: ResultStatus,
+  showCorrectness: boolean,
+): StudentResultStatus {
+  if (showCorrectness) return status;
+  return status === "pending" ? "pending" : "answered";
 }
 
 /** Copy an entry, preserving optional feedback/explanation only when present. */
@@ -206,13 +245,17 @@ export function applyStudentResultPolicy(
     }
   }
 
+  const showQuestionCorrectness = resolveShowQuestionCorrectness(vis);
+
   const results: StudentVisibleEntry[] = entries.map((e) => {
     const out: StudentVisibleEntry = {
       questionId: e.questionId,
       type: e.type,
       questionText: e.questionText,
       options: e.options,
-      result: e.result,
+      // Correctness is neutralized unless explicitly allowed — a visible
+      // student answer must never carry a right/wrong signal on its own.
+      result: projectResultStatus(e.result, showQuestionCorrectness),
     };
     if (vis.showStudentAnswers) out.studentAnswer = e.studentAnswer;
     if (vis.showCorrectAnswers) out.correctAnswer = e.correctAnswer;

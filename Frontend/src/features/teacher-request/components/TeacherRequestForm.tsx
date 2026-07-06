@@ -118,7 +118,7 @@ export function TeacherRequestForm() {
   }
 
   return (
-    <Card padding="lg" className="mx-auto max-w-lg">
+    <Card padding="md" className="mx-auto max-w-lg">
       <h1 className="mb-2 font-cairo text-h2 font-bold text-text-primary">
         {t("teacherRequest:pageTitle")}
       </h1>
@@ -126,7 +126,7 @@ export function TeacherRequestForm() {
         {t("teacherRequest:pageSubtitle")}
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
         {submitError && (
           <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
             {submitError}
@@ -173,7 +173,7 @@ export function TeacherRequestForm() {
           </label>
           <textarea
             {...register("bio")}
-            rows={4}
+            rows={2}
             placeholder={t("teacherRequest:bioPlaceholder")}
             className="w-full rounded-input border border-border bg-surface px-3 py-3 font-cairo text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent"
           />

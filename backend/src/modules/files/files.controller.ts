@@ -143,7 +143,6 @@ export class FilesController {
       }
 
       await assertLessonOwnedByTeacher(lessonId, req.user!.id);
-
       const results = await filesService.attachFilesToLesson(
         req.user!.id,
         lessonId,

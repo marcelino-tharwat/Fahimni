@@ -107,6 +107,7 @@
     "correctAnswer": "إجابة صحيحة",
     "wrongAnswer": "إجابة خاطئة",
     "pendingGrading": "بانتظار التصحيح",
+    "answered": "تمت الإجابة",
     "scoreUnderReview": "النتيجة قيد المراجعة",
     "correctAnswerLabel": "الإجابة الصحيحة",
     "yourAnswer": "إجابتك:",

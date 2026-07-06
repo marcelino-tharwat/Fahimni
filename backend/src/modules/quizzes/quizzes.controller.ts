@@ -4,6 +4,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { QuizService } from "./quizzes.service.js";
 import { QuizGenerationService } from "./quiz-generation.service.js";
+import { TeacherPlanPolicyService } from "../teacher-plans/teacher-plan-policy.service.js";
 import type {
   GeneratedQuizDTO,
 } from "./quiz-generation.service.js";
@@ -13,12 +14,23 @@ import type { GenerateQuizInput } from "./dto/generate-quiz.dto.js";
 
 const quizService = new QuizService();
 const quizGenerationService = new QuizGenerationService();
+const planPolicyService = new TeacherPlanPolicyService();
 
 export class QuizzesController {
   public generate = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const input = req.body as GenerateQuizInput;
-      const quiz = await quizGenerationService.generate(input, req.user!.id);
+      const teacherId = req.user!.id;
+      const locale = req.headers["accept-language"]?.startsWith("ar") ? "ar" : "en";
+
+      await planPolicyService.checkAiUsageQuota(teacherId, "AI_QUIZ_GENERATION", 1, locale);
+
+      const quiz = await quizGenerationService.generate(input, teacherId);
+
+      await planPolicyService.recordAiUsage(teacherId, "AI_QUIZ_GENERATION", 1, {
+        quizId: quiz.id,
+        questionCount: input.questionCount,
+      });
 
       res
         .status(201)

@@ -34,6 +34,9 @@ model User {
   aiTutorUsage        AiTutorUsage[]
   aiConversations     AiConversation[]
   materialDownloads   LessonMaterialDownload[]
+  teacherSubscriptions      TeacherSubscription[]
+  teacherSubscriptionRequests TeacherSubscriptionRequest[]
+  teacherAiUsageEvents      TeacherAiUsageEvent[]
 }
 
 model StudentProfile {
@@ -550,4 +553,132 @@ enum AiMessageStatus {
   PENDING
   COMPLETED
   FAILED
+}
+
+// ── Teacher Plans / Subscriptions ─────────────────────────────────────
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+enum SubscriptionRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum AiUsageType {
+  AI_QUIZ_GENERATION
+  AI_ESSAY_GRADING
+  AI_CONTENT_GENERATION
+  AI_LESSON_SUMMARY
+  AI_QUESTION_EXPLANATION
+}
+
+/// Teacher-visible subscription plan tier. Source of truth for feature
+/// access and usage limits. Seeded idempotently — never deleted at runtime.
+model TeacherPlan {
+  id              String          @id @default(uuid())
+  code            String          @unique
+  name            String
+  displayName     String
+  description     String?
+  monthlyPrice    Float           @default(0)
+  yearlyPrice     Float?
+  currency        String          @default("EGP")
+  billingInterval BillingInterval @default(MONTHLY)
+  isActive        Boolean         @default(true)
+  isRecommended   Boolean         @default(false)
+  sortOrder       Int             @default(0)
+  /// JSON array of display-friendly feature strings.
+  features        Json            @default("[]")
+  /// JSON object keyed by limit name (e.g. aiQuizGenerationsPerMonth).
+  limits          Json            @default("{}")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  subscriptions   TeacherSubscription[]
+  requests        TeacherSubscriptionRequest[]
+  usageEvents     TeacherAiUsageEvent[]
+
+  @@index([isActive, sortOrder])
+  @@map("teacher_plans")
+}
+
+/// A teacher's active or historical subscription. At most one ACTIVE or
+/// TRIALING subscription per teacher. ACTIVE is only set after confirmed
+/// payment or admin approval — never by the teacher frontend.
+model TeacherSubscription {
+  id                 String             @id @default(uuid())
+  teacherId          String
+  planId             String
+  status             SubscriptionStatus @default(TRIALING)
+  billingInterval    BillingInterval    @default(MONTHLY)
+  startedAt          DateTime           @default(now())
+  currentPeriodStart DateTime           @default(now())
+  currentPeriodEnd   DateTime
+  cancelledAt        DateTime?
+  trialEndsAt        DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  teacher            User               @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  plan               TeacherPlan        @relation(fields: [planId], references: [id])
+  usageEvents        TeacherAiUsageEvent[]
+
+  @@index([teacherId])
+  @@index([teacherId, status])
+  @@index([planId])
+  @@map("teacher_subscriptions")
+}
+
+/// A teacher-initiated request to subscribe, upgrade, or change plan.
+/// Created as PENDING; only admin approval can set to APPROVED.
+model TeacherSubscriptionRequest {
+  id                String                   @id @default(uuid())
+  teacherId         String
+  planId            String
+  requestedInterval BillingInterval           @default(MONTHLY)
+  status            SubscriptionRequestStatus @default(PENDING)
+  adminNotes        String?
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  teacher           User                      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  plan              TeacherPlan               @relation(fields: [planId], references: [id])
+
+  @@index([teacherId])
+  @@index([teacherId, status])
+  @@index([planId])
+  @@map("teacher_subscription_requests")
+}
+
+/// Immutable audit log of a teacher AI usage event. Written server-side
+/// only after the AI operation succeeds. Used for quota enforcement.
+model TeacherAiUsageEvent {
+  id              String       @id @default(uuid())
+  teacherId       String
+  subscriptionId  String?
+  planId          String?
+  usageType       AiUsageType
+  units           Int          @default(1)
+  /// Free-form metadata — e.g. { quizId, questionCount, essayCount }.
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  teacher         User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subscription    TeacherSubscription? @relation(fields: [subscriptionId], references: [id])
+  plan            TeacherPlan?         @relation(fields: [planId], references: [id])
+
+  @@index([teacherId])
+  @@index([teacherId, usageType, createdAt])
+  @@index([subscriptionId])
+  @@index([planId])
+  @@map("teacher_ai_usage_events")
 }

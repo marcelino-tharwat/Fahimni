@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { AlertCircle, Loader2, Sparkles } from 'lucide-react';
+import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
 import {
   EssayAvatar,
   EssayBreadcrumb,
@@ -234,6 +236,16 @@ export function EssayGradingDetailPage() {
   const gradeMutation = useGradeEssays(attemptId, quizId);
   const suggestMutation = useGenerateEssaySuggestions(attemptId);
 
+  const { data: subscriptionData } = useQuery({
+    queryKey: ['teacher', 'subscription', 'me'],
+    queryFn: () => teacherPlansApi.getMySubscription(),
+    staleTime: 60_000,
+  });
+
+  const essayQuotaExhausted = subscriptionData
+    ? subscriptionData.usage.aiEssayGradings.remaining <= 0
+    : false;
+
   const readOnly = data?.attempt.status === 'GRADED';
   const initialFields = useMemo(
     () => (data ? buildInitialFields(data.essayAnswers) : {}),
@@ -372,10 +384,10 @@ export function EssayGradingDetailPage() {
                 <button
                   type="button"
                   onClick={() => suggestMutation.mutate()}
-                  disabled={suggestMutation.isPending}
+                  disabled={suggestMutation.isPending || essayQuotaExhausted}
                   className={cn(
                     'flex h-10 items-center gap-2 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] px-4 text-sm font-semibold text-[#2563EB] transition-all hover:bg-[#DBEAFE]',
-                    suggestMutation.isPending && 'cursor-not-allowed opacity-60',
+                    (suggestMutation.isPending || essayQuotaExhausted) && 'cursor-not-allowed opacity-60',
                   )}
                 >
                   {suggestMutation.isPending ? (
@@ -389,6 +401,9 @@ export function EssayGradingDetailPage() {
                 </button>
                 {suggestMutation.data && !suggestMutation.data.aiAvailable && (
                   <p className="text-[11px] text-[#9CA3AF]">{t('essayGrading.aiUnavailable')}</p>
+                )}
+                {essayQuotaExhausted && (
+                  <p className="text-[11px] text-amber-600">{t('essayGrading.quotaExhausted')}</p>
                 )}
               </div>
             )}

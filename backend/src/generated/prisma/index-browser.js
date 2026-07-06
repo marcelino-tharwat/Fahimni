@@ -411,6 +411,62 @@ exports.Prisma.AiMessageScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.TeacherPlanScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  displayName: 'displayName',
+  description: 'description',
+  monthlyPrice: 'monthlyPrice',
+  yearlyPrice: 'yearlyPrice',
+  currency: 'currency',
+  billingInterval: 'billingInterval',
+  isActive: 'isActive',
+  isRecommended: 'isRecommended',
+  sortOrder: 'sortOrder',
+  features: 'features',
+  limits: 'limits',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TeacherSubscriptionScalarFieldEnum = {
+  id: 'id',
+  teacherId: 'teacherId',
+  planId: 'planId',
+  status: 'status',
+  billingInterval: 'billingInterval',
+  startedAt: 'startedAt',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  cancelledAt: 'cancelledAt',
+  trialEndsAt: 'trialEndsAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TeacherSubscriptionRequestScalarFieldEnum = {
+  id: 'id',
+  teacherId: 'teacherId',
+  planId: 'planId',
+  requestedInterval: 'requestedInterval',
+  status: 'status',
+  adminNotes: 'adminNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TeacherAiUsageEventScalarFieldEnum = {
+  id: 'id',
+  teacherId: 'teacherId',
+  subscriptionId: 'subscriptionId',
+  planId: 'planId',
+  usageType: 'usageType',
+  units: 'units',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -525,6 +581,34 @@ exports.AiMessageStatus = exports.$Enums.AiMessageStatus = {
   FAILED: 'FAILED'
 };
 
+exports.BillingInterval = exports.$Enums.BillingInterval = {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY'
+};
+
+exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
+  TRIALING: 'TRIALING',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+};
+
+exports.SubscriptionRequestStatus = exports.$Enums.SubscriptionRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.AiUsageType = exports.$Enums.AiUsageType = {
+  AI_QUIZ_GENERATION: 'AI_QUIZ_GENERATION',
+  AI_ESSAY_GRADING: 'AI_ESSAY_GRADING',
+  AI_CONTENT_GENERATION: 'AI_CONTENT_GENERATION',
+  AI_LESSON_SUMMARY: 'AI_LESSON_SUMMARY',
+  AI_QUESTION_EXPLANATION: 'AI_QUESTION_EXPLANATION'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   StudentProfile: 'StudentProfile',
@@ -549,7 +633,11 @@ exports.Prisma.ModelName = {
   PromoCode: 'PromoCode',
   TeacherRegistrationRequest: 'TeacherRegistrationRequest',
   AiConversation: 'AiConversation',
-  AiMessage: 'AiMessage'
+  AiMessage: 'AiMessage',
+  TeacherPlan: 'TeacherPlan',
+  TeacherSubscription: 'TeacherSubscription',
+  TeacherSubscriptionRequest: 'TeacherSubscriptionRequest',
+  TeacherAiUsageEvent: 'TeacherAiUsageEvent'
 };
 
 /**

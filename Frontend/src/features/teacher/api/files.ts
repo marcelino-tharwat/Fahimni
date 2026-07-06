@@ -26,18 +26,17 @@ export const filesApi = {
     formData.append('file', file);
     formData.append('lessonId', lessonId);
 
-    const { data } = await apiClient.post<{ success: boolean; filePath: string }>(
-      '/v1/upload/pdf',
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (e) => {
-          if (e.total && onProgress) {
-            onProgress(Math.round((e.loaded / e.total) * 100));
-          }
-        },
+    const { data } = await apiClient.post<{
+      success: boolean;
+      filePath: string;
+    }>('/v1/upload/pdf', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (e) => {
+        if (e.total && onProgress) {
+          onProgress(Math.round((e.loaded / e.total) * 100));
+        }
       },
-    );
+    });
     return data.filePath;
   },
 
@@ -48,18 +47,17 @@ export const filesApi = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const { data } = await apiClient.post<{ success: boolean; filePath: string }>(
-      '/v1/upload/pdf/staging',
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (e) => {
-          if (e.total && onProgress) {
-            onProgress(Math.round((e.loaded / e.total) * 100));
-          }
-        },
+    const { data } = await apiClient.post<{
+      success: boolean;
+      filePath: string;
+    }>('/v1/upload/pdf/staging', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (e) => {
+        if (e.total && onProgress) {
+          onProgress(Math.round((e.loaded / e.total) * 100));
+        }
       },
-    );
+    });
     return data.filePath;
   },
 
@@ -67,10 +65,10 @@ export const filesApi = {
     lessonId: string,
     files: StagingFileEntry[],
   ): Promise<AttachResult[]> => {
-    const { data } = await apiClient.post<{ success: boolean; records: AttachResult[] }>(
-      `/v1/lessons/${lessonId}/attach-files`,
-      { files },
-    );
+    const { data } = await apiClient.post<{
+      success: boolean;
+      records: AttachResult[];
+    }>(`/v1/lessons/${lessonId}/attach-files`, { files });
     return data.records;
   },
 
@@ -79,9 +77,12 @@ export const filesApi = {
   },
 
   getSignedUrl: async (path: string): Promise<string> => {
-    const { data } = await apiClient.get<{ signedUrl: string }>('/v1/signed-url', {
-      params: { path },
-    });
+    const { data } = await apiClient.get<{ signedUrl: string }>(
+      '/v1/signed-url',
+      {
+        params: { path },
+      },
+    );
     return data.signedUrl;
   },
 };

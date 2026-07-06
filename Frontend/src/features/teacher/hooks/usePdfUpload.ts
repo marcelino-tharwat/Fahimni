@@ -116,11 +116,13 @@ export function usePdfUpload({
               );
 
               const uploadPromise = useStaging
+
                 ? filesApi.uploadPdfStaging(uf.file, (percent) => {
                     setFiles((prev) =>
                       prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),
                     );
                   })
+
                 : filesApi.uploadPdf(uf.file, lessonIdRef.current, (percent) => {
                     setFiles((prev) =>
                       prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),

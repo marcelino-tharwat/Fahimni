@@ -26,9 +26,6 @@ interface PublishFormState {
   quizTitle: string;
   timeLimitMinutes: number;
   passingScore: number;
-  shuffleQuestions: boolean;
-  shuffleAnswers: boolean;
-  showResultImmediately: boolean;
   showCorrectAnswers: boolean;
   // Result-visibility settings persisted to the backend on publish.
   showPerQuestionScores: boolean;
@@ -50,9 +47,6 @@ const defaultForm = (overrides?: Partial<PublishFormState>): PublishFormState =>
   quizTitle: '',
   timeLimitMinutes: 0,
   passingScore: 50,
-  shuffleQuestions: false,
-  shuffleAnswers: false,
-  showResultImmediately: true,
   showCorrectAnswers: true,
   showPerQuestionScores: true,
   showFinalScore: true,
@@ -504,21 +498,6 @@ export function AiQuizPublishPage() {
               )}
 
               <div className="flex flex-col gap-3">
-                <ToggleRow
-                  checked={form.shuffleQuestions}
-                  onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'shuffleQuestions', value: v })}
-                  label={t('teacher:publish.shuffleQuestions')}
-                />
-                <ToggleRow
-                  checked={form.shuffleAnswers}
-                  onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'shuffleAnswers', value: v })}
-                  label={t('teacher:publish.shuffleAnswers')}
-                />
-                <ToggleRow
-                  checked={form.showResultImmediately}
-                  onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'showResultImmediately', value: v })}
-                  label={t('teacher:publish.showResultImmediately')}
-                />
                 <ToggleRow
                   checked={form.showCorrectAnswers}
                   onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'showCorrectAnswers', value: v })}

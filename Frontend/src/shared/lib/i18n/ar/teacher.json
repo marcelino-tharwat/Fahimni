@@ -203,9 +203,6 @@
       "passingScoreHint": "الحد الأدنى المئوي المطلوب للنجاح",
       "requireForProgression": "اشتراط الاجتياز لفتح الدرس التالي",
       "requireForProgressionHint": "عند التفعيل، يجب على الطالب اجتياز هذا الاختبار بعد إكمال \"{{lesson}}\" قبل فتح الدرس التالي.",
-      "shuffleQuestions": "خلط الأسئلة",
-      "shuffleAnswers": "خلط الإجابات",
-      "showResultImmediately": "عرض النتيجة فوراً",
       "showCorrectAnswers": "إظهار الإجابات الصحيحة",
       "showPerQuestionScores": "إظهار درجات كل سؤال",
       "showFinalScore": "إظهار الدرجة النهائية",
@@ -273,7 +270,6 @@
     },
     "activity": {
       "title": "النشاط الأخير",
-      "viewAll": "عرض الكل",
       "empty": "لا يوجد نشاط حديث بعد.",
       "you": "أنت",
       "actions": {
@@ -516,7 +512,12 @@
       "indexButton": "فهرسة",
       "indexing": "جارٍ الفهرسة...",
       "indexError": "تعذّرت فهرسة الدرس. تأكد من المحتوى وحاول مرة أخرى."
-    }
+    },
+    "quotaExhaustedTitle": "لقد استنفدت حد إنشاء الاختبارات بالذكاء الاصطناعي",
+    "quotaExhaustedDetails": "قم بترقية باقتك أو انتظر حتى دورة الفوترة التالية لإنشاء المزيد من الاختبارات.",
+    "quotaExceededTitle": "لقد استنفدت حد إنشاء الاختبارات بالذكاء الاصطناعي",
+    "quotaExceededDetails": "باقتك الحالية استهلكت كل عمليات إنشاء الاختبارات المتاحة لهذه الفترة.",
+    "quotaExceededSuggestion": "قم بترقية باقتك أو انتظر حتى دورة الفوترة التالية."
   },
   "stages": {
     "title": "جميع المراحل",
@@ -838,6 +839,46 @@
     "aiSuggestedScore": "الدرجة المقترحة: {{score}} من {{max}}",
     "aiSuggestionHint": "هذا اقتراح فقط؛ القرار النهائي للمدرس.",
     "aiAccept": "قبول الاقتراح",
-    "noEssayAnswers": "لا توجد أسئلة مقالية في هذا المحاولة."
+    "noEssayAnswers": "لا توجد أسئلة مقالية في هذا المحاولة.",
+    "quotaExhausted": "لقد استنفدت حد التصحيح بالذكاء الاصطناعي. قم بترقية باقتك للمزيد."
+  },
+  "plans": {
+    "pageTitle": "الباقات والاشتراكات",
+    "pageSubtitle": "اختر الباقة المناسبة لاستخدام أدوات فهمني",
+    "loadError": "حدث خطأ في تحميل الباقات",
+    "requestError": "حدث خطأ في إرسال طلب الاشتراك",
+    "currentPlan": "الباقة الحالية",
+    "freePlan": "مجانية",
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "month": "شهر",
+    "year": "سنة",
+    "savePercent": "وفر {{percent}}%",
+    "recommended": "مقترح",
+    "subscribe": "طلب الاشتراك",
+    "getStarted": "ابدأ مجاناً",
+    "currentPlanBadge": "الباقة الحالية",
+    "pendingBadge": "قيد المراجعة",
+    "noPlans": "لا توجد باقات متاحة حالياً",
+    "noData": "لا تتوفر بيانات الاشتراك",
+    "statusTrialing": "تجريبي",
+    "statusActive": "نشط",
+    "statusPastDue": "متأخر الدفع",
+    "statusCancelled": "ملغي",
+    "statusExpired": "منتهي",
+    "periodStart": "بداية الدورة",
+    "periodEnd": "نهاية الدورة",
+    "usageTitle": "استخدام الباقة",
+    "pendingRequestAlert": "لديك طلب اشتراك قيد المراجعة لباقة {{plan}}",
+    "aiLimitTitle": "لقد وصلت إلى الحد الأقصى لاستخدام الذكاء الاصطناعي",
+    "aiLimitDescription": "باقتك الحالية لا تسمح بمزيد من عمليات الذكاء الاصطناعي هذا الشهر.",
+    "aiLimitAction": "عرض الباقات",
+    "usage": {
+      "aiQuizGenerations": "إنشاء اختبارات بالذكاء الاصطناعي",
+      "aiEssayGradings": "تصحيح الأسئلة المقالية بالذكاء الاصطناعي",
+      "aiContentGenerations": "إنشاء محتوى تعليمي بالذكاء الاصطناعي",
+      "students": "عدد الطلاب",
+      "storage": "مساحة التخزين (ميجابايت)"
+    }
   }
 }

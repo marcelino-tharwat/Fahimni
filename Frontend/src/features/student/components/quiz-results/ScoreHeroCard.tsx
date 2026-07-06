@@ -13,22 +13,30 @@ export function ScoreHeroCard({ data }: ScoreHeroCardProps) {
   const { t } = useTranslation();
   const pass = data.percentage >= PASS_THRESHOLD;
   const scoreHidden = data.finalScoreHidden === true;
+  const correctnessHidden = data.correctnessHidden === true;
 
+  // When per-question correctness is hidden, the correct/wrong tiles (an
+  // aggregate right/wrong signal) are suppressed — only the pending tile, which
+  // reveals no correctness, may remain.
   const stats = [
-    {
-      key: 'correct',
-      icon: CheckCircle,
-      color: 'text-success-500',
-      value: data.correctCount,
-      label: t('quiz:results.correct'),
-    },
-    {
-      key: 'wrong',
-      icon: XCircle,
-      color: 'text-danger-500',
-      value: data.wrongCount,
-      label: t('quiz:results.wrong'),
-    },
+    ...(correctnessHidden
+      ? []
+      : [
+          {
+            key: 'correct' as const,
+            icon: CheckCircle,
+            color: 'text-success-500',
+            value: data.correctCount,
+            label: t('quiz:results.correct'),
+          },
+          {
+            key: 'wrong' as const,
+            icon: XCircle,
+            color: 'text-danger-500',
+            value: data.wrongCount,
+            label: t('quiz:results.wrong'),
+          },
+        ]),
     ...(data.pendingCount > 0
       ? [
           {
@@ -63,12 +71,16 @@ export function ScoreHeroCard({ data }: ScoreHeroCardProps) {
 
           {pass ? (
             <div className="flex flex-col gap-1 text-sm text-gray-600">
-              <span>
-                {t('quiz:results.correctAnswersSummary', {
-                  correct: toLocalNum(data.correctCount),
-                  total: toLocalNum(data.totalQuestions),
-                })}
-              </span>
+              {/* correctAnswersSummary is a right/wrong aggregate — hide it when
+                  correctness is hidden; the points summary (score) may stay. */}
+              {!correctnessHidden && (
+                <span>
+                  {t('quiz:results.correctAnswersSummary', {
+                    correct: toLocalNum(data.correctCount),
+                    total: toLocalNum(data.totalQuestions),
+                  })}
+                </span>
+              )}
               <span>
                 {t('quiz:results.pointsSummary', {
                   score: toLocalNum(data.score),
@@ -82,20 +94,22 @@ export function ScoreHeroCard({ data }: ScoreHeroCardProps) {
         </>
       )}
 
-      <div
-        className={cn(
-          'grid w-full gap-3',
-          stats.length === 3 ? 'grid-cols-3' : 'grid-cols-2',
-        )}
-      >
-        {stats.map(({ key, icon: Icon, color, value, label }) => (
-          <div key={key} className="flex flex-col items-center gap-1 rounded-xl bg-gray-100 p-3">
-            <Icon size={20} className={color} />
-            <span className="text-base font-bold text-navy-800">{toLocalNum(value)}</span>
-            <span className="text-caption text-gray-600">{label}</span>
-          </div>
-        ))}
-      </div>
+      {stats.length > 0 && (
+        <div
+          className={cn(
+            'grid w-full gap-3',
+            stats.length === 3 ? 'grid-cols-3' : stats.length === 1 ? 'grid-cols-1' : 'grid-cols-2',
+          )}
+        >
+          {stats.map(({ key, icon: Icon, color, value, label }) => (
+            <div key={key} className="flex flex-col items-center gap-1 rounded-xl bg-gray-100 p-3">
+              <Icon size={20} className={color} />
+              <span className="text-base font-bold text-navy-800">{toLocalNum(value)}</span>
+              <span className="text-caption text-gray-600">{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {data.quizTitle && (
         <p className="text-small text-gray-500">
