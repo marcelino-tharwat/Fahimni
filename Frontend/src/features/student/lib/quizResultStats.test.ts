@@ -27,6 +27,10 @@ describe('resolveResultTone', () => {
   it('graded essay with zero points counts as incorrect', () => {
     expect(resolveResultTone(result('graded', 0))).toBe('incorrect');
   });
+
+  it('answered (correctness hidden) resolves to a neutral tone', () => {
+    expect(resolveResultTone(result('answered', null))).toBe('neutral');
+  });
 });
 
 describe('summarizeQuizResults', () => {
@@ -54,6 +58,19 @@ describe('summarizeQuizResults', () => {
       correctCount: 1,
       wrongCount: 0,
       pendingCount: 1,
+    });
+  });
+
+  it('does not count neutral (correctness hidden) answers in any bucket', () => {
+    const summary = summarizeQuizResults([
+      result('answered', null),
+      result('answered', null),
+    ]);
+
+    expect(summary).toEqual({
+      correctCount: 0,
+      wrongCount: 0,
+      pendingCount: 0,
     });
   });
 });

@@ -202,7 +202,13 @@ export function buildDraftAnswers(
     .filter((item): item is { questionId: string; answer: string } => item != null);
 }
 
-const RESULT_STATUSES: ResultStatus[] = ['correct', 'incorrect', 'pending', 'graded'];
+const RESULT_STATUSES: ResultStatus[] = [
+  'correct',
+  'incorrect',
+  'pending',
+  'graded',
+  'answered',
+];
 
 function normalizeStatus(raw: string): ResultStatus {
   return RESULT_STATUSES.includes(raw as ResultStatus)
@@ -251,6 +257,8 @@ export function buildQuizResults(submit: SubmitAttemptResponse): QuizResultsData
     status: normalizeStatus(r.result),
     awardedPoints: r.awardedPoints ?? null,
     maxPoints: r.maxPoints ?? 0,
+    // The per-question score is only present when `showPerQuestionScores` is on.
+    scoreVisible: r.maxPoints != null,
     feedback: r.feedback,
     correctAnswer: r.correctAnswer ?? undefined,
     explanation: r.explanation,
@@ -258,6 +266,13 @@ export function buildQuizResults(submit: SubmitAttemptResponse): QuizResultsData
 
   const { correctCount, wrongCount, pendingCount } = summarizeQuizResults(results);
   const finalScoreHidden = submit.score === null || submit.score === undefined;
+
+  // Correctness is hidden only for a configured quiz whose teacher exposed
+  // neither the correct answer nor the per-question score. Legacy quizzes (no
+  // resultVisibility, or configured === false) keep showing everything.
+  const vis = submit.resultVisibility;
+  const correctnessHidden =
+    vis?.configured === true && !vis.showCorrectAnswers && !vis.showPerQuestionScores;
 
   return {
     quizId: submit.quizId,
@@ -273,6 +288,7 @@ export function buildQuizResults(submit: SubmitAttemptResponse): QuizResultsData
     finalScoreHidden,
     hasPendingEssayReview: submit.hasPendingEssayReview ?? false,
     reviewMessage: submit.message ?? null,
+    correctnessHidden,
   };
 }
 

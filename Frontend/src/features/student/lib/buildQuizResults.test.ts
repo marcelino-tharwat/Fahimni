@@ -67,6 +67,64 @@ describe('buildQuizResults — respects hidden fields from the policy', () => {
     expect(r.results[0]!.awardedPoints).toBeNull();
   });
 
+  it('flags correctnessHidden and neutralizes results when correctness is off', () => {
+    const r = buildQuizResults(
+      baseResponse({
+        resultVisibility: {
+          configured: true,
+          showCorrectAnswers: false,
+          showPerQuestionScores: false,
+          showFinalScore: true,
+          showStudentAnswers: true,
+          showExplanations: false,
+          pendingEssayResultMode: 'SHOW_OBJECTIVE_WITH_PENDING_MESSAGE',
+        },
+        results: [
+          {
+            questionId: 'm1',
+            type: 'MCQ',
+            questionText: 'Q1',
+            options: ['a', 'b'],
+            studentAnswer: 'a',
+            // correctAnswer / awardedPoints / maxPoints omitted by the policy
+            result: 'answered',
+          },
+        ],
+      }),
+    );
+    expect(r.correctnessHidden).toBe(true);
+    expect(r.results[0]!.status).toBe('answered');
+    expect(r.results[0]!.studentAnswer).toBe('a');
+    expect(r.results[0]!.correctAnswer).toBeUndefined();
+    expect(r.results[0]!.scoreVisible).toBe(false);
+    // No correct/wrong buckets when correctness is hidden.
+    expect(r.correctCount).toBe(0);
+    expect(r.wrongCount).toBe(0);
+  });
+
+  it('does not flag correctnessHidden when correct answers are shown', () => {
+    const r = buildQuizResults(
+      baseResponse({
+        resultVisibility: {
+          configured: true,
+          showCorrectAnswers: true,
+          showPerQuestionScores: false,
+          showFinalScore: true,
+          showStudentAnswers: true,
+          showExplanations: false,
+          pendingEssayResultMode: 'SHOW_OBJECTIVE_WITH_PENDING_MESSAGE',
+        },
+      }),
+    );
+    expect(r.correctnessHidden).toBe(false);
+  });
+
+  it('treats legacy (no resultVisibility) as correctness-visible', () => {
+    const r = buildQuizResults(baseResponse());
+    expect(r.correctnessHidden).toBe(false);
+    expect(r.results[0]!.scoreVisible).toBe(true);
+  });
+
   it('carries the pending review message and flag', () => {
     const r = buildQuizResults(
       baseResponse({
