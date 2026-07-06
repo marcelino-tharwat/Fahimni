@@ -3,6 +3,7 @@ import { logger } from "../../config/logger.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { buildEssayGradingPrompt } from "../ai/gemini/prompts/essay-grading.prompt.js";
 import { parseEssaySuggestion } from "./essay-ai-grading.js";
+import { TeacherPlanPolicyService } from "../teacher-plans/teacher-plan-policy.service.js";
 import type { QuestionResult } from "./auto-grade.js";
 import { Prisma } from "../../generated/prisma/client.js";
 
@@ -51,7 +52,7 @@ export class EssayAiGradingService {
       });
   }
 
-  public async suggestForAttempt(attemptId: string, teacherId: string) {
+  public async suggestForAttempt(attemptId: string, teacherId: string, locale: string = "ar") {
     const attempt = await this.prisma.quizAttempt.findUnique({
       where: { id: attemptId },
       select: {
@@ -79,6 +80,12 @@ export class EssayAiGradingService {
       throw new AppError("Quiz has no essay questions", 404);
     }
     const qMap = new Map(questions.map((q) => [q.id, q]));
+
+    const ungradedCount = ((attempt.answers as unknown as QuestionResult[]) ?? [])
+      .filter((r) => r?.type === "ESSAY" && r.awardedPoints === null).length;
+
+    const planPolicy = new TeacherPlanPolicyService();
+    await planPolicy.checkAiUsageQuota(teacherId, "AI_ESSAY_GRADING", Math.max(1, ungradedCount), locale);
 
     const stored = ((attempt.answers as unknown as QuestionResult[]) ?? []).slice();
     const results: EssaySuggestionResult[] = [];
@@ -148,11 +155,20 @@ export class EssayAiGradingService {
       });
     }
 
+    const suggestedCount = results.filter((r) => r.status === "AI_SUGGESTED").length;
+    if (suggestedCount > 0) {
+      const planPolicy = new TeacherPlanPolicyService();
+      await planPolicy.recordAiUsage(teacherId, "AI_ESSAY_GRADING", suggestedCount, {
+        attemptId,
+        quizId: attempt.quizId,
+      });
+    }
+
     logger.info("essay_ai_suggestion_completed", {
       teacherId,
       attemptId,
       quizId: attempt.quizId,
-      suggestedCount: results.filter((r) => r.status === "AI_SUGGESTED").length,
+      suggestedCount,
       unavailableCount: results.filter((r) => r.status === "AI_UNAVAILABLE").length,
     });
 
