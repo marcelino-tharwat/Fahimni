@@ -476,6 +476,36 @@ enum PaymentStatus {
   FAILED
 }
 
+enum TeacherRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Prospective teacher applications submitted for admin review.
+model TeacherRegistrationRequest {
+  id              String               @id @default(uuid())
+  publicReference String               @unique
+  fullName        String
+  email           String
+  mobile          String
+  subject         String?
+  bio             String?
+  status          TeacherRequestStatus @default(PENDING)
+  /// JSON array of {originalName, mimeType, size, path}
+  proofDocuments  Json                 @default("[]")
+  adminNotes      String?
+  reviewedById    String?
+  reviewedAt      DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+  @@index([mobile])
+  @@map("teacher_registration_requests")
+}
+
 /// STORY-69 — persistent AI tutor conversations owned by a student.
 model AiConversation {
   id         String      @id @default(uuid())

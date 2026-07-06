@@ -121,6 +121,11 @@ export type QuizAttempt = $Result.DefaultSelection<Prisma.$QuizAttemptPayload>
  */
 export type PromoCode = $Result.DefaultSelection<Prisma.$PromoCodePayload>
 /**
+ * Model TeacherRegistrationRequest
+ * Prospective teacher applications submitted for admin review.
+ */
+export type TeacherRegistrationRequest = $Result.DefaultSelection<Prisma.$TeacherRegistrationRequestPayload>
+/**
  * Model AiConversation
  * STORY-69 — persistent AI tutor conversations owned by a student.
  */
@@ -239,6 +244,15 @@ export const PaymentStatus: {
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 
+export const TeacherRequestStatus: {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+export type TeacherRequestStatus = (typeof TeacherRequestStatus)[keyof typeof TeacherRequestStatus]
+
+
 export const AiMessageRole: {
   STUDENT: 'STUDENT',
   ASSISTANT: 'ASSISTANT'
@@ -304,6 +318,10 @@ export const PaymentMethod: typeof $Enums.PaymentMethod
 export type PaymentStatus = $Enums.PaymentStatus
 
 export const PaymentStatus: typeof $Enums.PaymentStatus
+
+export type TeacherRequestStatus = $Enums.TeacherRequestStatus
+
+export const TeacherRequestStatus: typeof $Enums.TeacherRequestStatus
 
 export type AiMessageRole = $Enums.AiMessageRole
 
@@ -643,6 +661,16 @@ export class PrismaClient<
     * ```
     */
   get promoCode(): Prisma.PromoCodeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.teacherRegistrationRequest`: Exposes CRUD operations for the **TeacherRegistrationRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TeacherRegistrationRequests
+    * const teacherRegistrationRequests = await prisma.teacherRegistrationRequest.findMany()
+    * ```
+    */
+  get teacherRegistrationRequest(): Prisma.TeacherRegistrationRequestDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.aiConversation`: Exposes CRUD operations for the **AiConversation** model.
@@ -1118,6 +1146,7 @@ export namespace Prisma {
     Question: 'Question',
     QuizAttempt: 'QuizAttempt',
     PromoCode: 'PromoCode',
+    TeacherRegistrationRequest: 'TeacherRegistrationRequest',
     AiConversation: 'AiConversation',
     AiMessage: 'AiMessage'
   };
@@ -1135,7 +1164,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "aiConversation" | "aiMessage"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2693,6 +2722,80 @@ export namespace Prisma {
           }
         }
       }
+      TeacherRegistrationRequest: {
+        payload: Prisma.$TeacherRegistrationRequestPayload<ExtArgs>
+        fields: Prisma.TeacherRegistrationRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TeacherRegistrationRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TeacherRegistrationRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.TeacherRegistrationRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TeacherRegistrationRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>
+          }
+          findMany: {
+            args: Prisma.TeacherRegistrationRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>[]
+          }
+          create: {
+            args: Prisma.TeacherRegistrationRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>
+          }
+          createMany: {
+            args: Prisma.TeacherRegistrationRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TeacherRegistrationRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.TeacherRegistrationRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>
+          }
+          update: {
+            args: Prisma.TeacherRegistrationRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.TeacherRegistrationRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TeacherRegistrationRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TeacherRegistrationRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.TeacherRegistrationRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherRegistrationRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.TeacherRegistrationRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTeacherRegistrationRequest>
+          }
+          groupBy: {
+            args: Prisma.TeacherRegistrationRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TeacherRegistrationRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TeacherRegistrationRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<TeacherRegistrationRequestCountAggregateOutputType> | number
+          }
+        }
+      }
       AiConversation: {
         payload: Prisma.$AiConversationPayload<ExtArgs>
         fields: Prisma.AiConversationFieldRefs
@@ -2970,6 +3073,7 @@ export namespace Prisma {
     question?: QuestionOmit
     quizAttempt?: QuizAttemptOmit
     promoCode?: PromoCodeOmit
+    teacherRegistrationRequest?: TeacherRegistrationRequestOmit
     aiConversation?: AiConversationOmit
     aiMessage?: AiMessageOmit
   }
@@ -28332,6 +28436,1122 @@ export namespace Prisma {
 
 
   /**
+   * Model TeacherRegistrationRequest
+   */
+
+  export type AggregateTeacherRegistrationRequest = {
+    _count: TeacherRegistrationRequestCountAggregateOutputType | null
+    _min: TeacherRegistrationRequestMinAggregateOutputType | null
+    _max: TeacherRegistrationRequestMaxAggregateOutputType | null
+  }
+
+  export type TeacherRegistrationRequestMinAggregateOutputType = {
+    id: string | null
+    publicReference: string | null
+    fullName: string | null
+    email: string | null
+    mobile: string | null
+    subject: string | null
+    bio: string | null
+    status: $Enums.TeacherRequestStatus | null
+    adminNotes: string | null
+    reviewedById: string | null
+    reviewedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TeacherRegistrationRequestMaxAggregateOutputType = {
+    id: string | null
+    publicReference: string | null
+    fullName: string | null
+    email: string | null
+    mobile: string | null
+    subject: string | null
+    bio: string | null
+    status: $Enums.TeacherRequestStatus | null
+    adminNotes: string | null
+    reviewedById: string | null
+    reviewedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TeacherRegistrationRequestCountAggregateOutputType = {
+    id: number
+    publicReference: number
+    fullName: number
+    email: number
+    mobile: number
+    subject: number
+    bio: number
+    status: number
+    proofDocuments: number
+    adminNotes: number
+    reviewedById: number
+    reviewedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TeacherRegistrationRequestMinAggregateInputType = {
+    id?: true
+    publicReference?: true
+    fullName?: true
+    email?: true
+    mobile?: true
+    subject?: true
+    bio?: true
+    status?: true
+    adminNotes?: true
+    reviewedById?: true
+    reviewedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TeacherRegistrationRequestMaxAggregateInputType = {
+    id?: true
+    publicReference?: true
+    fullName?: true
+    email?: true
+    mobile?: true
+    subject?: true
+    bio?: true
+    status?: true
+    adminNotes?: true
+    reviewedById?: true
+    reviewedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TeacherRegistrationRequestCountAggregateInputType = {
+    id?: true
+    publicReference?: true
+    fullName?: true
+    email?: true
+    mobile?: true
+    subject?: true
+    bio?: true
+    status?: true
+    proofDocuments?: true
+    adminNotes?: true
+    reviewedById?: true
+    reviewedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TeacherRegistrationRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TeacherRegistrationRequest to aggregate.
+     */
+    where?: TeacherRegistrationRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherRegistrationRequests to fetch.
+     */
+    orderBy?: TeacherRegistrationRequestOrderByWithRelationInput | TeacherRegistrationRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TeacherRegistrationRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherRegistrationRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherRegistrationRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TeacherRegistrationRequests
+    **/
+    _count?: true | TeacherRegistrationRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TeacherRegistrationRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TeacherRegistrationRequestMaxAggregateInputType
+  }
+
+  export type GetTeacherRegistrationRequestAggregateType<T extends TeacherRegistrationRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateTeacherRegistrationRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTeacherRegistrationRequest[P]>
+      : GetScalarType<T[P], AggregateTeacherRegistrationRequest[P]>
+  }
+
+
+
+
+  export type TeacherRegistrationRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeacherRegistrationRequestWhereInput
+    orderBy?: TeacherRegistrationRequestOrderByWithAggregationInput | TeacherRegistrationRequestOrderByWithAggregationInput[]
+    by: TeacherRegistrationRequestScalarFieldEnum[] | TeacherRegistrationRequestScalarFieldEnum
+    having?: TeacherRegistrationRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TeacherRegistrationRequestCountAggregateInputType | true
+    _min?: TeacherRegistrationRequestMinAggregateInputType
+    _max?: TeacherRegistrationRequestMaxAggregateInputType
+  }
+
+  export type TeacherRegistrationRequestGroupByOutputType = {
+    id: string
+    publicReference: string
+    fullName: string
+    email: string
+    mobile: string
+    subject: string | null
+    bio: string | null
+    status: $Enums.TeacherRequestStatus
+    proofDocuments: JsonValue
+    adminNotes: string | null
+    reviewedById: string | null
+    reviewedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TeacherRegistrationRequestCountAggregateOutputType | null
+    _min: TeacherRegistrationRequestMinAggregateOutputType | null
+    _max: TeacherRegistrationRequestMaxAggregateOutputType | null
+  }
+
+  type GetTeacherRegistrationRequestGroupByPayload<T extends TeacherRegistrationRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TeacherRegistrationRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TeacherRegistrationRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TeacherRegistrationRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], TeacherRegistrationRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TeacherRegistrationRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    publicReference?: boolean
+    fullName?: boolean
+    email?: boolean
+    mobile?: boolean
+    subject?: boolean
+    bio?: boolean
+    status?: boolean
+    proofDocuments?: boolean
+    adminNotes?: boolean
+    reviewedById?: boolean
+    reviewedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["teacherRegistrationRequest"]>
+
+  export type TeacherRegistrationRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    publicReference?: boolean
+    fullName?: boolean
+    email?: boolean
+    mobile?: boolean
+    subject?: boolean
+    bio?: boolean
+    status?: boolean
+    proofDocuments?: boolean
+    adminNotes?: boolean
+    reviewedById?: boolean
+    reviewedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["teacherRegistrationRequest"]>
+
+  export type TeacherRegistrationRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    publicReference?: boolean
+    fullName?: boolean
+    email?: boolean
+    mobile?: boolean
+    subject?: boolean
+    bio?: boolean
+    status?: boolean
+    proofDocuments?: boolean
+    adminNotes?: boolean
+    reviewedById?: boolean
+    reviewedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["teacherRegistrationRequest"]>
+
+  export type TeacherRegistrationRequestSelectScalar = {
+    id?: boolean
+    publicReference?: boolean
+    fullName?: boolean
+    email?: boolean
+    mobile?: boolean
+    subject?: boolean
+    bio?: boolean
+    status?: boolean
+    proofDocuments?: boolean
+    adminNotes?: boolean
+    reviewedById?: boolean
+    reviewedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TeacherRegistrationRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "publicReference" | "fullName" | "email" | "mobile" | "subject" | "bio" | "status" | "proofDocuments" | "adminNotes" | "reviewedById" | "reviewedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherRegistrationRequest"]>
+
+  export type $TeacherRegistrationRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TeacherRegistrationRequest"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      publicReference: string
+      fullName: string
+      email: string
+      mobile: string
+      subject: string | null
+      bio: string | null
+      status: $Enums.TeacherRequestStatus
+      /**
+       * JSON array of {originalName, mimeType, size, path}
+       */
+      proofDocuments: Prisma.JsonValue
+      adminNotes: string | null
+      reviewedById: string | null
+      reviewedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["teacherRegistrationRequest"]>
+    composites: {}
+  }
+
+  type TeacherRegistrationRequestGetPayload<S extends boolean | null | undefined | TeacherRegistrationRequestDefaultArgs> = $Result.GetResult<Prisma.$TeacherRegistrationRequestPayload, S>
+
+  type TeacherRegistrationRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TeacherRegistrationRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TeacherRegistrationRequestCountAggregateInputType | true
+    }
+
+  export interface TeacherRegistrationRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TeacherRegistrationRequest'], meta: { name: 'TeacherRegistrationRequest' } }
+    /**
+     * Find zero or one TeacherRegistrationRequest that matches the filter.
+     * @param {TeacherRegistrationRequestFindUniqueArgs} args - Arguments to find a TeacherRegistrationRequest
+     * @example
+     * // Get one TeacherRegistrationRequest
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TeacherRegistrationRequestFindUniqueArgs>(args: SelectSubset<T, TeacherRegistrationRequestFindUniqueArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TeacherRegistrationRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TeacherRegistrationRequestFindUniqueOrThrowArgs} args - Arguments to find a TeacherRegistrationRequest
+     * @example
+     * // Get one TeacherRegistrationRequest
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TeacherRegistrationRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, TeacherRegistrationRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TeacherRegistrationRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherRegistrationRequestFindFirstArgs} args - Arguments to find a TeacherRegistrationRequest
+     * @example
+     * // Get one TeacherRegistrationRequest
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TeacherRegistrationRequestFindFirstArgs>(args?: SelectSubset<T, TeacherRegistrationRequestFindFirstArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TeacherRegistrationRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherRegistrationRequestFindFirstOrThrowArgs} args - Arguments to find a TeacherRegistrationRequest
+     * @example
+     * // Get one TeacherRegistrationRequest
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TeacherRegistrationRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, TeacherRegistrationRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TeacherRegistrationRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherRegistrationRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TeacherRegistrationRequests
+     * const teacherRegistrationRequests = await prisma.teacherRegistrationRequest.findMany()
+     * 
+     * // Get first 10 TeacherRegistrationRequests
+     * const teacherRegistrationRequests = await prisma.teacherRegistrationRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const teacherRegistrationRequestWithIdOnly = await prisma.teacherRegistrationRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TeacherRegistrationRequestFindManyArgs>(args?: SelectSubset<T, TeacherRegistrationRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TeacherRegistrationRequest.
+     * @param {TeacherRegistrationRequestCreateArgs} args - Arguments to create a TeacherRegistrationRequest.
+     * @example
+     * // Create one TeacherRegistrationRequest
+     * const TeacherRegistrationRequest = await prisma.teacherRegistrationRequest.create({
+     *   data: {
+     *     // ... data to create a TeacherRegistrationRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends TeacherRegistrationRequestCreateArgs>(args: SelectSubset<T, TeacherRegistrationRequestCreateArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TeacherRegistrationRequests.
+     * @param {TeacherRegistrationRequestCreateManyArgs} args - Arguments to create many TeacherRegistrationRequests.
+     * @example
+     * // Create many TeacherRegistrationRequests
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TeacherRegistrationRequestCreateManyArgs>(args?: SelectSubset<T, TeacherRegistrationRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TeacherRegistrationRequests and returns the data saved in the database.
+     * @param {TeacherRegistrationRequestCreateManyAndReturnArgs} args - Arguments to create many TeacherRegistrationRequests.
+     * @example
+     * // Create many TeacherRegistrationRequests
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TeacherRegistrationRequests and only return the `id`
+     * const teacherRegistrationRequestWithIdOnly = await prisma.teacherRegistrationRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TeacherRegistrationRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, TeacherRegistrationRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TeacherRegistrationRequest.
+     * @param {TeacherRegistrationRequestDeleteArgs} args - Arguments to delete one TeacherRegistrationRequest.
+     * @example
+     * // Delete one TeacherRegistrationRequest
+     * const TeacherRegistrationRequest = await prisma.teacherRegistrationRequest.delete({
+     *   where: {
+     *     // ... filter to delete one TeacherRegistrationRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TeacherRegistrationRequestDeleteArgs>(args: SelectSubset<T, TeacherRegistrationRequestDeleteArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TeacherRegistrationRequest.
+     * @param {TeacherRegistrationRequestUpdateArgs} args - Arguments to update one TeacherRegistrationRequest.
+     * @example
+     * // Update one TeacherRegistrationRequest
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TeacherRegistrationRequestUpdateArgs>(args: SelectSubset<T, TeacherRegistrationRequestUpdateArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TeacherRegistrationRequests.
+     * @param {TeacherRegistrationRequestDeleteManyArgs} args - Arguments to filter TeacherRegistrationRequests to delete.
+     * @example
+     * // Delete a few TeacherRegistrationRequests
+     * const { count } = await prisma.teacherRegistrationRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TeacherRegistrationRequestDeleteManyArgs>(args?: SelectSubset<T, TeacherRegistrationRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TeacherRegistrationRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherRegistrationRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TeacherRegistrationRequests
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TeacherRegistrationRequestUpdateManyArgs>(args: SelectSubset<T, TeacherRegistrationRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TeacherRegistrationRequests and returns the data updated in the database.
+     * @param {TeacherRegistrationRequestUpdateManyAndReturnArgs} args - Arguments to update many TeacherRegistrationRequests.
+     * @example
+     * // Update many TeacherRegistrationRequests
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TeacherRegistrationRequests and only return the `id`
+     * const teacherRegistrationRequestWithIdOnly = await prisma.teacherRegistrationRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TeacherRegistrationRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, TeacherRegistrationRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TeacherRegistrationRequest.
+     * @param {TeacherRegistrationRequestUpsertArgs} args - Arguments to update or create a TeacherRegistrationRequest.
+     * @example
+     * // Update or create a TeacherRegistrationRequest
+     * const teacherRegistrationRequest = await prisma.teacherRegistrationRequest.upsert({
+     *   create: {
+     *     // ... data to create a TeacherRegistrationRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TeacherRegistrationRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TeacherRegistrationRequestUpsertArgs>(args: SelectSubset<T, TeacherRegistrationRequestUpsertArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TeacherRegistrationRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherRegistrationRequestCountArgs} args - Arguments to filter TeacherRegistrationRequests to count.
+     * @example
+     * // Count the number of TeacherRegistrationRequests
+     * const count = await prisma.teacherRegistrationRequest.count({
+     *   where: {
+     *     // ... the filter for the TeacherRegistrationRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends TeacherRegistrationRequestCountArgs>(
+      args?: Subset<T, TeacherRegistrationRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TeacherRegistrationRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TeacherRegistrationRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherRegistrationRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TeacherRegistrationRequestAggregateArgs>(args: Subset<T, TeacherRegistrationRequestAggregateArgs>): Prisma.PrismaPromise<GetTeacherRegistrationRequestAggregateType<T>>
+
+    /**
+     * Group by TeacherRegistrationRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherRegistrationRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TeacherRegistrationRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TeacherRegistrationRequestGroupByArgs['orderBy'] }
+        : { orderBy?: TeacherRegistrationRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TeacherRegistrationRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTeacherRegistrationRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TeacherRegistrationRequest model
+   */
+  readonly fields: TeacherRegistrationRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TeacherRegistrationRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TeacherRegistrationRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TeacherRegistrationRequest model
+   */
+  interface TeacherRegistrationRequestFieldRefs {
+    readonly id: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly publicReference: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly fullName: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly email: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly mobile: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly subject: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly bio: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly status: FieldRef<"TeacherRegistrationRequest", 'TeacherRequestStatus'>
+    readonly proofDocuments: FieldRef<"TeacherRegistrationRequest", 'Json'>
+    readonly adminNotes: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly reviewedById: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly reviewedAt: FieldRef<"TeacherRegistrationRequest", 'DateTime'>
+    readonly createdAt: FieldRef<"TeacherRegistrationRequest", 'DateTime'>
+    readonly updatedAt: FieldRef<"TeacherRegistrationRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TeacherRegistrationRequest findUnique
+   */
+  export type TeacherRegistrationRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which TeacherRegistrationRequest to fetch.
+     */
+    where: TeacherRegistrationRequestWhereUniqueInput
+  }
+
+  /**
+   * TeacherRegistrationRequest findUniqueOrThrow
+   */
+  export type TeacherRegistrationRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which TeacherRegistrationRequest to fetch.
+     */
+    where: TeacherRegistrationRequestWhereUniqueInput
+  }
+
+  /**
+   * TeacherRegistrationRequest findFirst
+   */
+  export type TeacherRegistrationRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which TeacherRegistrationRequest to fetch.
+     */
+    where?: TeacherRegistrationRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherRegistrationRequests to fetch.
+     */
+    orderBy?: TeacherRegistrationRequestOrderByWithRelationInput | TeacherRegistrationRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TeacherRegistrationRequests.
+     */
+    cursor?: TeacherRegistrationRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherRegistrationRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherRegistrationRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherRegistrationRequests.
+     */
+    distinct?: TeacherRegistrationRequestScalarFieldEnum | TeacherRegistrationRequestScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherRegistrationRequest findFirstOrThrow
+   */
+  export type TeacherRegistrationRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which TeacherRegistrationRequest to fetch.
+     */
+    where?: TeacherRegistrationRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherRegistrationRequests to fetch.
+     */
+    orderBy?: TeacherRegistrationRequestOrderByWithRelationInput | TeacherRegistrationRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TeacherRegistrationRequests.
+     */
+    cursor?: TeacherRegistrationRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherRegistrationRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherRegistrationRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherRegistrationRequests.
+     */
+    distinct?: TeacherRegistrationRequestScalarFieldEnum | TeacherRegistrationRequestScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherRegistrationRequest findMany
+   */
+  export type TeacherRegistrationRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which TeacherRegistrationRequests to fetch.
+     */
+    where?: TeacherRegistrationRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherRegistrationRequests to fetch.
+     */
+    orderBy?: TeacherRegistrationRequestOrderByWithRelationInput | TeacherRegistrationRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TeacherRegistrationRequests.
+     */
+    cursor?: TeacherRegistrationRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherRegistrationRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherRegistrationRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherRegistrationRequests.
+     */
+    distinct?: TeacherRegistrationRequestScalarFieldEnum | TeacherRegistrationRequestScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherRegistrationRequest create
+   */
+  export type TeacherRegistrationRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * The data needed to create a TeacherRegistrationRequest.
+     */
+    data: XOR<TeacherRegistrationRequestCreateInput, TeacherRegistrationRequestUncheckedCreateInput>
+  }
+
+  /**
+   * TeacherRegistrationRequest createMany
+   */
+  export type TeacherRegistrationRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TeacherRegistrationRequests.
+     */
+    data: TeacherRegistrationRequestCreateManyInput | TeacherRegistrationRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TeacherRegistrationRequest createManyAndReturn
+   */
+  export type TeacherRegistrationRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many TeacherRegistrationRequests.
+     */
+    data: TeacherRegistrationRequestCreateManyInput | TeacherRegistrationRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TeacherRegistrationRequest update
+   */
+  export type TeacherRegistrationRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * The data needed to update a TeacherRegistrationRequest.
+     */
+    data: XOR<TeacherRegistrationRequestUpdateInput, TeacherRegistrationRequestUncheckedUpdateInput>
+    /**
+     * Choose, which TeacherRegistrationRequest to update.
+     */
+    where: TeacherRegistrationRequestWhereUniqueInput
+  }
+
+  /**
+   * TeacherRegistrationRequest updateMany
+   */
+  export type TeacherRegistrationRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TeacherRegistrationRequests.
+     */
+    data: XOR<TeacherRegistrationRequestUpdateManyMutationInput, TeacherRegistrationRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which TeacherRegistrationRequests to update
+     */
+    where?: TeacherRegistrationRequestWhereInput
+    /**
+     * Limit how many TeacherRegistrationRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TeacherRegistrationRequest updateManyAndReturn
+   */
+  export type TeacherRegistrationRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update TeacherRegistrationRequests.
+     */
+    data: XOR<TeacherRegistrationRequestUpdateManyMutationInput, TeacherRegistrationRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which TeacherRegistrationRequests to update
+     */
+    where?: TeacherRegistrationRequestWhereInput
+    /**
+     * Limit how many TeacherRegistrationRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TeacherRegistrationRequest upsert
+   */
+  export type TeacherRegistrationRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * The filter to search for the TeacherRegistrationRequest to update in case it exists.
+     */
+    where: TeacherRegistrationRequestWhereUniqueInput
+    /**
+     * In case the TeacherRegistrationRequest found by the `where` argument doesn't exist, create a new TeacherRegistrationRequest with this data.
+     */
+    create: XOR<TeacherRegistrationRequestCreateInput, TeacherRegistrationRequestUncheckedCreateInput>
+    /**
+     * In case the TeacherRegistrationRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TeacherRegistrationRequestUpdateInput, TeacherRegistrationRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * TeacherRegistrationRequest delete
+   */
+  export type TeacherRegistrationRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Filter which TeacherRegistrationRequest to delete.
+     */
+    where: TeacherRegistrationRequestWhereUniqueInput
+  }
+
+  /**
+   * TeacherRegistrationRequest deleteMany
+   */
+  export type TeacherRegistrationRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TeacherRegistrationRequests to delete
+     */
+    where?: TeacherRegistrationRequestWhereInput
+    /**
+     * Limit how many TeacherRegistrationRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TeacherRegistrationRequest without action
+   */
+  export type TeacherRegistrationRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model AiConversation
    */
 
@@ -30902,6 +32122,26 @@ export namespace Prisma {
   export type PromoCodeScalarFieldEnum = (typeof PromoCodeScalarFieldEnum)[keyof typeof PromoCodeScalarFieldEnum]
 
 
+  export const TeacherRegistrationRequestScalarFieldEnum: {
+    id: 'id',
+    publicReference: 'publicReference',
+    fullName: 'fullName',
+    email: 'email',
+    mobile: 'mobile',
+    subject: 'subject',
+    bio: 'bio',
+    status: 'status',
+    proofDocuments: 'proofDocuments',
+    adminNotes: 'adminNotes',
+    reviewedById: 'reviewedById',
+    reviewedAt: 'reviewedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TeacherRegistrationRequestScalarFieldEnum = (typeof TeacherRegistrationRequestScalarFieldEnum)[keyof typeof TeacherRegistrationRequestScalarFieldEnum]
+
+
   export const AiConversationScalarFieldEnum: {
     id: 'id',
     studentId: 'studentId',
@@ -31240,6 +32480,20 @@ export namespace Prisma {
    * Reference to a field of type 'AttemptSubmissionReason[]'
    */
   export type ListEnumAttemptSubmissionReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttemptSubmissionReason[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TeacherRequestStatus'
+   */
+  export type EnumTeacherRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeacherRequestStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'TeacherRequestStatus[]'
+   */
+  export type ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeacherRequestStatus[]'>
     
 
 
@@ -32999,6 +34253,103 @@ export namespace Prisma {
     chapterId?: StringWithAggregatesFilter<"PromoCode"> | string
     createdAt?: DateTimeWithAggregatesFilter<"PromoCode"> | Date | string
     expiresAt?: DateTimeNullableWithAggregatesFilter<"PromoCode"> | Date | string | null
+  }
+
+  export type TeacherRegistrationRequestWhereInput = {
+    AND?: TeacherRegistrationRequestWhereInput | TeacherRegistrationRequestWhereInput[]
+    OR?: TeacherRegistrationRequestWhereInput[]
+    NOT?: TeacherRegistrationRequestWhereInput | TeacherRegistrationRequestWhereInput[]
+    id?: StringFilter<"TeacherRegistrationRequest"> | string
+    publicReference?: StringFilter<"TeacherRegistrationRequest"> | string
+    fullName?: StringFilter<"TeacherRegistrationRequest"> | string
+    email?: StringFilter<"TeacherRegistrationRequest"> | string
+    mobile?: StringFilter<"TeacherRegistrationRequest"> | string
+    subject?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    bio?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    status?: EnumTeacherRequestStatusFilter<"TeacherRegistrationRequest"> | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonFilter<"TeacherRegistrationRequest">
+    adminNotes?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    reviewedById?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"TeacherRegistrationRequest"> | Date | string | null
+    createdAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
+  }
+
+  export type TeacherRegistrationRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    publicReference?: SortOrder
+    fullName?: SortOrder
+    email?: SortOrder
+    mobile?: SortOrder
+    subject?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    status?: SortOrder
+    proofDocuments?: SortOrder
+    adminNotes?: SortOrderInput | SortOrder
+    reviewedById?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherRegistrationRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    publicReference?: string
+    AND?: TeacherRegistrationRequestWhereInput | TeacherRegistrationRequestWhereInput[]
+    OR?: TeacherRegistrationRequestWhereInput[]
+    NOT?: TeacherRegistrationRequestWhereInput | TeacherRegistrationRequestWhereInput[]
+    fullName?: StringFilter<"TeacherRegistrationRequest"> | string
+    email?: StringFilter<"TeacherRegistrationRequest"> | string
+    mobile?: StringFilter<"TeacherRegistrationRequest"> | string
+    subject?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    bio?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    status?: EnumTeacherRequestStatusFilter<"TeacherRegistrationRequest"> | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonFilter<"TeacherRegistrationRequest">
+    adminNotes?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    reviewedById?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    reviewedAt?: DateTimeNullableFilter<"TeacherRegistrationRequest"> | Date | string | null
+    createdAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
+  }, "id" | "publicReference">
+
+  export type TeacherRegistrationRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    publicReference?: SortOrder
+    fullName?: SortOrder
+    email?: SortOrder
+    mobile?: SortOrder
+    subject?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    status?: SortOrder
+    proofDocuments?: SortOrder
+    adminNotes?: SortOrderInput | SortOrder
+    reviewedById?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TeacherRegistrationRequestCountOrderByAggregateInput
+    _max?: TeacherRegistrationRequestMaxOrderByAggregateInput
+    _min?: TeacherRegistrationRequestMinOrderByAggregateInput
+  }
+
+  export type TeacherRegistrationRequestScalarWhereWithAggregatesInput = {
+    AND?: TeacherRegistrationRequestScalarWhereWithAggregatesInput | TeacherRegistrationRequestScalarWhereWithAggregatesInput[]
+    OR?: TeacherRegistrationRequestScalarWhereWithAggregatesInput[]
+    NOT?: TeacherRegistrationRequestScalarWhereWithAggregatesInput | TeacherRegistrationRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TeacherRegistrationRequest"> | string
+    publicReference?: StringWithAggregatesFilter<"TeacherRegistrationRequest"> | string
+    fullName?: StringWithAggregatesFilter<"TeacherRegistrationRequest"> | string
+    email?: StringWithAggregatesFilter<"TeacherRegistrationRequest"> | string
+    mobile?: StringWithAggregatesFilter<"TeacherRegistrationRequest"> | string
+    subject?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
+    bio?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
+    status?: EnumTeacherRequestStatusWithAggregatesFilter<"TeacherRegistrationRequest"> | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonWithAggregatesFilter<"TeacherRegistrationRequest">
+    adminNotes?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
+    reviewedById?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TeacherRegistrationRequest"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TeacherRegistrationRequest"> | Date | string
   }
 
   export type AiConversationWhereInput = {
@@ -35005,6 +36356,125 @@ export namespace Prisma {
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type TeacherRegistrationRequestCreateInput = {
+    id?: string
+    publicReference: string
+    fullName: string
+    email: string
+    mobile: string
+    subject?: string | null
+    bio?: string | null
+    status?: $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: string | null
+    reviewedById?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherRegistrationRequestUncheckedCreateInput = {
+    id?: string
+    publicReference: string
+    fullName: string
+    email: string
+    mobile: string
+    subject?: string | null
+    bio?: string | null
+    status?: $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: string | null
+    reviewedById?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherRegistrationRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicReference?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherRegistrationRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicReference?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherRegistrationRequestCreateManyInput = {
+    id?: string
+    publicReference: string
+    fullName: string
+    email: string
+    mobile: string
+    subject?: string | null
+    bio?: string | null
+    status?: $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: string | null
+    reviewedById?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherRegistrationRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicReference?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherRegistrationRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicReference?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AiConversationCreateInput = {
     id?: string
     title?: string
@@ -36895,6 +38365,72 @@ export namespace Prisma {
     chapterId?: SortOrder
     createdAt?: SortOrder
     expiresAt?: SortOrder
+  }
+
+  export type EnumTeacherRequestStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherRequestStatus | EnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherRequestStatusFilter<$PrismaModel> | $Enums.TeacherRequestStatus
+  }
+
+  export type TeacherRegistrationRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    publicReference?: SortOrder
+    fullName?: SortOrder
+    email?: SortOrder
+    mobile?: SortOrder
+    subject?: SortOrder
+    bio?: SortOrder
+    status?: SortOrder
+    proofDocuments?: SortOrder
+    adminNotes?: SortOrder
+    reviewedById?: SortOrder
+    reviewedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherRegistrationRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    publicReference?: SortOrder
+    fullName?: SortOrder
+    email?: SortOrder
+    mobile?: SortOrder
+    subject?: SortOrder
+    bio?: SortOrder
+    status?: SortOrder
+    adminNotes?: SortOrder
+    reviewedById?: SortOrder
+    reviewedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherRegistrationRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    publicReference?: SortOrder
+    fullName?: SortOrder
+    email?: SortOrder
+    mobile?: SortOrder
+    subject?: SortOrder
+    bio?: SortOrder
+    status?: SortOrder
+    adminNotes?: SortOrder
+    reviewedById?: SortOrder
+    reviewedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumTeacherRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherRequestStatus | EnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.TeacherRequestStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTeacherRequestStatusFilter<$PrismaModel>
+    _max?: NestedEnumTeacherRequestStatusFilter<$PrismaModel>
   }
 
   export type AiMessageListRelationFilter = {
@@ -38894,6 +40430,10 @@ export namespace Prisma {
     update?: XOR<XOR<ChapterUpdateToOneWithWhereWithoutPromoCodesInput, ChapterUpdateWithoutPromoCodesInput>, ChapterUncheckedUpdateWithoutPromoCodesInput>
   }
 
+  export type EnumTeacherRequestStatusFieldUpdateOperationsInput = {
+    set?: $Enums.TeacherRequestStatus
+  }
+
   export type UserCreateNestedOneWithoutAiConversationsInput = {
     create?: XOR<UserCreateWithoutAiConversationsInput, UserUncheckedCreateWithoutAiConversationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAiConversationsInput
@@ -39493,6 +41033,23 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
     _max?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTeacherRequestStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherRequestStatus | EnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherRequestStatusFilter<$PrismaModel> | $Enums.TeacherRequestStatus
+  }
+
+  export type NestedEnumTeacherRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherRequestStatus | EnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherRequestStatusWithAggregatesFilter<$PrismaModel> | $Enums.TeacherRequestStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTeacherRequestStatusFilter<$PrismaModel>
+    _max?: NestedEnumTeacherRequestStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumAiMessageRoleFilter<$PrismaModel = never> = {

@@ -371,6 +371,23 @@ exports.Prisma.PromoCodeScalarFieldEnum = {
   expiresAt: 'expiresAt'
 };
 
+exports.Prisma.TeacherRegistrationRequestScalarFieldEnum = {
+  id: 'id',
+  publicReference: 'publicReference',
+  fullName: 'fullName',
+  email: 'email',
+  mobile: 'mobile',
+  subject: 'subject',
+  bio: 'bio',
+  status: 'status',
+  proofDocuments: 'proofDocuments',
+  adminNotes: 'adminNotes',
+  reviewedById: 'reviewedById',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.AiConversationScalarFieldEnum = {
   id: 'id',
   studentId: 'studentId',
@@ -491,6 +508,12 @@ exports.AttemptSubmissionReason = exports.$Enums.AttemptSubmissionReason = {
   TIME_EXPIRED: 'TIME_EXPIRED'
 };
 
+exports.TeacherRequestStatus = exports.$Enums.TeacherRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
 exports.AiMessageRole = exports.$Enums.AiMessageRole = {
   STUDENT: 'STUDENT',
   ASSISTANT: 'ASSISTANT'
@@ -524,6 +547,7 @@ exports.Prisma.ModelName = {
   Question: 'Question',
   QuizAttempt: 'QuizAttempt',
   PromoCode: 'PromoCode',
+  TeacherRegistrationRequest: 'TeacherRegistrationRequest',
   AiConversation: 'AiConversation',
   AiMessage: 'AiMessage'
 };

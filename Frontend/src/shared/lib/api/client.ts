@@ -52,6 +52,14 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableConfig | undefined;
 
+    // 403 — structured rejection without redirect or logout
+    if (error.response?.status === 403) {
+      const normalized = normalizeError(error);
+      normalized.message =
+        "ليس لديك صلاحية للوصول إلى هذا المحتوى";
+      return Promise.reject(normalized);
+    }
+
     if (
       error.response?.status === 401 &&
       originalRequest &&

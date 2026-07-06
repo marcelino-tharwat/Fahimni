@@ -24,6 +24,8 @@ interface UsePdfUploadOptions {
   existingKeys?: string[];
   /** When false, files are held as `pending` until `startUpload()` is called */
   uploadImmediately?: boolean;
+  /** Upload to staging (no lessonId needed). Files attached to lesson later. */
+  staging?: boolean;
 }
 
 export function usePdfUpload({
@@ -31,6 +33,7 @@ export function usePdfUpload({
   lessonId: initialLessonId,
   existingKeys,
   uploadImmediately = true,
+  staging = false,
 }: UsePdfUploadOptions) {
   const [files, setFiles] = useState<UploadingFile[]>(() =>
     (existingKeys ?? []).map((key) => ({
@@ -95,9 +98,12 @@ export function usePdfUpload({
 
       setFiles((prev) => [...prev, ...newUploading]);
 
-      if (!(uploadImmediately && lessonIdRef.current)) return;
+      if (!uploadImmediately) return;
+      if (!lessonIdRef.current && !staging) return;
 
       uploadingRef.current = true;
+
+      const useStaging = staging && !lessonIdRef.current;
 
       const results = await Promise.allSettled(
         newUploading.map(
@@ -109,12 +115,19 @@ export function usePdfUpload({
                 ),
               );
 
-              filesApi
-                .uploadPdf(uf.file, teacherId, lessonIdRef.current, (percent) => {
-                  setFiles((prev) =>
-                    prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),
-                  );
-                })
+              const uploadPromise = useStaging
+                ? filesApi.uploadPdfStaging(uf.file, (percent) => {
+                    setFiles((prev) =>
+                      prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),
+                    );
+                  })
+                : filesApi.uploadPdf(uf.file, lessonIdRef.current, (percent) => {
+                    setFiles((prev) =>
+                      prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),
+                    );
+                  });
+
+              uploadPromise
                 .then((storageKey) => {
                   setFiles((prev) =>
                     prev.map((f) =>
@@ -150,12 +163,68 @@ export function usePdfUpload({
         setError(`${failures.length} file(s) failed to upload`);
       }
     },
-    [files, teacherId, uploadImmediately],
+    [files, teacherId, uploadImmediately, staging],
   );
 
   const startUpload = useCallback(
     async (newLessonId: string): Promise<string[]> => {
       lessonIdRef.current = newLessonId;
+
+      if (staging) {
+        const stagedFiles = files.filter(
+          (f) => f.status === 'completed' && f.storageKey,
+        );
+        if (stagedFiles.length === 0) return [];
+
+        uploadingRef.current = true;
+
+        try {
+          for (const f of stagedFiles) {
+            setFiles((prev) =>
+              prev.map((pf) =>
+                pf.id === f.id ? { ...pf, status: 'uploading' as const, progress: 0 } : pf,
+              ),
+            );
+          }
+
+          const stagingEntries = stagedFiles.map((f) => ({
+            stagingPath: f.storageKey!,
+            originalName: f.name,
+            fileSize: f.size,
+            mimeType: 'application/pdf',
+          }));
+
+          const records = await filesApi.attachFilesToLesson(newLessonId, stagingEntries);
+
+          const pathMap = new Map<string, string>();
+          stagedFiles.forEach((sf, i) => {
+            pathMap.set(sf.storageKey!, records[i]?.filePath ?? sf.storageKey!);
+          });
+
+          setFiles((prev) =>
+            prev.map((pf) =>
+              pf.storageKey && pathMap.has(pf.storageKey)
+                ? { ...pf, status: 'completed' as const, progress: 100, storageKey: pathMap.get(pf.storageKey)! }
+                : pf,
+            ),
+          );
+
+          return Array.from(pathMap.values());
+        } catch (err) {
+          setFiles((prev) =>
+            prev.map((pf) =>
+              pf.status === 'uploading'
+                ? { ...pf, status: 'error' as const, error: 'Failed to attach files' }
+                : pf,
+            ),
+          );
+          setError('Failed to attach files to lesson');
+          return [];
+        } finally {
+          uploadingRef.current = false;
+        }
+      }
+
       const pendingFiles = files.filter((f) => f.status === 'pending');
       if (pendingFiles.length === 0) return [];
 
@@ -173,7 +242,7 @@ export function usePdfUpload({
               );
 
               filesApi
-                .uploadPdf(uf.file, teacherId, newLessonId, (percent) => {
+                .uploadPdf(uf.file, newLessonId, (percent) => {
                   setFiles((prev) =>
                     prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),
                   );
@@ -216,7 +285,7 @@ export function usePdfUpload({
 
       return keys;
     },
-    [files, teacherId],
+    [files, teacherId, staging],
   );
 
   const removeFile = useCallback(

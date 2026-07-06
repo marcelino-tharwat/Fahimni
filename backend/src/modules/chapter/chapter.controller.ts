@@ -155,7 +155,7 @@ export class ChapterController {
         return;
       }
 
-      const quizzes = await quizService.getChapterQuizzes(chapterId);
+      const quizzes = await quizService.getChapterQuizzes(chapterId, req.user!.id);
 
       res.status(200).json(okResponse<QuizDetailResponseDTO[]>(
         "Chapter quizzes fetched successfully",
