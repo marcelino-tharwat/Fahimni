@@ -17,6 +17,19 @@ router.post(
   uploadSingle,
   controller.uploadSingle,
 );
+router.post(
+  "/upload/pdf/staging",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  uploadSingle,
+  controller.uploadStaging,
+);
+router.post(
+  "/lessons/:lessonId/attach-files",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  controller.attachFiles,
+);
 router.get(
   "/signed-url",
   authenticateMiddleware,

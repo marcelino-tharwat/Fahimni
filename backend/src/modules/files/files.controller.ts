@@ -98,6 +98,57 @@ export class FilesController {
     }
   };
 
+  uploadStaging = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const file = req.file;
+      if (!file) {
+        res.status(400).json({ success: false, message: "No file provided" });
+        return;
+      }
+
+      const filePath = await filesService.uploadToStaging(file, req.user!.id);
+
+      res.status(201).json({ success: true, filePath });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  attachFiles = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const lessonId = req.params.lessonId;
+      if (typeof lessonId !== "string") {
+        res.status(400).json({ success: false, message: "Invalid lesson ID" });
+        return;
+      }
+
+      const { files: stagingFiles } = req.body;
+
+      if (!stagingFiles || !Array.isArray(stagingFiles) || stagingFiles.length === 0) {
+        res.status(400).json({ success: false, message: "files array is required" });
+        return;
+      }
+
+      const results = await filesService.attachFilesToLesson(
+        req.user!.id,
+        lessonId,
+        stagingFiles,
+      );
+
+      res.status(200).json({ success: true, records: results });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   delete = async (
     req: Request,
     res: Response,

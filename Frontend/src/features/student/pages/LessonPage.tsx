@@ -242,6 +242,14 @@ export function LessonPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        className="flex w-fit items-center gap-1.5 font-cairo text-sm text-gray-600 transition-colors hover:text-navy-900"
+      >
+        <ChevronLeft size={18} className="rtl:rotate-180" />
+        {t('common:actions.back')}
+      </button>
       <nav className="flex flex-wrap items-center gap-1 font-cairo text-sm text-gray-500">
         <Link to="/student/dashboard" className="hover:text-accent transition-colors">
           {t('student:content.tabs.allContent')}
