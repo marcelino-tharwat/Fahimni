@@ -116,10 +116,14 @@ export class StudentController {
         return next(new AppError("Student not found", 404));
       }
 
-      if (req.user?.role === "STUDENT" && req.user?.id !== id) {
-        return next(
-          new AppError("You can only update your own profile", 403),
-        );
+      if (req.user?.role === "STUDENT") {
+        if (req.user?.id !== id) {
+          return next(
+            new AppError("You can only update your own profile", 403),
+          );
+        }
+      } else if (req.user?.role === "OPERATION") {
+        await assertStudentVisibleToTeacher(id, req.user.id);
       }
 
       const input = req.body as UpdateStudentInput;

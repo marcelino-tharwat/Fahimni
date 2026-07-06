@@ -167,6 +167,8 @@ export class FilesController {
         return;
       }
 
+      await assertMaterialPathOwnedByTeacher(req.user!.id, path);
+
       await filesService.deleteFile(path);
 
       await prisma.lessonMaterial.updateMany({
