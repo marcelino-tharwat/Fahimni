@@ -62,7 +62,7 @@ export function ProofUpload({ files, onChange, error }: ProofUploadProps) {
       </label>
       <div
         onClick={handleSelect}
-        className="flex cursor-pointer flex-col items-center gap-2 rounded-input border-2 border-dashed border-border bg-surface px-4 py-6 transition hover:border-accent"
+        className="flex cursor-pointer flex-col items-center gap-1 rounded-input border-2 border-dashed border-border bg-surface px-4 py-3 transition hover:border-accent"
       >
         <Upload className="text-text-secondary" size={28} />
         <p className="font-cairo text-sm text-text-secondary">
