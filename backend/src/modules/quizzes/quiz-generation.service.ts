@@ -30,6 +30,8 @@ import type { Prisma } from "../../generated/prisma/client.js";
 import { Prisma as PrismaNamespace } from "../../generated/prisma/client.js";
 import {
   resolveAndValidateQuizContentScope,
+  resolveMultiChapterScope,
+  resolveFullCurriculumScope,
   persistQuizLessonRelations,
   type QuizContentScope,
 } from "./quiz-scope.js";
@@ -285,14 +287,50 @@ export class QuizGenerationService {
     return result;
   }
 
-  /** Resolve the content source via the shared scope validator. */
+  /**
+   * Resolve the content source. Branches on the requested source scope; the
+   * default (SINGLE_CHAPTER / omitted) preserves the original single-chapter
+   * behavior byte-for-byte. Source scope is independent of quiz placement and
+   * progression gating.
+   */
   private async resolveContent(
     input: GenerateQuizInput,
     teacherId: string,
   ): Promise<ResolvedContent> {
+    const sourceScope = input.sourceScope ?? "SINGLE_CHAPTER";
+
+    if (sourceScope === "MULTI_CHAPTER") {
+      const scope = await resolveMultiChapterScope(
+        input.chapterIds ?? [],
+        teacherId,
+        this.prisma,
+      );
+      return {
+        lessonIds: scope.lessonIds,
+        sourceTitles: scope.sourceTitles,
+        chapterId: scope.chapterId,
+        contentScope: scope.contentScope,
+      };
+    }
+
+    if (sourceScope === "FULL_CURRICULUM") {
+      const scope = await resolveFullCurriculumScope(
+        input.stageId ?? "",
+        teacherId,
+        this.prisma,
+      );
+      return {
+        lessonIds: scope.lessonIds,
+        sourceTitles: scope.sourceTitles,
+        chapterId: scope.chapterId,
+        contentScope: scope.contentScope,
+      };
+    }
+
+    // SINGLE_CHAPTER (default / legacy).
     const scope = await resolveAndValidateQuizContentScope(
       {
-        chapterId: input.chapterId,
+        chapterId: input.chapterId ?? "",
         contentScope: input.contentScope,
         lessonIds: input.lessonIds,
       },

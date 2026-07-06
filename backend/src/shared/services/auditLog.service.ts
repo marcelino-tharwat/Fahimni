@@ -36,7 +36,13 @@ export type AuditLogAction =
   // Legacy values retained so historical rows remain readable.
   | "DELETE_STAGE"
   | "DELETE_CHAPTER"
-  | "DELETE_LESSON";
+  | "DELETE_LESSON"
+  // Content-protection events (client-side deterrence).
+  | "CONTENT_PROTECTION_COPY_BLOCKED"
+  | "CONTENT_PROTECTION_PASTE_BLOCKED"
+  | "CONTENT_PROTECTION_PRINT_BLOCKED"
+  | "CONTENT_PROTECTION_CONTENT_BLURRED"
+  | "CONTENT_PROTECTION_CONTEXTMENU_BLOCKED";
 
 export type ActorType = "TEACHER" | "STUDENT" | "ADMIN" | "SYSTEM";
 

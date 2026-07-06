@@ -3,6 +3,7 @@ import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { attemptsService } from "./attempts.service.js";
+import { essayAiGradingService } from "./essay-ai-grading.service.js";
 import {
   resultsQuerySchema,
   essayGradingListQuerySchema,
@@ -10,6 +11,7 @@ import {
 import type {
   GradeEssaysInput,
   EssayGradingListQueryInput,
+  ResultSettingsInput,
   SaveDraftAnswersInput,
   SubmitAttemptInput,
 } from "./attempts.validation.js";
@@ -196,6 +198,55 @@ export class AttemptsController {
       res
         .status(200)
         .json(okResponse("Essay submissions fetched successfully", data));
+    },
+  );
+
+  /** POST /api/attempts/:attemptId/essay-suggestions (teacher) — AI suggestions. */
+  public generateEssaySuggestions = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const attemptId = req.params.attemptId;
+      if (typeof attemptId !== "string") {
+        throw new AppError("Invalid attempt ID", 400);
+      }
+
+      const data = await essayAiGradingService.suggestForAttempt(
+        attemptId,
+        req.user!.id,
+      );
+      res
+        .status(200)
+        .json(okResponse("Essay AI suggestions generated", data));
+    },
+  );
+
+  /** GET /api/quizzes/:id/result-settings (teacher). */
+  public getResultSettings = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const quizId = req.params.id;
+      if (typeof quizId !== "string") throw new AppError("Invalid quiz ID", 400);
+
+      const data = await attemptsService.getResultSettings(quizId, req.user!.id);
+      res
+        .status(200)
+        .json(okResponse("Result settings fetched successfully", data));
+    },
+  );
+
+  /** PUT /api/quizzes/:id/result-settings (teacher). */
+  public updateResultSettings = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const quizId = req.params.id;
+      if (typeof quizId !== "string") throw new AppError("Invalid quiz ID", 400);
+
+      const input = req.body as ResultSettingsInput;
+      const data = await attemptsService.updateResultSettings(
+        quizId,
+        req.user!.id,
+        input,
+      );
+      res
+        .status(200)
+        .json(okResponse("Result settings updated successfully", data));
     },
   );
 

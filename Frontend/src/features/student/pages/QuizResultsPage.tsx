@@ -14,6 +14,7 @@ import {
   type QuizResultsData,
   type ResultFilterKey,
 } from '@/features/student/types/quizResults';
+import { ProtectedContent } from '@/shared/components/content-protection';
 import { getAttemptResults, buildQuizResults } from '@/features/student/api/quiz';
 import { resolveResultTone } from '@/features/student/lib/quizResultStats';
 
@@ -95,28 +96,63 @@ export function QuizResultsPage() {
     return <ErrorFallback />;
   }
 
-  return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
-      <ScoreHeroCard data={data} />
-
-      <ResultQuestionNavigator results={data.results} />
-
-      <ResultFilterBar active={filter} counts={counts} onChange={setFilter} />
-
-      {filtered.length > 0 ? (
-        <div className="flex flex-col gap-5">
-          {filtered.map((result) => {
-            const index = data.results.indexOf(result);
-            return <ResultQuestionCard key={result.question.id} result={result} index={index} />;
-          })}
+  // HIDE_ALL_RESULTS: the backend returned no questions and a review message —
+  // show only the message until the teacher completes essay review.
+  if (data.results.length === 0 && data.reviewMessage) {
+    return (
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+        <div
+          role="status"
+          className="rounded-card border border-warning-300 bg-warning-50 p-8 text-center text-body font-medium text-warning-700 shadow-card"
+        >
+          {data.reviewMessage}
         </div>
-      ) : (
-        <p className="rounded-card border border-gray-300 bg-white p-8 text-center text-body text-gray-500 shadow-card">
-          {t('quiz:results.noQuestionsInFilter')}
-        </p>
-      )}
+        <ResultFooterActions onDashboard={() => navigate('/student/dashboard')} />
+      </div>
+    );
+  }
 
-      <ResultFooterActions onDashboard={() => navigate('/student/dashboard')} />
-    </div>
+  return (
+    <ProtectedContent
+      policy={{
+        disableCopy: true,
+        disableContextMenu: true,
+        disablePrint: true,
+        disableSelection: true,
+      }}
+      className="print-protected"
+    >
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+        {data.reviewMessage && (
+          <div
+            role="status"
+            className="rounded-card border border-warning-300 bg-warning-50 px-4 py-3 text-center text-body font-medium text-warning-700 shadow-card"
+          >
+            {data.reviewMessage}
+          </div>
+        )}
+
+        <ScoreHeroCard data={data} />
+
+        <ResultQuestionNavigator results={data.results} />
+
+        <ResultFilterBar active={filter} counts={counts} onChange={setFilter} />
+
+        {filtered.length > 0 ? (
+          <div className="flex flex-col gap-5">
+            {filtered.map((result) => {
+              const index = data.results.indexOf(result);
+              return <ResultQuestionCard key={result.question.id} result={result} index={index} />;
+            })}
+          </div>
+        ) : (
+          <p className="rounded-card border border-gray-300 bg-white p-8 text-center text-body text-gray-500 shadow-card">
+            {t('quiz:results.noQuestionsInFilter')}
+          </p>
+        )}
+
+        <ResultFooterActions onDashboard={() => navigate('/student/dashboard')} />
+      </div>
+    </ProtectedContent>
   );
 }

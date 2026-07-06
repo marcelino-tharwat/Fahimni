@@ -23,6 +23,19 @@ export type QuizDifficultyMode = (typeof QUIZ_DIFFICULTY_MODES)[number];
 export const QUIZ_CONTENT_SCOPES = ["CHAPTER", "SELECTED_LESSONS"] as const;
 export type QuizContentScopeWire = (typeof QUIZ_CONTENT_SCOPES)[number];
 
+/**
+ * Source scope of the CONTENT used to generate questions. This is distinct from
+ * Quiz.contentScope (lesson placement) and Lesson.requiredQuizId (progression
+ * gate). Defaults to SINGLE_CHAPTER when omitted so legacy chapterId-only
+ * requests keep working unchanged.
+ */
+export const SOURCE_SCOPES = [
+  "SINGLE_CHAPTER",
+  "MULTI_CHAPTER",
+  "FULL_CURRICULUM",
+] as const;
+export type SourceScope = (typeof SOURCE_SCOPES)[number];
+
 const uuid = z
   .string()
   .regex(
@@ -94,8 +107,22 @@ const scopeRefinements = <T extends z.ZodObject<z.ZodRawShape>>(schema: T) =>
       },
     );
 
+const chapterIdsField = z
+  .array(uuid)
+  .optional()
+  .refine(
+    (ids) => ids === undefined || new Set(ids).size === ids.length,
+    "chapterIds must not contain duplicates",
+  );
+
 const generateQuizBaseSchema = z.object({
-  chapterId: uuid,
+  // Optional so MULTI_CHAPTER / FULL_CURRICULUM requests need not supply it.
+  // Required for SINGLE_CHAPTER — enforced by the union-level refinement below.
+  chapterId: uuid.optional(),
+  // Source scope of the generation content. Omitted => SINGLE_CHAPTER (legacy).
+  sourceScope: z.enum(SOURCE_SCOPES).optional(),
+  chapterIds: chapterIdsField,
+  stageId: uuid.optional(),
   contentScope: z.enum(QUIZ_CONTENT_SCOPES),
   lessonIds: lessonIdsField,
   questionCount: z
@@ -140,9 +167,53 @@ const mixedDifficultySchema = scopedBaseSchema
   })
   .strict();
 
-export const generateQuizSchema = z.discriminatedUnion("difficultyMode", [
-  singleDifficultySchema,
-  mixedDifficultySchema,
-]);
+export const generateQuizSchema = z
+  .discriminatedUnion("difficultyMode", [
+    singleDifficultySchema,
+    mixedDifficultySchema,
+  ])
+  .superRefine((data, ctx) => {
+    const scope: SourceScope = data.sourceScope ?? "SINGLE_CHAPTER";
+
+    if (scope === "SINGLE_CHAPTER") {
+      if (!data.chapterId) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["chapterId"],
+          message: "chapterId is required for SINGLE_CHAPTER generation",
+        });
+      }
+      return;
+    }
+
+    // MULTI_CHAPTER / FULL_CURRICULUM draw from whole chapters only; per-lesson
+    // selection is a single-chapter concept.
+    if (data.contentScope !== "CHAPTER") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["contentScope"],
+        message: "Multi-chapter and full-curriculum generation require contentScope CHAPTER",
+      });
+    }
+
+    if (scope === "MULTI_CHAPTER") {
+      const ids = data.chapterIds ?? [];
+      if (ids.length < 2) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["chapterIds"],
+          message: "MULTI_CHAPTER requires at least two chapters",
+        });
+      }
+    } else if (scope === "FULL_CURRICULUM") {
+      if (!data.stageId) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["stageId"],
+          message: "stageId is required for FULL_CURRICULUM generation",
+        });
+      }
+    }
+  });
 
 export type GenerateQuizInput = z.infer<typeof generateQuizSchema>;

@@ -4,6 +4,7 @@ import type {
   EssayGradingDetail,
   EssayGradingHubResponse,
   EssaySubmissionsResponse,
+  EssaySuggestionsResponse,
   GradeEssaysPayload,
 } from '@/features/teacher/types/essayGrading';
 
@@ -47,6 +48,13 @@ export const essayGradingApi = {
     const { data } = await apiClient.patch<ApiResponse<unknown>>(
       `/attempts/${attemptId}/grade-essays`,
       payload,
+    );
+    return data.data;
+  },
+
+  generateSuggestions: async (attemptId: string): Promise<EssaySuggestionsResponse> => {
+    const { data } = await apiClient.post<ApiResponse<EssaySuggestionsResponse>>(
+      `/attempts/${attemptId}/essay-suggestions`,
     );
     return data.data;
   },

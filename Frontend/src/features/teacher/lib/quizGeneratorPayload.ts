@@ -9,7 +9,10 @@ import { mapFormDifficultyMode } from '@/features/teacher/lib/quizDifficultyVali
 export function buildGenerateQuizPayload(
   form: Pick<
     QuizGeneratorFormState,
+    | 'sourceScope'
+    | 'stageId'
     | 'chapterId'
+    | 'chapterIds'
     | 'contentScope'
     | 'lessonIds'
     | 'questionCount'
@@ -20,18 +23,48 @@ export function buildGenerateQuizPayload(
   >,
   topicFocus?: string,
 ): GenerateQuizPayload {
+  // Default to SINGLE_CHAPTER so callers/forms that never set sourceScope keep
+  // producing the exact legacy chapterId-only payload.
+  const sourceScope = form.sourceScope ?? 'SINGLE_CHAPTER';
+
+  // Per-lesson selection is only meaningful for a single chapter.
   const lessonIds =
-    form.contentScope === 'SELECTED_LESSONS' ? [...form.lessonIds] : [];
+    sourceScope === 'SINGLE_CHAPTER' && form.contentScope === 'SELECTED_LESSONS'
+      ? [...form.lessonIds]
+      : [];
+
+  let scopeFields: Partial<GenerateQuizPayload>;
+  if (sourceScope === 'MULTI_CHAPTER') {
+    scopeFields = {
+      sourceScope,
+      chapterIds: [...form.chapterIds],
+      contentScope: 'CHAPTER',
+      lessonIds: [],
+    };
+  } else if (sourceScope === 'FULL_CURRICULUM') {
+    scopeFields = {
+      sourceScope,
+      stageId: form.stageId,
+      contentScope: 'CHAPTER',
+      lessonIds: [],
+    };
+  } else {
+    // SINGLE_CHAPTER: omit sourceScope so the wire payload stays byte-identical
+    // to the legacy request (the backend defaults a missing scope to SINGLE_CHAPTER).
+    scopeFields = {
+      chapterId: form.chapterId,
+      contentScope: form.contentScope,
+      lessonIds,
+    };
+  }
 
   const base = {
-    chapterId: form.chapterId,
-    contentScope: form.contentScope,
-    lessonIds,
+    ...scopeFields,
     questionCount: form.questionCount,
     types: form.questionTypes,
     difficultyMode: mapFormDifficultyMode(form.difficultyMode),
     ...(topicFocus ? { topicFocus } : {}),
-  };
+  } as GenerateQuizPayload;
 
   if (form.difficultyMode === 'mixed') {
     return {
@@ -46,6 +79,25 @@ export function buildGenerateQuizPayload(
     difficultyMode: 'SINGLE',
     difficulty: form.difficulty as 'easy' | 'medium' | 'hard',
   };
+}
+
+/** Whether the current source-scope selection has the inputs it needs. */
+export function isGenerateSourceScopeValid(
+  form: Pick<
+    QuizGeneratorFormState,
+    'sourceScope' | 'chapterId' | 'chapterIds' | 'stageId' | 'contentScope' | 'lessonIds'
+  >,
+): boolean {
+  const sourceScope = form.sourceScope ?? 'SINGLE_CHAPTER';
+  if (sourceScope === 'MULTI_CHAPTER') {
+    return new Set(form.chapterIds).size >= 2;
+  }
+  if (sourceScope === 'FULL_CURRICULUM') {
+    return Boolean(form.stageId);
+  }
+  // SINGLE_CHAPTER
+  if (!form.chapterId) return false;
+  return isGenerateFormScopeValid(form.contentScope, form.lessonIds);
 }
 
 export function shouldShowLessonPicker(contentScope: QuizContentScope): boolean {

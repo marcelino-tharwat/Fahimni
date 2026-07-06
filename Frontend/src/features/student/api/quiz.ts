@@ -46,11 +46,13 @@ export interface SubmitResultEntry {
   type: 'MCQ' | 'TRUE_FALSE' | 'ESSAY';
   questionText: string;
   options: string[] | null;
-  studentAnswer: string;
-  correctAnswer: string | null;
+  // The backend result-visibility policy may OMIT these fields (they are only
+  // hidden server-side, never sent). Kept optional so the UI renders safely.
+  studentAnswer?: string;
+  correctAnswer?: string | null;
   result: string;
-  awardedPoints: number | null;
-  maxPoints: number;
+  awardedPoints?: number | null;
+  maxPoints?: number;
   feedback?: string;
   explanation?: string;
 }
@@ -60,12 +62,26 @@ export interface SubmitAttemptResponse {
   quizId: string;
   quizTitle: string;
   status: string;
-  score: number;
-  totalPoints: number;
-  percentage: number;
+  // score/totalPoints/percentage are null when the final score is hidden.
+  score: number | null;
+  totalPoints: number | null;
+  percentage: number | null;
   pendingEssayCount: number;
   isFinal: boolean;
   results: SubmitResultEntry[];
+  // Additive result-visibility metadata (present for configured quizzes).
+  hasPendingEssayReview?: boolean;
+  pendingEssayResultMode?: string | null;
+  message?: string | null;
+  resultVisibility?: {
+    configured: boolean;
+    showCorrectAnswers: boolean;
+    showPerQuestionScores: boolean;
+    showFinalScore: boolean;
+    showStudentAnswers: boolean;
+    showExplanations: boolean;
+    pendingEssayResultMode: string;
+  };
 }
 
 export interface ChapterQuizInfo {
@@ -227,31 +243,36 @@ export function buildQuizResults(submit: SubmitAttemptResponse): QuizResultsData
       id: r.questionId,
       type: mapBackendType(r.type),
       text: r.questionText,
-      points: r.maxPoints,
+      points: r.maxPoints ?? 0,
       options: r.options ? mapOptions(r.options) : undefined,
     },
-    studentAnswer: r.studentAnswer,
+    // A hidden field is simply absent from the API payload → render nothing.
+    studentAnswer: r.studentAnswer ?? '',
     status: normalizeStatus(r.result),
-    awardedPoints: r.awardedPoints,
-    maxPoints: r.maxPoints,
+    awardedPoints: r.awardedPoints ?? null,
+    maxPoints: r.maxPoints ?? 0,
     feedback: r.feedback,
     correctAnswer: r.correctAnswer ?? undefined,
     explanation: r.explanation,
   }));
 
   const { correctCount, wrongCount, pendingCount } = summarizeQuizResults(results);
+  const finalScoreHidden = submit.score === null || submit.score === undefined;
 
   return {
     quizId: submit.quizId,
     quizTitle: submit.quizTitle,
     totalQuestions: submit.results.length,
-    score: submit.score,
-    totalPoints: submit.totalPoints,
-    percentage: submit.percentage,
+    score: submit.score ?? 0,
+    totalPoints: submit.totalPoints ?? 0,
+    percentage: submit.percentage ?? 0,
     correctCount,
     wrongCount,
     pendingCount,
     results,
+    finalScoreHidden,
+    hasPendingEssayReview: submit.hasPendingEssayReview ?? false,
+    reviewMessage: submit.message ?? null,
   };
 }
 

@@ -31,3 +31,26 @@ body {
 #root {
   min-height: 100dvh;
 }
+
+/* Print-protection fallback — if the JS beforeprint overlay fails in any
+   browser, pure CSS hides protected content and shows a warning message. */
+@media print {
+  .print-protected {
+    visibility: hidden !important;
+    position: relative !important;
+  }
+  .print-protected::before {
+    content: "Protected - cannot be printed";
+    visibility: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-family: 'Cairo', sans-serif !important;
+    font-size: 18px !important;
+    background: white !important;
+    color: #333 !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 999999 !important;
+  }
+}
