@@ -48,6 +48,7 @@ import { ProfilePage } from '@/pages/ProfilePage';
 import { AllStagesPage } from '@/features/teacher/pages/AllStagesPage';
 import { StageDetailPage } from '@/features/teacher/pages/StageDetailPage';
 import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
+import { TeacherPlansPage } from '@/features/teacher/pages/TeacherPlansPage';
 import { EssayGradingHubPage } from '@/features/teacher/pages/EssayGradingHubPage';
 import { EssaySubmissionsPage } from '@/features/teacher/pages/EssaySubmissionsPage';
 import { EssayGradingDetailPage } from '@/features/teacher/pages/EssayGradingDetailPage';
@@ -140,6 +141,7 @@ const router = createBrowserRouter([
               { path: '/teacher/students/:studentId', element: <StudentDetailPage /> },
               { path: '/teacher/branding', element: <TeacherBrandingPage /> },
               { path: '/teacher/promo-codes', element: <AdminPromoCodesPage /> },
+              { path: '/teacher/plans', element: <TeacherPlansPage /> },
               { path: '/teacher/profile', element: <ProfilePage /> },
             ],
           },

@@ -16,6 +16,7 @@ const REASON_I18N_KEY: Record<string, string> = {
   DATABASE_SCHEMA_OUT_OF_DATE: 'generationErrorSchema',
   DATABASE_ERROR: 'generationErrorGeneric',
   GENERATION_FAILED: 'generationErrorGeneric',
+  QUOTA_EXCEEDED: 'quotaExceeded',
 };
 
 function isUnsafeTechnicalMessage(message: string): boolean {

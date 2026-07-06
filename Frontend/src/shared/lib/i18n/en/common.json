@@ -15,7 +15,8 @@
     "profile": "Profile",
     "promoCodes": "Promo Codes",
     "studentLookup": "Student Lookup",
-    "tenants": "Academies"
+    "tenants": "Academies",
+    "plans": "Plans & Subscriptions"
   },
   "roles": {
     "ADMIN": "Admin",
