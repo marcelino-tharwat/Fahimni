@@ -7,15 +7,26 @@ interface ResultFilterBarProps {
   active: ResultFilterKey;
   counts: Record<ResultFilterKey, number>;
   onChange: (key: ResultFilterKey) => void;
+  // When correctness is hidden there is no right/wrong split to filter by.
+  correctnessHidden?: boolean;
 }
 
-export function ResultFilterBar({ active, counts, onChange }: ResultFilterBarProps) {
+export function ResultFilterBar({
+  active,
+  counts,
+  onChange,
+  correctnessHidden,
+}: ResultFilterBarProps) {
   const { t } = useTranslation();
 
   const pills: { key: ResultFilterKey; label: string }[] = [
     { key: 'all', label: t('quiz:results.filterAll') },
-    { key: 'correct', label: t('quiz:results.filterCorrect') },
-    { key: 'wrong', label: t('quiz:results.filterWrong') },
+    ...(correctnessHidden
+      ? []
+      : [
+          { key: 'correct' as const, label: t('quiz:results.filterCorrect') },
+          { key: 'wrong' as const, label: t('quiz:results.filterWrong') },
+        ]),
     ...(counts.pending > 0
       ? [{ key: 'pending' as const, label: t('quiz:results.filterPending') }]
       : []),

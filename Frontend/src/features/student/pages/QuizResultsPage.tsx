@@ -136,7 +136,12 @@ export function QuizResultsPage() {
 
         <ResultQuestionNavigator results={data.results} />
 
-        <ResultFilterBar active={filter} counts={counts} onChange={setFilter} />
+        <ResultFilterBar
+          active={filter}
+          counts={counts}
+          onChange={setFilter}
+          correctnessHidden={data.correctnessHidden}
+        />
 
         {filtered.length > 0 ? (
           <div className="flex flex-col gap-5">

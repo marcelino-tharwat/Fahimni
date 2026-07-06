@@ -3,9 +3,16 @@ import type { QuizQuestion } from '@/shared/types';
 /**
  * Per-question result status as returned by the backend submit response.
  * `graded` is used once a teacher manually grades an essay; on the immediate
- * post-submit view essays are typically `pending`.
+ * post-submit view essays are typically `pending`. `answered` is the neutral
+ * status the backend sends when per-question correctness is hidden — the
+ * student's answer is shown with no right/wrong signal.
  */
-export type ResultStatus = 'correct' | 'incorrect' | 'pending' | 'graded';
+export type ResultStatus =
+  | 'correct'
+  | 'incorrect'
+  | 'pending'
+  | 'graded'
+  | 'answered';
 
 /**
  * One question merged with the student's answer and the backend grading
@@ -22,6 +29,10 @@ export interface QuestionResult {
   feedback?: string;
   correctAnswer?: string;
   explanation?: string;
+  // Whether the per-question score (awardedPoints/maxPoints) was sent by the
+  // backend. `false` when `showPerQuestionScores` is off — the UI then renders
+  // no points badge. Absent (undefined) is treated as visible for legacy data.
+  scoreVisible?: boolean;
 }
 
 /**
@@ -45,6 +56,10 @@ export interface QuizResultsData {
   finalScoreHidden?: boolean;
   hasPendingEssayReview?: boolean;
   reviewMessage?: string | null;
+  // True when per-question correctness is hidden (neither the correct answer
+  // nor the per-question score is exposed). The UI then suppresses every
+  // right/wrong signal — badges, colors, and the correct/wrong summary tiles.
+  correctnessHidden?: boolean;
 }
 
 export type ResultFilterKey = 'all' | 'correct' | 'wrong' | 'pending';

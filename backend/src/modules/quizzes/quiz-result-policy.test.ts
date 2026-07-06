@@ -160,6 +160,80 @@ describe("applyStudentResultPolicy — per-field hiding (configured, final)", ()
   });
 });
 
+describe("applyStudentResultPolicy — student answer without correctness", () => {
+  // The core fix: showing the student's own answer must not, on its own, reveal
+  // whether that answer was right or wrong.
+  const answerOnly = configured({
+    showStudentAnswers: true,
+    showCorrectAnswers: false,
+    showPerQuestionScores: false,
+    showExplanations: false,
+    showFinalScore: false,
+  });
+
+  it("returns the student's answer only", () => {
+    const out = applyStudentResultPolicy(finalResult(), answerOnly);
+    expect(out.results[0]!.studentAnswer).toBe("a");
+  });
+
+  it("does not include the correct answer", () => {
+    const out = applyStudentResultPolicy(finalResult(), answerOnly);
+    expect(out.results[0]).not.toHaveProperty("correctAnswer");
+  });
+
+  it("neutralizes the per-question correctness indicator to 'answered'", () => {
+    const out = applyStudentResultPolicy(finalResult(), answerOnly);
+    // The internal grade was "incorrect" — the student must not see that.
+    expect(out.results[0]!.result).toBe("answered");
+    expect(out.results[0]!.result).not.toBe("incorrect");
+    expect(out.results[0]!.result).not.toBe("correct");
+  });
+
+  it("does not include the per-question score", () => {
+    const out = applyStudentResultPolicy(finalResult(), answerOnly);
+    expect(out.results[0]).not.toHaveProperty("awardedPoints");
+    expect(out.results[0]).not.toHaveProperty("maxPoints");
+  });
+
+  it("does not include the explanation", () => {
+    const out = applyStudentResultPolicy(finalResult(), answerOnly);
+    expect(out.results[0]).not.toHaveProperty("explanation");
+  });
+
+  it("keeps correctness when showCorrectAnswers is on", () => {
+    const out = applyStudentResultPolicy(
+      finalResult(),
+      configured({ showCorrectAnswers: true, showPerQuestionScores: false }),
+    );
+    expect(out.results[0]!.result).toBe("incorrect");
+    expect(out.results[0]!.correctAnswer).toBe("b");
+  });
+
+  it("keeps correctness when only showPerQuestionScores is on", () => {
+    const out = applyStudentResultPolicy(
+      finalResult(),
+      configured({ showCorrectAnswers: false, showPerQuestionScores: true }),
+    );
+    expect(out.results[0]!.result).toBe("incorrect");
+    expect(out.results[0]).not.toHaveProperty("correctAnswer");
+    expect(out.results[0]!.awardedPoints).toBe(0);
+  });
+
+  it("preserves the pending grading state even when correctness is hidden", () => {
+    const out = applyStudentResultPolicy(
+      pendingEssayResult(),
+      configured({
+        showCorrectAnswers: false,
+        showPerQuestionScores: false,
+        pendingEssayResultMode: "SHOW_OBJECTIVE_ONLY",
+      }),
+    );
+    // Objective MCQ is neutralized; a still-pending essay would keep "pending".
+    expect(out.results.every((r) => r.result !== "correct" && r.result !== "incorrect")).toBe(true);
+    expect(out.results[0]!.result).toBe("answered");
+  });
+});
+
 describe("applyStudentResultPolicy — pending essay modes", () => {
   it("HIDE_ALL_RESULTS hides all results and the score", () => {
     const out = applyStudentResultPolicy(

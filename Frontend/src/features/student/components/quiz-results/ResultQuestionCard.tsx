@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { CheckCircle, XCircle, Clock, Lightbulb, Info } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Lightbulb, Info, FileText } from 'lucide-react';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { cn } from '@/shared/lib/utils/cn';
 import type { QuestionResult } from '@/features/student/types/quizResults';
@@ -10,7 +10,7 @@ interface ResultQuestionCardProps {
   index: number;
 }
 
-type Tone = 'correct' | 'incorrect' | 'pending';
+type Tone = 'correct' | 'incorrect' | 'pending' | 'neutral';
 
 function toneOf(result: QuestionResult): Tone {
   return resolveResultTone(result);
@@ -20,6 +20,8 @@ const TONE = {
   correct: { strip: 'bg-success-500', icon: CheckCircle, text: 'text-success-500' },
   incorrect: { strip: 'bg-danger-500', icon: XCircle, text: 'text-danger-500' },
   pending: { strip: 'bg-warning-500', icon: Clock, text: 'text-warning-500' },
+  // Correctness hidden: neutral gray, no right/wrong signal.
+  neutral: { strip: 'bg-gray-300', icon: FileText, text: 'text-gray-500' },
 } as const;
 
 export function ResultQuestionCard({ result, index }: ResultQuestionCardProps) {
@@ -32,13 +34,18 @@ export function ResultQuestionCard({ result, index }: ResultQuestionCardProps) {
 
   const tone = toneOf(result);
   const { strip, icon: StatusIcon, text } = TONE[tone];
+  // The per-question score is rendered only when the backend actually sent it
+  // (showPerQuestionScores). `scoreVisible === undefined` = legacy → visible.
+  const scoreVisible = result.scoreVisible !== false;
 
   const statusLabel =
     tone === 'correct'
       ? t('quiz:results.correctAnswer')
       : tone === 'incorrect'
         ? t('quiz:results.wrongAnswer')
-        : t('quiz:results.pendingGrading');
+        : tone === 'pending'
+          ? t('quiz:results.pendingGrading')
+          : t('quiz:results.answered');
 
   const typeLabel = (() => {
     switch (question.type) {
@@ -50,6 +57,8 @@ export function ResultQuestionCard({ result, index }: ResultQuestionCardProps) {
   })();
 
   const pointsNode = (() => {
+    // No per-question score sent (showPerQuestionScores off) → render nothing.
+    if (!scoreVisible) return null;
     if (tone === 'pending') {
       return (
         <span className="ms-auto text-small font-semibold text-gray-500">
@@ -226,6 +235,8 @@ function TrueFalse({ studentAnswer, tone, correctAnswer }: TrueFalseProps) {
         const isCorrectOption = correctAnswer != null && correctAnswer === opt.value;
         const showCorrect = isCorrectOption || (selected && tone === 'correct');
         const showWrong = selected && tone === 'incorrect';
+        // Correctness hidden: still mark the student's own choice, but neutrally.
+        const showNeutral = selected && !showCorrect && !showWrong;
 
         return (
           <div
@@ -234,7 +245,8 @@ function TrueFalse({ studentAnswer, tone, correctAnswer }: TrueFalseProps) {
               'flex min-w-[120px] items-center justify-center gap-2 rounded-xl border-2 px-6 py-3 text-sm font-semibold',
               showCorrect && 'border-success-500 bg-success-50 text-success-500',
               showWrong && 'border-danger-500 bg-danger-50 text-danger-500',
-              !showCorrect && !showWrong && 'border-gray-300 bg-white text-gray-600',
+              showNeutral && 'border-cyan-500 bg-cyan-50 text-cyan-700',
+              !showCorrect && !showWrong && !showNeutral && 'border-gray-300 bg-white text-gray-600',
             )}
           >
             {showCorrect && <CheckCircle size={16} />}
@@ -271,6 +283,19 @@ function FreeTextAnswer({ studentAnswer, tone, correctAnswer }: FreeTextProps) {
           <Info size={13} />
           <span>{t('quiz:results.teacherWillGrade')}</span>
         </div>
+      </div>
+    );
+  }
+
+  // Correctness hidden: show the student's answer with neutral styling only —
+  // no right/wrong color, no correct-answer reveal.
+  if (tone === 'neutral') {
+    return (
+      <div className="rounded-xl border-2 border-gray-300 bg-gray-50 p-3">
+        <p className="mb-1 text-small font-semibold text-gray-600">
+          {t('quiz:results.yourAnswer')}
+        </p>
+        <p className="font-mono text-sm leading-relaxed text-navy-800">{studentAnswer || '—'}</p>
       </div>
     );
   }

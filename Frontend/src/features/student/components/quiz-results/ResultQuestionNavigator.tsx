@@ -14,6 +14,7 @@ const TONE_BG: Record<string, string> = {
   correct: 'bg-success-500',
   incorrect: 'bg-danger-500',
   pending: 'bg-warning-500',
+  neutral: 'bg-gray-400',
 };
 
 export function ResultQuestionNavigator({ results }: ResultQuestionNavigatorProps) {
