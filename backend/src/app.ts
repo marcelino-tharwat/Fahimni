@@ -26,6 +26,7 @@ import quizRoutes from "./modules/quizzes/quizzes.routes.js";
 import attemptsRoutes from "./modules/quizzes/attempts.routes.js";
 import materialsRoutes from "./modules/materials/materials.routes.js";
 import contentProtectionRoutes from "./modules/content-protection/contentProtection.routes.js";
+import { teacherRequestRoutes } from "./modules/teacher-request/index.js";
 
 export function createApp(): Application {
   const app = express();
@@ -83,6 +84,8 @@ export function createApp(): Application {
   app.use("/api/attempts", attemptsRoutes);
   app.use("/api", materialsRoutes);
   app.use("/api", contentProtectionRoutes);
+
+  app.use("/api/teacher-registration-requests", teacherRequestRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
