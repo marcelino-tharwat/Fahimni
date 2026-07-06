@@ -55,7 +55,8 @@ export function CreateLessonForm({
 
   const pdfUpload = usePdfUpload({
     teacherId,
-    uploadImmediately: false,
+    uploadImmediately: true,
+    staging: true,
   });
 
   const clearError = (field: string) => setErrors((prev) => ({ ...prev, [field]: '' }));

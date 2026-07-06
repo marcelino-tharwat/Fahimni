@@ -273,7 +273,6 @@
     },
     "activity": {
       "title": "Recent Activity",
-      "viewAll": "View All",
       "empty": "No recent activity yet.",
       "you": "You",
       "actions": {

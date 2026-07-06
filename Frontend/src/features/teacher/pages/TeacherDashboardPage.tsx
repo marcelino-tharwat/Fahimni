@@ -164,7 +164,7 @@ export function TeacherDashboardPage() {
       ) : isEmpty ? (
         <DashboardEmpty onCreateStage={goToContent} />
       ) : (
-        data && <DashboardContent data={data} onQuickAction={goToContent} onViewAll={goToContent} />
+        data && <DashboardContent data={data} onQuickAction={goToContent} />
       )}
     </div>
   );
@@ -177,11 +177,9 @@ export function TeacherDashboardPage() {
 function DashboardContent({
   data,
   onQuickAction,
-  onViewAll,
 }: {
   data: TeacherDashboardStats;
   onQuickAction: () => void;
-  onViewAll: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -244,15 +242,7 @@ function DashboardContent({
           <h2 className="font-cairo text-lg font-bold text-navy-900">
             {t('teacher:dashboardView.activity.title')}
           </h2>
-          {data.recentActivity.length > 0 && (
-            <button
-              type="button"
-              onClick={onViewAll}
-              className="rounded-btn border border-gray-200 px-3 py-1.5 font-cairo text-xs font-medium text-navy-700 transition-colors hover:bg-gray-50"
-            >
-              {t('teacher:dashboardView.activity.viewAll')}
-            </button>
-          )}
+
         </div>
         <Card padding={data.recentActivity.length === 0 ? 'lg' : 'none'} className="overflow-hidden">
           {data.recentActivity.length === 0 ? (

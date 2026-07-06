@@ -145,4 +145,99 @@ export class FilesService {
 
     return { record, indexingStatus };
   }
+
+  async uploadToStaging(
+    file: Express.Multer.File,
+    teacherId: string,
+  ): Promise<string> {
+    const key = `teachers/${teacherId}/staging/${uuidv4()}.pdf`;
+    return this.uploadFile(file.buffer, key, file.mimetype);
+  }
+
+  async attachFilesToLesson(
+    teacherId: string,
+    lessonId: string,
+    files: Array<{ stagingPath: string; originalName: string; fileSize: number; mimeType: string }>,
+  ): Promise<Array<{ id: string; filePath: string; displayName: string; fileSize: number; mimeType: string; indexingStatus: IndexingStatus }>> {
+    const results: Array<{ id: string; filePath: string; displayName: string; fileSize: number; mimeType: string; indexingStatus: IndexingStatus }> = [];
+
+    for (const f of files) {
+      try {
+        const { buffer } = await this.downloadFileBuffer(f.stagingPath);
+        const newKey = `teachers/${teacherId}/lessons/${lessonId}/${uuidv4()}.pdf`;
+        await this.uploadFile(buffer, newKey, f.mimeType);
+        await this.deleteFile(f.stagingPath);
+
+        const record = await prisma.lessonMaterial.create({
+          data: {
+            lessonId,
+            filePath: newKey,
+            displayName: f.originalName,
+            fileSize: f.fileSize,
+            mimeType: f.mimeType,
+          },
+        });
+
+        logger.info("material_processing_started", {
+          lessonId,
+          materialId: record.id,
+          mimeType: f.mimeType,
+          fileSize: f.fileSize,
+        });
+
+        let indexingStatus: IndexingStatus = "pending";
+        try {
+          const parser = new PDFParse({ data: new Uint8Array(buffer) });
+          const textResult = await parser.getText();
+          const text = textResult.text.trim();
+          const nonWhitespace = text.replace(/\s+/g, "").length;
+          logger.info("material_text_extracted", {
+            lessonId,
+            materialId: record.id,
+            pageCount: textResult.total ?? 0,
+            characterCount: text.length,
+            nonWhitespaceCharacterCount: nonWhitespace,
+          });
+          if (nonWhitespace > 0) {
+            try {
+              await aiService.indexLesson(lessonId, text, {
+                fileName: f.originalName,
+                filePath: newKey,
+                materialId: record.id,
+              });
+              indexingStatus = "ready";
+            } catch {
+              indexingStatus = "failed";
+              logger.info("material_processing_failed", {
+                lessonId,
+                materialId: record.id,
+                safeErrorCode: "EMBEDDING_FAILED",
+              });
+            }
+          } else {
+            indexingStatus = "failed";
+            logger.info("material_processing_failed", {
+              lessonId,
+              materialId: record.id,
+              safeErrorCode: "OCR_REQUIRED",
+              pageCount: textResult.total ?? 0,
+            });
+          }
+        } catch {
+          indexingStatus = "failed";
+          logger.info("material_processing_failed", {
+            lessonId,
+            materialId: record.id,
+            safeErrorCode: "CORRUPT_PDF",
+          });
+        }
+
+        results.push({ id: record.id, filePath: record.filePath, displayName: record.displayName, fileSize: record.fileSize, mimeType: record.mimeType, indexingStatus });
+      } catch (err) {
+        logger.warn("Failed to attach staging file", { stagingPath: f.stagingPath, error: err });
+      }
+    }
+
+    return results;
+  }
 }
