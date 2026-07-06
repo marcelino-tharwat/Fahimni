@@ -25,6 +25,7 @@ import promoCodeRoutes from "./modules/promo-code/promo-code.routes.js";
 import quizRoutes from "./modules/quizzes/quizzes.routes.js";
 import attemptsRoutes from "./modules/quizzes/attempts.routes.js";
 import materialsRoutes from "./modules/materials/materials.routes.js";
+import { teacherRequestRoutes } from "./modules/teacher-request/index.js";
 
 export function createApp(): Application {
   const app = express();
@@ -69,6 +70,8 @@ export function createApp(): Application {
   app.use("/api/quizzes", quizRoutes);
   app.use("/api/attempts", attemptsRoutes);
   app.use("/api", materialsRoutes);
+
+  app.use("/api/teacher-registration-requests", teacherRequestRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

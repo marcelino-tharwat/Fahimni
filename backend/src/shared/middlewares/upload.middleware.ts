@@ -54,3 +54,34 @@ const pdfUpload = multer({
 
 export const uploadSingle = pdfUpload.single("file");
 export const uploadBatch = pdfUpload.array("files", 10);
+
+// ── Proof documents upload (teacher registration requests) ──────────────
+const PROOF_ALLOWED_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
+
+const PROOF_MAX_SIZE = 10 * 1024 * 1024;
+const PROOF_MAX_COUNT = 5;
+
+const proofFileFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback,
+): void => {
+  if (PROOF_ALLOWED_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Only PDF, JPEG, PNG, and WebP files are allowed", 400));
+  }
+};
+
+const proofUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: PROOF_MAX_SIZE },
+  fileFilter: proofFileFilter,
+});
+
+export const uploadProofDocuments = proofUpload.array("proofDocuments", PROOF_MAX_COUNT);
