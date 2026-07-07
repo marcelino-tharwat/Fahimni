@@ -52,11 +52,25 @@ export interface PendingRequestDTO {
   createdAt: string;
 }
 
+export interface PendingPaymentInfoDTO {
+  id: string;
+  planId: string;
+  planCode: string;
+  billingInterval: BillingInterval;
+  amount: number;
+  currency: string;
+  status: string;
+  checkoutUrl: string | null;
+  createdAt: string;
+}
+
 export interface SubscriptionMeResponse {
   currentPlan: CurrentPlanDTO;
   subscription: SubscriptionDTO | null;
   usage: UsageSummaryDTO;
   pendingRequest: PendingRequestDTO | null;
+  /** Latest pending online payment (paid checkout awaiting confirmation). */
+  pendingPayment: PendingPaymentInfoDTO | null;
   effectivePlanCode: string;
 }
 

@@ -124,12 +124,17 @@ export class PaymobService {
     amountInEGP: number,
     billingData: BillingData,
     chapterId?: string,
+    redirectionUrlOverride?: string,
   ): Promise<string> {
     const amountCents = Math.round(amountInEGP * 100);
 
-    const redirectionUrl = chapterId
-      ? `${env.FRONTEND_BASE_URL}/student/dashboard?orderId=${paymobOrderId}&chapterId=${chapterId}`
-      : `${env.FRONTEND_BASE_URL}/student/dashboard?orderId=${paymobOrderId}`;
+    // Teacher-subscription checkout passes an explicit redirect (e.g. back to
+    // /teacher/plans); student chapter checkout falls back to the dashboard.
+    const redirectionUrl =
+      redirectionUrlOverride ??
+      (chapterId
+        ? `${env.FRONTEND_BASE_URL}/student/dashboard?orderId=${paymobOrderId}&chapterId=${chapterId}`
+        : `${env.FRONTEND_BASE_URL}/student/dashboard?orderId=${paymobOrderId}`);
 
     const response = await this.fetchWithTimeout(
       "/api/acceptance/payment_keys",

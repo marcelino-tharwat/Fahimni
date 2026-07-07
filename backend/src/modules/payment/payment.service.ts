@@ -7,6 +7,7 @@ import { AppError } from "../../shared/utils/AppError.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
 import { PaymobService } from "./paymob.service.js";
 import type { BillingData } from "./paymob.service.js";
+import { teacherSubscriptionPaymentService } from "../teacher-plans/teacher-subscription-payment.service.js";
 import type { PaymentStatusDTO } from "./payment.types.js";
 import { paymentMessages } from "./payment.i18n.js";
 import type { Lang } from "./payment.i18n.js";
@@ -129,7 +130,17 @@ export class PaymentService {
     });
 
     if (!transaction) {
-      logger.info("Paymob webhook skipped — unknown order", { paymobOrderId });
+      // Not a student chapter payment — it may be a teacher subscription
+      // payment. The HMAC has already been verified above, so it is safe to
+      // hand the verified payload to the teacher-subscription handler.
+      const handled =
+        await teacherSubscriptionPaymentService.handleProviderWebhook(
+          paymobOrderId,
+          payload,
+        );
+      if (!handled) {
+        logger.info("Paymob webhook skipped — unknown order", { paymobOrderId });
+      }
       return;
     }
 

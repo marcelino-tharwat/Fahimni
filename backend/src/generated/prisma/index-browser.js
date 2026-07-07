@@ -467,6 +467,25 @@ exports.Prisma.TeacherAiUsageEventScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.TeacherSubscriptionPaymentScalarFieldEnum = {
+  id: 'id',
+  teacherId: 'teacherId',
+  planId: 'planId',
+  subscriptionId: 'subscriptionId',
+  provider: 'provider',
+  providerOrderId: 'providerOrderId',
+  providerTransactionId: 'providerTransactionId',
+  amount: 'amount',
+  currency: 'currency',
+  billingInterval: 'billingInterval',
+  status: 'status',
+  checkoutUrl: 'checkoutUrl',
+  errorMessage: 'errorMessage',
+  rawCallback: 'rawCallback',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -637,7 +656,8 @@ exports.Prisma.ModelName = {
   TeacherPlan: 'TeacherPlan',
   TeacherSubscription: 'TeacherSubscription',
   TeacherSubscriptionRequest: 'TeacherSubscriptionRequest',
-  TeacherAiUsageEvent: 'TeacherAiUsageEvent'
+  TeacherAiUsageEvent: 'TeacherAiUsageEvent',
+  TeacherSubscriptionPayment: 'TeacherSubscriptionPayment'
 };
 
 /**

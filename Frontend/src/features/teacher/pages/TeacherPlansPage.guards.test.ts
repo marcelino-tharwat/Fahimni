@@ -74,3 +74,50 @@ describe('TeacherPlansPage — real data guards', () => {
     expect(types).toContain('pendingRequest: PendingRequestInfo | null');
   });
 });
+
+describe('TeacherPlansPage — real payment checkout flow', () => {
+  it('api exposes a checkout method hitting the checkout endpoint', () => {
+    expect(api).toContain('/teacher/subscription/checkout');
+    expect(api).toContain('checkout:');
+  });
+
+  it('main paid button triggers checkout and redirects to the provider URL', () => {
+    expect(page).toContain('handleCheckout');
+    expect(page).toContain('teacherPlansApi.checkout');
+    expect(page).toContain('window.location.assign');
+    // The primary button label is "Pay Now", not a manual request.
+    expect(page).toContain("'plans.payNow'");
+    expect(page).toContain('onClick={() => handleCheckout(plan.id)}');
+  });
+
+  it('does NOT show a fake success on checkout (only redirect)', () => {
+    // handleCheckout must never surface a success message from the checkout
+    // response — success only comes from a confirmed payment, reflected via
+    // subscription state after the redirect. (Resetting to null is allowed.)
+    const checkoutFn = page.slice(
+      page.indexOf('const handleCheckout'),
+      page.indexOf('const handleManualRequest'),
+    );
+    expect(checkoutFn).not.toContain('setSuccessMsg(result');
+    expect(checkoutFn).toContain('window.location.assign');
+  });
+
+  it('renders the pending payment and payment-unavailable states', () => {
+    expect(page).toContain('pendingPayment');
+    expect(page).toContain('paymentPendingAlert');
+    expect(page).toContain('paymentUnavailable');
+  });
+
+  it('manual admin request is a secondary action, not the main flow', () => {
+    expect(page).toContain('handleManualRequest');
+    expect(page).toContain('requestManualReview');
+    // The main card button calls checkout, not the manual request.
+    expect(page).not.toContain('onClick={() => handleManualRequest(plan.id)}\n                disabled={isDisabled');
+  });
+
+  it('PendingPaymentInfo type and pendingPayment field exist', () => {
+    expect(types).toContain('PendingPaymentInfo');
+    expect(types).toContain('pendingPayment: PendingPaymentInfo | null');
+    expect(types).toContain('CheckoutResponse');
+  });
+});

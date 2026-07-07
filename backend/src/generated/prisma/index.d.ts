@@ -160,6 +160,14 @@ export type TeacherSubscriptionRequest = $Result.DefaultSelection<Prisma.$Teache
  * only after the AI operation succeeds. Used for quota enforcement.
  */
 export type TeacherAiUsageEvent = $Result.DefaultSelection<Prisma.$TeacherAiUsageEventPayload>
+/**
+ * Model TeacherSubscriptionPayment
+ * Tracks a teacher's plan-subscription payment through the payment provider
+ * (Paymob). A TeacherSubscription is created/activated ONLY after the matching
+ * payment row reaches SUCCESS via the HMAC-verified provider webhook — never
+ * optimistically on checkout. Reuses PaymentStatus (PENDING/SUCCESS/FAILED).
+ */
+export type TeacherSubscriptionPayment = $Result.DefaultSelection<Prisma.$TeacherSubscriptionPaymentPayload>
 
 /**
  * Enums
@@ -812,6 +820,16 @@ export class PrismaClient<
     * ```
     */
   get teacherAiUsageEvent(): Prisma.TeacherAiUsageEventDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.teacherSubscriptionPayment`: Exposes CRUD operations for the **TeacherSubscriptionPayment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TeacherSubscriptionPayments
+    * const teacherSubscriptionPayments = await prisma.teacherSubscriptionPayment.findMany()
+    * ```
+    */
+  get teacherSubscriptionPayment(): Prisma.TeacherSubscriptionPaymentDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1273,7 +1291,8 @@ export namespace Prisma {
     TeacherPlan: 'TeacherPlan',
     TeacherSubscription: 'TeacherSubscription',
     TeacherSubscriptionRequest: 'TeacherSubscriptionRequest',
-    TeacherAiUsageEvent: 'TeacherAiUsageEvent'
+    TeacherAiUsageEvent: 'TeacherAiUsageEvent',
+    TeacherSubscriptionPayment: 'TeacherSubscriptionPayment'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1289,7 +1308,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3365,6 +3384,80 @@ export namespace Prisma {
           }
         }
       }
+      TeacherSubscriptionPayment: {
+        payload: Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>
+        fields: Prisma.TeacherSubscriptionPaymentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TeacherSubscriptionPaymentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TeacherSubscriptionPaymentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>
+          }
+          findFirst: {
+            args: Prisma.TeacherSubscriptionPaymentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TeacherSubscriptionPaymentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>
+          }
+          findMany: {
+            args: Prisma.TeacherSubscriptionPaymentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>[]
+          }
+          create: {
+            args: Prisma.TeacherSubscriptionPaymentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>
+          }
+          createMany: {
+            args: Prisma.TeacherSubscriptionPaymentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TeacherSubscriptionPaymentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>[]
+          }
+          delete: {
+            args: Prisma.TeacherSubscriptionPaymentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>
+          }
+          update: {
+            args: Prisma.TeacherSubscriptionPaymentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>
+          }
+          deleteMany: {
+            args: Prisma.TeacherSubscriptionPaymentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TeacherSubscriptionPaymentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TeacherSubscriptionPaymentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>[]
+          }
+          upsert: {
+            args: Prisma.TeacherSubscriptionPaymentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherSubscriptionPaymentPayload>
+          }
+          aggregate: {
+            args: Prisma.TeacherSubscriptionPaymentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTeacherSubscriptionPayment>
+          }
+          groupBy: {
+            args: Prisma.TeacherSubscriptionPaymentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TeacherSubscriptionPaymentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TeacherSubscriptionPaymentCountArgs<ExtArgs>
+            result: $Utils.Optional<TeacherSubscriptionPaymentCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3501,6 +3594,7 @@ export namespace Prisma {
     teacherSubscription?: TeacherSubscriptionOmit
     teacherSubscriptionRequest?: TeacherSubscriptionRequestOmit
     teacherAiUsageEvent?: TeacherAiUsageEventOmit
+    teacherSubscriptionPayment?: TeacherSubscriptionPaymentOmit
   }
 
   /* Types for Logging */
@@ -3598,6 +3692,7 @@ export namespace Prisma {
     teacherSubscriptions: number
     teacherSubscriptionRequests: number
     teacherAiUsageEvents: number
+    teacherSubscriptionPayments: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3618,6 +3713,7 @@ export namespace Prisma {
     teacherSubscriptions?: boolean | UserCountOutputTypeCountTeacherSubscriptionsArgs
     teacherSubscriptionRequests?: boolean | UserCountOutputTypeCountTeacherSubscriptionRequestsArgs
     teacherAiUsageEvents?: boolean | UserCountOutputTypeCountTeacherAiUsageEventsArgs
+    teacherSubscriptionPayments?: boolean | UserCountOutputTypeCountTeacherSubscriptionPaymentsArgs
   }
 
   // Custom InputTypes
@@ -3748,6 +3844,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountTeacherAiUsageEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TeacherAiUsageEventWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTeacherSubscriptionPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeacherSubscriptionPaymentWhereInput
   }
 
 
@@ -4044,12 +4147,14 @@ export namespace Prisma {
     subscriptions: number
     requests: number
     usageEvents: number
+    payments: number
   }
 
   export type TeacherPlanCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subscriptions?: boolean | TeacherPlanCountOutputTypeCountSubscriptionsArgs
     requests?: boolean | TeacherPlanCountOutputTypeCountRequestsArgs
     usageEvents?: boolean | TeacherPlanCountOutputTypeCountUsageEventsArgs
+    payments?: boolean | TeacherPlanCountOutputTypeCountPaymentsArgs
   }
 
   // Custom InputTypes
@@ -4084,6 +4189,13 @@ export namespace Prisma {
     where?: TeacherAiUsageEventWhereInput
   }
 
+  /**
+   * TeacherPlanCountOutputType without action
+   */
+  export type TeacherPlanCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeacherSubscriptionPaymentWhereInput
+  }
+
 
   /**
    * Count Type TeacherSubscriptionCountOutputType
@@ -4091,10 +4203,12 @@ export namespace Prisma {
 
   export type TeacherSubscriptionCountOutputType = {
     usageEvents: number
+    payments: number
   }
 
   export type TeacherSubscriptionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     usageEvents?: boolean | TeacherSubscriptionCountOutputTypeCountUsageEventsArgs
+    payments?: boolean | TeacherSubscriptionCountOutputTypeCountPaymentsArgs
   }
 
   // Custom InputTypes
@@ -4113,6 +4227,13 @@ export namespace Prisma {
    */
   export type TeacherSubscriptionCountOutputTypeCountUsageEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TeacherAiUsageEventWhereInput
+  }
+
+  /**
+   * TeacherSubscriptionCountOutputType without action
+   */
+  export type TeacherSubscriptionCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeacherSubscriptionPaymentWhereInput
   }
 
 
@@ -4377,6 +4498,7 @@ export namespace Prisma {
     teacherSubscriptions?: boolean | User$teacherSubscriptionsArgs<ExtArgs>
     teacherSubscriptionRequests?: boolean | User$teacherSubscriptionRequestsArgs<ExtArgs>
     teacherAiUsageEvents?: boolean | User$teacherAiUsageEventsArgs<ExtArgs>
+    teacherSubscriptionPayments?: boolean | User$teacherSubscriptionPaymentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4440,6 +4562,7 @@ export namespace Prisma {
     teacherSubscriptions?: boolean | User$teacherSubscriptionsArgs<ExtArgs>
     teacherSubscriptionRequests?: boolean | User$teacherSubscriptionRequestsArgs<ExtArgs>
     teacherAiUsageEvents?: boolean | User$teacherAiUsageEventsArgs<ExtArgs>
+    teacherSubscriptionPayments?: boolean | User$teacherSubscriptionPaymentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4467,6 +4590,7 @@ export namespace Prisma {
       teacherSubscriptions: Prisma.$TeacherSubscriptionPayload<ExtArgs>[]
       teacherSubscriptionRequests: Prisma.$TeacherSubscriptionRequestPayload<ExtArgs>[]
       teacherAiUsageEvents: Prisma.$TeacherAiUsageEventPayload<ExtArgs>[]
+      teacherSubscriptionPayments: Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4892,6 +5016,7 @@ export namespace Prisma {
     teacherSubscriptions<T extends User$teacherSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     teacherSubscriptionRequests<T extends User$teacherSubscriptionRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherSubscriptionRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     teacherAiUsageEvents<T extends User$teacherAiUsageEventsArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherAiUsageEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherAiUsageEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    teacherSubscriptionPayments<T extends User$teacherSubscriptionPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherSubscriptionPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5767,6 +5892,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TeacherAiUsageEventScalarFieldEnum | TeacherAiUsageEventScalarFieldEnum[]
+  }
+
+  /**
+   * User.teacherSubscriptionPayments
+   */
+  export type User$teacherSubscriptionPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    where?: TeacherSubscriptionPaymentWhereInput
+    orderBy?: TeacherSubscriptionPaymentOrderByWithRelationInput | TeacherSubscriptionPaymentOrderByWithRelationInput[]
+    cursor?: TeacherSubscriptionPaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TeacherSubscriptionPaymentScalarFieldEnum | TeacherSubscriptionPaymentScalarFieldEnum[]
   }
 
   /**
@@ -32699,6 +32848,7 @@ export namespace Prisma {
     subscriptions?: boolean | TeacherPlan$subscriptionsArgs<ExtArgs>
     requests?: boolean | TeacherPlan$requestsArgs<ExtArgs>
     usageEvents?: boolean | TeacherPlan$usageEventsArgs<ExtArgs>
+    payments?: boolean | TeacherPlan$paymentsArgs<ExtArgs>
     _count?: boolean | TeacherPlanCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["teacherPlan"]>
 
@@ -32764,6 +32914,7 @@ export namespace Prisma {
     subscriptions?: boolean | TeacherPlan$subscriptionsArgs<ExtArgs>
     requests?: boolean | TeacherPlan$requestsArgs<ExtArgs>
     usageEvents?: boolean | TeacherPlan$usageEventsArgs<ExtArgs>
+    payments?: boolean | TeacherPlan$paymentsArgs<ExtArgs>
     _count?: boolean | TeacherPlanCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TeacherPlanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -32775,6 +32926,7 @@ export namespace Prisma {
       subscriptions: Prisma.$TeacherSubscriptionPayload<ExtArgs>[]
       requests: Prisma.$TeacherSubscriptionRequestPayload<ExtArgs>[]
       usageEvents: Prisma.$TeacherAiUsageEventPayload<ExtArgs>[]
+      payments: Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -33196,6 +33348,7 @@ export namespace Prisma {
     subscriptions<T extends TeacherPlan$subscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, TeacherPlan$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     requests<T extends TeacherPlan$requestsArgs<ExtArgs> = {}>(args?: Subset<T, TeacherPlan$requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     usageEvents<T extends TeacherPlan$usageEventsArgs<ExtArgs> = {}>(args?: Subset<T, TeacherPlan$usageEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherAiUsageEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    payments<T extends TeacherPlan$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, TeacherPlan$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -33706,6 +33859,30 @@ export namespace Prisma {
   }
 
   /**
+   * TeacherPlan.payments
+   */
+  export type TeacherPlan$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    where?: TeacherSubscriptionPaymentWhereInput
+    orderBy?: TeacherSubscriptionPaymentOrderByWithRelationInput | TeacherSubscriptionPaymentOrderByWithRelationInput[]
+    cursor?: TeacherSubscriptionPaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TeacherSubscriptionPaymentScalarFieldEnum | TeacherSubscriptionPaymentScalarFieldEnum[]
+  }
+
+  /**
    * TeacherPlan without action
    */
   export type TeacherPlanDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -33947,6 +34124,7 @@ export namespace Prisma {
     teacher?: boolean | UserDefaultArgs<ExtArgs>
     plan?: boolean | TeacherPlanDefaultArgs<ExtArgs>
     usageEvents?: boolean | TeacherSubscription$usageEventsArgs<ExtArgs>
+    payments?: boolean | TeacherSubscription$paymentsArgs<ExtArgs>
     _count?: boolean | TeacherSubscriptionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["teacherSubscription"]>
 
@@ -34004,6 +34182,7 @@ export namespace Prisma {
     teacher?: boolean | UserDefaultArgs<ExtArgs>
     plan?: boolean | TeacherPlanDefaultArgs<ExtArgs>
     usageEvents?: boolean | TeacherSubscription$usageEventsArgs<ExtArgs>
+    payments?: boolean | TeacherSubscription$paymentsArgs<ExtArgs>
     _count?: boolean | TeacherSubscriptionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TeacherSubscriptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -34021,6 +34200,7 @@ export namespace Prisma {
       teacher: Prisma.$UserPayload<ExtArgs>
       plan: Prisma.$TeacherPlanPayload<ExtArgs>
       usageEvents: Prisma.$TeacherAiUsageEventPayload<ExtArgs>[]
+      payments: Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -34432,6 +34612,7 @@ export namespace Prisma {
     teacher<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     plan<T extends TeacherPlanDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TeacherPlanDefaultArgs<ExtArgs>>): Prisma__TeacherPlanClient<$Result.GetResult<Prisma.$TeacherPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     usageEvents<T extends TeacherSubscription$usageEventsArgs<ExtArgs> = {}>(args?: Subset<T, TeacherSubscription$usageEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherAiUsageEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    payments<T extends TeacherSubscription$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, TeacherSubscription$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -34895,6 +35076,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TeacherAiUsageEventScalarFieldEnum | TeacherAiUsageEventScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherSubscription.payments
+   */
+  export type TeacherSubscription$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    where?: TeacherSubscriptionPaymentWhereInput
+    orderBy?: TeacherSubscriptionPaymentOrderByWithRelationInput | TeacherSubscriptionPaymentOrderByWithRelationInput[]
+    cursor?: TeacherSubscriptionPaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TeacherSubscriptionPaymentScalarFieldEnum | TeacherSubscriptionPaymentScalarFieldEnum[]
   }
 
   /**
@@ -37216,6 +37421,1283 @@ export namespace Prisma {
 
 
   /**
+   * Model TeacherSubscriptionPayment
+   */
+
+  export type AggregateTeacherSubscriptionPayment = {
+    _count: TeacherSubscriptionPaymentCountAggregateOutputType | null
+    _avg: TeacherSubscriptionPaymentAvgAggregateOutputType | null
+    _sum: TeacherSubscriptionPaymentSumAggregateOutputType | null
+    _min: TeacherSubscriptionPaymentMinAggregateOutputType | null
+    _max: TeacherSubscriptionPaymentMaxAggregateOutputType | null
+  }
+
+  export type TeacherSubscriptionPaymentAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type TeacherSubscriptionPaymentSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type TeacherSubscriptionPaymentMinAggregateOutputType = {
+    id: string | null
+    teacherId: string | null
+    planId: string | null
+    subscriptionId: string | null
+    provider: string | null
+    providerOrderId: string | null
+    providerTransactionId: string | null
+    amount: number | null
+    currency: string | null
+    billingInterval: $Enums.BillingInterval | null
+    status: $Enums.PaymentStatus | null
+    checkoutUrl: string | null
+    errorMessage: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TeacherSubscriptionPaymentMaxAggregateOutputType = {
+    id: string | null
+    teacherId: string | null
+    planId: string | null
+    subscriptionId: string | null
+    provider: string | null
+    providerOrderId: string | null
+    providerTransactionId: string | null
+    amount: number | null
+    currency: string | null
+    billingInterval: $Enums.BillingInterval | null
+    status: $Enums.PaymentStatus | null
+    checkoutUrl: string | null
+    errorMessage: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TeacherSubscriptionPaymentCountAggregateOutputType = {
+    id: number
+    teacherId: number
+    planId: number
+    subscriptionId: number
+    provider: number
+    providerOrderId: number
+    providerTransactionId: number
+    amount: number
+    currency: number
+    billingInterval: number
+    status: number
+    checkoutUrl: number
+    errorMessage: number
+    rawCallback: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TeacherSubscriptionPaymentAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type TeacherSubscriptionPaymentSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type TeacherSubscriptionPaymentMinAggregateInputType = {
+    id?: true
+    teacherId?: true
+    planId?: true
+    subscriptionId?: true
+    provider?: true
+    providerOrderId?: true
+    providerTransactionId?: true
+    amount?: true
+    currency?: true
+    billingInterval?: true
+    status?: true
+    checkoutUrl?: true
+    errorMessage?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TeacherSubscriptionPaymentMaxAggregateInputType = {
+    id?: true
+    teacherId?: true
+    planId?: true
+    subscriptionId?: true
+    provider?: true
+    providerOrderId?: true
+    providerTransactionId?: true
+    amount?: true
+    currency?: true
+    billingInterval?: true
+    status?: true
+    checkoutUrl?: true
+    errorMessage?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TeacherSubscriptionPaymentCountAggregateInputType = {
+    id?: true
+    teacherId?: true
+    planId?: true
+    subscriptionId?: true
+    provider?: true
+    providerOrderId?: true
+    providerTransactionId?: true
+    amount?: true
+    currency?: true
+    billingInterval?: true
+    status?: true
+    checkoutUrl?: true
+    errorMessage?: true
+    rawCallback?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TeacherSubscriptionPaymentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TeacherSubscriptionPayment to aggregate.
+     */
+    where?: TeacherSubscriptionPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherSubscriptionPayments to fetch.
+     */
+    orderBy?: TeacherSubscriptionPaymentOrderByWithRelationInput | TeacherSubscriptionPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TeacherSubscriptionPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherSubscriptionPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherSubscriptionPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TeacherSubscriptionPayments
+    **/
+    _count?: true | TeacherSubscriptionPaymentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TeacherSubscriptionPaymentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TeacherSubscriptionPaymentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TeacherSubscriptionPaymentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TeacherSubscriptionPaymentMaxAggregateInputType
+  }
+
+  export type GetTeacherSubscriptionPaymentAggregateType<T extends TeacherSubscriptionPaymentAggregateArgs> = {
+        [P in keyof T & keyof AggregateTeacherSubscriptionPayment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTeacherSubscriptionPayment[P]>
+      : GetScalarType<T[P], AggregateTeacherSubscriptionPayment[P]>
+  }
+
+
+
+
+  export type TeacherSubscriptionPaymentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeacherSubscriptionPaymentWhereInput
+    orderBy?: TeacherSubscriptionPaymentOrderByWithAggregationInput | TeacherSubscriptionPaymentOrderByWithAggregationInput[]
+    by: TeacherSubscriptionPaymentScalarFieldEnum[] | TeacherSubscriptionPaymentScalarFieldEnum
+    having?: TeacherSubscriptionPaymentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TeacherSubscriptionPaymentCountAggregateInputType | true
+    _avg?: TeacherSubscriptionPaymentAvgAggregateInputType
+    _sum?: TeacherSubscriptionPaymentSumAggregateInputType
+    _min?: TeacherSubscriptionPaymentMinAggregateInputType
+    _max?: TeacherSubscriptionPaymentMaxAggregateInputType
+  }
+
+  export type TeacherSubscriptionPaymentGroupByOutputType = {
+    id: string
+    teacherId: string
+    planId: string
+    subscriptionId: string | null
+    provider: string
+    providerOrderId: string | null
+    providerTransactionId: string | null
+    amount: number
+    currency: string
+    billingInterval: $Enums.BillingInterval
+    status: $Enums.PaymentStatus
+    checkoutUrl: string | null
+    errorMessage: string | null
+    rawCallback: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TeacherSubscriptionPaymentCountAggregateOutputType | null
+    _avg: TeacherSubscriptionPaymentAvgAggregateOutputType | null
+    _sum: TeacherSubscriptionPaymentSumAggregateOutputType | null
+    _min: TeacherSubscriptionPaymentMinAggregateOutputType | null
+    _max: TeacherSubscriptionPaymentMaxAggregateOutputType | null
+  }
+
+  type GetTeacherSubscriptionPaymentGroupByPayload<T extends TeacherSubscriptionPaymentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TeacherSubscriptionPaymentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TeacherSubscriptionPaymentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TeacherSubscriptionPaymentGroupByOutputType[P]>
+            : GetScalarType<T[P], TeacherSubscriptionPaymentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TeacherSubscriptionPaymentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    teacherId?: boolean
+    planId?: boolean
+    subscriptionId?: boolean
+    provider?: boolean
+    providerOrderId?: boolean
+    providerTransactionId?: boolean
+    amount?: boolean
+    currency?: boolean
+    billingInterval?: boolean
+    status?: boolean
+    checkoutUrl?: boolean
+    errorMessage?: boolean
+    rawCallback?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    plan?: boolean | TeacherPlanDefaultArgs<ExtArgs>
+    subscription?: boolean | TeacherSubscriptionPayment$subscriptionArgs<ExtArgs>
+  }, ExtArgs["result"]["teacherSubscriptionPayment"]>
+
+  export type TeacherSubscriptionPaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    teacherId?: boolean
+    planId?: boolean
+    subscriptionId?: boolean
+    provider?: boolean
+    providerOrderId?: boolean
+    providerTransactionId?: boolean
+    amount?: boolean
+    currency?: boolean
+    billingInterval?: boolean
+    status?: boolean
+    checkoutUrl?: boolean
+    errorMessage?: boolean
+    rawCallback?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    plan?: boolean | TeacherPlanDefaultArgs<ExtArgs>
+    subscription?: boolean | TeacherSubscriptionPayment$subscriptionArgs<ExtArgs>
+  }, ExtArgs["result"]["teacherSubscriptionPayment"]>
+
+  export type TeacherSubscriptionPaymentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    teacherId?: boolean
+    planId?: boolean
+    subscriptionId?: boolean
+    provider?: boolean
+    providerOrderId?: boolean
+    providerTransactionId?: boolean
+    amount?: boolean
+    currency?: boolean
+    billingInterval?: boolean
+    status?: boolean
+    checkoutUrl?: boolean
+    errorMessage?: boolean
+    rawCallback?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    plan?: boolean | TeacherPlanDefaultArgs<ExtArgs>
+    subscription?: boolean | TeacherSubscriptionPayment$subscriptionArgs<ExtArgs>
+  }, ExtArgs["result"]["teacherSubscriptionPayment"]>
+
+  export type TeacherSubscriptionPaymentSelectScalar = {
+    id?: boolean
+    teacherId?: boolean
+    planId?: boolean
+    subscriptionId?: boolean
+    provider?: boolean
+    providerOrderId?: boolean
+    providerTransactionId?: boolean
+    amount?: boolean
+    currency?: boolean
+    billingInterval?: boolean
+    status?: boolean
+    checkoutUrl?: boolean
+    errorMessage?: boolean
+    rawCallback?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TeacherSubscriptionPaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "teacherId" | "planId" | "subscriptionId" | "provider" | "providerOrderId" | "providerTransactionId" | "amount" | "currency" | "billingInterval" | "status" | "checkoutUrl" | "errorMessage" | "rawCallback" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherSubscriptionPayment"]>
+  export type TeacherSubscriptionPaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    plan?: boolean | TeacherPlanDefaultArgs<ExtArgs>
+    subscription?: boolean | TeacherSubscriptionPayment$subscriptionArgs<ExtArgs>
+  }
+  export type TeacherSubscriptionPaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    plan?: boolean | TeacherPlanDefaultArgs<ExtArgs>
+    subscription?: boolean | TeacherSubscriptionPayment$subscriptionArgs<ExtArgs>
+  }
+  export type TeacherSubscriptionPaymentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    plan?: boolean | TeacherPlanDefaultArgs<ExtArgs>
+    subscription?: boolean | TeacherSubscriptionPayment$subscriptionArgs<ExtArgs>
+  }
+
+  export type $TeacherSubscriptionPaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TeacherSubscriptionPayment"
+    objects: {
+      teacher: Prisma.$UserPayload<ExtArgs>
+      plan: Prisma.$TeacherPlanPayload<ExtArgs>
+      subscription: Prisma.$TeacherSubscriptionPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      teacherId: string
+      planId: string
+      /**
+       * Set once the payment succeeds and a subscription is created/activated.
+       */
+      subscriptionId: string | null
+      provider: string
+      providerOrderId: string | null
+      providerTransactionId: string | null
+      amount: number
+      currency: string
+      billingInterval: $Enums.BillingInterval
+      status: $Enums.PaymentStatus
+      checkoutUrl: string | null
+      errorMessage: string | null
+      /**
+       * Raw provider callback — server-only; never returned by normal APIs.
+       */
+      rawCallback: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["teacherSubscriptionPayment"]>
+    composites: {}
+  }
+
+  type TeacherSubscriptionPaymentGetPayload<S extends boolean | null | undefined | TeacherSubscriptionPaymentDefaultArgs> = $Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload, S>
+
+  type TeacherSubscriptionPaymentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TeacherSubscriptionPaymentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TeacherSubscriptionPaymentCountAggregateInputType | true
+    }
+
+  export interface TeacherSubscriptionPaymentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TeacherSubscriptionPayment'], meta: { name: 'TeacherSubscriptionPayment' } }
+    /**
+     * Find zero or one TeacherSubscriptionPayment that matches the filter.
+     * @param {TeacherSubscriptionPaymentFindUniqueArgs} args - Arguments to find a TeacherSubscriptionPayment
+     * @example
+     * // Get one TeacherSubscriptionPayment
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TeacherSubscriptionPaymentFindUniqueArgs>(args: SelectSubset<T, TeacherSubscriptionPaymentFindUniqueArgs<ExtArgs>>): Prisma__TeacherSubscriptionPaymentClient<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TeacherSubscriptionPayment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TeacherSubscriptionPaymentFindUniqueOrThrowArgs} args - Arguments to find a TeacherSubscriptionPayment
+     * @example
+     * // Get one TeacherSubscriptionPayment
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TeacherSubscriptionPaymentFindUniqueOrThrowArgs>(args: SelectSubset<T, TeacherSubscriptionPaymentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TeacherSubscriptionPaymentClient<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TeacherSubscriptionPayment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherSubscriptionPaymentFindFirstArgs} args - Arguments to find a TeacherSubscriptionPayment
+     * @example
+     * // Get one TeacherSubscriptionPayment
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TeacherSubscriptionPaymentFindFirstArgs>(args?: SelectSubset<T, TeacherSubscriptionPaymentFindFirstArgs<ExtArgs>>): Prisma__TeacherSubscriptionPaymentClient<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TeacherSubscriptionPayment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherSubscriptionPaymentFindFirstOrThrowArgs} args - Arguments to find a TeacherSubscriptionPayment
+     * @example
+     * // Get one TeacherSubscriptionPayment
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TeacherSubscriptionPaymentFindFirstOrThrowArgs>(args?: SelectSubset<T, TeacherSubscriptionPaymentFindFirstOrThrowArgs<ExtArgs>>): Prisma__TeacherSubscriptionPaymentClient<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TeacherSubscriptionPayments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherSubscriptionPaymentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TeacherSubscriptionPayments
+     * const teacherSubscriptionPayments = await prisma.teacherSubscriptionPayment.findMany()
+     * 
+     * // Get first 10 TeacherSubscriptionPayments
+     * const teacherSubscriptionPayments = await prisma.teacherSubscriptionPayment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const teacherSubscriptionPaymentWithIdOnly = await prisma.teacherSubscriptionPayment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TeacherSubscriptionPaymentFindManyArgs>(args?: SelectSubset<T, TeacherSubscriptionPaymentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TeacherSubscriptionPayment.
+     * @param {TeacherSubscriptionPaymentCreateArgs} args - Arguments to create a TeacherSubscriptionPayment.
+     * @example
+     * // Create one TeacherSubscriptionPayment
+     * const TeacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.create({
+     *   data: {
+     *     // ... data to create a TeacherSubscriptionPayment
+     *   }
+     * })
+     * 
+     */
+    create<T extends TeacherSubscriptionPaymentCreateArgs>(args: SelectSubset<T, TeacherSubscriptionPaymentCreateArgs<ExtArgs>>): Prisma__TeacherSubscriptionPaymentClient<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TeacherSubscriptionPayments.
+     * @param {TeacherSubscriptionPaymentCreateManyArgs} args - Arguments to create many TeacherSubscriptionPayments.
+     * @example
+     * // Create many TeacherSubscriptionPayments
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TeacherSubscriptionPaymentCreateManyArgs>(args?: SelectSubset<T, TeacherSubscriptionPaymentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TeacherSubscriptionPayments and returns the data saved in the database.
+     * @param {TeacherSubscriptionPaymentCreateManyAndReturnArgs} args - Arguments to create many TeacherSubscriptionPayments.
+     * @example
+     * // Create many TeacherSubscriptionPayments
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TeacherSubscriptionPayments and only return the `id`
+     * const teacherSubscriptionPaymentWithIdOnly = await prisma.teacherSubscriptionPayment.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TeacherSubscriptionPaymentCreateManyAndReturnArgs>(args?: SelectSubset<T, TeacherSubscriptionPaymentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TeacherSubscriptionPayment.
+     * @param {TeacherSubscriptionPaymentDeleteArgs} args - Arguments to delete one TeacherSubscriptionPayment.
+     * @example
+     * // Delete one TeacherSubscriptionPayment
+     * const TeacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.delete({
+     *   where: {
+     *     // ... filter to delete one TeacherSubscriptionPayment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TeacherSubscriptionPaymentDeleteArgs>(args: SelectSubset<T, TeacherSubscriptionPaymentDeleteArgs<ExtArgs>>): Prisma__TeacherSubscriptionPaymentClient<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TeacherSubscriptionPayment.
+     * @param {TeacherSubscriptionPaymentUpdateArgs} args - Arguments to update one TeacherSubscriptionPayment.
+     * @example
+     * // Update one TeacherSubscriptionPayment
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TeacherSubscriptionPaymentUpdateArgs>(args: SelectSubset<T, TeacherSubscriptionPaymentUpdateArgs<ExtArgs>>): Prisma__TeacherSubscriptionPaymentClient<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TeacherSubscriptionPayments.
+     * @param {TeacherSubscriptionPaymentDeleteManyArgs} args - Arguments to filter TeacherSubscriptionPayments to delete.
+     * @example
+     * // Delete a few TeacherSubscriptionPayments
+     * const { count } = await prisma.teacherSubscriptionPayment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TeacherSubscriptionPaymentDeleteManyArgs>(args?: SelectSubset<T, TeacherSubscriptionPaymentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TeacherSubscriptionPayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherSubscriptionPaymentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TeacherSubscriptionPayments
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TeacherSubscriptionPaymentUpdateManyArgs>(args: SelectSubset<T, TeacherSubscriptionPaymentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TeacherSubscriptionPayments and returns the data updated in the database.
+     * @param {TeacherSubscriptionPaymentUpdateManyAndReturnArgs} args - Arguments to update many TeacherSubscriptionPayments.
+     * @example
+     * // Update many TeacherSubscriptionPayments
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TeacherSubscriptionPayments and only return the `id`
+     * const teacherSubscriptionPaymentWithIdOnly = await prisma.teacherSubscriptionPayment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TeacherSubscriptionPaymentUpdateManyAndReturnArgs>(args: SelectSubset<T, TeacherSubscriptionPaymentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TeacherSubscriptionPayment.
+     * @param {TeacherSubscriptionPaymentUpsertArgs} args - Arguments to update or create a TeacherSubscriptionPayment.
+     * @example
+     * // Update or create a TeacherSubscriptionPayment
+     * const teacherSubscriptionPayment = await prisma.teacherSubscriptionPayment.upsert({
+     *   create: {
+     *     // ... data to create a TeacherSubscriptionPayment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TeacherSubscriptionPayment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TeacherSubscriptionPaymentUpsertArgs>(args: SelectSubset<T, TeacherSubscriptionPaymentUpsertArgs<ExtArgs>>): Prisma__TeacherSubscriptionPaymentClient<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TeacherSubscriptionPayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherSubscriptionPaymentCountArgs} args - Arguments to filter TeacherSubscriptionPayments to count.
+     * @example
+     * // Count the number of TeacherSubscriptionPayments
+     * const count = await prisma.teacherSubscriptionPayment.count({
+     *   where: {
+     *     // ... the filter for the TeacherSubscriptionPayments we want to count
+     *   }
+     * })
+    **/
+    count<T extends TeacherSubscriptionPaymentCountArgs>(
+      args?: Subset<T, TeacherSubscriptionPaymentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TeacherSubscriptionPaymentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TeacherSubscriptionPayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherSubscriptionPaymentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TeacherSubscriptionPaymentAggregateArgs>(args: Subset<T, TeacherSubscriptionPaymentAggregateArgs>): Prisma.PrismaPromise<GetTeacherSubscriptionPaymentAggregateType<T>>
+
+    /**
+     * Group by TeacherSubscriptionPayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherSubscriptionPaymentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TeacherSubscriptionPaymentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TeacherSubscriptionPaymentGroupByArgs['orderBy'] }
+        : { orderBy?: TeacherSubscriptionPaymentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TeacherSubscriptionPaymentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTeacherSubscriptionPaymentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TeacherSubscriptionPayment model
+   */
+  readonly fields: TeacherSubscriptionPaymentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TeacherSubscriptionPayment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TeacherSubscriptionPaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    teacher<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    plan<T extends TeacherPlanDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TeacherPlanDefaultArgs<ExtArgs>>): Prisma__TeacherPlanClient<$Result.GetResult<Prisma.$TeacherPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    subscription<T extends TeacherSubscriptionPayment$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, TeacherSubscriptionPayment$subscriptionArgs<ExtArgs>>): Prisma__TeacherSubscriptionClient<$Result.GetResult<Prisma.$TeacherSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TeacherSubscriptionPayment model
+   */
+  interface TeacherSubscriptionPaymentFieldRefs {
+    readonly id: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly teacherId: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly planId: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly subscriptionId: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly provider: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly providerOrderId: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly providerTransactionId: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly amount: FieldRef<"TeacherSubscriptionPayment", 'Float'>
+    readonly currency: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly billingInterval: FieldRef<"TeacherSubscriptionPayment", 'BillingInterval'>
+    readonly status: FieldRef<"TeacherSubscriptionPayment", 'PaymentStatus'>
+    readonly checkoutUrl: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly errorMessage: FieldRef<"TeacherSubscriptionPayment", 'String'>
+    readonly rawCallback: FieldRef<"TeacherSubscriptionPayment", 'Json'>
+    readonly createdAt: FieldRef<"TeacherSubscriptionPayment", 'DateTime'>
+    readonly updatedAt: FieldRef<"TeacherSubscriptionPayment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TeacherSubscriptionPayment findUnique
+   */
+  export type TeacherSubscriptionPaymentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherSubscriptionPayment to fetch.
+     */
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+  }
+
+  /**
+   * TeacherSubscriptionPayment findUniqueOrThrow
+   */
+  export type TeacherSubscriptionPaymentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherSubscriptionPayment to fetch.
+     */
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+  }
+
+  /**
+   * TeacherSubscriptionPayment findFirst
+   */
+  export type TeacherSubscriptionPaymentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherSubscriptionPayment to fetch.
+     */
+    where?: TeacherSubscriptionPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherSubscriptionPayments to fetch.
+     */
+    orderBy?: TeacherSubscriptionPaymentOrderByWithRelationInput | TeacherSubscriptionPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TeacherSubscriptionPayments.
+     */
+    cursor?: TeacherSubscriptionPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherSubscriptionPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherSubscriptionPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherSubscriptionPayments.
+     */
+    distinct?: TeacherSubscriptionPaymentScalarFieldEnum | TeacherSubscriptionPaymentScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherSubscriptionPayment findFirstOrThrow
+   */
+  export type TeacherSubscriptionPaymentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherSubscriptionPayment to fetch.
+     */
+    where?: TeacherSubscriptionPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherSubscriptionPayments to fetch.
+     */
+    orderBy?: TeacherSubscriptionPaymentOrderByWithRelationInput | TeacherSubscriptionPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TeacherSubscriptionPayments.
+     */
+    cursor?: TeacherSubscriptionPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherSubscriptionPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherSubscriptionPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherSubscriptionPayments.
+     */
+    distinct?: TeacherSubscriptionPaymentScalarFieldEnum | TeacherSubscriptionPaymentScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherSubscriptionPayment findMany
+   */
+  export type TeacherSubscriptionPaymentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherSubscriptionPayments to fetch.
+     */
+    where?: TeacherSubscriptionPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherSubscriptionPayments to fetch.
+     */
+    orderBy?: TeacherSubscriptionPaymentOrderByWithRelationInput | TeacherSubscriptionPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TeacherSubscriptionPayments.
+     */
+    cursor?: TeacherSubscriptionPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherSubscriptionPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherSubscriptionPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherSubscriptionPayments.
+     */
+    distinct?: TeacherSubscriptionPaymentScalarFieldEnum | TeacherSubscriptionPaymentScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherSubscriptionPayment create
+   */
+  export type TeacherSubscriptionPaymentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TeacherSubscriptionPayment.
+     */
+    data: XOR<TeacherSubscriptionPaymentCreateInput, TeacherSubscriptionPaymentUncheckedCreateInput>
+  }
+
+  /**
+   * TeacherSubscriptionPayment createMany
+   */
+  export type TeacherSubscriptionPaymentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TeacherSubscriptionPayments.
+     */
+    data: TeacherSubscriptionPaymentCreateManyInput | TeacherSubscriptionPaymentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TeacherSubscriptionPayment createManyAndReturn
+   */
+  export type TeacherSubscriptionPaymentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * The data used to create many TeacherSubscriptionPayments.
+     */
+    data: TeacherSubscriptionPaymentCreateManyInput | TeacherSubscriptionPaymentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TeacherSubscriptionPayment update
+   */
+  export type TeacherSubscriptionPaymentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TeacherSubscriptionPayment.
+     */
+    data: XOR<TeacherSubscriptionPaymentUpdateInput, TeacherSubscriptionPaymentUncheckedUpdateInput>
+    /**
+     * Choose, which TeacherSubscriptionPayment to update.
+     */
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+  }
+
+  /**
+   * TeacherSubscriptionPayment updateMany
+   */
+  export type TeacherSubscriptionPaymentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TeacherSubscriptionPayments.
+     */
+    data: XOR<TeacherSubscriptionPaymentUpdateManyMutationInput, TeacherSubscriptionPaymentUncheckedUpdateManyInput>
+    /**
+     * Filter which TeacherSubscriptionPayments to update
+     */
+    where?: TeacherSubscriptionPaymentWhereInput
+    /**
+     * Limit how many TeacherSubscriptionPayments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TeacherSubscriptionPayment updateManyAndReturn
+   */
+  export type TeacherSubscriptionPaymentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * The data used to update TeacherSubscriptionPayments.
+     */
+    data: XOR<TeacherSubscriptionPaymentUpdateManyMutationInput, TeacherSubscriptionPaymentUncheckedUpdateManyInput>
+    /**
+     * Filter which TeacherSubscriptionPayments to update
+     */
+    where?: TeacherSubscriptionPaymentWhereInput
+    /**
+     * Limit how many TeacherSubscriptionPayments to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TeacherSubscriptionPayment upsert
+   */
+  export type TeacherSubscriptionPaymentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TeacherSubscriptionPayment to update in case it exists.
+     */
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    /**
+     * In case the TeacherSubscriptionPayment found by the `where` argument doesn't exist, create a new TeacherSubscriptionPayment with this data.
+     */
+    create: XOR<TeacherSubscriptionPaymentCreateInput, TeacherSubscriptionPaymentUncheckedCreateInput>
+    /**
+     * In case the TeacherSubscriptionPayment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TeacherSubscriptionPaymentUpdateInput, TeacherSubscriptionPaymentUncheckedUpdateInput>
+  }
+
+  /**
+   * TeacherSubscriptionPayment delete
+   */
+  export type TeacherSubscriptionPaymentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+    /**
+     * Filter which TeacherSubscriptionPayment to delete.
+     */
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+  }
+
+  /**
+   * TeacherSubscriptionPayment deleteMany
+   */
+  export type TeacherSubscriptionPaymentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TeacherSubscriptionPayments to delete
+     */
+    where?: TeacherSubscriptionPaymentWhereInput
+    /**
+     * Limit how many TeacherSubscriptionPayments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TeacherSubscriptionPayment.subscription
+   */
+  export type TeacherSubscriptionPayment$subscriptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscription
+     */
+    select?: TeacherSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscription
+     */
+    omit?: TeacherSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionInclude<ExtArgs> | null
+    where?: TeacherSubscriptionWhereInput
+  }
+
+  /**
+   * TeacherSubscriptionPayment without action
+   */
+  export type TeacherSubscriptionPaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherSubscriptionPayment
+     */
+    select?: TeacherSubscriptionPaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherSubscriptionPayment
+     */
+    omit?: TeacherSubscriptionPaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherSubscriptionPaymentInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -37658,6 +39140,28 @@ export namespace Prisma {
   };
 
   export type TeacherAiUsageEventScalarFieldEnum = (typeof TeacherAiUsageEventScalarFieldEnum)[keyof typeof TeacherAiUsageEventScalarFieldEnum]
+
+
+  export const TeacherSubscriptionPaymentScalarFieldEnum: {
+    id: 'id',
+    teacherId: 'teacherId',
+    planId: 'planId',
+    subscriptionId: 'subscriptionId',
+    provider: 'provider',
+    providerOrderId: 'providerOrderId',
+    providerTransactionId: 'providerTransactionId',
+    amount: 'amount',
+    currency: 'currency',
+    billingInterval: 'billingInterval',
+    status: 'status',
+    checkoutUrl: 'checkoutUrl',
+    errorMessage: 'errorMessage',
+    rawCallback: 'rawCallback',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TeacherSubscriptionPaymentScalarFieldEnum = (typeof TeacherSubscriptionPaymentScalarFieldEnum)[keyof typeof TeacherSubscriptionPaymentScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -38106,6 +39610,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionListRelationFilter
     teacherSubscriptionRequests?: TeacherSubscriptionRequestListRelationFilter
     teacherAiUsageEvents?: TeacherAiUsageEventListRelationFilter
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -38138,6 +39643,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionOrderByRelationAggregateInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestOrderByRelationAggregateInput
     teacherAiUsageEvents?: TeacherAiUsageEventOrderByRelationAggregateInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -38173,6 +39679,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionListRelationFilter
     teacherSubscriptionRequests?: TeacherSubscriptionRequestListRelationFilter
     teacherAiUsageEvents?: TeacherAiUsageEventListRelationFilter
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentListRelationFilter
   }, "id" | "email" | "mobile">
 
   export type UserOrderByWithAggregationInput = {
@@ -40078,6 +41585,7 @@ export namespace Prisma {
     subscriptions?: TeacherSubscriptionListRelationFilter
     requests?: TeacherSubscriptionRequestListRelationFilter
     usageEvents?: TeacherAiUsageEventListRelationFilter
+    payments?: TeacherSubscriptionPaymentListRelationFilter
   }
 
   export type TeacherPlanOrderByWithRelationInput = {
@@ -40100,6 +41608,7 @@ export namespace Prisma {
     subscriptions?: TeacherSubscriptionOrderByRelationAggregateInput
     requests?: TeacherSubscriptionRequestOrderByRelationAggregateInput
     usageEvents?: TeacherAiUsageEventOrderByRelationAggregateInput
+    payments?: TeacherSubscriptionPaymentOrderByRelationAggregateInput
   }
 
   export type TeacherPlanWhereUniqueInput = Prisma.AtLeast<{
@@ -40125,6 +41634,7 @@ export namespace Prisma {
     subscriptions?: TeacherSubscriptionListRelationFilter
     requests?: TeacherSubscriptionRequestListRelationFilter
     usageEvents?: TeacherAiUsageEventListRelationFilter
+    payments?: TeacherSubscriptionPaymentListRelationFilter
   }, "id" | "code">
 
   export type TeacherPlanOrderByWithAggregationInput = {
@@ -40192,6 +41702,7 @@ export namespace Prisma {
     teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
     plan?: XOR<TeacherPlanScalarRelationFilter, TeacherPlanWhereInput>
     usageEvents?: TeacherAiUsageEventListRelationFilter
+    payments?: TeacherSubscriptionPaymentListRelationFilter
   }
 
   export type TeacherSubscriptionOrderByWithRelationInput = {
@@ -40210,6 +41721,7 @@ export namespace Prisma {
     teacher?: UserOrderByWithRelationInput
     plan?: TeacherPlanOrderByWithRelationInput
     usageEvents?: TeacherAiUsageEventOrderByRelationAggregateInput
+    payments?: TeacherSubscriptionPaymentOrderByRelationAggregateInput
   }
 
   export type TeacherSubscriptionWhereUniqueInput = Prisma.AtLeast<{
@@ -40231,6 +41743,7 @@ export namespace Prisma {
     teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
     plan?: XOR<TeacherPlanScalarRelationFilter, TeacherPlanWhereInput>
     usageEvents?: TeacherAiUsageEventListRelationFilter
+    payments?: TeacherSubscriptionPaymentListRelationFilter
   }, "id">
 
   export type TeacherSubscriptionOrderByWithAggregationInput = {
@@ -40420,6 +41933,124 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"TeacherAiUsageEvent"> | Date | string
   }
 
+  export type TeacherSubscriptionPaymentWhereInput = {
+    AND?: TeacherSubscriptionPaymentWhereInput | TeacherSubscriptionPaymentWhereInput[]
+    OR?: TeacherSubscriptionPaymentWhereInput[]
+    NOT?: TeacherSubscriptionPaymentWhereInput | TeacherSubscriptionPaymentWhereInput[]
+    id?: StringFilter<"TeacherSubscriptionPayment"> | string
+    teacherId?: StringFilter<"TeacherSubscriptionPayment"> | string
+    planId?: StringFilter<"TeacherSubscriptionPayment"> | string
+    subscriptionId?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    provider?: StringFilter<"TeacherSubscriptionPayment"> | string
+    providerOrderId?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    providerTransactionId?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    amount?: FloatFilter<"TeacherSubscriptionPayment"> | number
+    currency?: StringFilter<"TeacherSubscriptionPayment"> | string
+    billingInterval?: EnumBillingIntervalFilter<"TeacherSubscriptionPayment"> | $Enums.BillingInterval
+    status?: EnumPaymentStatusFilter<"TeacherSubscriptionPayment"> | $Enums.PaymentStatus
+    checkoutUrl?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    errorMessage?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    rawCallback?: JsonNullableFilter<"TeacherSubscriptionPayment">
+    createdAt?: DateTimeFilter<"TeacherSubscriptionPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"TeacherSubscriptionPayment"> | Date | string
+    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
+    plan?: XOR<TeacherPlanScalarRelationFilter, TeacherPlanWhereInput>
+    subscription?: XOR<TeacherSubscriptionNullableScalarRelationFilter, TeacherSubscriptionWhereInput> | null
+  }
+
+  export type TeacherSubscriptionPaymentOrderByWithRelationInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    planId?: SortOrder
+    subscriptionId?: SortOrderInput | SortOrder
+    provider?: SortOrder
+    providerOrderId?: SortOrderInput | SortOrder
+    providerTransactionId?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    billingInterval?: SortOrder
+    status?: SortOrder
+    checkoutUrl?: SortOrderInput | SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    rawCallback?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    teacher?: UserOrderByWithRelationInput
+    plan?: TeacherPlanOrderByWithRelationInput
+    subscription?: TeacherSubscriptionOrderByWithRelationInput
+  }
+
+  export type TeacherSubscriptionPaymentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    providerOrderId?: string
+    AND?: TeacherSubscriptionPaymentWhereInput | TeacherSubscriptionPaymentWhereInput[]
+    OR?: TeacherSubscriptionPaymentWhereInput[]
+    NOT?: TeacherSubscriptionPaymentWhereInput | TeacherSubscriptionPaymentWhereInput[]
+    teacherId?: StringFilter<"TeacherSubscriptionPayment"> | string
+    planId?: StringFilter<"TeacherSubscriptionPayment"> | string
+    subscriptionId?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    provider?: StringFilter<"TeacherSubscriptionPayment"> | string
+    providerTransactionId?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    amount?: FloatFilter<"TeacherSubscriptionPayment"> | number
+    currency?: StringFilter<"TeacherSubscriptionPayment"> | string
+    billingInterval?: EnumBillingIntervalFilter<"TeacherSubscriptionPayment"> | $Enums.BillingInterval
+    status?: EnumPaymentStatusFilter<"TeacherSubscriptionPayment"> | $Enums.PaymentStatus
+    checkoutUrl?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    errorMessage?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    rawCallback?: JsonNullableFilter<"TeacherSubscriptionPayment">
+    createdAt?: DateTimeFilter<"TeacherSubscriptionPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"TeacherSubscriptionPayment"> | Date | string
+    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
+    plan?: XOR<TeacherPlanScalarRelationFilter, TeacherPlanWhereInput>
+    subscription?: XOR<TeacherSubscriptionNullableScalarRelationFilter, TeacherSubscriptionWhereInput> | null
+  }, "id" | "providerOrderId">
+
+  export type TeacherSubscriptionPaymentOrderByWithAggregationInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    planId?: SortOrder
+    subscriptionId?: SortOrderInput | SortOrder
+    provider?: SortOrder
+    providerOrderId?: SortOrderInput | SortOrder
+    providerTransactionId?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    billingInterval?: SortOrder
+    status?: SortOrder
+    checkoutUrl?: SortOrderInput | SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    rawCallback?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TeacherSubscriptionPaymentCountOrderByAggregateInput
+    _avg?: TeacherSubscriptionPaymentAvgOrderByAggregateInput
+    _max?: TeacherSubscriptionPaymentMaxOrderByAggregateInput
+    _min?: TeacherSubscriptionPaymentMinOrderByAggregateInput
+    _sum?: TeacherSubscriptionPaymentSumOrderByAggregateInput
+  }
+
+  export type TeacherSubscriptionPaymentScalarWhereWithAggregatesInput = {
+    AND?: TeacherSubscriptionPaymentScalarWhereWithAggregatesInput | TeacherSubscriptionPaymentScalarWhereWithAggregatesInput[]
+    OR?: TeacherSubscriptionPaymentScalarWhereWithAggregatesInput[]
+    NOT?: TeacherSubscriptionPaymentScalarWhereWithAggregatesInput | TeacherSubscriptionPaymentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TeacherSubscriptionPayment"> | string
+    teacherId?: StringWithAggregatesFilter<"TeacherSubscriptionPayment"> | string
+    planId?: StringWithAggregatesFilter<"TeacherSubscriptionPayment"> | string
+    subscriptionId?: StringNullableWithAggregatesFilter<"TeacherSubscriptionPayment"> | string | null
+    provider?: StringWithAggregatesFilter<"TeacherSubscriptionPayment"> | string
+    providerOrderId?: StringNullableWithAggregatesFilter<"TeacherSubscriptionPayment"> | string | null
+    providerTransactionId?: StringNullableWithAggregatesFilter<"TeacherSubscriptionPayment"> | string | null
+    amount?: FloatWithAggregatesFilter<"TeacherSubscriptionPayment"> | number
+    currency?: StringWithAggregatesFilter<"TeacherSubscriptionPayment"> | string
+    billingInterval?: EnumBillingIntervalWithAggregatesFilter<"TeacherSubscriptionPayment"> | $Enums.BillingInterval
+    status?: EnumPaymentStatusWithAggregatesFilter<"TeacherSubscriptionPayment"> | $Enums.PaymentStatus
+    checkoutUrl?: StringNullableWithAggregatesFilter<"TeacherSubscriptionPayment"> | string | null
+    errorMessage?: StringNullableWithAggregatesFilter<"TeacherSubscriptionPayment"> | string | null
+    rawCallback?: JsonNullableWithAggregatesFilter<"TeacherSubscriptionPayment">
+    createdAt?: DateTimeWithAggregatesFilter<"TeacherSubscriptionPayment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TeacherSubscriptionPayment"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     fullName: string
@@ -40450,6 +42081,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -40482,6 +42114,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUpdateInput = {
@@ -40514,6 +42147,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -40546,6 +42180,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -42589,6 +44224,7 @@ export namespace Prisma {
     subscriptions?: TeacherSubscriptionCreateNestedManyWithoutPlanInput
     requests?: TeacherSubscriptionRequestCreateNestedManyWithoutPlanInput
     usageEvents?: TeacherAiUsageEventCreateNestedManyWithoutPlanInput
+    payments?: TeacherSubscriptionPaymentCreateNestedManyWithoutPlanInput
   }
 
   export type TeacherPlanUncheckedCreateInput = {
@@ -42611,6 +44247,7 @@ export namespace Prisma {
     subscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutPlanInput
     requests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutPlanInput
     usageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutPlanInput
+    payments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutPlanInput
   }
 
   export type TeacherPlanUpdateInput = {
@@ -42633,6 +44270,7 @@ export namespace Prisma {
     subscriptions?: TeacherSubscriptionUpdateManyWithoutPlanNestedInput
     requests?: TeacherSubscriptionRequestUpdateManyWithoutPlanNestedInput
     usageEvents?: TeacherAiUsageEventUpdateManyWithoutPlanNestedInput
+    payments?: TeacherSubscriptionPaymentUpdateManyWithoutPlanNestedInput
   }
 
   export type TeacherPlanUncheckedUpdateInput = {
@@ -42655,6 +44293,7 @@ export namespace Prisma {
     subscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutPlanNestedInput
     requests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutPlanNestedInput
     usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutPlanNestedInput
+    payments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutPlanNestedInput
   }
 
   export type TeacherPlanCreateManyInput = {
@@ -42728,6 +44367,7 @@ export namespace Prisma {
     teacher: UserCreateNestedOneWithoutTeacherSubscriptionsInput
     plan: TeacherPlanCreateNestedOneWithoutSubscriptionsInput
     usageEvents?: TeacherAiUsageEventCreateNestedManyWithoutSubscriptionInput
+    payments?: TeacherSubscriptionPaymentCreateNestedManyWithoutSubscriptionInput
   }
 
   export type TeacherSubscriptionUncheckedCreateInput = {
@@ -42744,6 +44384,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     usageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutSubscriptionInput
+    payments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutSubscriptionInput
   }
 
   export type TeacherSubscriptionUpdateInput = {
@@ -42760,6 +44401,7 @@ export namespace Prisma {
     teacher?: UserUpdateOneRequiredWithoutTeacherSubscriptionsNestedInput
     plan?: TeacherPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
     usageEvents?: TeacherAiUsageEventUpdateManyWithoutSubscriptionNestedInput
+    payments?: TeacherSubscriptionPaymentUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type TeacherSubscriptionUncheckedUpdateInput = {
@@ -42776,6 +44418,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutSubscriptionNestedInput
+    payments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type TeacherSubscriptionCreateManyInput = {
@@ -42970,6 +44613,136 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TeacherSubscriptionPaymentCreateInput = {
+    id?: string
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    teacher: UserCreateNestedOneWithoutTeacherSubscriptionPaymentsInput
+    plan: TeacherPlanCreateNestedOneWithoutPaymentsInput
+    subscription?: TeacherSubscriptionCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedCreateInput = {
+    id?: string
+    teacherId: string
+    planId: string
+    subscriptionId?: string | null
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherSubscriptionPaymentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teacher?: UserUpdateOneRequiredWithoutTeacherSubscriptionPaymentsNestedInput
+    plan?: TeacherPlanUpdateOneRequiredWithoutPaymentsNestedInput
+    subscription?: TeacherSubscriptionUpdateOneWithoutPaymentsNestedInput
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherSubscriptionPaymentCreateManyInput = {
+    id?: string
+    teacherId: string
+    planId: string
+    subscriptionId?: string | null
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherSubscriptionPaymentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -43127,6 +44900,12 @@ export namespace Prisma {
     none?: TeacherAiUsageEventWhereInput
   }
 
+  export type TeacherSubscriptionPaymentListRelationFilter = {
+    every?: TeacherSubscriptionPaymentWhereInput
+    some?: TeacherSubscriptionPaymentWhereInput
+    none?: TeacherSubscriptionPaymentWhereInput
+  }
+
   export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -43188,6 +44967,10 @@ export namespace Prisma {
   }
 
   export type TeacherAiUsageEventOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TeacherSubscriptionPaymentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -45181,6 +46964,69 @@ export namespace Prisma {
     _max?: NestedEnumAiUsageTypeFilter<$PrismaModel>
   }
 
+  export type TeacherSubscriptionPaymentCountOrderByAggregateInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    planId?: SortOrder
+    subscriptionId?: SortOrder
+    provider?: SortOrder
+    providerOrderId?: SortOrder
+    providerTransactionId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    billingInterval?: SortOrder
+    status?: SortOrder
+    checkoutUrl?: SortOrder
+    errorMessage?: SortOrder
+    rawCallback?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherSubscriptionPaymentAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type TeacherSubscriptionPaymentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    planId?: SortOrder
+    subscriptionId?: SortOrder
+    provider?: SortOrder
+    providerOrderId?: SortOrder
+    providerTransactionId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    billingInterval?: SortOrder
+    status?: SortOrder
+    checkoutUrl?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherSubscriptionPaymentMinOrderByAggregateInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    planId?: SortOrder
+    subscriptionId?: SortOrder
+    provider?: SortOrder
+    providerOrderId?: SortOrder
+    providerTransactionId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    billingInterval?: SortOrder
+    status?: SortOrder
+    checkoutUrl?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherSubscriptionPaymentSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
   export type AuditLogCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -45312,6 +47158,13 @@ export namespace Prisma {
     connect?: TeacherAiUsageEventWhereUniqueInput | TeacherAiUsageEventWhereUniqueInput[]
   }
 
+  export type TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutTeacherInput, TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput> | TeacherSubscriptionPaymentCreateWithoutTeacherInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput | TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManyTeacherInputEnvelope
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+  }
+
   export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -45441,6 +47294,13 @@ export namespace Prisma {
     connectOrCreate?: TeacherAiUsageEventCreateOrConnectWithoutTeacherInput | TeacherAiUsageEventCreateOrConnectWithoutTeacherInput[]
     createMany?: TeacherAiUsageEventCreateManyTeacherInputEnvelope
     connect?: TeacherAiUsageEventWhereUniqueInput | TeacherAiUsageEventWhereUniqueInput[]
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutTeacherInput, TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput> | TeacherSubscriptionPaymentCreateWithoutTeacherInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput | TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManyTeacherInputEnvelope
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -45725,6 +47585,20 @@ export namespace Prisma {
     deleteMany?: TeacherAiUsageEventScalarWhereInput | TeacherAiUsageEventScalarWhereInput[]
   }
 
+  export type TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutTeacherInput, TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput> | TeacherSubscriptionPaymentCreateWithoutTeacherInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput | TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput[]
+    upsert?: TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutTeacherInput | TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutTeacherInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManyTeacherInputEnvelope
+    set?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    disconnect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    delete?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    update?: TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutTeacherInput | TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutTeacherInput[]
+    updateMany?: TeacherSubscriptionPaymentUpdateManyWithWhereWithoutTeacherInput | TeacherSubscriptionPaymentUpdateManyWithWhereWithoutTeacherInput[]
+    deleteMany?: TeacherSubscriptionPaymentScalarWhereInput | TeacherSubscriptionPaymentScalarWhereInput[]
+  }
+
   export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -45981,6 +47855,20 @@ export namespace Prisma {
     update?: TeacherAiUsageEventUpdateWithWhereUniqueWithoutTeacherInput | TeacherAiUsageEventUpdateWithWhereUniqueWithoutTeacherInput[]
     updateMany?: TeacherAiUsageEventUpdateManyWithWhereWithoutTeacherInput | TeacherAiUsageEventUpdateManyWithWhereWithoutTeacherInput[]
     deleteMany?: TeacherAiUsageEventScalarWhereInput | TeacherAiUsageEventScalarWhereInput[]
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutTeacherInput, TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput> | TeacherSubscriptionPaymentCreateWithoutTeacherInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput | TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput[]
+    upsert?: TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutTeacherInput | TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutTeacherInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManyTeacherInputEnvelope
+    set?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    disconnect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    delete?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    update?: TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutTeacherInput | TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutTeacherInput[]
+    updateMany?: TeacherSubscriptionPaymentUpdateManyWithWhereWithoutTeacherInput | TeacherSubscriptionPaymentUpdateManyWithWhereWithoutTeacherInput[]
+    deleteMany?: TeacherSubscriptionPaymentScalarWhereInput | TeacherSubscriptionPaymentScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutStudentProfileInput = {
@@ -47286,6 +49174,13 @@ export namespace Prisma {
     connect?: TeacherAiUsageEventWhereUniqueInput | TeacherAiUsageEventWhereUniqueInput[]
   }
 
+  export type TeacherSubscriptionPaymentCreateNestedManyWithoutPlanInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutPlanInput, TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput> | TeacherSubscriptionPaymentCreateWithoutPlanInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput | TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManyPlanInputEnvelope
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+  }
+
   export type TeacherSubscriptionUncheckedCreateNestedManyWithoutPlanInput = {
     create?: XOR<TeacherSubscriptionCreateWithoutPlanInput, TeacherSubscriptionUncheckedCreateWithoutPlanInput> | TeacherSubscriptionCreateWithoutPlanInput[] | TeacherSubscriptionUncheckedCreateWithoutPlanInput[]
     connectOrCreate?: TeacherSubscriptionCreateOrConnectWithoutPlanInput | TeacherSubscriptionCreateOrConnectWithoutPlanInput[]
@@ -47305,6 +49200,13 @@ export namespace Prisma {
     connectOrCreate?: TeacherAiUsageEventCreateOrConnectWithoutPlanInput | TeacherAiUsageEventCreateOrConnectWithoutPlanInput[]
     createMany?: TeacherAiUsageEventCreateManyPlanInputEnvelope
     connect?: TeacherAiUsageEventWhereUniqueInput | TeacherAiUsageEventWhereUniqueInput[]
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutPlanInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutPlanInput, TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput> | TeacherSubscriptionPaymentCreateWithoutPlanInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput | TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManyPlanInputEnvelope
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
   }
 
   export type EnumBillingIntervalFieldUpdateOperationsInput = {
@@ -47353,6 +49255,20 @@ export namespace Prisma {
     deleteMany?: TeacherAiUsageEventScalarWhereInput | TeacherAiUsageEventScalarWhereInput[]
   }
 
+  export type TeacherSubscriptionPaymentUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutPlanInput, TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput> | TeacherSubscriptionPaymentCreateWithoutPlanInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput | TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput[]
+    upsert?: TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutPlanInput | TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManyPlanInputEnvelope
+    set?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    disconnect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    delete?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    update?: TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutPlanInput | TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: TeacherSubscriptionPaymentUpdateManyWithWhereWithoutPlanInput | TeacherSubscriptionPaymentUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: TeacherSubscriptionPaymentScalarWhereInput | TeacherSubscriptionPaymentScalarWhereInput[]
+  }
+
   export type TeacherSubscriptionUncheckedUpdateManyWithoutPlanNestedInput = {
     create?: XOR<TeacherSubscriptionCreateWithoutPlanInput, TeacherSubscriptionUncheckedCreateWithoutPlanInput> | TeacherSubscriptionCreateWithoutPlanInput[] | TeacherSubscriptionUncheckedCreateWithoutPlanInput[]
     connectOrCreate?: TeacherSubscriptionCreateOrConnectWithoutPlanInput | TeacherSubscriptionCreateOrConnectWithoutPlanInput[]
@@ -47395,6 +49311,20 @@ export namespace Prisma {
     deleteMany?: TeacherAiUsageEventScalarWhereInput | TeacherAiUsageEventScalarWhereInput[]
   }
 
+  export type TeacherSubscriptionPaymentUncheckedUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutPlanInput, TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput> | TeacherSubscriptionPaymentCreateWithoutPlanInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput | TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput[]
+    upsert?: TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutPlanInput | TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManyPlanInputEnvelope
+    set?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    disconnect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    delete?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    update?: TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutPlanInput | TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: TeacherSubscriptionPaymentUpdateManyWithWhereWithoutPlanInput | TeacherSubscriptionPaymentUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: TeacherSubscriptionPaymentScalarWhereInput | TeacherSubscriptionPaymentScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutTeacherSubscriptionsInput = {
     create?: XOR<UserCreateWithoutTeacherSubscriptionsInput, UserUncheckedCreateWithoutTeacherSubscriptionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutTeacherSubscriptionsInput
@@ -47414,11 +49344,25 @@ export namespace Prisma {
     connect?: TeacherAiUsageEventWhereUniqueInput | TeacherAiUsageEventWhereUniqueInput[]
   }
 
+  export type TeacherSubscriptionPaymentCreateNestedManyWithoutSubscriptionInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutSubscriptionInput, TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput> | TeacherSubscriptionPaymentCreateWithoutSubscriptionInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput | TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManySubscriptionInputEnvelope
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+  }
+
   export type TeacherAiUsageEventUncheckedCreateNestedManyWithoutSubscriptionInput = {
     create?: XOR<TeacherAiUsageEventCreateWithoutSubscriptionInput, TeacherAiUsageEventUncheckedCreateWithoutSubscriptionInput> | TeacherAiUsageEventCreateWithoutSubscriptionInput[] | TeacherAiUsageEventUncheckedCreateWithoutSubscriptionInput[]
     connectOrCreate?: TeacherAiUsageEventCreateOrConnectWithoutSubscriptionInput | TeacherAiUsageEventCreateOrConnectWithoutSubscriptionInput[]
     createMany?: TeacherAiUsageEventCreateManySubscriptionInputEnvelope
     connect?: TeacherAiUsageEventWhereUniqueInput | TeacherAiUsageEventWhereUniqueInput[]
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutSubscriptionInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutSubscriptionInput, TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput> | TeacherSubscriptionPaymentCreateWithoutSubscriptionInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput | TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManySubscriptionInputEnvelope
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
   }
 
   export type EnumSubscriptionStatusFieldUpdateOperationsInput = {
@@ -47455,6 +49399,20 @@ export namespace Prisma {
     deleteMany?: TeacherAiUsageEventScalarWhereInput | TeacherAiUsageEventScalarWhereInput[]
   }
 
+  export type TeacherSubscriptionPaymentUpdateManyWithoutSubscriptionNestedInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutSubscriptionInput, TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput> | TeacherSubscriptionPaymentCreateWithoutSubscriptionInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput | TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput[]
+    upsert?: TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutSubscriptionInput | TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutSubscriptionInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManySubscriptionInputEnvelope
+    set?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    disconnect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    delete?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    update?: TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutSubscriptionInput | TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutSubscriptionInput[]
+    updateMany?: TeacherSubscriptionPaymentUpdateManyWithWhereWithoutSubscriptionInput | TeacherSubscriptionPaymentUpdateManyWithWhereWithoutSubscriptionInput[]
+    deleteMany?: TeacherSubscriptionPaymentScalarWhereInput | TeacherSubscriptionPaymentScalarWhereInput[]
+  }
+
   export type TeacherAiUsageEventUncheckedUpdateManyWithoutSubscriptionNestedInput = {
     create?: XOR<TeacherAiUsageEventCreateWithoutSubscriptionInput, TeacherAiUsageEventUncheckedCreateWithoutSubscriptionInput> | TeacherAiUsageEventCreateWithoutSubscriptionInput[] | TeacherAiUsageEventUncheckedCreateWithoutSubscriptionInput[]
     connectOrCreate?: TeacherAiUsageEventCreateOrConnectWithoutSubscriptionInput | TeacherAiUsageEventCreateOrConnectWithoutSubscriptionInput[]
@@ -47467,6 +49425,20 @@ export namespace Prisma {
     update?: TeacherAiUsageEventUpdateWithWhereUniqueWithoutSubscriptionInput | TeacherAiUsageEventUpdateWithWhereUniqueWithoutSubscriptionInput[]
     updateMany?: TeacherAiUsageEventUpdateManyWithWhereWithoutSubscriptionInput | TeacherAiUsageEventUpdateManyWithWhereWithoutSubscriptionInput[]
     deleteMany?: TeacherAiUsageEventScalarWhereInput | TeacherAiUsageEventScalarWhereInput[]
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateManyWithoutSubscriptionNestedInput = {
+    create?: XOR<TeacherSubscriptionPaymentCreateWithoutSubscriptionInput, TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput> | TeacherSubscriptionPaymentCreateWithoutSubscriptionInput[] | TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput[]
+    connectOrCreate?: TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput | TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput[]
+    upsert?: TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutSubscriptionInput | TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutSubscriptionInput[]
+    createMany?: TeacherSubscriptionPaymentCreateManySubscriptionInputEnvelope
+    set?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    disconnect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    delete?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    connect?: TeacherSubscriptionPaymentWhereUniqueInput | TeacherSubscriptionPaymentWhereUniqueInput[]
+    update?: TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutSubscriptionInput | TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutSubscriptionInput[]
+    updateMany?: TeacherSubscriptionPaymentUpdateManyWithWhereWithoutSubscriptionInput | TeacherSubscriptionPaymentUpdateManyWithWhereWithoutSubscriptionInput[]
+    deleteMany?: TeacherSubscriptionPaymentScalarWhereInput | TeacherSubscriptionPaymentScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutTeacherSubscriptionRequestsInput = {
@@ -47549,6 +49521,50 @@ export namespace Prisma {
     delete?: TeacherPlanWhereInput | boolean
     connect?: TeacherPlanWhereUniqueInput
     update?: XOR<XOR<TeacherPlanUpdateToOneWithWhereWithoutUsageEventsInput, TeacherPlanUpdateWithoutUsageEventsInput>, TeacherPlanUncheckedUpdateWithoutUsageEventsInput>
+  }
+
+  export type UserCreateNestedOneWithoutTeacherSubscriptionPaymentsInput = {
+    create?: XOR<UserCreateWithoutTeacherSubscriptionPaymentsInput, UserUncheckedCreateWithoutTeacherSubscriptionPaymentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTeacherSubscriptionPaymentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type TeacherPlanCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<TeacherPlanCreateWithoutPaymentsInput, TeacherPlanUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: TeacherPlanCreateOrConnectWithoutPaymentsInput
+    connect?: TeacherPlanWhereUniqueInput
+  }
+
+  export type TeacherSubscriptionCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<TeacherSubscriptionCreateWithoutPaymentsInput, TeacherSubscriptionUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: TeacherSubscriptionCreateOrConnectWithoutPaymentsInput
+    connect?: TeacherSubscriptionWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutTeacherSubscriptionPaymentsNestedInput = {
+    create?: XOR<UserCreateWithoutTeacherSubscriptionPaymentsInput, UserUncheckedCreateWithoutTeacherSubscriptionPaymentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTeacherSubscriptionPaymentsInput
+    upsert?: UserUpsertWithoutTeacherSubscriptionPaymentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTeacherSubscriptionPaymentsInput, UserUpdateWithoutTeacherSubscriptionPaymentsInput>, UserUncheckedUpdateWithoutTeacherSubscriptionPaymentsInput>
+  }
+
+  export type TeacherPlanUpdateOneRequiredWithoutPaymentsNestedInput = {
+    create?: XOR<TeacherPlanCreateWithoutPaymentsInput, TeacherPlanUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: TeacherPlanCreateOrConnectWithoutPaymentsInput
+    upsert?: TeacherPlanUpsertWithoutPaymentsInput
+    connect?: TeacherPlanWhereUniqueInput
+    update?: XOR<XOR<TeacherPlanUpdateToOneWithWhereWithoutPaymentsInput, TeacherPlanUpdateWithoutPaymentsInput>, TeacherPlanUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type TeacherSubscriptionUpdateOneWithoutPaymentsNestedInput = {
+    create?: XOR<TeacherSubscriptionCreateWithoutPaymentsInput, TeacherSubscriptionUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: TeacherSubscriptionCreateOrConnectWithoutPaymentsInput
+    upsert?: TeacherSubscriptionUpsertWithoutPaymentsInput
+    disconnect?: TeacherSubscriptionWhereInput | boolean
+    delete?: TeacherSubscriptionWhereInput | boolean
+    connect?: TeacherSubscriptionWhereUniqueInput
+    update?: XOR<XOR<TeacherSubscriptionUpdateToOneWithWhereWithoutPaymentsInput, TeacherSubscriptionUpdateWithoutPaymentsInput>, TeacherSubscriptionUncheckedUpdateWithoutPaymentsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -48724,6 +50740,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     plan: TeacherPlanCreateNestedOneWithoutSubscriptionsInput
     usageEvents?: TeacherAiUsageEventCreateNestedManyWithoutSubscriptionInput
+    payments?: TeacherSubscriptionPaymentCreateNestedManyWithoutSubscriptionInput
   }
 
   export type TeacherSubscriptionUncheckedCreateWithoutTeacherInput = {
@@ -48739,6 +50756,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     usageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutSubscriptionInput
+    payments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutSubscriptionInput
   }
 
   export type TeacherSubscriptionCreateOrConnectWithoutTeacherInput = {
@@ -48808,6 +50826,52 @@ export namespace Prisma {
 
   export type TeacherAiUsageEventCreateManyTeacherInputEnvelope = {
     data: TeacherAiUsageEventCreateManyTeacherInput | TeacherAiUsageEventCreateManyTeacherInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TeacherSubscriptionPaymentCreateWithoutTeacherInput = {
+    id?: string
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    plan: TeacherPlanCreateNestedOneWithoutPaymentsInput
+    subscription?: TeacherSubscriptionCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput = {
+    id?: string
+    planId: string
+    subscriptionId?: string | null
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherSubscriptionPaymentCreateOrConnectWithoutTeacherInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    create: XOR<TeacherSubscriptionPaymentCreateWithoutTeacherInput, TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput>
+  }
+
+  export type TeacherSubscriptionPaymentCreateManyTeacherInputEnvelope = {
+    data: TeacherSubscriptionPaymentCreateManyTeacherInput | TeacherSubscriptionPaymentCreateManyTeacherInput[]
     skipDuplicates?: boolean
   }
 
@@ -49387,6 +51451,44 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"TeacherAiUsageEvent"> | Date | string
   }
 
+  export type TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutTeacherInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    update: XOR<TeacherSubscriptionPaymentUpdateWithoutTeacherInput, TeacherSubscriptionPaymentUncheckedUpdateWithoutTeacherInput>
+    create: XOR<TeacherSubscriptionPaymentCreateWithoutTeacherInput, TeacherSubscriptionPaymentUncheckedCreateWithoutTeacherInput>
+  }
+
+  export type TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutTeacherInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    data: XOR<TeacherSubscriptionPaymentUpdateWithoutTeacherInput, TeacherSubscriptionPaymentUncheckedUpdateWithoutTeacherInput>
+  }
+
+  export type TeacherSubscriptionPaymentUpdateManyWithWhereWithoutTeacherInput = {
+    where: TeacherSubscriptionPaymentScalarWhereInput
+    data: XOR<TeacherSubscriptionPaymentUpdateManyMutationInput, TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherInput>
+  }
+
+  export type TeacherSubscriptionPaymentScalarWhereInput = {
+    AND?: TeacherSubscriptionPaymentScalarWhereInput | TeacherSubscriptionPaymentScalarWhereInput[]
+    OR?: TeacherSubscriptionPaymentScalarWhereInput[]
+    NOT?: TeacherSubscriptionPaymentScalarWhereInput | TeacherSubscriptionPaymentScalarWhereInput[]
+    id?: StringFilter<"TeacherSubscriptionPayment"> | string
+    teacherId?: StringFilter<"TeacherSubscriptionPayment"> | string
+    planId?: StringFilter<"TeacherSubscriptionPayment"> | string
+    subscriptionId?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    provider?: StringFilter<"TeacherSubscriptionPayment"> | string
+    providerOrderId?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    providerTransactionId?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    amount?: FloatFilter<"TeacherSubscriptionPayment"> | number
+    currency?: StringFilter<"TeacherSubscriptionPayment"> | string
+    billingInterval?: EnumBillingIntervalFilter<"TeacherSubscriptionPayment"> | $Enums.BillingInterval
+    status?: EnumPaymentStatusFilter<"TeacherSubscriptionPayment"> | $Enums.PaymentStatus
+    checkoutUrl?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    errorMessage?: StringNullableFilter<"TeacherSubscriptionPayment"> | string | null
+    rawCallback?: JsonNullableFilter<"TeacherSubscriptionPayment">
+    createdAt?: DateTimeFilter<"TeacherSubscriptionPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"TeacherSubscriptionPayment"> | Date | string
+  }
+
   export type UserCreateWithoutStudentProfileInput = {
     id?: string
     fullName: string
@@ -49416,6 +51518,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -49447,6 +51550,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -49523,6 +51627,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -49554,6 +51659,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type StageUpsertWithoutStudentProfilesInput = {
@@ -49620,6 +51726,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutTeacherProfileInput = {
@@ -49651,6 +51758,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutTeacherProfileInput = {
@@ -49698,6 +51806,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherProfileInput = {
@@ -49729,6 +51838,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type ChapterCreateWithoutStageInput = {
@@ -49826,6 +51936,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutStagesInput = {
@@ -49857,6 +51968,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutStagesInput = {
@@ -49962,6 +52074,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStagesInput = {
@@ -49993,6 +52106,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type StageCreateWithoutChaptersInput = {
@@ -50807,6 +52921,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutOtpsInput = {
@@ -50838,6 +52953,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutOtpsInput = {
@@ -50885,6 +53001,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOtpsInput = {
@@ -50916,6 +53033,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type ChapterCreateWithoutEnrollmentsInput = {
@@ -50984,6 +53102,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -51015,6 +53134,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -51105,6 +53225,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -51136,6 +53257,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserCreateWithoutPaymentTransactionsInput = {
@@ -51167,6 +53289,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
@@ -51198,6 +53321,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutPaymentTransactionsInput = {
@@ -51282,6 +53406,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
@@ -51313,6 +53438,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type ChapterUpsertWithoutPaymentTransactionsInput = {
@@ -51430,6 +53556,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -51461,6 +53588,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -51557,6 +53685,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -51588,6 +53717,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type LessonCreateWithoutLessonMaterialsInput = {
@@ -51751,6 +53881,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutMaterialDownloadsInput = {
@@ -51782,6 +53913,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutMaterialDownloadsInput = {
@@ -51856,6 +53988,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaterialDownloadsInput = {
@@ -51887,6 +54020,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type LessonMaterialUpsertWithoutDownloadsInput = {
@@ -52043,6 +54177,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutAiTutorUsageInput = {
@@ -52074,6 +54209,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutAiTutorUsageInput = {
@@ -52121,6 +54257,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiTutorUsageInput = {
@@ -52152,6 +54289,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -52183,6 +54321,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -52214,6 +54353,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -52261,6 +54401,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -52292,6 +54433,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserCreateWithoutRefreshTokensInput = {
@@ -52323,6 +54465,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -52354,6 +54497,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -52401,6 +54545,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -52432,6 +54577,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type QuestionCreateWithoutQuizInput = {
@@ -52646,6 +54792,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutQuizzesInput = {
@@ -52677,6 +54824,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutQuizzesInput = {
@@ -52848,6 +54996,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizzesInput = {
@@ -52879,6 +55028,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type QuizCreateWithoutQuizLessonsInput = {
@@ -53309,6 +55459,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -53340,6 +55491,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -53452,6 +55604,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -53483,6 +55636,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserCreateWithoutUsedPromoCodesInput = {
@@ -53514,6 +55668,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutUsedPromoCodesInput = {
@@ -53545,6 +55700,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutUsedPromoCodesInput = {
@@ -53581,6 +55737,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutCreatedPromoCodesInput = {
@@ -53612,6 +55769,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutCreatedPromoCodesInput = {
@@ -53696,6 +55854,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsedPromoCodesInput = {
@@ -53727,6 +55886,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUpsertWithoutCreatedPromoCodesInput = {
@@ -53769,6 +55929,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedPromoCodesInput = {
@@ -53800,6 +55961,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type ChapterUpsertWithoutPromoCodesInput = {
@@ -53874,6 +56036,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutAiConversationsInput = {
@@ -53905,6 +56068,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutAiConversationsInput = {
@@ -53986,6 +56150,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiConversationsInput = {
@@ -54017,6 +56182,7 @@ export namespace Prisma {
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type AiMessageUpsertWithWhereUniqueWithoutConversationInput = {
@@ -54120,6 +56286,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     teacher: UserCreateNestedOneWithoutTeacherSubscriptionsInput
     usageEvents?: TeacherAiUsageEventCreateNestedManyWithoutSubscriptionInput
+    payments?: TeacherSubscriptionPaymentCreateNestedManyWithoutSubscriptionInput
   }
 
   export type TeacherSubscriptionUncheckedCreateWithoutPlanInput = {
@@ -54135,6 +56302,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     usageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutSubscriptionInput
+    payments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutSubscriptionInput
   }
 
   export type TeacherSubscriptionCreateOrConnectWithoutPlanInput = {
@@ -54207,6 +56375,52 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TeacherSubscriptionPaymentCreateWithoutPlanInput = {
+    id?: string
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    teacher: UserCreateNestedOneWithoutTeacherSubscriptionPaymentsInput
+    subscription?: TeacherSubscriptionCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput = {
+    id?: string
+    teacherId: string
+    subscriptionId?: string | null
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherSubscriptionPaymentCreateOrConnectWithoutPlanInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    create: XOR<TeacherSubscriptionPaymentCreateWithoutPlanInput, TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput>
+  }
+
+  export type TeacherSubscriptionPaymentCreateManyPlanInputEnvelope = {
+    data: TeacherSubscriptionPaymentCreateManyPlanInput | TeacherSubscriptionPaymentCreateManyPlanInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TeacherSubscriptionUpsertWithWhereUniqueWithoutPlanInput = {
     where: TeacherSubscriptionWhereUniqueInput
     update: XOR<TeacherSubscriptionUpdateWithoutPlanInput, TeacherSubscriptionUncheckedUpdateWithoutPlanInput>
@@ -54255,6 +56469,22 @@ export namespace Prisma {
     data: XOR<TeacherAiUsageEventUpdateManyMutationInput, TeacherAiUsageEventUncheckedUpdateManyWithoutPlanInput>
   }
 
+  export type TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutPlanInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    update: XOR<TeacherSubscriptionPaymentUpdateWithoutPlanInput, TeacherSubscriptionPaymentUncheckedUpdateWithoutPlanInput>
+    create: XOR<TeacherSubscriptionPaymentCreateWithoutPlanInput, TeacherSubscriptionPaymentUncheckedCreateWithoutPlanInput>
+  }
+
+  export type TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutPlanInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    data: XOR<TeacherSubscriptionPaymentUpdateWithoutPlanInput, TeacherSubscriptionPaymentUncheckedUpdateWithoutPlanInput>
+  }
+
+  export type TeacherSubscriptionPaymentUpdateManyWithWhereWithoutPlanInput = {
+    where: TeacherSubscriptionPaymentScalarWhereInput
+    data: XOR<TeacherSubscriptionPaymentUpdateManyMutationInput, TeacherSubscriptionPaymentUncheckedUpdateManyWithoutPlanInput>
+  }
+
   export type UserCreateWithoutTeacherSubscriptionsInput = {
     id?: string
     fullName: string
@@ -54284,6 +56514,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutTeacherSubscriptionsInput = {
@@ -54315,6 +56546,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutTeacherSubscriptionsInput = {
@@ -54341,6 +56573,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     requests?: TeacherSubscriptionRequestCreateNestedManyWithoutPlanInput
     usageEvents?: TeacherAiUsageEventCreateNestedManyWithoutPlanInput
+    payments?: TeacherSubscriptionPaymentCreateNestedManyWithoutPlanInput
   }
 
   export type TeacherPlanUncheckedCreateWithoutSubscriptionsInput = {
@@ -54362,6 +56595,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     requests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutPlanInput
     usageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutPlanInput
+    payments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutPlanInput
   }
 
   export type TeacherPlanCreateOrConnectWithoutSubscriptionsInput = {
@@ -54396,6 +56630,52 @@ export namespace Prisma {
 
   export type TeacherAiUsageEventCreateManySubscriptionInputEnvelope = {
     data: TeacherAiUsageEventCreateManySubscriptionInput | TeacherAiUsageEventCreateManySubscriptionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TeacherSubscriptionPaymentCreateWithoutSubscriptionInput = {
+    id?: string
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    teacher: UserCreateNestedOneWithoutTeacherSubscriptionPaymentsInput
+    plan: TeacherPlanCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput = {
+    id?: string
+    teacherId: string
+    planId: string
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherSubscriptionPaymentCreateOrConnectWithoutSubscriptionInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    create: XOR<TeacherSubscriptionPaymentCreateWithoutSubscriptionInput, TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput>
+  }
+
+  export type TeacherSubscriptionPaymentCreateManySubscriptionInputEnvelope = {
+    data: TeacherSubscriptionPaymentCreateManySubscriptionInput | TeacherSubscriptionPaymentCreateManySubscriptionInput[]
     skipDuplicates?: boolean
   }
 
@@ -54439,6 +56719,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherSubscriptionsInput = {
@@ -54470,6 +56751,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type TeacherPlanUpsertWithoutSubscriptionsInput = {
@@ -54502,6 +56784,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requests?: TeacherSubscriptionRequestUpdateManyWithoutPlanNestedInput
     usageEvents?: TeacherAiUsageEventUpdateManyWithoutPlanNestedInput
+    payments?: TeacherSubscriptionPaymentUpdateManyWithoutPlanNestedInput
   }
 
   export type TeacherPlanUncheckedUpdateWithoutSubscriptionsInput = {
@@ -54523,6 +56806,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutPlanNestedInput
     usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutPlanNestedInput
+    payments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutPlanNestedInput
   }
 
   export type TeacherAiUsageEventUpsertWithWhereUniqueWithoutSubscriptionInput = {
@@ -54539,6 +56823,22 @@ export namespace Prisma {
   export type TeacherAiUsageEventUpdateManyWithWhereWithoutSubscriptionInput = {
     where: TeacherAiUsageEventScalarWhereInput
     data: XOR<TeacherAiUsageEventUpdateManyMutationInput, TeacherAiUsageEventUncheckedUpdateManyWithoutSubscriptionInput>
+  }
+
+  export type TeacherSubscriptionPaymentUpsertWithWhereUniqueWithoutSubscriptionInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    update: XOR<TeacherSubscriptionPaymentUpdateWithoutSubscriptionInput, TeacherSubscriptionPaymentUncheckedUpdateWithoutSubscriptionInput>
+    create: XOR<TeacherSubscriptionPaymentCreateWithoutSubscriptionInput, TeacherSubscriptionPaymentUncheckedCreateWithoutSubscriptionInput>
+  }
+
+  export type TeacherSubscriptionPaymentUpdateWithWhereUniqueWithoutSubscriptionInput = {
+    where: TeacherSubscriptionPaymentWhereUniqueInput
+    data: XOR<TeacherSubscriptionPaymentUpdateWithoutSubscriptionInput, TeacherSubscriptionPaymentUncheckedUpdateWithoutSubscriptionInput>
+  }
+
+  export type TeacherSubscriptionPaymentUpdateManyWithWhereWithoutSubscriptionInput = {
+    where: TeacherSubscriptionPaymentScalarWhereInput
+    data: XOR<TeacherSubscriptionPaymentUpdateManyMutationInput, TeacherSubscriptionPaymentUncheckedUpdateManyWithoutSubscriptionInput>
   }
 
   export type UserCreateWithoutTeacherSubscriptionRequestsInput = {
@@ -54570,6 +56870,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutTeacherSubscriptionRequestsInput = {
@@ -54601,6 +56902,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutTeacherSubscriptionRequestsInput = {
@@ -54627,6 +56929,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     subscriptions?: TeacherSubscriptionCreateNestedManyWithoutPlanInput
     usageEvents?: TeacherAiUsageEventCreateNestedManyWithoutPlanInput
+    payments?: TeacherSubscriptionPaymentCreateNestedManyWithoutPlanInput
   }
 
   export type TeacherPlanUncheckedCreateWithoutRequestsInput = {
@@ -54648,6 +56951,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     subscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutPlanInput
     usageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutPlanInput
+    payments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutPlanInput
   }
 
   export type TeacherPlanCreateOrConnectWithoutRequestsInput = {
@@ -54695,6 +56999,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherSubscriptionRequestsInput = {
@@ -54726,6 +57031,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type TeacherPlanUpsertWithoutRequestsInput = {
@@ -54758,6 +57064,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: TeacherSubscriptionUpdateManyWithoutPlanNestedInput
     usageEvents?: TeacherAiUsageEventUpdateManyWithoutPlanNestedInput
+    payments?: TeacherSubscriptionPaymentUpdateManyWithoutPlanNestedInput
   }
 
   export type TeacherPlanUncheckedUpdateWithoutRequestsInput = {
@@ -54779,6 +57086,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutPlanNestedInput
     usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutPlanNestedInput
+    payments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutPlanNestedInput
   }
 
   export type UserCreateWithoutTeacherAiUsageEventsInput = {
@@ -54810,6 +57118,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
     teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
   }
 
   export type UserUncheckedCreateWithoutTeacherAiUsageEventsInput = {
@@ -54841,6 +57150,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
     teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
   }
 
   export type UserCreateOrConnectWithoutTeacherAiUsageEventsInput = {
@@ -54861,6 +57171,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     teacher: UserCreateNestedOneWithoutTeacherSubscriptionsInput
     plan: TeacherPlanCreateNestedOneWithoutSubscriptionsInput
+    payments?: TeacherSubscriptionPaymentCreateNestedManyWithoutSubscriptionInput
   }
 
   export type TeacherSubscriptionUncheckedCreateWithoutUsageEventsInput = {
@@ -54876,6 +57187,7 @@ export namespace Prisma {
     trialEndsAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    payments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutSubscriptionInput
   }
 
   export type TeacherSubscriptionCreateOrConnectWithoutUsageEventsInput = {
@@ -54902,6 +57214,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     subscriptions?: TeacherSubscriptionCreateNestedManyWithoutPlanInput
     requests?: TeacherSubscriptionRequestCreateNestedManyWithoutPlanInput
+    payments?: TeacherSubscriptionPaymentCreateNestedManyWithoutPlanInput
   }
 
   export type TeacherPlanUncheckedCreateWithoutUsageEventsInput = {
@@ -54923,6 +57236,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     subscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutPlanInput
     requests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutPlanInput
+    payments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutPlanInput
   }
 
   export type TeacherPlanCreateOrConnectWithoutUsageEventsInput = {
@@ -54970,6 +57284,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
     teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherAiUsageEventsInput = {
@@ -55001,6 +57316,7 @@ export namespace Prisma {
     materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
     teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type TeacherSubscriptionUpsertWithoutUsageEventsInput = {
@@ -55027,6 +57343,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     teacher?: UserUpdateOneRequiredWithoutTeacherSubscriptionsNestedInput
     plan?: TeacherPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
+    payments?: TeacherSubscriptionPaymentUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type TeacherSubscriptionUncheckedUpdateWithoutUsageEventsInput = {
@@ -55042,6 +57359,7 @@ export namespace Prisma {
     trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type TeacherPlanUpsertWithoutUsageEventsInput = {
@@ -55074,6 +57392,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: TeacherSubscriptionUpdateManyWithoutPlanNestedInput
     requests?: TeacherSubscriptionRequestUpdateManyWithoutPlanNestedInput
+    payments?: TeacherSubscriptionPaymentUpdateManyWithoutPlanNestedInput
   }
 
   export type TeacherPlanUncheckedUpdateWithoutUsageEventsInput = {
@@ -55095,6 +57414,335 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutPlanNestedInput
     requests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutPlanNestedInput
+    payments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutPlanNestedInput
+  }
+
+  export type UserCreateWithoutTeacherSubscriptionPaymentsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+  }
+
+  export type UserUncheckedCreateWithoutTeacherSubscriptionPaymentsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+  }
+
+  export type UserCreateOrConnectWithoutTeacherSubscriptionPaymentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTeacherSubscriptionPaymentsInput, UserUncheckedCreateWithoutTeacherSubscriptionPaymentsInput>
+  }
+
+  export type TeacherPlanCreateWithoutPaymentsInput = {
+    id?: string
+    code: string
+    name: string
+    displayName: string
+    description?: string | null
+    monthlyPrice?: number
+    yearlyPrice?: number | null
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    isActive?: boolean
+    isRecommended?: boolean
+    sortOrder?: number
+    features?: JsonNullValueInput | InputJsonValue
+    limits?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subscriptions?: TeacherSubscriptionCreateNestedManyWithoutPlanInput
+    requests?: TeacherSubscriptionRequestCreateNestedManyWithoutPlanInput
+    usageEvents?: TeacherAiUsageEventCreateNestedManyWithoutPlanInput
+  }
+
+  export type TeacherPlanUncheckedCreateWithoutPaymentsInput = {
+    id?: string
+    code: string
+    name: string
+    displayName: string
+    description?: string | null
+    monthlyPrice?: number
+    yearlyPrice?: number | null
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    isActive?: boolean
+    isRecommended?: boolean
+    sortOrder?: number
+    features?: JsonNullValueInput | InputJsonValue
+    limits?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutPlanInput
+    requests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutPlanInput
+    usageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutPlanInput
+  }
+
+  export type TeacherPlanCreateOrConnectWithoutPaymentsInput = {
+    where: TeacherPlanWhereUniqueInput
+    create: XOR<TeacherPlanCreateWithoutPaymentsInput, TeacherPlanUncheckedCreateWithoutPaymentsInput>
+  }
+
+  export type TeacherSubscriptionCreateWithoutPaymentsInput = {
+    id?: string
+    status?: $Enums.SubscriptionStatus
+    billingInterval?: $Enums.BillingInterval
+    startedAt?: Date | string
+    currentPeriodStart?: Date | string
+    currentPeriodEnd: Date | string
+    cancelledAt?: Date | string | null
+    trialEndsAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    teacher: UserCreateNestedOneWithoutTeacherSubscriptionsInput
+    plan: TeacherPlanCreateNestedOneWithoutSubscriptionsInput
+    usageEvents?: TeacherAiUsageEventCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type TeacherSubscriptionUncheckedCreateWithoutPaymentsInput = {
+    id?: string
+    teacherId: string
+    planId: string
+    status?: $Enums.SubscriptionStatus
+    billingInterval?: $Enums.BillingInterval
+    startedAt?: Date | string
+    currentPeriodStart?: Date | string
+    currentPeriodEnd: Date | string
+    cancelledAt?: Date | string | null
+    trialEndsAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type TeacherSubscriptionCreateOrConnectWithoutPaymentsInput = {
+    where: TeacherSubscriptionWhereUniqueInput
+    create: XOR<TeacherSubscriptionCreateWithoutPaymentsInput, TeacherSubscriptionUncheckedCreateWithoutPaymentsInput>
+  }
+
+  export type UserUpsertWithoutTeacherSubscriptionPaymentsInput = {
+    update: XOR<UserUpdateWithoutTeacherSubscriptionPaymentsInput, UserUncheckedUpdateWithoutTeacherSubscriptionPaymentsInput>
+    create: XOR<UserCreateWithoutTeacherSubscriptionPaymentsInput, UserUncheckedCreateWithoutTeacherSubscriptionPaymentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTeacherSubscriptionPaymentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTeacherSubscriptionPaymentsInput, UserUncheckedUpdateWithoutTeacherSubscriptionPaymentsInput>
+  }
+
+  export type UserUpdateWithoutTeacherSubscriptionPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTeacherSubscriptionPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+  }
+
+  export type TeacherPlanUpsertWithoutPaymentsInput = {
+    update: XOR<TeacherPlanUpdateWithoutPaymentsInput, TeacherPlanUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<TeacherPlanCreateWithoutPaymentsInput, TeacherPlanUncheckedCreateWithoutPaymentsInput>
+    where?: TeacherPlanWhereInput
+  }
+
+  export type TeacherPlanUpdateToOneWithWhereWithoutPaymentsInput = {
+    where?: TeacherPlanWhereInput
+    data: XOR<TeacherPlanUpdateWithoutPaymentsInput, TeacherPlanUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type TeacherPlanUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyPrice?: FloatFieldUpdateOperationsInput | number
+    yearlyPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isRecommended?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    features?: JsonNullValueInput | InputJsonValue
+    limits?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptions?: TeacherSubscriptionUpdateManyWithoutPlanNestedInput
+    requests?: TeacherSubscriptionRequestUpdateManyWithoutPlanNestedInput
+    usageEvents?: TeacherAiUsageEventUpdateManyWithoutPlanNestedInput
+  }
+
+  export type TeacherPlanUncheckedUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyPrice?: FloatFieldUpdateOperationsInput | number
+    yearlyPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isRecommended?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    features?: JsonNullValueInput | InputJsonValue
+    limits?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutPlanNestedInput
+    requests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutPlanNestedInput
+    usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutPlanNestedInput
+  }
+
+  export type TeacherSubscriptionUpsertWithoutPaymentsInput = {
+    update: XOR<TeacherSubscriptionUpdateWithoutPaymentsInput, TeacherSubscriptionUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<TeacherSubscriptionCreateWithoutPaymentsInput, TeacherSubscriptionUncheckedCreateWithoutPaymentsInput>
+    where?: TeacherSubscriptionWhereInput
+  }
+
+  export type TeacherSubscriptionUpdateToOneWithWhereWithoutPaymentsInput = {
+    where?: TeacherSubscriptionWhereInput
+    data: XOR<TeacherSubscriptionUpdateWithoutPaymentsInput, TeacherSubscriptionUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type TeacherSubscriptionUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentPeriodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teacher?: UserUpdateOneRequiredWithoutTeacherSubscriptionsNestedInput
+    plan?: TeacherPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
+    usageEvents?: TeacherAiUsageEventUpdateManyWithoutSubscriptionNestedInput
+  }
+
+  export type TeacherSubscriptionUncheckedUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentPeriodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type AuditLogCreateManyUserInput = {
@@ -55288,6 +57936,24 @@ export namespace Prisma {
     units?: number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type TeacherSubscriptionPaymentCreateManyTeacherInput = {
+    id?: string
+    planId: string
+    subscriptionId?: string | null
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AuditLogUpdateWithoutUserInput = {
@@ -55794,6 +58460,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     plan?: TeacherPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
     usageEvents?: TeacherAiUsageEventUpdateManyWithoutSubscriptionNestedInput
+    payments?: TeacherSubscriptionPaymentUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type TeacherSubscriptionUncheckedUpdateWithoutTeacherInput = {
@@ -55809,6 +58476,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutSubscriptionNestedInput
+    payments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type TeacherSubscriptionUncheckedUpdateManyWithoutTeacherInput = {
@@ -55883,6 +58551,60 @@ export namespace Prisma {
     units?: IntFieldUpdateOperationsInput | number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherSubscriptionPaymentUpdateWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    plan?: TeacherPlanUpdateOneRequiredWithoutPaymentsNestedInput
+    subscription?: TeacherSubscriptionUpdateOneWithoutPaymentsNestedInput
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ChapterCreateManyStageInput = {
@@ -56719,6 +59441,24 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type TeacherSubscriptionPaymentCreateManyPlanInput = {
+    id?: string
+    teacherId: string
+    subscriptionId?: string | null
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type TeacherSubscriptionUpdateWithoutPlanInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
@@ -56732,6 +59472,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     teacher?: UserUpdateOneRequiredWithoutTeacherSubscriptionsNestedInput
     usageEvents?: TeacherAiUsageEventUpdateManyWithoutSubscriptionNestedInput
+    payments?: TeacherSubscriptionPaymentUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type TeacherSubscriptionUncheckedUpdateWithoutPlanInput = {
@@ -56747,6 +59488,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutSubscriptionNestedInput
+    payments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type TeacherSubscriptionUncheckedUpdateManyWithoutPlanInput = {
@@ -56823,6 +59565,60 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TeacherSubscriptionPaymentUpdateWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teacher?: UserUpdateOneRequiredWithoutTeacherSubscriptionPaymentsNestedInput
+    subscription?: TeacherSubscriptionUpdateOneWithoutPaymentsNestedInput
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateManyWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type TeacherAiUsageEventCreateManySubscriptionInput = {
     id?: string
     teacherId: string
@@ -56831,6 +59627,24 @@ export namespace Prisma {
     units?: number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type TeacherSubscriptionPaymentCreateManySubscriptionInput = {
+    id?: string
+    teacherId: string
+    planId: string
+    provider?: string
+    providerOrderId?: string | null
+    providerTransactionId?: string | null
+    amount: number
+    currency?: string
+    billingInterval?: $Enums.BillingInterval
+    status?: $Enums.PaymentStatus
+    checkoutUrl?: string | null
+    errorMessage?: string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type TeacherAiUsageEventUpdateWithoutSubscriptionInput = {
@@ -56861,6 +59675,60 @@ export namespace Prisma {
     units?: IntFieldUpdateOperationsInput | number
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherSubscriptionPaymentUpdateWithoutSubscriptionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teacher?: UserUpdateOneRequiredWithoutTeacherSubscriptionPaymentsNestedInput
+    plan?: TeacherPlanUpdateOneRequiredWithoutPaymentsNestedInput
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateWithoutSubscriptionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherSubscriptionPaymentUncheckedUpdateManyWithoutSubscriptionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    providerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    billingInterval?: EnumBillingIntervalFieldUpdateOperationsInput | $Enums.BillingInterval
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    checkoutUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    rawCallback?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

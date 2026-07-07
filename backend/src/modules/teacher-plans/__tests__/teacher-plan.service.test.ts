@@ -1,8 +1,10 @@
 import "dotenv/config";
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { randomUUID } from "node:crypto";
 import { prisma } from "../../../config/database.js";
 import { TeacherPlanService } from "../teacher-plan.service.js";
 import { TeacherPlanPolicyService } from "../teacher-plan-policy.service.js";
+import { TEACHER_PLANS } from "../teacher-plan.seed-data.js";
 
 const planService = new TeacherPlanService();
 const policyService = new TeacherPlanPolicyService();
@@ -11,21 +13,67 @@ let freePlanId: string;
 
 describe("TeacherPlanService", () => {
   beforeAll(async () => {
-    const plans = await prisma.teacherPlan.findMany();
-    if (plans.length === 0) {
-      throw new Error("Run seed-teacher-plans.ts first");
+    // Self-contained: upsert the canonical plans so the suite never depends on
+    // an external `seed-teacher-plans.ts` run (idempotent — safe if seeded).
+    for (const plan of TEACHER_PLANS) {
+      await prisma.teacherPlan.upsert({
+        where: { code: plan.code },
+        update: {
+          name: plan.name,
+          displayName: plan.displayName,
+          description: plan.description,
+          monthlyPrice: plan.monthlyPrice,
+          yearlyPrice: plan.yearlyPrice,
+          currency: plan.currency,
+          billingInterval: plan.billingInterval,
+          isActive: plan.isActive,
+          isRecommended: plan.isRecommended,
+          sortOrder: plan.sortOrder,
+          features: plan.features,
+          limits: plan.limits,
+        },
+        create: {
+          code: plan.code,
+          name: plan.name,
+          displayName: plan.displayName,
+          description: plan.description,
+          monthlyPrice: plan.monthlyPrice,
+          yearlyPrice: plan.yearlyPrice,
+          currency: plan.currency,
+          billingInterval: plan.billingInterval,
+          isActive: plan.isActive,
+          isRecommended: plan.isRecommended,
+          sortOrder: plan.sortOrder,
+          features: plan.features,
+          limits: plan.limits,
+        },
+      });
     }
-    const teacher = await prisma.user.findFirst({
-      where: { role: "OPERATION" },
+
+    // Dedicated teacher owned by this suite (no reliance on pre-seeded users).
+    const teacher = await prisma.user.create({
+      data: {
+        email: `tp-svc-${randomUUID()}@test.local`,
+        fullName: "TP Service Test Teacher",
+        mobile: `019${Math.floor(Math.random() * 1e8).toString().padStart(8, "0")}`,
+        password: "not-used-in-service-tests",
+        role: "OPERATION",
+        status: "ACTIVE",
+      },
     });
-    if (teacher) {
-      teacherId = teacher.id;
-    }
+    teacherId = teacher.id;
+
     const freePlan = await prisma.teacherPlan.findUnique({ where: { code: "FREE" } });
-    if (freePlan) freePlanId = freePlan.id;
+    freePlanId = freePlan!.id;
   });
 
   afterAll(async () => {
+    // Remove only this suite's data; leave the shared (idempotent) plan catalog.
+    await prisma.teacherSubscriptionPayment.deleteMany({ where: { teacherId } });
+    await prisma.teacherAiUsageEvent.deleteMany({ where: { teacherId } });
+    await prisma.teacherSubscriptionRequest.deleteMany({ where: { teacherId } });
+    await prisma.teacherSubscription.deleteMany({ where: { teacherId } });
+    await prisma.user.delete({ where: { id: teacherId } }).catch(() => {});
     await prisma.$disconnect();
   });
 
