@@ -1,13 +1,13 @@
 import bcrypt from "bcryptjs";
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../../config/database.js";
-import { getAll } from "../../shared/utils/handlerFactory.js";
 import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { userPublicFields } from "../users/user.types.js";
 import { studentPublicFields } from "./student.types.js";
 import { getStudentProfileOverview } from "./student-profile.service.js";
+import { assertStudentVisibleToTeacher } from "../teacher-access/teacher-access.service.js";
 import type {
   CreateStudentInput,
   UpdateStudentInput,
@@ -16,7 +16,42 @@ import type {
 const Student = prisma.studentProfile;
 
 export class StudentController {
-  public list = getAll(Student);
+
+  /**
+   * GET /api/students — scoped to students enrolled in at least one chapter
+   * belonging to this teacher's stages. The route guard already ensures only
+   * OPERATION can reach this handler.
+   */
+  public list = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const teacherId = req.user!.id;
+
+      const students = await prisma.studentProfile.findMany({
+        where: {
+          user: {
+            enrollments: {
+              some: {
+                status: "ACTIVE",
+                chapter: {
+                  deletedAt: null,
+                  stage: { teacherId, deletedAt: null },
+                },
+              },
+            },
+          },
+        },
+        select: {
+          ...studentPublicFields,
+          user: { select: userPublicFields },
+          stage: { select: { name: true } },
+        },
+      });
+
+      res
+        .status(200)
+        .json(okResponse("Students fetched successfully", students));
+    },
+  );
 
   /**
    * GET /api/students/me/profile — the authenticated student's aggregated
@@ -48,6 +83,10 @@ export class StudentController {
         );
       }
 
+      if (req.user?.role === "OPERATION") {
+        await assertStudentVisibleToTeacher(id, req.user.id);
+      }
+
       const profile = await Student.findUnique({
         where: { userId: id },
         select: {
@@ -77,10 +116,14 @@ export class StudentController {
         return next(new AppError("Student not found", 404));
       }
 
-      if (req.user?.role === "STUDENT" && req.user?.id !== id) {
-        return next(
-          new AppError("You can only update your own profile", 403),
-        );
+      if (req.user?.role === "STUDENT") {
+        if (req.user?.id !== id) {
+          return next(
+            new AppError("You can only update your own profile", 403),
+          );
+        }
+      } else if (req.user?.role === "OPERATION") {
+        await assertStudentVisibleToTeacher(id, req.user.id);
       }
 
       const input = req.body as UpdateStudentInput;

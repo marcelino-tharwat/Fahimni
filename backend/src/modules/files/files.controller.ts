@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../../config/database.js";
 import { FilesService } from "./files.service.js";
 import { assertMaterialPathOwnedByTeacher } from "../materials/material-access.service.js";
+import { assertLessonOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
 
 const filesService = new FilesService();
 
@@ -25,6 +26,8 @@ export class FilesController {
           .json({ success: false, message: "lessonId is required" });
         return;
       }
+
+      await assertLessonOwnedByTeacher(lessonId, req.user!.id);
 
       const { record, indexingStatus } = await filesService.uploadAndSave(
         file,
@@ -83,6 +86,8 @@ export class FilesController {
         return;
       }
 
+      await assertLessonOwnedByTeacher(lessonId, req.user!.id);
+
       const results = await Promise.all(
         files.map((f) => filesService.uploadAndSave(f, req.user!.id, lessonId)),
       );
@@ -137,6 +142,7 @@ export class FilesController {
         return;
       }
 
+      await assertLessonOwnedByTeacher(lessonId, req.user!.id);
       const results = await filesService.attachFilesToLesson(
         req.user!.id,
         lessonId,
@@ -160,6 +166,8 @@ export class FilesController {
         res.status(400).json({ success: false, message: "path query parameter is required" });
         return;
       }
+
+      await assertMaterialPathOwnedByTeacher(req.user!.id, path);
 
       await filesService.deleteFile(path);
 

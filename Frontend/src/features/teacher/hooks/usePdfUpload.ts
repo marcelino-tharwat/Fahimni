@@ -116,12 +116,14 @@ export function usePdfUpload({
               );
 
               const uploadPromise = useStaging
-                ? filesApi.uploadPdfStaging(uf.file, teacherId, (percent) => {
+
+                ? filesApi.uploadPdfStaging(uf.file, (percent) => {
                     setFiles((prev) =>
                       prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),
                     );
                   })
-                : filesApi.uploadPdf(uf.file, teacherId, lessonIdRef.current, (percent) => {
+
+                : filesApi.uploadPdf(uf.file, lessonIdRef.current, (percent) => {
                     setFiles((prev) =>
                       prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),
                     );
@@ -242,7 +244,7 @@ export function usePdfUpload({
               );
 
               filesApi
-                .uploadPdf(uf.file, teacherId, newLessonId, (percent) => {
+                .uploadPdf(uf.file, newLessonId, (percent) => {
                   setFiles((prev) =>
                     prev.map((f) => (f.id === uf.id ? { ...f, progress: percent } : f)),
                   );

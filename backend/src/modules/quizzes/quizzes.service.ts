@@ -1,6 +1,7 @@
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
+import { assertChapterOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
 import {
   quizPublicFields,
   questionPublicFields,
@@ -649,10 +650,15 @@ export class QuizService {
 
   public async getChapterQuizzes(
     chapterId: string,
+    teacherId?: string,
   ): Promise<QuizDetailResponseDTO[]> {
-    const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
-    if (!chapter) {
-      throw new AppError("Chapter not found", 404);
+    if (teacherId) {
+      await assertChapterOwnedByTeacher(chapterId, teacherId);
+    } else {
+      const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
+      if (!chapter) {
+        throw new AppError("Chapter not found", 404);
+      }
     }
 
     const quizzes = await prisma.quiz.findMany({

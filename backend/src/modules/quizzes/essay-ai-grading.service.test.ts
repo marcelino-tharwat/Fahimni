@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { EssayAiGradingService } from "./essay-ai-grading.service.js";
+import { TeacherPlanPolicyService } from "../teacher-plans/teacher-plan-policy.service.js";
 
 const ATTEMPT = "attempt-1";
 const TEACHER = "teacher-1";
@@ -40,6 +41,14 @@ describe("EssayAiGradingService.suggestForAttempt", () => {
   let prisma: ReturnType<typeof makePrisma>;
   beforeEach(() => {
     prisma = makePrisma(makeAttempt([{ ...essayResult }]), [essayQuestion]);
+    vi.spyOn(TeacherPlanPolicyService.prototype, "checkAiUsageQuota").mockResolvedValue(undefined);
+    vi.spyOn(TeacherPlanPolicyService.prototype, "recordAiUsage").mockResolvedValue(undefined);
+    vi.spyOn(TeacherPlanPolicyService.prototype, "getTeacherEffectivePlan").mockResolvedValue({
+      planId: "free", planCode: "FREE", limits: {},
+    });
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("stores an AI suggestion without touching awardedPoints (stays pending)", async () => {
