@@ -2,7 +2,9 @@ import { Router } from "express";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
+import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import userRoutes from "../users/user.routes.js";
+import { AdminStatsController } from "./admin-stats.controller.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -20,10 +22,14 @@ import userRoutes from "../users/user.routes.js";
  * their sub-router here rather than wiring the guards ad-hoc.
  */
 const router = Router();
+const statsController = new AdminStatsController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
 router.use(authenticateMiddleware, authorizeMiddleware("ADMIN"));
+
+/** Global platform metrics for the admin dashboard (overview only). */
+router.get("/stats", asyncHandler(statsController.getStats));
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */
 router.get("/me", (req, res) => {
