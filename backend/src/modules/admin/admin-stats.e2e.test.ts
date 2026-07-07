@@ -22,6 +22,8 @@ const owned = {
   stageIds: [] as string[],
   chapterIds: [] as string[],
   paymentIds: [] as string[],
+  planIds: [] as string[],
+  subPaymentIds: [] as string[],
 };
 
 interface HttpResult {
@@ -89,9 +91,9 @@ async function makeStageChapter(teacherId: string): Promise<string> {
   return chapterId;
 }
 
-async function activeEnroll(studentId: string, chapterId: string) {
+async function enroll(studentId: string, chapterId: string, status: "ACTIVE" | "PAYMENT_PENDING") {
   await prisma.enrollment.create({
-    data: { studentId, chapterId, price: 0, paymentMethod: "FREE", status: "ACTIVE" },
+    data: { studentId, chapterId, price: 0, paymentMethod: "FREE", status },
   });
 }
 
@@ -100,6 +102,21 @@ async function successPayment(studentId: string, chapterId: string, amount: numb
     data: { studentId, chapterId, amount, status: "SUCCESS", paymobOrderId: `stats-${randomUUID()}` },
   });
   owned.paymentIds.push(p.id);
+}
+
+async function makePlan(): Promise<string> {
+  const plan = await prisma.teacherPlan.create({
+    data: { code: `STATS-${randomUUID().slice(0, 8)}`, name: "stats-plan", displayName: "Stats Plan", monthlyPrice: 199 },
+  });
+  owned.planIds.push(plan.id);
+  return plan.id;
+}
+
+async function successSubPayment(teacherId: string, planId: string, amount: number) {
+  const p = await prisma.teacherSubscriptionPayment.create({
+    data: { teacherId, planId, amount, status: "SUCCESS", provider: "PAYMOB", providerOrderId: `stats-sub-${randomUUID()}` },
+  });
+  owned.subPaymentIds.push(p.id);
 }
 
 let adminCookie: string;
@@ -122,31 +139,60 @@ beforeAll(async () => {
   teacherCookie = await login((await prisma.user.findUniqueOrThrow({ where: { id: teacherId } })).email);
   studentCookie = await login((await prisma.user.findUniqueOrThrow({ where: { id: studentId } })).email);
 
-  // Dominant teacher: one huge SUCCESS payment (guaranteed #1 by revenue) plus
-  // three distinct active-enrolled students.
+  // Dominant teacher: one huge SUCCESS course payment (guaranteed #1 by revenue)
+  // + three distinct active-enrolled students + a confirmed subscription payment.
   dominantTeacherId = await makeUser("OPERATION");
   const chapterId = await makeStageChapter(dominantTeacherId);
   const payer = await makeUser("STUDENT");
   await successPayment(payer, chapterId, 10_000_000);
   for (let i = 0; i < 3; i++) {
     const s = await makeUser("STUDENT");
-    await activeEnroll(s, chapterId);
+    await enroll(s, chapterId, "ACTIVE");
   }
+  const planId = await makePlan();
+  await successSubPayment(dominantTeacherId, planId, 777);
 });
 
 afterAll(async () => {
+  await prisma.teacherSubscriptionPayment.deleteMany({ where: { id: { in: owned.subPaymentIds } } });
   await prisma.paymentTransaction.deleteMany({ where: { id: { in: owned.paymentIds } } });
   await prisma.enrollment.deleteMany({ where: { studentId: { in: owned.userIds } } });
   await prisma.chapter.deleteMany({ where: { id: { in: owned.chapterIds } } });
   await prisma.stage.deleteMany({ where: { id: { in: owned.stageIds } } });
+  await prisma.teacherSubscription.deleteMany({ where: { teacherId: { in: owned.userIds } } });
+  await prisma.teacherPlan.deleteMany({ where: { id: { in: owned.planIds } } });
   await prisma.user.deleteMany({ where: { id: { in: owned.userIds } } });
   await new Promise<void>((resolve) => server.close(() => resolve()));
   await prisma.$disconnect();
 });
 
 async function getStats(cookie: string) {
-  const r = await http("GET", "/api/admin/stats", { cookie });
-  return r;
+  return http("GET", "/api/admin/stats", { cookie });
+}
+
+type Stats = {
+  users: Record<string, number>;
+  content: Record<string, number>;
+  learning: Record<string, number>;
+  finance: {
+    confirmedCourseRevenue: number;
+    confirmedTeacherSubscriptionRevenue: number;
+    totalConfirmedRevenue: number;
+    monthlyConfirmedRevenue: number;
+    estimatedSubscriptionRevenue: number;
+    currency: string;
+    reliabilityWarnings: string[];
+  };
+  operations: Record<string, number>;
+  ai: Record<string, number>;
+  topTeachers: {
+    byRevenue: { teacherId: string; fullName: string; revenue: number }[];
+    byStudents: { teacherId: string; fullName: string; studentCount: number }[];
+  };
+};
+
+async function statsData(cookie = adminCookie): Promise<Stats> {
+  return (await getStats(cookie)).json?.data as Stats;
 }
 
 describe("GET /api/admin/stats — authorization", () => {
@@ -166,11 +212,8 @@ describe("GET /api/admin/stats — authorization", () => {
 
 describe("GET /api/admin/stats — payload", () => {
   it("5. returns the correct response shape and types", async () => {
-    const r = await getStats(adminCookie);
-    const d = r.json?.data as Record<string, Record<string, unknown>>;
-    expect(d).toBeDefined();
-
-    for (const k of ["totalTeachers", "activeTeachers", "totalStudents", "activeStudents", "studentsWithoutTeacher"]) {
+    const d = await statsData();
+    for (const k of ["totalTeachers", "activeTeachers", "totalStudents", "activeStudents", "studentsWithoutTeacher", "studentsWithoutAnyEnrollment"]) {
       expect(typeof d.users[k]).toBe("number");
     }
     for (const k of ["totalStages", "totalChapters", "totalLessons", "totalMaterials", "totalQuizzes", "publishedQuizzes", "draftQuizzes"]) {
@@ -179,68 +222,85 @@ describe("GET /api/admin/stats — payload", () => {
     for (const k of ["totalEnrollments", "activeEnrollments", "pendingEnrollments", "quizAttempts", "averageQuizScore"]) {
       expect(typeof d.learning[k]).toBe("number");
     }
-    expect(typeof d.finance.confirmedRevenue).toBe("number");
-    expect(typeof d.finance.monthlyConfirmedRevenue).toBe("number");
-    expect(typeof d.finance.estimatedSubscriptionRevenue).toBe("number");
+    for (const k of ["confirmedCourseRevenue", "confirmedTeacherSubscriptionRevenue", "totalConfirmedRevenue", "monthlyConfirmedRevenue", "estimatedSubscriptionRevenue"]) {
+      expect(typeof (d.finance as unknown as Record<string, number>)[k]).toBe("number");
+    }
     expect(d.finance.currency).toBe("EGP");
     expect(Array.isArray(d.finance.reliabilityWarnings)).toBe(true);
-    expect((d.finance.reliabilityWarnings as string[]).length).toBeGreaterThan(0);
-    for (const k of ["pendingTeacherRequests", "activeTeacherSubscriptions", "pendingTeacherSubscriptionRequests"]) {
+    expect(d.finance.reliabilityWarnings.length).toBeGreaterThan(0);
+    for (const k of ["pendingTeacherRequests", "activeTeacherSubscriptions", "pendingTeacherSubscriptionRequests", "pendingTeacherSubscriptionPayments", "failedTeacherSubscriptionPayments"]) {
       expect(typeof d.operations[k]).toBe("number");
     }
-    expect(typeof d.ai.quizGenerations).toBe("number");
-    expect(typeof d.ai.essayGrading).toBe("number");
-    expect(Array.isArray((d.topTeachers as unknown as { byRevenue: unknown[] }).byRevenue)).toBe(true);
-    expect(Array.isArray((d.topTeachers as unknown as { byStudents: unknown[] }).byStudents)).toBe(true);
+    for (const k of ["quizGenerations", "essayGrading", "totalAiEvents"]) {
+      expect(typeof d.ai[k]).toBe("number");
+    }
+    expect(Array.isArray(d.topTeachers.byRevenue)).toBe(true);
+    expect(Array.isArray(d.topTeachers.byStudents)).toBe(true);
   });
 
-  it("6. computes studentsWithoutTeacher correctly (delta on unassigned vs assigned)", async () => {
-    const before = (await getStats(adminCookie)).json?.data as { users: { studentsWithoutTeacher: number; totalStudents: number } };
+  it("6 & 7. computes studentsWithoutTeacher and studentsWithoutAnyEnrollment correctly", async () => {
+    const before = (await statsData()).users;
 
-    // Unassigned student → studentsWithoutTeacher +1, totalStudents +1.
+    // (a) Unassigned student, no enrollments → both metrics +1.
     await makeUser("STUDENT");
-    const afterUnassigned = (await getStats(adminCookie)).json?.data as { users: { studentsWithoutTeacher: number; totalStudents: number } };
-    expect(afterUnassigned.users.totalStudents).toBe(before.users.totalStudents + 1);
-    expect(afterUnassigned.users.studentsWithoutTeacher).toBe(before.users.studentsWithoutTeacher + 1);
+    const afterUnassigned = (await statsData()).users;
+    expect(afterUnassigned.totalStudents).toBe(before.totalStudents + 1);
+    expect(afterUnassigned.studentsWithoutTeacher).toBe(before.studentsWithoutTeacher + 1);
+    expect(afterUnassigned.studentsWithoutAnyEnrollment).toBe(before.studentsWithoutAnyEnrollment + 1);
 
-    // Assigned student (active enrollment) → totalStudents +1, studentsWithoutTeacher unchanged.
-    const chapterId = owned.chapterIds[0]!;
-    const assigned = await makeUser("STUDENT");
-    await activeEnroll(assigned, chapterId);
-    const afterAssigned = (await getStats(adminCookie)).json?.data as { users: { studentsWithoutTeacher: number; totalStudents: number } };
-    expect(afterAssigned.users.totalStudents).toBe(afterUnassigned.users.totalStudents + 1);
-    expect(afterAssigned.users.studentsWithoutTeacher).toBe(afterUnassigned.users.studentsWithoutTeacher);
+    // (b) Student with a PAYMENT_PENDING enrollment → has an enrollment (so
+    // studentsWithoutAnyEnrollment unchanged) but no ACTIVE one (so
+    // studentsWithoutTeacher +1).
+    const pendingStudent = await makeUser("STUDENT");
+    await enroll(pendingStudent, owned.chapterIds[0]!, "PAYMENT_PENDING");
+    const afterPending = (await statsData()).users;
+    expect(afterPending.totalStudents).toBe(afterUnassigned.totalStudents + 1);
+    expect(afterPending.studentsWithoutTeacher).toBe(afterUnassigned.studentsWithoutTeacher + 1);
+    expect(afterPending.studentsWithoutAnyEnrollment).toBe(afterUnassigned.studentsWithoutAnyEnrollment);
+
+    // (c) Student with an ACTIVE enrollment → neither "without" metric changes.
+    const activeStudent = await makeUser("STUDENT");
+    await enroll(activeStudent, owned.chapterIds[0]!, "ACTIVE");
+    const afterActive = (await statsData()).users;
+    expect(afterActive.studentsWithoutTeacher).toBe(afterPending.studentsWithoutTeacher);
+    expect(afterActive.studentsWithoutAnyEnrollment).toBe(afterPending.studentsWithoutAnyEnrollment);
   });
 
-  it("7. computes topTeachers correctly (ordering + independent recomputation)", async () => {
-    const d = (await getStats(adminCookie)).json?.data as {
-      topTeachers: {
-        byRevenue: { teacherId: string; fullName: string; revenue: number }[];
-        byStudents: { teacherId: string; fullName: string; studentCount: number }[];
-      };
-    };
-    const { byRevenue, byStudents } = d.topTeachers;
+  it("8. confirmedCourseRevenue equals the sum of successful PaymentTransaction", async () => {
+    const d = await statsData();
+    const agg = await prisma.paymentTransaction.aggregate({ where: { status: "SUCCESS" }, _sum: { amount: true } });
+    expect(d.finance.confirmedCourseRevenue).toBe(Number(agg._sum.amount ?? 0));
+  });
 
-    // Dominant teacher (10,000,000) must rank #1 by revenue with the exact sum.
-    expect(byRevenue[0]?.teacherId).toBe(dominantTeacherId);
-    expect(byRevenue[0]?.revenue).toBe(10_000_000);
-    expect(typeof byRevenue[0]?.fullName).toBe("string");
-    expect(byRevenue[0]?.fullName.length).toBeGreaterThan(0);
+  it("9. confirmedTeacherSubscriptionRevenue equals the sum of successful TeacherSubscriptionPayment", async () => {
+    const d = await statsData();
+    const agg = await prisma.teacherSubscriptionPayment.aggregate({ where: { status: "SUCCESS" }, _sum: { amount: true } });
+    expect(d.finance.confirmedTeacherSubscriptionRevenue).toBe(Number(agg._sum.amount ?? 0));
+    // Our fixture contributed a confirmed 777 subscription payment.
+    expect(d.finance.confirmedTeacherSubscriptionRevenue).toBeGreaterThanOrEqual(777);
+    // Because confirmed subscription revenue exists, the estimate is not used.
+    expect(d.finance.estimatedSubscriptionRevenue).toBe(0);
+  });
 
-    // byRevenue sorted descending + each entry matches an independent recompute.
-    for (let i = 1; i < byRevenue.length; i++) {
-      expect(byRevenue[i - 1]!.revenue).toBeGreaterThanOrEqual(byRevenue[i]!.revenue);
-    }
-    if (byRevenue.length > 0) {
-      const top = byRevenue[0]!;
-      const agg = await prisma.paymentTransaction.aggregate({
-        where: { status: "SUCCESS", chapter: { stage: { teacherId: top.teacherId } } },
-        _sum: { amount: true },
-      });
-      expect(top.revenue).toBe(Number(agg._sum.amount ?? 0));
-    }
+  it("10. totalConfirmedRevenue equals course + subscription confirmed revenue", async () => {
+    const d = await statsData();
+    expect(d.finance.totalConfirmedRevenue).toBe(
+      d.finance.confirmedCourseRevenue + d.finance.confirmedTeacherSubscriptionRevenue,
+    );
+  });
 
-    // byStudents sorted descending + top entry matches an independent recompute.
+  it("11. monthlyConfirmedRevenue includes both course and subscription payments", async () => {
+    const d = await statsData();
+    const monthStart = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1));
+    const [course, sub] = await Promise.all([
+      prisma.paymentTransaction.aggregate({ where: { status: "SUCCESS", createdAt: { gte: monthStart } }, _sum: { amount: true } }),
+      prisma.teacherSubscriptionPayment.aggregate({ where: { status: "SUCCESS", createdAt: { gte: monthStart } }, _sum: { amount: true } }),
+    ]);
+    expect(d.finance.monthlyConfirmedRevenue).toBe(Number(course._sum.amount ?? 0) + Number(sub._sum.amount ?? 0));
+  });
+
+  it("12. topTeachers.byStudents is sorted and matches an independent recompute", async () => {
+    const { byStudents } = (await statsData()).topTeachers;
     for (let i = 1; i < byStudents.length; i++) {
       expect(byStudents[i - 1]!.studentCount).toBeGreaterThanOrEqual(byStudents[i]!.studentCount);
     }
@@ -255,9 +315,26 @@ describe("GET /api/admin/stats — payload", () => {
     }
   });
 
-  it("8. never exposes sensitive fields", async () => {
+  it("13. topTeachers.byRevenue uses course revenue only (subscription payments excluded)", async () => {
+    const { byRevenue } = (await statsData()).topTeachers;
+    // Dominant teacher's 10,000,000 course payment ranks #1 — and does NOT include
+    // the 777 subscription payment (subscription = platform revenue, not teacher-earned).
+    expect(byRevenue[0]?.teacherId).toBe(dominantTeacherId);
+    expect(byRevenue[0]?.revenue).toBe(10_000_000);
+    for (let i = 1; i < byRevenue.length; i++) {
+      expect(byRevenue[i - 1]!.revenue).toBeGreaterThanOrEqual(byRevenue[i]!.revenue);
+    }
+    const top = byRevenue[0]!;
+    const agg = await prisma.paymentTransaction.aggregate({
+      where: { status: "SUCCESS", chapter: { stage: { teacherId: top.teacherId } } },
+      _sum: { amount: true },
+    });
+    expect(top.revenue).toBe(Number(agg._sum.amount ?? 0));
+  });
+
+  it("14. never exposes sensitive fields", async () => {
     const r = await getStats(adminCookie);
     const raw = JSON.stringify(r.json);
-    expect(raw).not.toMatch(/password|tokenVersion|rawCallback|filePath|storageKey/i);
+    expect(raw).not.toMatch(/password|tokenVersion|rawCallback|storageKey|filePath/i);
   });
 });

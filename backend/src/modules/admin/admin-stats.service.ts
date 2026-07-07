@@ -17,7 +17,17 @@ function startOfCurrentMonthUtc(): Date {
  * Computes global platform metrics for the admin dashboard.
  *
  * Read-only aggregation across all teachers/students. Selects only non-sensitive
- * columns (never password / tokenVersion / rawCallback / filePath / storageKey).
+ * columns (never password / tokenVersion / rawCallback / filePath / storageKey /
+ * provider payloads).
+ *
+ * Revenue policy:
+ *  - confirmedCourseRevenue        = successful student course PaymentTransaction.
+ *  - confirmedTeacherSubscription  = successful TeacherSubscriptionPayment (what
+ *                                    teachers pay the PLATFORM for a plan).
+ *  - topTeachers.byRevenue counts ONLY teacher-owned course revenue — teacher
+ *    subscription payments are platform revenue (a cost to the teacher), not
+ *    revenue the teacher earned, so they are deliberately excluded from the
+ *    teacher-revenue ranking.
  */
 export class AdminStatsService {
   async getStats(): Promise<AdminStatsResponse> {
@@ -29,6 +39,7 @@ export class AdminStatsService {
       totalStudents,
       activeStudents,
       studentsWithActiveEnrollment,
+      studentsWithAnyEnrollment,
       totalStages,
       totalChapters,
       totalLessons,
@@ -41,14 +52,18 @@ export class AdminStatsService {
       pendingEnrollments,
       quizAttempts,
       avgScoreRows,
-      confirmedRevenueAgg,
-      monthlyRevenueAgg,
-      subscriptionPaymentAgg,
+      courseRevenueAgg,
+      monthlyCourseRevenueAgg,
+      subRevenueAgg,
+      monthlySubRevenueAgg,
       pendingTeacherRequests,
       activeTeacherSubscriptions,
       pendingTeacherSubscriptionRequests,
+      pendingTeacherSubscriptionPayments,
+      failedTeacherSubscriptionPayments,
       quizGenAgg,
       essayGradingAgg,
+      totalAiEvents,
       byRevenue,
       byStudents,
     ] = await Promise.all([
@@ -58,6 +73,11 @@ export class AdminStatsService {
       prisma.user.count({ where: { role: "STUDENT", status: "ACTIVE" } }),
       prisma.enrollment.findMany({
         where: { status: "ACTIVE", student: { role: "STUDENT" } },
+        select: { studentId: true },
+        distinct: ["studentId"],
+      }),
+      prisma.enrollment.findMany({
+        where: { student: { role: "STUDENT" } },
         select: { studentId: true },
         distinct: ["studentId"],
       }),
@@ -89,9 +109,15 @@ export class AdminStatsService {
         where: { status: "SUCCESS" },
         _sum: { amount: true },
       }),
+      prisma.teacherSubscriptionPayment.aggregate({
+        where: { status: "SUCCESS", createdAt: { gte: monthStart } },
+        _sum: { amount: true },
+      }),
       prisma.teacherRegistrationRequest.count({ where: { status: "PENDING" } }),
       prisma.teacherSubscription.count({ where: { status: "ACTIVE" } }),
       prisma.teacherSubscriptionRequest.count({ where: { status: "PENDING" } }),
+      prisma.teacherSubscriptionPayment.count({ where: { status: "PENDING" } }),
+      prisma.teacherSubscriptionPayment.count({ where: { status: "FAILED" } }),
       prisma.teacherAiUsageEvent.aggregate({
         where: { usageType: "AI_QUIZ_GENERATION" },
         _sum: { units: true },
@@ -100,14 +126,18 @@ export class AdminStatsService {
         where: { usageType: "AI_ESSAY_GRADING" },
         _sum: { units: true },
       }),
+      prisma.teacherAiUsageEvent.count(),
       this.topTeachersByRevenue(),
       this.topTeachersByStudents(),
     ]);
 
-    const totalStudentsCount = totalStudents;
     const studentsWithoutTeacher = Math.max(
       0,
-      totalStudentsCount - studentsWithActiveEnrollment.length,
+      totalStudents - studentsWithActiveEnrollment.length,
+    );
+    const studentsWithoutAnyEnrollment = Math.max(
+      0,
+      totalStudents - studentsWithAnyEnrollment.length,
     );
 
     const averageQuizScore =
@@ -115,27 +145,36 @@ export class AdminStatsService {
         ? Math.round(Number(avgScoreRows[0].avg) * 10) / 10
         : 0;
 
-    const confirmedRevenue = Number(confirmedRevenueAgg._sum.amount ?? 0);
-    const monthlyConfirmedRevenue = Number(monthlyRevenueAgg._sum.amount ?? 0);
-    const realSubscriptionRevenue = Number(subscriptionPaymentAgg._sum.amount ?? 0);
+    const confirmedCourseRevenue = Number(courseRevenueAgg._sum.amount ?? 0);
+    const confirmedTeacherSubscriptionRevenue = Number(subRevenueAgg._sum.amount ?? 0);
+    const totalConfirmedRevenue =
+      confirmedCourseRevenue + confirmedTeacherSubscriptionRevenue;
+    const monthlyConfirmedRevenue =
+      Number(monthlyCourseRevenueAgg._sum.amount ?? 0) +
+      Number(monthlySubRevenueAgg._sum.amount ?? 0);
 
     const reliabilityWarnings: string[] = [
-      "الإيرادات المؤكدة تحتسب فقط مدفوعات Paymob الناجحة للفصول؛ الاشتراكات المجانية أو عبر الأكواد غير محتسبة.",
+      "إيرادات الكورسات المؤكدة تحتسب فقط مدفوعات Paymob الناجحة؛ الاشتراكات المجانية أو عبر الأكواد غير محتسبة.",
       "المبالغ المستردة والإلغاءات غير محتسبة في الإيرادات.",
     ];
 
-    let estimatedSubscriptionRevenue: number;
-    if (realSubscriptionRevenue > 0) {
-      estimatedSubscriptionRevenue = realSubscriptionRevenue;
+    // Prefer confirmed subscription payments. Only fall back to an estimate when
+    // there are no confirmed TeacherSubscriptionPayment rows at all.
+    let estimatedSubscriptionRevenue = 0;
+    if (confirmedTeacherSubscriptionRevenue > 0) {
       reliabilityWarnings.push(
-        "إيراد الاشتراكات محسوب من مدفوعات الاشتراك المؤكدة.",
+        "إيراد اشتراكات المدرسين محسوب من مدفوعات الاشتراك المؤكدة (القيمة التقديرية غير مستخدمة).",
       );
     } else {
       estimatedSubscriptionRevenue = await this.estimateSubscriptionRevenue();
       reliabilityWarnings.push(
-        "إيراد الاشتراكات تقديري بناءً على الاشتراكات النشطة × سعر الباقة (لا توجد مدفوعات اشتراك مؤكدة بعد).",
+        "إيراد اشتراكات المدرسين تقديري بناءً على الاشتراكات النشطة × سعر الباقة (لا توجد مدفوعات اشتراك مؤكدة بعد).",
       );
     }
+
+    reliabilityWarnings.push(
+      "ترتيب المدرسين حسب الإيراد يعتمد على إيرادات الكورسات المملوكة للمدرس فقط؛ مدفوعات اشتراكات المدرسين تُعد إيراداً للمنصة وليست إيراداً للمدرس.",
+    );
 
     return {
       users: {
@@ -144,6 +183,7 @@ export class AdminStatsService {
         totalStudents,
         activeStudents,
         studentsWithoutTeacher,
+        studentsWithoutAnyEnrollment,
       },
       content: {
         totalStages,
@@ -162,7 +202,9 @@ export class AdminStatsService {
         averageQuizScore,
       },
       finance: {
-        confirmedRevenue,
+        confirmedCourseRevenue,
+        confirmedTeacherSubscriptionRevenue,
+        totalConfirmedRevenue,
         monthlyConfirmedRevenue,
         estimatedSubscriptionRevenue,
         currency: CURRENCY,
@@ -172,10 +214,13 @@ export class AdminStatsService {
         pendingTeacherRequests,
         activeTeacherSubscriptions,
         pendingTeacherSubscriptionRequests,
+        pendingTeacherSubscriptionPayments,
+        failedTeacherSubscriptionPayments,
       },
       ai: {
         quizGenerations: Number(quizGenAgg._sum.units ?? 0),
         essayGrading: Number(essayGradingAgg._sum.units ?? 0),
+        totalAiEvents,
       },
       topTeachers: {
         byRevenue,
