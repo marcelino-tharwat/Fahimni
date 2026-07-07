@@ -1,18 +1,24 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../config/database.js";
 import type { ApiError } from "../../shared/types/common.types.js";
+import { auditLogService } from "../../shared/services/auditLog.service.js";
 import { UserRepository } from "./user.repository.js";
 import { userPublicFields } from "./user.types.js";
-import type { CreateUserInput } from "./user.validation.js";
+import type { CreateUserInput, ListUsersQuery } from "./user.validation.js";
 
 export class UserService {
   constructor(private readonly userRepository = new UserRepository()) {}
 
-  public async listUsers() {
-    return this.userRepository.findAll();
+  public async listUsers(query: ListUsersQuery) {
+    return this.userRepository.findMany(query);
   }
 
-  public async createUser(input: CreateUserInput) {
+  /**
+   * Create a user. This is an ADMIN-only operation (enforced at the route
+   * layer), so the caller-supplied role is trusted here. `actorId` is the
+   * authenticated admin performing the action, recorded for the audit trail.
+   */
+  public async createUser(input: CreateUserInput, actorId: string) {
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ email: input.email }, { mobile: input.mobile }],
@@ -27,7 +33,7 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(input.password, 10);
 
-    return prisma.user.create({
+    const created = await prisma.user.create({
       data: {
         fullName: input.fullName,
         email: input.email,
@@ -37,5 +43,18 @@ export class UserService {
       },
       select: userPublicFields,
     });
+
+    // Non-blocking audit trail for a privileged mutation. Failures are
+    // swallowed inside the service, so this never breaks user creation.
+    await auditLogService.record({
+      action: "USER_CREATED",
+      resourceType: "User",
+      resourceId: created.id,
+      actorId,
+      actorType: "ADMIN",
+      details: { role: created.role },
+    });
+
+    return created;
   }
 }

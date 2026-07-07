@@ -28,6 +28,7 @@ import materialsRoutes from "./modules/materials/materials.routes.js";
 import contentProtectionRoutes from "./modules/content-protection/contentProtection.routes.js";
 import { teacherRequestRoutes } from "./modules/teacher-request/index.js";
 import teacherPlanRoutes from "./modules/teacher-plans/teacher-plan.routes.js";
+import adminRoutes from "./modules/admin/admin.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -65,6 +66,7 @@ export function createApp(): Application {
 
   app.use("/api/v1/auth", authRoutes);
   app.use("/api/users", userRoutes);
+  app.use("/api/admin", adminRoutes);
   app.use("/api/students", studentRoutes);
   app.use("/api/teachers", teacherRoutes);
   app.use("/api/stages", stageRoutes);
