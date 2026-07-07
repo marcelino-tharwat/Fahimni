@@ -2,6 +2,22 @@ import { z } from "zod";
 
 export const userRoleSchema = z.enum(["ADMIN", "STUDENT", "OPERATION"]);
 
+export const userStatusSchema = z.enum(["ACTIVE", "INACTIVE", "BANNED"]);
+
+/**
+ * Query schema for the ADMIN-only user list. Coerces pagination values and
+ * accepts optional role/status filters plus a free-text search term.
+ */
+export const listUsersQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  role: userRoleSchema.optional(),
+  status: userStatusSchema.optional(),
+  search: z.string().trim().min(1).max(100).optional(),
+});
+
+export type ListUsersQuery = z.infer<typeof listUsersQuerySchema>;
+
 export const createUserSchema = z.object({
   fullName: z
     .string()

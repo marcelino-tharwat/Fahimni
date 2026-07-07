@@ -33,6 +33,9 @@ export type AuditLogAction =
   | "STUDENT_UNENROLLED"
   | "PAYMENT_COMPLETED"
   | "PAYMENT_FAILED"
+  // Admin (platform-level) actions — not scoped to a single teacher.
+  | "USER_CREATED"
+  | "USER_STATUS_CHANGED"
   // Legacy values retained so historical rows remain readable.
   | "DELETE_STAGE"
   | "DELETE_CHAPTER"
@@ -55,8 +58,12 @@ export interface ActivityParams {
   actorType?: ActorType;
   /** Denormalized display name; only needed for non-teacher actors. */
   actorName?: string | null;
-  /** Teacher whose dashboard/activity stream should surface this event. */
-  scopeTeacherId: string;
+  /**
+   * Teacher whose dashboard/activity stream should surface this event.
+   * Optional for platform-level admin actions that are not scoped to a
+   * single teacher (stored as NULL — the column is nullable).
+   */
+  scopeTeacherId?: string | null;
   /** Sanitized, non-sensitive metadata only. */
   details?: Record<string, unknown> | null;
 }
@@ -123,7 +130,7 @@ export class AuditLogService {
           userId: params.actorId,
           actorType: params.actorType ?? "TEACHER",
           actorName: params.actorName ?? null,
-          scopeTeacherId: params.scopeTeacherId,
+          scopeTeacherId: params.scopeTeacherId ?? null,
           details: sanitizeMetadata(params.details),
         },
       });
