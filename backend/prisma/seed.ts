@@ -5,8 +5,10 @@ import { logger } from "../src/config/logger.js";
 import { assertLocalDatabase } from "../src/seed/local-guard.js";
 import { isValidUuid, seedId } from "../src/seed/chemistry-ids.js";
 import {
-  ALL_QUIZ_IDS,
-  buildQuestions,
+  CHEMISTRY_CHAPTER_DEFS,
+  allChemistryChapterIds,
+  allChemistryLessonIds,
+  buildChemistryLessonShellCatalog,
 } from "../src/seed/chemistry-seed.fixtures.js";
 import type { Prisma } from "../src/generated/prisma/client.js";
 
@@ -18,13 +20,162 @@ import type { Prisma } from "../src/generated/prisma/client.js";
 
 const BCRYPT_ROUNDS = 12;
 const LEGACY_SEED_PREFIX = "seed-chem-";
+const ALL_CHEMISTRY_MATERIAL_IDS: string[] = [];
 const LOCAL_PASSWORD = process.env.SEED_LOCAL_PASSWORD ?? "ChemDemo#2026";
 
 const TEACHER_PLANS = [
-  { code: "FREE", name: "free", displayName: "الباقة المجانية", description: "ابدأ رحلتك التعليمية مع الباقة المجانية", monthlyPrice: 0, yearlyPrice: null, isRecommended: false, sortOrder: 0, features: ["إنشاء اختبارات بالذكاء الاصطناعي (محدود)", "تصحيح مقالات بالذكاء الاصطناعي (محدود)", "دروس غير محدودة", "محتوى محمي ضد النسخ", "دعم عبر واتساب"], limits: { aiQuizGenerationsPerMonth: 5, aiEssayGradingsPerMonth: 10, aiContentGenerationsPerMonth: 0, aiLessonSummariesPerMonth: 0, aiQuestionExplanationsPerMonth: 0, maxStudents: 50, maxCourses: 3, maxQuizzes: 20, storageMb: 500, analyticsAccess: false, studentEngagementAnalytics: false, pdfDownloadTracking: true, contentProtection: true, prioritySupport: false } },
-  { code: "BASIC", name: "basic", displayName: "الباقة الأساسية", description: "مناسبة للمدرسين الجدد", monthlyPrice: 199, yearlyPrice: 1990, isRecommended: false, sortOrder: 1, features: ["إنشاء اختبارات بالذكاء الاصطناعي", "تصحيح مقالات بالذكاء الاصطناعي", "إنشاء محتوى تعليمي بالذكاء الاصطناعي", "دروس غير محدودة", "تخزين 5 جيجابايت", "محتوى محمي ضد النسخ", "تحليلات أساسية", "دعم عبر واتساب"], limits: { aiQuizGenerationsPerMonth: 30, aiEssayGradingsPerMonth: 100, aiContentGenerationsPerMonth: 10, aiLessonSummariesPerMonth: 10, aiQuestionExplanationsPerMonth: 10, maxStudents: 200, maxCourses: 10, maxQuizzes: 100, storageMb: 5120, analyticsAccess: true, studentEngagementAnalytics: false, pdfDownloadTracking: true, contentProtection: true, prioritySupport: false } },
-  { code: "PRO", name: "pro", displayName: "الباقة الاحترافية", description: "مناسبة للمدرسين النشطين", monthlyPrice: 499, yearlyPrice: 4990, isRecommended: true, sortOrder: 2, features: ["إنشاء اختبارات بالذكاء الاصطناعي (غير محدود تقريباً)", "تصحيح مقالات بالذكاء الاصطناعي", "إنشاء محتوى تعليمي بالذكاء الاصطناعي", "ملخصات دروس بالذكاء الاصطناعي", "شروحات ذكية للأسئلة", "دروس غير محدودة", "تخزين 10 جيجابايت", "تحليلات الطلاب", "تحليلات تفاعل الطلاب", "تتبع تحميل PDF", "محتوى محمي ضد النسخ", "العلامة المائية للمحتوى", "دعم أولوية عبر واتساب"], limits: { aiQuizGenerationsPerMonth: 100, aiEssayGradingsPerMonth: 500, aiContentGenerationsPerMonth: 50, aiLessonSummariesPerMonth: 50, aiQuestionExplanationsPerMonth: 50, maxStudents: 500, maxCourses: 20, maxQuizzes: 500, storageMb: 10240, analyticsAccess: true, studentEngagementAnalytics: true, pdfDownloadTracking: true, contentProtection: true, prioritySupport: true } },
-  { code: "PREMIUM", name: "premium", displayName: "الباقة المميزة", description: "للأكاديميات الكبرى", monthlyPrice: 999, yearlyPrice: 9990, isRecommended: false, sortOrder: 3, features: ["إنشاء اختبارات بالذكاء الاصطناعي (غير محدود)", "تصحيح مقالات بالذكاء الاصطناعي (غير محدود)", "إنشاء محتوى تعليمي بالذكاء الاصطناعي", "ملخصات دروس بالذكاء الاصطناعي", "شروحات ذكية للأسئلة", "دروس غير محدودة", "تخزين 50 جيجابايت", "عدد غير محدود من الطلاب", "تحليلات الطلاب المتقدمة", "تحليلات تفاعل الطلاب", "تتبع تحميل PDF", "محتوى محمي ضد النسخ", "العلامة المائية للمحتوى", "دعم VIP عبر واتساب"], limits: { aiQuizGenerationsPerMonth: -1, aiEssayGradingsPerMonth: -1, aiContentGenerationsPerMonth: 200, aiLessonSummariesPerMonth: 200, aiQuestionExplanationsPerMonth: 200, maxStudents: -1, maxCourses: 100, maxQuizzes: -1, storageMb: 51200, analyticsAccess: true, studentEngagementAnalytics: true, pdfDownloadTracking: true, contentProtection: true, prioritySupport: true } },
+  {
+    code: "FREE",
+    name: "free",
+    displayName: "الباقة المجانية",
+    description: "ابدأ رحلتك التعليمية مع الباقة المجانية",
+    monthlyPrice: 0,
+    yearlyPrice: null,
+    isRecommended: false,
+    sortOrder: 0,
+    features: [
+      "إنشاء اختبارات بالذكاء الاصطناعي (محدود)",
+      "تصحيح مقالات بالذكاء الاصطناعي (محدود)",
+      "دروس غير محدودة",
+      "محتوى محمي ضد النسخ",
+      "دعم عبر واتساب",
+    ],
+    limits: {
+      aiQuizGenerationsPerMonth: 5,
+      aiEssayGradingsPerMonth: 10,
+      aiContentGenerationsPerMonth: 0,
+      aiLessonSummariesPerMonth: 0,
+      aiQuestionExplanationsPerMonth: 0,
+      maxStudents: 50,
+      maxCourses: 3,
+      maxQuizzes: 20,
+      storageMb: 500,
+      analyticsAccess: false,
+      studentEngagementAnalytics: false,
+      pdfDownloadTracking: true,
+      contentProtection: true,
+      prioritySupport: false,
+    },
+  },
+  {
+    code: "BASIC",
+    name: "basic",
+    displayName: "الباقة الأساسية",
+    description: "مناسبة للمدرسين الجدد",
+    monthlyPrice: 199,
+    yearlyPrice: 1990,
+    isRecommended: false,
+    sortOrder: 1,
+    features: [
+      "إنشاء اختبارات بالذكاء الاصطناعي",
+      "تصحيح مقالات بالذكاء الاصطناعي",
+      "إنشاء محتوى تعليمي بالذكاء الاصطناعي",
+      "دروس غير محدودة",
+      "تخزين 5 جيجابايت",
+      "محتوى محمي ضد النسخ",
+      "تحليلات أساسية",
+      "دعم عبر واتساب",
+    ],
+    limits: {
+      aiQuizGenerationsPerMonth: 30,
+      aiEssayGradingsPerMonth: 100,
+      aiContentGenerationsPerMonth: 10,
+      aiLessonSummariesPerMonth: 10,
+      aiQuestionExplanationsPerMonth: 10,
+      maxStudents: 200,
+      maxCourses: 10,
+      maxQuizzes: 100,
+      storageMb: 5120,
+      analyticsAccess: true,
+      studentEngagementAnalytics: false,
+      pdfDownloadTracking: true,
+      contentProtection: true,
+      prioritySupport: false,
+    },
+  },
+  {
+    code: "PRO",
+    name: "pro",
+    displayName: "الباقة الاحترافية",
+    description: "مناسبة للمدرسين النشطين",
+    monthlyPrice: 499,
+    yearlyPrice: 4990,
+    isRecommended: true,
+    sortOrder: 2,
+    features: [
+      "إنشاء اختبارات بالذكاء الاصطناعي (غير محدود تقريباً)",
+      "تصحيح مقالات بالذكاء الاصطناعي",
+      "إنشاء محتوى تعليمي بالذكاء الاصطناعي",
+      "ملخصات دروس بالذكاء الاصطناعي",
+      "شروحات ذكية للأسئلة",
+      "دروس غير محدودة",
+      "تخزين 10 جيجابايت",
+      "تحليلات الطلاب",
+      "تحليلات تفاعل الطلاب",
+      "تتبع تحميل PDF",
+      "محتوى محمي ضد النسخ",
+      "العلامة المائية للمحتوى",
+      "دعم أولوية عبر واتساب",
+    ],
+    limits: {
+      aiQuizGenerationsPerMonth: 100,
+      aiEssayGradingsPerMonth: 500,
+      aiContentGenerationsPerMonth: 50,
+      aiLessonSummariesPerMonth: 50,
+      aiQuestionExplanationsPerMonth: 50,
+      maxStudents: 500,
+      maxCourses: 20,
+      maxQuizzes: 500,
+      storageMb: 10240,
+      analyticsAccess: true,
+      studentEngagementAnalytics: true,
+      pdfDownloadTracking: true,
+      contentProtection: true,
+      prioritySupport: true,
+    },
+  },
+  {
+    code: "PREMIUM",
+    name: "premium",
+    displayName: "الباقة المميزة",
+    description: "للأكاديميات الكبرى",
+    monthlyPrice: 999,
+    yearlyPrice: 9990,
+    isRecommended: false,
+    sortOrder: 3,
+    features: [
+      "إنشاء اختبارات بالذكاء الاصطناعي (غير محدود)",
+      "تصحيح مقالات بالذكاء الاصطناعي (غير محدود)",
+      "إنشاء محتوى تعليمي بالذكاء الاصطناعي",
+      "ملخصات دروس بالذكاء الاصطناعي",
+      "شروحات ذكية للأسئلة",
+      "دروس غير محدودة",
+      "تخزين 50 جيجابايت",
+      "عدد غير محدود من الطلاب",
+      "تحليلات الطلاب المتقدمة",
+      "تحليلات تفاعل الطلاب",
+      "تتبع تحميل PDF",
+      "محتوى محمي ضد النسخ",
+      "العلامة المائية للمحتوى",
+      "دعم VIP عبر واتساب",
+    ],
+    limits: {
+      aiQuizGenerationsPerMonth: -1,
+      aiEssayGradingsPerMonth: -1,
+      aiContentGenerationsPerMonth: 200,
+      aiLessonSummariesPerMonth: 200,
+      aiQuestionExplanationsPerMonth: 200,
+      maxStudents: -1,
+      maxCourses: 100,
+      maxQuizzes: -1,
+      storageMb: 51200,
+      analyticsAccess: true,
+      studentEngagementAnalytics: true,
+      pdfDownloadTracking: true,
+      contentProtection: true,
+      prioritySupport: true,
+    },
+  },
 ];
 
 const CHEMISTRY_SEED_EMAILS = [
@@ -47,6 +198,7 @@ const ADMIN = {
   mobile: "01000000001",
   role: "ADMIN" as const,
 };
+
 const TEACHER = {
   id: seedId("teacher"),
   email: "teacher.chemistry@fahimni.test",
@@ -54,8 +206,10 @@ const TEACHER = {
   mobile: "01000000002",
   role: "OPERATION" as const,
 };
+
 const STUDENTS = Array.from({ length: 8 }, (_v, i) => {
   const n = String(i + 1).padStart(2, "0");
+
   return {
     id: seedId(`student-${n}`),
     email: `chem.student${n}@fahimni.test`,
@@ -77,6 +231,7 @@ const CHAPTERS = CHEMISTRY_CHAPTER_DEFS.map((c) => ({
 }));
 
 const now = new Date();
+
 const daysAgo = (d: number) =>
   new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
 
@@ -95,6 +250,7 @@ async function resolveSeedUserIds(): Promise<string[]> {
     },
     select: { id: true },
   });
+
   return [...new Set(rows.map((r) => r.id))];
 }
 
@@ -112,6 +268,7 @@ async function cleanup(): Promise<void> {
       { chapter: { stage: { teacherId: { in: seedUserIds } } } },
     ],
   };
+
   const ownedChapter = {
     OR: [
       { id: { in: ALL_CHAPTER_IDS } },
@@ -119,6 +276,7 @@ async function cleanup(): Promise<void> {
       { stage: { teacherId: { in: seedUserIds } } },
     ],
   };
+
   const ownedStage = {
     OR: [
       { id: STAGE.id },
@@ -126,6 +284,7 @@ async function cleanup(): Promise<void> {
       { teacherId: { in: seedUserIds } },
     ],
   };
+
   const ownedQuiz = {
     OR: [
       { id: { startsWith: LEGACY_SEED_PREFIX } },
@@ -143,9 +302,11 @@ async function cleanup(): Promise<void> {
         ],
       },
     });
+
     await tx.aiTutorUsage.deleteMany({
       where: { studentId: { in: seedUserIds } },
     });
+
     await tx.lessonProgress.deleteMany({
       where: {
         OR: [
@@ -155,6 +316,7 @@ async function cleanup(): Promise<void> {
         ],
       },
     });
+
     await tx.enrollment.deleteMany({
       where: {
         OR: [
@@ -164,18 +326,24 @@ async function cleanup(): Promise<void> {
         ],
       },
     });
+
     await tx.paymentTransaction.deleteMany({
       where: {
         OR: [{ studentId: { in: seedUserIds } }, { chapter: ownedChapter }],
       },
     });
+
     await tx.lesson.updateMany({
-      where: { OR: [{ id: { in: ALL_LESSON_IDS } }, { chapter: ownedChapter }] },
+      where: {
+        OR: [{ id: { in: ALL_LESSON_IDS } }, { chapter: ownedChapter }],
+      },
       data: { requiredQuizId: null },
     });
+
     await tx.question.deleteMany({ where: { quiz: ownedQuiz } });
     await tx.quizLesson.deleteMany({ where: { quiz: ownedQuiz } });
     await tx.quiz.deleteMany({ where: ownedQuiz });
+
     await tx.$executeRaw`
       DELETE FROM content_chunks WHERE "lessonId" IN (
         SELECT l.id FROM lessons l
@@ -185,16 +353,19 @@ async function cleanup(): Promise<void> {
            OR l.id LIKE 'seed-chem-%'
            OR s."teacherId" = ANY(${seedUserIds}::text[])
       )`;
+
     await tx.lessonMaterialDownload.deleteMany({
       where: {
         OR: [
           { studentId: { in: seedUserIds } },
-          { materialId: { in: [...ALL_CHEMISTRY_MATERIAL_IDS] } },
+          { materialId: { in: ALL_CHEMISTRY_MATERIAL_IDS } },
         ],
       },
     });
+
     await tx.lessonMaterial.deleteMany({ where: { lesson: ownedLesson } });
     await tx.lesson.deleteMany({ where: ownedLesson });
+
     await tx.promoCode.deleteMany({
       where: {
         OR: [
@@ -203,13 +374,17 @@ async function cleanup(): Promise<void> {
         ],
       },
     });
+
     await tx.chapter.deleteMany({ where: ownedChapter });
+
     await tx.studentProfile.deleteMany({
       where: {
         OR: [{ userId: { in: seedUserIds } }, { stage: ownedStage }],
       },
     });
+
     await tx.stage.deleteMany({ where: ownedStage });
+
     await tx.auditLog.deleteMany({
       where: {
         OR: [
@@ -218,9 +393,11 @@ async function cleanup(): Promise<void> {
         ],
       },
     });
+
     await tx.teacherProfile.deleteMany({
       where: { userId: { in: seedUserIds } },
     });
+
     await tx.user.deleteMany({ where: { id: { in: seedUserIds } } });
   });
 
@@ -246,9 +423,11 @@ function validateAllSeedIds(): void {
 
 async function seed(): Promise<void> {
   validateAllSeedIds();
+
   const passwordHash = await bcrypt.hash(LOCAL_PASSWORD, BCRYPT_ROUNDS);
 
   const lessonCatalog = buildChemistryLessonShellCatalog();
+
   const chapterRows = CHAPTERS.map((c, ci) => ({
     id: c.id,
     name: c.name,
@@ -256,6 +435,7 @@ async function seed(): Promise<void> {
     stageId: STAGE.id,
     price: ci === 0 ? null : 150,
   }));
+
   const lessonRows = lessonCatalog.map((l) => ({
     id: l.id,
     title: l.title,
@@ -299,6 +479,7 @@ async function seed(): Promise<void> {
           },
         });
       }
+
       logger.info("teacher_plans_seeded", { count: TEACHER_PLANS.length });
 
       await tx.user.createMany({
@@ -308,6 +489,7 @@ async function seed(): Promise<void> {
           status: "ACTIVE" as const,
         })),
       });
+
       await tx.teacherProfile.create({
         data: {
           id: seedId("teacher-profile"),
@@ -317,6 +499,7 @@ async function seed(): Promise<void> {
           aiTutorDailyQueryLimit: 30,
         },
       });
+
       await tx.stage.create({
         data: {
           id: STAGE.id,
@@ -326,6 +509,7 @@ async function seed(): Promise<void> {
           teacherId: TEACHER.id,
         },
       });
+
       await tx.studentProfile.createMany({
         data: STUDENTS.map((s, i) => ({
           id: seedId(`student-profile-${String(i + 1).padStart(2, "0")}`),
@@ -333,12 +517,15 @@ async function seed(): Promise<void> {
           stageId: STAGE.id,
         })),
       });
+
       await tx.chapter.createMany({ data: chapterRows });
       await tx.lesson.createMany({ data: lessonRows });
 
       const enrollments: Prisma.EnrollmentCreateManyInput[] = [];
+
       STUDENTS.forEach((s, i) => {
         const n = String(i + 1).padStart(2, "0");
+
         enrollments.push({
           id: seedId(`enrollment-student${n}-ch1`),
           studentId: s.id,
@@ -348,6 +535,7 @@ async function seed(): Promise<void> {
           paymentMethod: "FREE",
           enrolledAt: daysAgo(i < 4 ? 5 + i : 40 + i),
         });
+
         if (i % 2 === 0) {
           enrollments.push({
             id: seedId(`enrollment-student${n}-ch2`),
@@ -360,6 +548,7 @@ async function seed(): Promise<void> {
           });
         }
       });
+
       enrollments.push({
         id: seedId("enrollment-student08-ch3-deact"),
         studentId: STUDENTS[7]!.id,
@@ -369,6 +558,7 @@ async function seed(): Promise<void> {
         paymentMethod: "PAYMOB",
         enrolledAt: daysAgo(60),
       });
+
       await tx.enrollment.createMany({ data: enrollments });
     },
     { timeout: 30_000 },
@@ -377,6 +567,7 @@ async function seed(): Promise<void> {
 
 async function countChemistrySeed(): Promise<Record<string, number>> {
   const userIds = ALL_SEED_USER_IDS;
+
   const [
     users,
     teachers,
@@ -393,29 +584,41 @@ async function countChemistrySeed(): Promise<Record<string, number>> {
     legacyPrefix,
   ] = await Promise.all([
     prisma.user.count({ where: { id: { in: userIds } } }),
+
     prisma.user.count({
       where: { id: { in: userIds }, role: "OPERATION" },
     }),
+
     prisma.user.count({
       where: { id: { in: userIds }, role: "STUDENT" },
     }),
+
     prisma.stage.count({ where: { id: STAGE.id } }),
+
     prisma.chapter.count({ where: { id: { in: ALL_CHAPTER_IDS } } }),
+
     prisma.lesson.count({ where: { id: { in: ALL_LESSON_IDS } } }),
+
     prisma.quiz.count({ where: { createdBy: TEACHER.id } }),
+
     prisma.question.count({ where: { quiz: { createdBy: TEACHER.id } } }),
+
     prisma.enrollment.count({
       where: { studentId: { in: STUDENTS.map((s) => s.id) } },
     }),
+
     prisma.quizAttempt.count({
       where: { studentId: { in: STUDENTS.map((s) => s.id) } },
     }),
+
     prisma.lessonProgress.count({
       where: { studentId: { in: STUDENTS.map((s) => s.id) } },
     }),
+
     prisma.lessonMaterial.count({
       where: { lesson: { chapter: { stageId: STAGE.id } } },
     }),
+
     prisma.question.count({
       where: { id: { startsWith: LEGACY_SEED_PREFIX } },
     }),
@@ -466,6 +669,7 @@ async function main(): Promise<void> {
   await seed();
 
   const counts = await countChemistrySeed();
+
   logger.info("seed_completed", counts);
 
   if (counts.legacyPrefix > 0) {
@@ -484,6 +688,7 @@ main()
     logger.error("seed_failed", {
       message: e instanceof Error ? e.message : String(e),
     });
+
     process.exitCode = 1;
   })
   .finally(() => prisma.$disconnect());

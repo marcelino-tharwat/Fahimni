@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
-  Users, GraduationCap, UserCheck, UserX, Layers, BookOpen, FileText,
-  FileStack, ClipboardList, DollarSign, CalendarClock, CreditCard, Bell,
-  BadgeCheck, Sparkles, Award, TrendingUp, AlertTriangle, ChevronLeft,
+  Users, GraduationCap, UserCheck, UserX, UserMinus, Layers, BookOpen, FileText,
+  FileStack, ClipboardList, DollarSign, Wallet, CreditCard, CalendarClock, Bell,
+  BadgeCheck, XCircle, Sparkles, Award, TrendingUp, AlertTriangle, ChevronLeft,
 } from 'lucide-react';
 import { Card, StatCard, Spinner, EmptyState } from '@/shared/components/ui';
 import { useAdminStats } from '@/features/admin/hooks/useAdminStats';
@@ -13,9 +13,7 @@ const nf = (n: number) => n.toLocaleString('ar-EG');
 const money = (n: number, currency: string) => `${nf(Math.round(n))} ${currency}`;
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="font-cairo text-lg font-bold text-text-primary">{children}</h2>
-  );
+  return <h2 className="font-cairo text-lg font-bold text-text-primary">{children}</h2>;
 }
 
 /** Card that navigates to a detail page when clicked. */
@@ -26,7 +24,7 @@ function LinkStatCard({
   icon: typeof Users; accent?: 'amber' | 'cyan';
 }) {
   return (
-    <Link to={to} className="block focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 rounded-card">
+    <Link to={to} className="block rounded-card focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
       <Card className="flex items-center gap-4 transition-shadow hover:shadow-elevated">
         <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-card ${accent === 'amber' ? 'bg-amber-100' : 'bg-accent/10'}`}>
           <Icon size={24} className={accent === 'amber' ? 'text-amber-600' : 'text-accent'} />
@@ -147,17 +145,24 @@ export function AdminDashboardPage() {
       {/* Users */}
       <section className="flex flex-col gap-3">
         <SectionTitle>{t('adminDashboard.usersSection', 'المستخدمون')}</SectionTitle>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard icon={Users} title={t('adminDashboard.totalTeachers', 'إجمالي المدرسين')} value={nf(s.users.totalTeachers)} />
           <StatCard icon={UserCheck} title={t('adminDashboard.activeTeachers', 'المدرسون النشطون')} value={nf(s.users.activeTeachers)} />
           <StatCard icon={GraduationCap} title={t('adminDashboard.totalStudents', 'إجمالي الطلاب')} value={nf(s.users.totalStudents)} />
           <StatCard icon={UserCheck} title={t('adminDashboard.activeStudents', 'الطلاب النشطون')} value={nf(s.users.activeStudents)} />
           <LinkStatCard
-            to="/admin/students?filter=unassigned"
+            to="/admin/students?filter=without_active_teacher"
             icon={UserX}
             accent="amber"
-            title={t('adminDashboard.studentsWithoutTeacher', 'طلاب بدون مدرس')}
+            title={t('adminDashboard.studentsWithoutTeacher', 'طلاب بدون مدرس نشط')}
             value={nf(s.users.studentsWithoutTeacher)}
+          />
+          <LinkStatCard
+            to="/admin/students?filter=without_enrollment"
+            icon={UserMinus}
+            accent="amber"
+            title={t('adminDashboard.studentsWithoutAnyEnrollment', 'طلاب بدون أي اشتراك')}
+            value={nf(s.users.studentsWithoutAnyEnrollment)}
           />
         </div>
       </section>
@@ -165,15 +170,19 @@ export function AdminDashboardPage() {
       {/* Finance */}
       <section className="flex flex-col gap-3">
         <SectionTitle>{t('adminDashboard.financeSection', 'الإيرادات')}</SectionTitle>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <LinkStatCard
             to="/admin/revenue"
             icon={DollarSign}
-            title={t('adminDashboard.confirmedRevenue', 'الإيرادات المؤكدة')}
-            value={money(s.finance.confirmedRevenue, currency)}
+            title={t('adminDashboard.totalConfirmedRevenue', 'إجمالي الإيرادات المؤكدة')}
+            value={money(s.finance.totalConfirmedRevenue, currency)}
           />
+          <StatCard icon={BookOpen} title={t('adminDashboard.confirmedCourseRevenue', 'إيرادات الكورسات')} value={money(s.finance.confirmedCourseRevenue, currency)} />
+          <StatCard icon={Wallet} title={t('adminDashboard.confirmedTeacherSubscriptionRevenue', 'إيرادات باقات المدرسين')} value={money(s.finance.confirmedTeacherSubscriptionRevenue, currency)} />
           <StatCard icon={CalendarClock} title={t('adminDashboard.monthlyConfirmedRevenue', 'إيرادات هذا الشهر')} value={money(s.finance.monthlyConfirmedRevenue, currency)} />
-          <StatCard icon={CreditCard} title={t('adminDashboard.estimatedSubscriptionRevenue', 'إيراد الاشتراكات (تقديري)')} value={money(s.finance.estimatedSubscriptionRevenue, currency)} />
+          {s.finance.estimatedSubscriptionRevenue > 0 && (
+            <StatCard icon={CreditCard} title={t('adminDashboard.estimatedSubscriptionRevenue', 'إيراد الاشتراكات (تقديري)')} value={money(s.finance.estimatedSubscriptionRevenue, currency)} />
+          )}
         </div>
         {s.finance.reliabilityWarnings.length > 0 && (
           <Card className="border-amber-200 bg-amber-50">
@@ -195,7 +204,7 @@ export function AdminDashboardPage() {
       {/* Operations */}
       <section className="flex flex-col gap-3">
         <SectionTitle>{t('adminDashboard.operationsSection', 'العمليات')}</SectionTitle>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <LinkStatCard
             to="/admin/teacher-requests"
             icon={Bell}
@@ -203,8 +212,16 @@ export function AdminDashboardPage() {
             title={t('adminDashboard.pendingTeacherRequests', 'طلبات تسجيل مدرسين معلقة')}
             value={nf(s.operations.pendingTeacherRequests)}
           />
+          <LinkStatCard
+            to="/admin/subscriptions"
+            icon={CreditCard}
+            accent="amber"
+            title={t('adminDashboard.pendingTeacherSubscriptionPayments', 'مدفوعات باقات معلقة')}
+            value={nf(s.operations.pendingTeacherSubscriptionPayments)}
+          />
           <StatCard icon={BadgeCheck} title={t('adminDashboard.activeTeacherSubscriptions', 'اشتراكات نشطة')} value={nf(s.operations.activeTeacherSubscriptions)} />
           <StatCard icon={ClipboardList} title={t('adminDashboard.pendingTeacherSubscriptionRequests', 'طلبات اشتراك معلقة')} value={nf(s.operations.pendingTeacherSubscriptionRequests)} />
+          <StatCard icon={XCircle} title={t('adminDashboard.failedTeacherSubscriptionPayments', 'مدفوعات باقات فاشلة')} value={nf(s.operations.failedTeacherSubscriptionPayments)} />
         </div>
       </section>
 
@@ -237,23 +254,24 @@ export function AdminDashboardPage() {
       {/* AI usage */}
       <section className="flex flex-col gap-3">
         <SectionTitle>{t('adminDashboard.aiSection', 'استخدام الذكاء الاصطناعي')}</SectionTitle>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <StatCard icon={Sparkles} title={t('adminDashboard.quizGenerations', 'توليد اختبارات بالذكاء الاصطناعي')} value={nf(s.ai.quizGenerations)} />
           <StatCard icon={Sparkles} title={t('adminDashboard.essayGrading', 'تصحيح مقالات بالذكاء الاصطناعي')} value={nf(s.ai.essayGrading)} />
+          <StatCard icon={TrendingUp} title={t('adminDashboard.totalAiEvents', 'إجمالي عمليات الذكاء الاصطناعي')} value={nf(s.ai.totalAiEvents)} />
         </div>
       </section>
 
       {/* Top teachers */}
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <TopTeachersTable
-          title={t('adminDashboard.topByRevenue', 'أعلى المدرسين إيراداً')}
+          title={t('adminDashboard.topByRevenue', 'أكثر المدرسين من حيث الإيرادات')}
           rows={s.topTeachers.byRevenue}
           valueLabel={t('adminDashboard.revenue', 'الإيراد')}
           renderValue={(r) => money(r.revenue, currency)}
           emptyText={t('adminDashboard.noTopTeachers', 'لا توجد بيانات بعد')}
         />
         <TopTeachersTable
-          title={t('adminDashboard.topByStudents', 'أعلى المدرسين عدداً للطلاب')}
+          title={t('adminDashboard.topByStudents', 'أكثر المدرسين من حيث عدد الطلاب')}
           rows={s.topTeachers.byStudents}
           valueLabel={t('adminDashboard.students', 'الطلاب')}
           renderValue={(r) => nf(r.studentCount)}
