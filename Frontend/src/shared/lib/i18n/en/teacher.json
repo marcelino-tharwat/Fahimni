@@ -878,7 +878,71 @@
       "aiEssayGradings": "AI Essay Gradings",
       "aiContentGenerations": "AI Content Generations",
       "students": "Students",
-      "storage": "Storage (MB)"
+      "storage": "Storage (MB)",
+      "notIncluded": "Not included in this plan"
+    },
+    "unlimited": "Unlimited",
+    "planNames": {
+      "FREE": "Free",
+      "BASIC": "Basic",
+      "PRO": "Pro",
+      "PREMIUM": "Premium"
+    },
+    "planDescs": {
+      "FREE": "Start your educational journey with the Free plan",
+      "BASIC": "Perfect for new teachers",
+      "PRO": "Perfect for active teachers",
+      "PREMIUM": "For large academies"
+    },
+    "planFeatures": {
+      "FREE": [
+        "AI Quiz Generation (Limited)",
+        "AI Essay Grading (Limited)",
+        "Unlimited Lessons",
+        "Copy-Protected Content",
+        "WhatsApp Support"
+      ],
+      "BASIC": [
+        "AI Quiz Generation",
+        "AI Essay Grading",
+        "AI Content Generation",
+        "Unlimited Lessons",
+        "5 GB Storage",
+        "Copy-Protected Content",
+        "Basic Analytics",
+        "WhatsApp Support"
+      ],
+      "PRO": [
+        "AI Quiz Generation (Virtually Unlimited)",
+        "AI Essay Grading",
+        "AI Content Generation",
+        "AI Lesson Summaries",
+        "Smart Question Explanations",
+        "Unlimited Lessons",
+        "10 GB Storage",
+        "Student Analytics",
+        "Student Engagement Analytics",
+        "PDF Download Tracking",
+        "Copy-Protected Content",
+        "Content Watermarking",
+        "Priority WhatsApp Support"
+      ],
+      "PREMIUM": [
+        "AI Quiz Generation (Unlimited)",
+        "AI Essay Grading (Unlimited)",
+        "AI Content Generation",
+        "AI Lesson Summaries",
+        "Smart Question Explanations",
+        "Unlimited Lessons",
+        "50 GB Storage",
+        "Unlimited Students",
+        "Advanced Student Analytics",
+        "Student Engagement Analytics",
+        "PDF Download Tracking",
+        "Copy-Protected Content",
+        "Content Watermarking",
+        "VIP WhatsApp Support"
+      ]
     }
   }
 }

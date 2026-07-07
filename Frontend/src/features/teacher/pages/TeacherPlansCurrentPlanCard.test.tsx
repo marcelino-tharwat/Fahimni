@@ -54,7 +54,7 @@ describe('TeacherPlansCurrentPlanCard', () => {
   it('renders FREE badge when no subscription (free plan)', () => {
     render(<TeacherPlansCurrentPlanCard data={freeData} />);
     expect(screen.getByText('plans.freePlan')).toBeInTheDocument();
-    expect(screen.getByText('الباقة المجانية')).toBeInTheDocument();
+    expect(screen.getByText('plans.planNames.FREE')).toBeInTheDocument();
   });
 
   it('renders current plan display name', () => {

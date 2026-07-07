@@ -1,10 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check, Loader2, AlertTriangle } from 'lucide-react';
-import { Button, Card, Badge, Spinner } from '@/shared/components/ui';
+import { Card } from '@/shared/components/ui';
 import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
 import { TeacherPlansCurrentPlanCard } from './TeacherPlansCurrentPlanCard';
 import type { TeacherPlan, SubscriptionMeResponse } from '@/features/teacher/types/teacherPlans';
+
+const ENTRY_CODES = new Set(['FREE', 'BASIC']);
+const UPGRADED_CODES = new Set(['PRO', 'PREMIUM']);
+
+function isEntryTier(code: string): boolean {
+  return ENTRY_CODES.has(code);
+}
 
 export function TeacherPlansPage() {
   const { t } = useTranslation('teacher');
@@ -60,8 +67,26 @@ export function TeacherPlansPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Spinner size="lg" />
+      <div className="mx-auto max-w-6xl space-y-8">
+        <div>
+          <div className="h-8 w-56 animate-pulse rounded bg-gray-200" />
+          <div className="mt-2 h-5 w-72 animate-pulse rounded bg-gray-100" />
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="animate-pulse rounded-card bg-surface p-5 shadow-card">
+              <div className="mb-4 h-4 w-16 rounded-badge bg-gray-200" />
+              <div className="mb-2 h-8 w-24 rounded bg-gray-200" />
+              <div className="mb-6 h-4 w-36 rounded bg-gray-200" />
+              <div className="mb-4 h-10 rounded-btn bg-gray-200" />
+              <div className="space-y-2">
+                {[1, 2, 3].map((j) => (
+                  <div key={j} className="h-4 rounded bg-gray-100" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -71,9 +96,13 @@ export function TeacherPlansPage() {
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <AlertTriangle className="mb-4 h-12 w-12 text-red-400" />
         <p className="mb-4 text-gray-600">{error}</p>
-        <Button variant="outline" onClick={fetchData}>
+        <button
+          type="button"
+          onClick={fetchData}
+          className="rounded-btn border border-border bg-surface px-5 py-2 font-cairo text-sm font-medium text-text-primary transition-colors hover:bg-gray-100"
+        >
           {t('common:status.retry', 'إعادة المحاولة')}
-        </Button>
+        </button>
       </div>
     );
   }
@@ -123,58 +152,73 @@ export function TeacherPlansPage() {
 
       <TeacherPlansCurrentPlanCard data={subscription} />
 
-      <div className="flex items-center justify-center gap-2">
-        <span className={`text-sm ${billingInterval === 'MONTHLY' ? 'font-bold text-navy-600' : 'text-gray-400'}`}>
-          {t('plans.monthly', 'شهري')}
-        </span>
+      <div className="flex items-center justify-center">
         <button
           type="button"
           onClick={() => setBillingInterval(billingInterval === 'MONTHLY' ? 'YEARLY' : 'MONTHLY')}
-          className={`relative h-6 w-12 rounded-full transition-colors ${
-            billingInterval === 'YEARLY' ? 'bg-navy-600' : 'bg-gray-300'
-          }`}
+          className="inline-flex items-center rounded-full bg-gray-100 p-1 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-none"
         >
           <span
-            className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-              billingInterval === 'YEARLY' ? 'translate-x-6' : ''
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+              billingInterval === 'MONTHLY'
+                ? 'bg-surface text-text-primary shadow-sm'
+                : 'text-text-muted'
             }`}
-          />
+          >
+            {t('plans.monthly', 'شهري')}
+          </span>
+          <span
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+              billingInterval === 'YEARLY'
+                ? 'bg-surface text-text-primary shadow-sm'
+                : 'text-text-muted'
+            }`}
+          >
+            {t('plans.yearly', 'سنوي')}
+          </span>
         </button>
-        <span className={`text-sm ${billingInterval === 'YEARLY' ? 'font-bold text-navy-600' : 'text-gray-400'}`}>
-          {t('plans.yearly', 'سنوي')}
-        </span>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {plans.map((plan) => {
           const price = billingInterval === 'YEARLY' && plan.yearlyPrice != null
             ? plan.yearlyPrice
             : plan.monthlyPrice;
           const isFree = price === 0;
+          const entry = isEntryTier(plan.code);
 
           return (
             <Card
               key={plan.id}
-              className={`relative flex flex-col p-6 transition-shadow hover:shadow-lg ${
-                plan.isRecommended ? 'ring-2 ring-navy-500' : ''
+              className={`relative flex h-full flex-col overflow-visible p-5 transition-shadow hover:shadow-elevated ${
+                plan.isRecommended
+                  ? 'ring-2 ring-cyan-500 shadow-glow'
+                  : entry
+                    ? 'border-gray-200'
+                    : 'border-purple-200'
               }`}
             >
               {plan.isRecommended && (
-                <Badge variant="success" className="absolute -top-2 left-1/2 -translate-x-1/2">
+                <span className="absolute -top-3 start-1/2 z-10 -translate-x-1/2 rounded-badge bg-cyan-500 px-3 py-0.5 text-xs font-bold text-white">
                   {t('plans.recommended', 'مقترح')}
-                </Badge>
+                </span>
               )}
 
-              <div className="mb-4">
-                <h3 className="text-lg font-bold text-gray-900">{plan.displayName}</h3>
-                <p className="mt-1 text-sm text-gray-500">{plan.description}</p>
-              </div>
+              <span
+                className={`self-start rounded-badge px-3 py-0.5 text-xs font-semibold ${
+                  entry
+                    ? 'bg-cyan-50 text-cyan-600'
+                    : 'bg-purple-50 text-purple-600'
+                }`}
+              >
+                {t(`plans.planNames.${plan.code}`, plan.displayName)}
+              </span>
 
-              <div className="mb-4">
-                <span className="text-3xl font-bold text-navy-600">
+              <div className="mb-4 mt-3">
+                <span className="text-4xl font-bold text-text-primary">
                   {isFree ? 0 : price}
                 </span>
-                <span className="mr-1 text-sm text-gray-400">
+                <span className="me-1 text-sm text-text-muted">
                   {plan.currency}
                   {billingInterval === 'YEARLY' && plan.yearlyPrice != null
                     ? `/${t('plans.year', 'سنة')}`
@@ -183,30 +227,31 @@ export function TeacherPlansPage() {
               </div>
 
               {billingInterval === 'YEARLY' && plan.yearlyPrice != null && plan.monthlyPrice > 0 && (
-                <p className="mb-4 text-xs text-green-600">
+                <p className="mb-4 text-xs text-success-500">
                   {t('plans.savePercent', 'وفر {{percent}}%', {
                     percent: Math.round((1 - plan.yearlyPrice / (plan.monthlyPrice * 12)) * 100),
                   })}
                 </p>
               )}
 
-              <ul className="mb-6 flex-1 space-y-2">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="mb-4 text-sm text-text-secondary">{t(`plans.planDescs.${plan.code}`, plan.description ?? '')}</p>
 
-              <Button
+              <button
+                type="button"
                 onClick={() => handleSubscribe(plan.id)}
                 disabled={isDisabled(plan)}
-                variant={isCurrentPlan(plan) ? 'outline' : plan.isRecommended ? 'primary' : 'secondary'}
-                className="w-full"
+                className={`min-h-[44px] w-full rounded-btn font-cairo text-sm font-semibold transition-all focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed ${
+                  isCurrentPlan(plan)
+                    ? 'bg-gray-100 text-gray-500'
+                    : hasPendingRequest(plan)
+                      ? 'border border-warning-500 bg-warning-50 text-warning-600'
+                      : entry
+                        ? 'bg-cyan-gradient text-white hover:opacity-90'
+                        : 'bg-purple-gradient text-white hover:opacity-90'
+                }`}
               >
                 {subscribing === plan.id ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="mx-auto h-4 w-4 animate-spin" />
                 ) : isCurrentPlan(plan) ? (
                   t('plans.currentPlanBadge', 'الباقة الحالية')
                 ) : hasPendingRequest(plan) ? (
@@ -216,7 +261,18 @@ export function TeacherPlansPage() {
                 ) : (
                   t('plans.subscribe', 'طلب الاشتراك')
                 )}
-              </Button>
+              </button>
+
+              <div className="mt-4 flex-1 rounded-card bg-gray-50 px-5 py-4">
+                <ul className="space-y-3">
+                  {plan.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm text-text-secondary">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-success-500" />
+                      <span>{t(`plans.planFeatures.${plan.code}.${i}`, feature)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </Card>
           );
         })}
