@@ -49,12 +49,41 @@ export interface PendingRequestInfo {
   createdAt: string;
 }
 
+export interface PendingPaymentInfo {
+  id: string;
+  planId: string;
+  planCode: string;
+  billingInterval: 'MONTHLY' | 'YEARLY';
+  amount: number;
+  currency: string;
+  status: string;
+  checkoutUrl: string | null;
+  createdAt: string;
+}
+
 export interface SubscriptionMeResponse {
   currentPlan: CurrentPlanInfo;
   subscription: SubscriptionInfo | null;
   usage: UsageSummary;
   pendingRequest: PendingRequestInfo | null;
+  pendingPayment: PendingPaymentInfo | null;
   effectivePlanCode: string;
+}
+
+export interface CheckoutInput {
+  planId: string;
+  billingInterval: 'MONTHLY' | 'YEARLY';
+}
+
+export interface CheckoutResponse {
+  paymentId: string;
+  orderId: string;
+  checkoutUrl: string;
+  amount: number;
+  currency: string;
+  billingInterval: 'MONTHLY' | 'YEARLY';
+  status: string;
+  message: string;
 }
 
 export interface CreateRequestInput {

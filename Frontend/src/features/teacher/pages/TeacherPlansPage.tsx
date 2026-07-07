@@ -7,7 +7,6 @@ import { TeacherPlansCurrentPlanCard } from './TeacherPlansCurrentPlanCard';
 import type { TeacherPlan, SubscriptionMeResponse } from '@/features/teacher/types/teacherPlans';
 
 const ENTRY_CODES = new Set(['FREE', 'BASIC']);
-const UPGRADED_CODES = new Set(['PRO', 'PREMIUM']);
 
 function isEntryTier(code: string): boolean {
   return ENTRY_CODES.has(code);
@@ -19,10 +18,12 @@ export function TeacherPlansPage() {
   const [subscription, setSubscription] = useState<SubscriptionMeResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [subscribing, setSubscribing] = useState<string | null>(null);
+  const [requesting, setRequesting] = useState<string | null>(null);
   const [billingInterval, setBillingInterval] = useState<'MONTHLY' | 'YEARLY'>('MONTHLY');
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorField, setErrorField] = useState<string | null>(null);
+  const [paymentUnavailable, setPaymentUnavailable] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -46,22 +47,52 @@ export function TeacherPlansPage() {
     fetchData();
   }, [fetchData]);
 
-  const handleSubscribe = async (planId: string) => {
+  // Primary paid flow: create a real checkout session and redirect to the
+  // payment provider. The subscription only becomes ACTIVE after the verified
+  // provider webhook — so no success message is shown here (no fake success).
+  const handleCheckout = async (planId: string) => {
     setSubscribing(planId);
     setErrorField(null);
     setSuccessMsg(null);
+    setPaymentUnavailable(false);
     try {
-      const result = await teacherPlansApi.createRequest({
-        planId,
-        billingInterval,
-      });
+      const result = await teacherPlansApi.checkout({ planId, billingInterval });
+      if (result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl);
+        return; // navigating away — keep the button in its loading state
+      }
+      setPaymentUnavailable(true);
+      setSubscribing(null);
+    } catch (err: unknown) {
+      const e = err as { statusCode?: number; code?: string; message?: string };
+      if (
+        e.code === 'PAYMENT_PROVIDER_UNAVAILABLE' ||
+        e.statusCode === 502 ||
+        e.statusCode === 503
+      ) {
+        setPaymentUnavailable(true);
+      } else {
+        setErrorField(e.message ?? t('plans.checkoutError', 'حدث خطأ أثناء بدء عملية الدفع'));
+      }
+      setSubscribing(null);
+    }
+  };
+
+  // Secondary/fallback flow: ask the admin to review a manual subscription
+  // request. Not the primary paid path.
+  const handleManualRequest = async (planId: string) => {
+    setRequesting(planId);
+    setErrorField(null);
+    setSuccessMsg(null);
+    try {
+      const result = await teacherPlansApi.createRequest({ planId, billingInterval });
       setSuccessMsg(result.message);
       await fetchData();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t('plans.requestError', 'حدث خطأ في إرسال الطلب');
       setErrorField(msg);
     } finally {
-      setSubscribing(null);
+      setRequesting(null);
     }
   };
 
@@ -109,10 +140,16 @@ export function TeacherPlansPage() {
 
   const currentPlanId = subscription?.currentPlan?.id;
   const pendingRequestPlanCode = subscription?.pendingRequest?.planCode;
+  const pendingPaymentPlanCode = subscription?.pendingPayment?.planCode;
 
   const isCurrentPlan = (plan: TeacherPlan) => plan.id === currentPlanId;
   const hasPendingRequest = (plan: TeacherPlan) => plan.code === pendingRequestPlanCode;
-  const isDisabled = (plan: TeacherPlan) => isCurrentPlan(plan) || hasPendingRequest(plan) || subscribing === plan.id;
+  const hasPendingPayment = (plan: TeacherPlan) => plan.code === pendingPaymentPlanCode;
+  const isDisabled = (plan: TeacherPlan) =>
+    isCurrentPlan(plan) ||
+    hasPendingPayment(plan) ||
+    hasPendingRequest(plan) ||
+    subscribing === plan.id;
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -135,6 +172,33 @@ export function TeacherPlansPage() {
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           {errorField}
         </div>
+      )}
+
+      {paymentUnavailable && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          {t('plans.paymentUnavailable', 'الدفع الإلكتروني غير مفعل حاليًا')}
+        </div>
+      )}
+
+      {subscription?.pendingPayment && (
+        <Card className="border-amber-200 bg-amber-50 p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-amber-600" />
+            <span className="text-sm text-amber-800">
+              {t('plans.paymentPendingAlert', 'لديك عملية دفع بانتظار التأكيد لباقة {{plan}}', {
+                plan: subscription.pendingPayment.planCode,
+              })}
+            </span>
+            {subscription.pendingPayment.checkoutUrl && (
+              <a
+                href={subscription.pendingPayment.checkoutUrl}
+                className="text-sm font-semibold text-amber-900 underline"
+              >
+                {t('plans.completePayment', 'أكمل الدفع')}
+              </a>
+            )}
+          </div>
+        </Card>
       )}
 
       {subscription?.pendingRequest && (
@@ -186,6 +250,7 @@ export function TeacherPlansPage() {
             : plan.monthlyPrice;
           const isFree = price === 0;
           const entry = isEntryTier(plan.code);
+          const buttonDisabled = isDisabled(plan) || isFree;
 
           return (
             <Card
@@ -238,30 +303,48 @@ export function TeacherPlansPage() {
 
               <button
                 type="button"
-                onClick={() => handleSubscribe(plan.id)}
-                disabled={isDisabled(plan)}
+                onClick={() => handleCheckout(plan.id)}
+                disabled={buttonDisabled}
                 className={`min-h-[44px] w-full rounded-btn font-cairo text-sm font-semibold transition-all focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed ${
                   isCurrentPlan(plan)
                     ? 'bg-gray-100 text-gray-500'
-                    : hasPendingRequest(plan)
+                    : hasPendingPayment(plan)
                       ? 'border border-warning-500 bg-warning-50 text-warning-600'
-                      : entry
-                        ? 'bg-cyan-gradient text-white hover:opacity-90'
-                        : 'bg-purple-gradient text-white hover:opacity-90'
+                      : hasPendingRequest(plan)
+                        ? 'border border-warning-500 bg-warning-50 text-warning-600'
+                        : entry
+                          ? 'bg-cyan-gradient text-white hover:opacity-90'
+                          : 'bg-purple-gradient text-white hover:opacity-90'
                 }`}
               >
                 {subscribing === plan.id ? (
                   <Loader2 className="mx-auto h-4 w-4 animate-spin" />
                 ) : isCurrentPlan(plan) ? (
                   t('plans.currentPlanBadge', 'الباقة الحالية')
+                ) : hasPendingPayment(plan) ? (
+                  t('plans.paymentPending', 'بانتظار تأكيد الدفع')
                 ) : hasPendingRequest(plan) ? (
                   t('plans.pendingBadge', 'قيد المراجعة')
                 ) : isFree ? (
                   t('plans.getStarted', 'ابدأ مجاناً')
                 ) : (
-                  t('plans.subscribe', 'طلب الاشتراك')
+                  t('plans.payNow', 'ادفع الآن')
                 )}
               </button>
+
+              {/* Secondary/fallback: manual admin review (not the main paid flow). */}
+              {!isFree && !isCurrentPlan(plan) && !hasPendingPayment(plan) && !hasPendingRequest(plan) && (
+                <button
+                  type="button"
+                  onClick={() => handleManualRequest(plan.id)}
+                  disabled={requesting === plan.id}
+                  className="mt-2 w-full text-xs font-medium text-text-muted underline transition-colors hover:text-text-secondary disabled:cursor-not-allowed"
+                >
+                  {requesting === plan.id
+                    ? t('plans.sending', 'جاري الإرسال...')
+                    : t('plans.requestManualReview', 'أو اطلب مراجعة يدوية من الإدارة')}
+                </button>
+              )}
 
               <div className="mt-4 flex-1 rounded-card bg-gray-50 px-5 py-4">
                 <ul className="space-y-3">

@@ -37,6 +37,7 @@ model User {
   teacherSubscriptions      TeacherSubscription[]
   teacherSubscriptionRequests TeacherSubscriptionRequest[]
   teacherAiUsageEvents      TeacherAiUsageEvent[]
+  teacherSubscriptionPayments TeacherSubscriptionPayment[]
 }
 
 model StudentProfile {
@@ -609,6 +610,7 @@ model TeacherPlan {
   subscriptions   TeacherSubscription[]
   requests        TeacherSubscriptionRequest[]
   usageEvents     TeacherAiUsageEvent[]
+  payments        TeacherSubscriptionPayment[]
 
   @@index([isActive, sortOrder])
   @@map("teacher_plans")
@@ -633,6 +635,7 @@ model TeacherSubscription {
   teacher            User               @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   plan               TeacherPlan        @relation(fields: [planId], references: [id])
   usageEvents        TeacherAiUsageEvent[]
+  payments           TeacherSubscriptionPayment[]
 
   @@index([teacherId])
   @@index([teacherId, status])
@@ -681,4 +684,38 @@ model TeacherAiUsageEvent {
   @@index([subscriptionId])
   @@index([planId])
   @@map("teacher_ai_usage_events")
+}
+
+/// Tracks a teacher's plan-subscription payment through the payment provider
+/// (Paymob). A TeacherSubscription is created/activated ONLY after the matching
+/// payment row reaches SUCCESS via the HMAC-verified provider webhook — never
+/// optimistically on checkout. Reuses PaymentStatus (PENDING/SUCCESS/FAILED).
+model TeacherSubscriptionPayment {
+  id                    String          @id @default(uuid())
+  teacherId             String
+  planId                String
+  /// Set once the payment succeeds and a subscription is created/activated.
+  subscriptionId        String?
+  provider              String          @default("PAYMOB")
+  providerOrderId       String?         @unique
+  providerTransactionId String?
+  amount                Float
+  currency              String          @default("EGP")
+  billingInterval       BillingInterval @default(MONTHLY)
+  status                PaymentStatus   @default(PENDING)
+  checkoutUrl           String?
+  errorMessage          String?
+  /// Raw provider callback — server-only; never returned by normal APIs.
+  rawCallback           Json?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  teacher               User            @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  plan                  TeacherPlan     @relation(fields: [planId], references: [id])
+  subscription          TeacherSubscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([teacherId])
+  @@index([teacherId, status])
+  @@index([planId])
+  @@index([subscriptionId])
+  @@map("teacher_subscription_payments")
 }

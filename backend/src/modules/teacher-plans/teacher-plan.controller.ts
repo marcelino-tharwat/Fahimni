@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import { TeacherPlanService } from "./teacher-plan.service.js";
 import { TeacherPlanPolicyService } from "./teacher-plan-policy.service.js";
+import { teacherSubscriptionPaymentService } from "./teacher-subscription-payment.service.js";
+import { getTeacherPlanMessage } from "./teacher-plan.i18n.js";
 
 const planService = new TeacherPlanService();
 const policyService = new TeacherPlanPolicyService();
@@ -39,6 +41,25 @@ export class TeacherPlanController {
         locale,
       );
       res.status(201).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async checkout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const teacherId = req.user!.id;
+      const locale = req.headers["accept-language"]?.startsWith("ar") ? "ar" : "en";
+      const { planId, billingInterval } = req.body;
+      const result = await teacherSubscriptionPaymentService.createCheckout(
+        teacherId,
+        { planId, billingInterval },
+        locale,
+      );
+      res.status(201).json({
+        ...result,
+        message: getTeacherPlanMessage("CHECKOUT_CREATED", locale),
+      });
     } catch (err) {
       next(err);
     }

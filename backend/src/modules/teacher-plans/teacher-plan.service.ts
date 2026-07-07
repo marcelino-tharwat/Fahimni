@@ -4,6 +4,7 @@ import { DEFAULT_LIMITS } from "./teacher-plan.types.js";
 import { getTeacherPlanMessage } from "./teacher-plan.i18n.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { prisma } from "../../config/database.js";
+import { teacherSubscriptionPaymentService } from "./teacher-subscription-payment.service.js";
 
 function isUnlimited(limit: number): boolean {
   return limit < 0;
@@ -127,6 +128,7 @@ export class TeacherPlanService {
     const effectivePlan = await this.getPlanByCode(effectivePlanCode);
 
     const usage = await this.computeUsageSummary(teacherId, effectivePlan?.limits ?? {});
+    const pendingPayment = await teacherSubscriptionPaymentService.getPendingPayment(teacherId);
 
     if (activeSub) {
       return {
@@ -152,6 +154,7 @@ export class TeacherPlanService {
               createdAt: pendingReq.createdAt.toISOString(),
             }
           : null,
+        pendingPayment,
         effectivePlanCode,
       };
     }
@@ -172,6 +175,7 @@ export class TeacherPlanService {
             createdAt: pendingReq.createdAt.toISOString(),
           }
         : null,
+      pendingPayment,
       effectivePlanCode: "FREE",
     };
   }
