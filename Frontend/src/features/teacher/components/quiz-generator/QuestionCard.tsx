@@ -1,10 +1,16 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Pencil, Trash2, CheckCircle2 } from 'lucide-react';
+import { GripVertical, Pencil, Trash2, CheckCircle2, BookOpen, Layers, Gauge } from 'lucide-react';
 import { Badge } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils/cn';
-import { optionLabel, typeBadge, type ReviewQuestion } from '@/features/teacher/lib/quizReview';
+import {
+  optionLabel,
+  typeBadge,
+  validatePoints,
+  type ReviewQuestion,
+} from '@/features/teacher/lib/quizReview';
 
 interface QuestionCardProps {
   question: ReviewQuestion;
@@ -16,6 +22,10 @@ interface QuestionCardProps {
   collapsed?: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  /** Live points change (valid numeric) — drives the dynamic total. */
+  onPointsChange?: (points: number) => void;
+  /** Commit points to the backend (on blur, when valid and changed). */
+  onPointsCommit?: (points: number) => void;
 }
 
 export function QuestionCard({
@@ -25,6 +35,8 @@ export function QuestionCard({
   collapsed = false,
   onEdit,
   onDelete,
+  onPointsChange,
+  onPointsCommit,
 }: QuestionCardProps) {
   const { t } = useTranslation();
   const tk = (k: string, o?: Record<string, unknown>) => t(`teacher:quizGenerator.review.${k}`, o);
@@ -33,10 +45,53 @@ export function QuestionCard({
   });
   const badge = typeBadge(question.type);
 
+  // Local points editing state. Re-seeded whenever the server value changes
+  // (after a successful commit + refetch) so the input never fights the server.
+  const [pointsStr, setPointsStr] = useState(String(question.points));
+  const [seededPoints, setSeededPoints] = useState(question.points);
+  const [pointsError, setPointsError] = useState<string | null>(null);
+  if (seededPoints !== question.points) {
+    setSeededPoints(question.points);
+    setPointsStr(String(question.points));
+    setPointsError(null);
+  }
+
+  const handlePointsChange = (value: string) => {
+    setPointsStr(value);
+    const trimmed = value.trim();
+    if (trimmed === '') {
+      setPointsError('errors.pointsRequired');
+      return;
+    }
+    const n = Number(trimmed);
+    const err = validatePoints(n);
+    setPointsError(err);
+    if (!err) onPointsChange?.(n);
+  };
+
+  const handlePointsBlur = () => {
+    const trimmed = pointsStr.trim();
+    const n = Number(trimmed);
+    const err = trimmed === '' ? 'errors.pointsRequired' : validatePoints(n);
+    if (err) {
+      // Revert to the last valid value so the total stays consistent.
+      setPointsStr(String(question.points));
+      setPointsError(null);
+      onPointsChange?.(question.points);
+      return;
+    }
+    if (n !== question.points) onPointsCommit?.(n);
+  };
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  const notSpecified = tk('metadata.notSpecified');
+  const difficultyLabel = question.difficulty
+    ? tk(`difficulty.${question.difficulty.toLowerCase()}`)
+    : notSpecified;
 
   return (
     <div
@@ -69,9 +124,26 @@ export function QuestionCard({
 
         <Badge variant={badge.variant}>{tk(`types.${badge.key}`)}</Badge>
 
-        <span className="font-cairo text-xs text-text-secondary">
-          {tk('pointsLabel', { count: question.points })}
-        </span>
+        {/* Editable per-question points */}
+        <label className="ms-1 flex items-center gap-1.5">
+          <span className="font-cairo text-xs text-text-secondary">{tk('pointsInputLabel')}</span>
+          <input
+            type="number"
+            min={1}
+            max={100}
+            step={1}
+            inputMode="numeric"
+            value={pointsStr}
+            onChange={(e) => handlePointsChange(e.target.value)}
+            onBlur={handlePointsBlur}
+            aria-label={tk('pointsInputLabel')}
+            aria-invalid={Boolean(pointsError)}
+            className={cn(
+              'w-16 rounded-button border bg-surface px-2 py-1 text-center font-cairo text-sm text-text-primary',
+              pointsError ? 'border-danger' : 'border-border',
+            )}
+          />
+        </label>
 
         <div className="ms-auto flex shrink-0 items-center gap-1">
           <button
@@ -93,10 +165,39 @@ export function QuestionCard({
         </div>
       </div>
 
+      {pointsError && (
+        <p className="border-b border-border bg-danger/5 px-4 py-1.5 font-cairo text-xs text-danger" role="alert">
+          {tk(pointsError)}
+        </p>
+      )}
+
       {/* Body */}
       {!collapsed && (
         <div className="flex flex-col gap-3 px-4 py-4">
           <p className="font-cairo text-[15px] font-medium text-text-primary">{question.content}</p>
+
+          {/* Teacher-only metadata strip */}
+          <div className="flex flex-wrap gap-x-6 gap-y-1.5 rounded-button bg-gray-50 px-3 py-2 font-cairo text-xs text-text-secondary">
+            <span className="flex items-center gap-1.5">
+              <BookOpen size={14} className="text-text-muted" />
+              <span className="font-semibold">{tk('metadata.lesson')}:</span>
+              <span>{question.sourceLessonTitle ?? notSpecified}</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Layers size={14} className="text-text-muted" />
+              <span className="font-semibold">{tk('metadata.chapter')}:</span>
+              <span>{question.sourceChapterTitle ?? notSpecified}</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Gauge size={14} className="text-text-muted" />
+              <span className="font-semibold">{tk('metadata.level')}:</span>
+              <span>{difficultyLabel}</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="font-semibold">{tk('metadata.questionType')}:</span>
+              <span>{tk(`types.${badge.key}`)}</span>
+            </span>
+          </div>
 
           {(question.type === 'MCQ' || question.type === 'TRUE_FALSE') &&
             question.options.length > 0 && (

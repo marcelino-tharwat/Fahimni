@@ -23,6 +23,7 @@ export const questionPublicFields = {
   correctAnswer: true,
   explanation: true,
   sortOrder: true,
+  points: true,
   createdAt: true,
   updatedAt: true,
 } as const;
@@ -77,6 +78,7 @@ export interface QuestionResponseDTO {
   correctAnswer: string | null;
   explanation: string | null;
   sortOrder: number;
+  points: number;
   createdAt: Date;
   updatedAt: Date;
 }

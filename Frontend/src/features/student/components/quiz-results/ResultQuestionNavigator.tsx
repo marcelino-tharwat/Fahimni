@@ -17,29 +17,44 @@ const TONE_BG: Record<string, string> = {
   neutral: 'bg-gray-400',
 };
 
-export function ResultQuestionNavigator({ results }: ResultQuestionNavigatorProps) {
+export function ResultQuestionNavigator({
+  results,
+}: ResultQuestionNavigatorProps) {
   const { t, i18n } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isRtl = i18n.language === 'ar';
 
-  const scroll = useCallback((direction: 'left' | 'right') => {
-    if (!scrollRef.current) return;
-    scrollRef.current.scrollBy({ left: direction === 'left' ? -120 : 120, behavior: 'smooth' });
-  }, []);
+  const isRtl = i18n.dir() === 'rtl';
+
+  const scroll = useCallback(
+    (forward: boolean) => {
+      if (!scrollRef.current) return;
+
+      const amount = forward ? 120 : -120;
+
+      scrollRef.current.scrollBy({
+        left: isRtl ? -amount : amount,
+        behavior: 'smooth',
+      });
+    },
+    [isRtl],
+  );
 
   const handleClick = (id: string) => {
-    document.getElementById(`qr-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document
+      .getElementById(`qr-${id}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
     <div className="flex items-center gap-2 rounded-card border border-gray-300 bg-white p-3 shadow-card">
+      {/* Previous */}
       <button
         type="button"
-        onClick={() => scroll(isRtl ? 'right' : 'left')}
+        onClick={() => scroll(false)}
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-200"
-        aria-label="scroll start"
+        aria-label="Previous"
       >
-        <ChevronRight size={16} />
+        {isRtl ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
       </button>
 
       <div
@@ -52,7 +67,9 @@ export function ResultQuestionNavigator({ results }: ResultQuestionNavigatorProp
             key={r.question.id}
             type="button"
             onClick={() => handleClick(r.question.id)}
-            aria-label={t('quiz:goToQuestion', { num: toLocalNum(idx + 1) })}
+            aria-label={t('quiz:goToQuestion', {
+              num: toLocalNum(idx + 1),
+            })}
             className={cn(
               'flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-xs font-bold text-white transition-transform hover:scale-110',
               TONE_BG[resolveResultTone(r)] ?? 'bg-gray-500',
@@ -63,13 +80,14 @@ export function ResultQuestionNavigator({ results }: ResultQuestionNavigatorProp
         ))}
       </div>
 
+      {/* Next */}
       <button
         type="button"
-        onClick={() => scroll(isRtl ? 'left' : 'right')}
+        onClick={() => scroll(true)}
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-200"
-        aria-label="scroll end"
+        aria-label="Next"
       >
-        <ChevronLeft size={16} />
+        {isRtl ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
       </button>
     </div>
   );

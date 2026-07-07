@@ -35,10 +35,22 @@ function toQuestionResponseDTO(
     correctAnswer: (row.correctAnswer as string | null) ?? null,
     explanation: (row.explanation as string | null) ?? null,
     sortOrder: row.sortOrder as number,
+    points: typeof row.points === "number" ? (row.points as number) : 1,
     createdAt: row.createdAt as Date,
     updatedAt: row.updatedAt as Date,
   };
 }
+
+/**
+ * Default points applied when a question is created without an explicit value.
+ * Objective questions are worth 1; essays are worth more by convention. Kept in
+ * sync with the AI generator's DEFAULT_POINTS_BY_TYPE.
+ */
+const DEFAULT_POINTS_BY_TYPE: Record<"MCQ" | "TRUE_FALSE" | "ESSAY", number> = {
+  MCQ: 1,
+  TRUE_FALSE: 1,
+  ESSAY: 5,
+};
 
 export class QuizService {
   private async assertQuizOwned(
@@ -257,6 +269,7 @@ export class QuizService {
         correctAnswer: input.correctAnswer ?? null,
         explanation: input.explanation ?? null,
         sortOrder: input.sortOrder ?? (maxQuestion._max.sortOrder ?? 0) + 1,
+        points: input.points ?? DEFAULT_POINTS_BY_TYPE[input.type],
       },
       select: questionPublicFields,
     });
@@ -307,6 +320,9 @@ export class QuizService {
     }
     if (input.explanation !== undefined) {
       data.explanation = input.explanation;
+    }
+    if (input.points !== undefined) {
+      data.points = input.points;
     }
     if (input.sortOrder !== undefined) {
       data.sortOrder = input.sortOrder;

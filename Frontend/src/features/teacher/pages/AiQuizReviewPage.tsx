@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   DndContext,
@@ -41,11 +41,15 @@ import {
 import {
   draftToApiPayload,
   sortQuestions,
+  sumQuestionPoints,
   toReviewQuestion,
+  mergeMetadata,
   type QuestionDraft,
+  type QuestionMetadata,
   type ReviewQuestion,
   type ReviewQuestionType,
 } from '@/features/teacher/lib/quizReview';
+import { loadGeneratedMeta, saveGeneratedMeta } from '@/features/teacher/lib/quizGeneratedMeta';
 
 type TypeFilter = 'all' | ReviewQuestionType;
 const FILTERS: { value: TypeFilter; key: string }[] = [
@@ -61,6 +65,7 @@ export function AiQuizReviewPage() {
   const BackArrow = i18n.language === 'ar' ? ArrowRight : ArrowLeft;
   const ForwardArrow = i18n.language === 'ar' ? ArrowLeft : ArrowRight;
   const navigate = useNavigate();
+  const location = useLocation();
   const tk = (k: string, o?: Record<string, unknown>) => t(`teacher:quizGenerator.review.${k}`, o);
 
   const { data, isLoading, isError, refetch, isFetching } = useDraftQuiz(quizId);
@@ -69,12 +74,28 @@ export function AiQuizReviewPage() {
   const deleteQ = useDeleteQuestion(quizId ?? '');
   const reorderQ = useReorderQuestions(quizId ?? '');
 
+  // Teacher-only generation metadata (difficulty + source lesson/chapter) is not
+  // persisted server-side, so we take it from Step 1's navigation state and fall
+  // back to sessionStorage on refresh. Absent metadata renders as "غير محدد".
+  const metadata = useMemo<Record<string, QuestionMetadata>>(() => {
+    const fromState = (location.state as { generatedMeta?: Record<string, QuestionMetadata> } | null)
+      ?.generatedMeta;
+    if (fromState && Object.keys(fromState).length > 0) {
+      if (quizId) saveGeneratedMeta(quizId, fromState);
+      return fromState;
+    }
+    return quizId ? loadGeneratedMeta(quizId) : {};
+  }, [location.state, quizId]);
+
   // Server is the source of truth; an optional local id-order override makes drag
   // reorder feel immediate without syncing state in an effect. Cleared whenever
   // the server data changes (add/delete/reorder success → refetch).
   const serverQuestions = useMemo<ReviewQuestion[]>(
-    () => (data?.questions ? sortQuestions(data.questions.map(toReviewQuestion)) : []),
-    [data],
+    () =>
+      data?.questions
+        ? mergeMetadata(sortQuestions(data.questions.map(toReviewQuestion)), metadata)
+        : [],
+    [data, metadata],
   );
   const [orderOverride, setOrderOverride] = useState<string[] | null>(null);
   const questions = useMemo<ReviewQuestion[]>(() => {
@@ -95,6 +116,36 @@ export function AiQuizReviewPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [filter, setFilter] = useState<TypeFilter>('all');
   const [collapsed, setCollapsed] = useState(false);
+  // Live per-question points overrides (id → points) so the total updates as the
+  // teacher types, before the change is committed to the backend.
+  const [pointsDraft, setPointsDraft] = useState<Record<string, number>>({});
+
+  const changePoints = (id: string, points: number) => {
+    setPointsDraft((d) => ({ ...d, [id]: points }));
+  };
+
+  const commitPoints = (id: string, points: number) => {
+    setActionError(null);
+    updateQ.mutate(
+      { questionId: id, body: { points } },
+      {
+        onSuccess: () =>
+          setPointsDraft((d) => {
+            const next = { ...d };
+            delete next[id];
+            return next;
+          }),
+        onError: () => {
+          setActionError(tk('errors.pointsSaveFailed'));
+          setPointsDraft((d) => {
+            const next = { ...d };
+            delete next[id];
+            return next;
+          });
+        },
+      },
+    );
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -201,7 +252,7 @@ export function AiQuizReviewPage() {
   }
 
   const count = questions.length;
-  const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
+  const totalPoints = sumQuestionPoints(questions, pointsDraft);
   const savingEditor = createQ.isPending || updateQ.isPending;
   const visible = filter === 'all' ? questions : questions.filter((q) => q.type === filter);
   // Original 1-based position kept stable even when filtered.
@@ -223,7 +274,7 @@ export function AiQuizReviewPage() {
           <div className="flex shrink-0 items-center gap-2">
             <Badge variant="info">{tk('countBadge', { count })}</Badge>
             <Badge className="bg-violet-100 text-violet-700">
-              {tk('pointsBadge', { count: totalPoints })}
+              {tk('totalPointsLabel', { count: totalPoints })}
             </Badge>
           </div>
         </div>
@@ -299,6 +350,8 @@ export function AiQuizReviewPage() {
                   collapsed={collapsed}
                   onEdit={() => openEdit(q)}
                   onDelete={() => setDeleteTarget(q)}
+                  onPointsChange={(p) => changePoints(q.id, p)}
+                  onPointsCommit={(p) => commitPoints(q.id, p)}
                 />
               ))}
             </div>

@@ -188,6 +188,76 @@ describe("QuizGenerationService.generate", () => {
     expect(result.questions.map((q) => q.sortOrder)).toEqual([1, 2, 3]);
   });
 
+  it("persists per-question points in the createMany payload", async () => {
+    primeHappyPath(m);
+    await service().generate(CHAPTER_INPUT, TEACHER);
+
+    const payloadArg = m.tx.question.createMany.mock.calls[0]![0] as {
+      data: Array<{ points: number; sortOrder: number }>;
+    };
+    expect(payloadArg.data.every((d) => typeof d.points === "number")).toBe(true);
+    expect(payloadArg.data.map((d) => d.points)).toEqual([1, 1, 1]);
+  });
+
+  it("attaches teacher-only source metadata + difficulty per question", async () => {
+    primeHappyPath(m);
+    const result = await service().generate(CHAPTER_INPUT, TEACHER);
+
+    for (const q of result.questions) {
+      // Single resolved lesson → attributed as the source lesson.
+      expect(q.sourceLessonId).toBe(LESSON_1);
+      expect(q.sourceLessonTitle).toBe("الدرس الأول");
+      expect(q.sourceChapterTitle).toBe("الجبر");
+      // SINGLE(medium) with no model label → deterministic fallback.
+      expect(q.difficulty).toBe("MEDIUM");
+    }
+  });
+
+  it("nulls the source lesson when more than one lesson fed generation", async () => {
+    m.prisma.chapter.findFirst.mockResolvedValue({ id: CHAPTER_ID, name: "الجبر" });
+    m.prisma.lesson.findMany.mockResolvedValue([
+      { id: LESSON_1, title: "د١" },
+      { id: LESSON_2, title: "د٢" },
+    ]);
+    m.rag.countChunksInLessons.mockResolvedValue(5);
+    m.rag.similaritySearchInLessons.mockResolvedValue([{ content: "نص" }]);
+    m.gemini.generateContent.mockResolvedValue(validGeminiOutput());
+    m.tx.quiz.create.mockResolvedValue({
+      id: "quiz-1",
+      title: "t",
+      description: null,
+      chapterId: CHAPTER_ID,
+      contentScope: "SELECTED_LESSONS",
+      status: "DRAFT",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    m.tx.quizLesson.deleteMany.mockResolvedValue({ count: 0 });
+    m.tx.quizLesson.createMany.mockResolvedValue({ count: 2 });
+    m.tx.question.createMany.mockResolvedValue({ count: 3 });
+    m.tx.question.findMany.mockResolvedValue(persistedQuestions());
+
+    const result = await service().generate(
+      {
+        chapterId: CHAPTER_ID,
+        contentScope: "SELECTED_LESSONS",
+        lessonIds: [LESSON_1, LESSON_2],
+        questionCount: 3,
+        types: ["MCQ", "TF", "ESSAY"],
+        difficultyMode: "SINGLE",
+        difficulty: "easy",
+      },
+      TEACHER,
+    );
+
+    for (const q of result.questions) {
+      expect(q.sourceLessonId).toBeNull();
+      expect(q.sourceLessonTitle).toBeNull();
+      expect(q.sourceChapterTitle).toBe("الجبر");
+      expect(q.difficulty).toBe("EASY");
+    }
+  });
+
   it("runs RAG → Gemini → persistence in order", async () => {
     primeHappyPath(m);
     await service().generate(CHAPTER_INPUT, TEACHER);

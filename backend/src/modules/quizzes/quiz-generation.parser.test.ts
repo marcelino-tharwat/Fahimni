@@ -217,4 +217,46 @@ describe("parseQuizGenerationResponse", () => {
       }),
     ).toThrow(QuizGenerationParseError);
   });
+
+  it("defaults omitted points per type (MCQ/TF=1, ESSAY=5)", () => {
+    const mcqNoPoints = { type: "MCQ", content: "س١", options: ["أ", "ب"], correctAnswer: "أ" };
+    const tfNoPoints = { type: "TF", content: "س٢", correctAnswer: "صح" };
+    const essayNoPoints = { type: "ESSAY", content: "س٣" };
+    const result = parseQuizGenerationResponse(
+      payload([mcqNoPoints, tfNoPoints, essayNoPoints]),
+      { questionCount: 3, requestedTypes: [...ALL_TYPES] },
+    );
+    expect(result.questions.map((q) => q.points)).toEqual([1, 1, 5]);
+  });
+
+  it("clamps oversized model points to the max (100)", () => {
+    const big = { ...MCQ, points: 9999 };
+    const result = parseQuizGenerationResponse(payload([big]), {
+      questionCount: 1,
+      requestedTypes: ["MCQ"],
+    });
+    expect(result.questions[0]!.points).toBe(100);
+  });
+
+  it("extracts a per-question difficulty label when supplied (en + ar)", () => {
+    const easy = { ...MCQ, difficulty: "easy" };
+    const hardAr = { ...TF, difficulty: "صعب" };
+    const result = parseQuizGenerationResponse(payload([easy, hardAr]), {
+      questionCount: 2,
+      requestedTypes: ["MCQ", "TF"],
+    });
+    expect(result.questions[0]!.difficulty).toBe("easy");
+    expect(result.questions[1]!.difficulty).toBe("hard");
+  });
+
+  it("leaves difficulty null when the model omits or garbles it", () => {
+    const noDiff = { ...MCQ };
+    const junk = { ...TF, difficulty: "impossible" };
+    const result = parseQuizGenerationResponse(payload([noDiff, junk]), {
+      questionCount: 2,
+      requestedTypes: ["MCQ", "TF"],
+    });
+    expect(result.questions[0]!.difficulty).toBeNull();
+    expect(result.questions[1]!.difficulty).toBeNull();
+  });
 });

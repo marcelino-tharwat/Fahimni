@@ -469,10 +469,27 @@
         "mcqFourOptions": "Enter four non-empty options",
         "mcqDuplicateOptions": "Duplicate options are not allowed",
         "correctAnswerRequired": "Select the correct answer",
+        "pointsRequired": "Points are required",
+        "pointsInteger": "Points must be a whole number",
+        "pointsPositive": "Points must be greater than 0",
+        "pointsMax": "Points must not exceed 100",
         "saveFailed": "Could not save the question. Please try again.",
         "deleteFailed": "Could not delete the question.",
         "reorderFailed": "Could not save the new order.",
+        "pointsSaveFailed": "Could not update the points.",
         "loadFailed": "Could not load the draft."
+      },
+      "metadata": {
+        "lesson": "Lesson",
+        "chapter": "Chapter",
+        "level": "Level",
+        "questionType": "Type",
+        "notSpecified": "Not specified"
+      },
+      "difficulty": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
       },
       "step3": {
         "title": "Step 3: Publish",
@@ -482,8 +499,10 @@
       "pageTitle": "Review Questions",
       "pageSubtitle": "Review the generated questions — edit, delete, or reorder them as you need",
       "pointsBadge": "{{count}} points",
+      "totalPointsLabel": "Total score: {{count}}",
       "questionLabel": "Question {{number}}",
       "pointsLabel": "{{count}} pts",
+      "pointsInputLabel": "Question points",
       "saveDraft": "Save as draft",
       "collapseAll": "Collapse all",
       "expandAll": "Expand all",
