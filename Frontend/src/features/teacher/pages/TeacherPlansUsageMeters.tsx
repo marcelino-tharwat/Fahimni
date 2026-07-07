@@ -1,29 +1,42 @@
 import { useTranslation } from 'react-i18next';
 import type { UsageSummary } from '@/features/teacher/types/teacherPlans';
 
+function getBarColor(used: number, limit: number): string {
+  if (limit <= 0) return 'bg-gray-200';
+  const pct = (used / limit) * 100;
+  if (pct >= 95) return 'bg-danger-500';
+  if (pct >= 80) return 'bg-warning-500';
+  return 'bg-cyan-500';
+}
+
 interface UsageMeterProps {
   label: string;
   used: number;
   limit: number;
-  variant?: 'default' | 'warning' | 'danger';
 }
 
-function UsageMeter({ label, used, limit, variant = 'default' }: UsageMeterProps) {
+function UsageMeter({ label, used, limit }: UsageMeterProps) {
+  const { t } = useTranslation('teacher');
+
+  if (limit === 0) {
+    return (
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-gray-400">{label}</span>
+        <span className="text-gray-400">{t('plans.usage.notIncluded')}</span>
+      </div>
+    );
+  }
+
   const isUnlimited = limit < 0;
-  const percentage = isUnlimited ? 0 : Math.min(100, Math.round((used / limit) * 100));
-  const barColor =
-    variant === 'danger' ? 'bg-red-500' : variant === 'warning' ? 'bg-amber-500' : 'bg-cyan-500';
+  const percentage = Math.min(100, Math.round((used / limit) * 100));
+  const barColor = getBarColor(used, limit);
 
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-sm">
         <span className="text-gray-700">{label}</span>
-        <span className="font-medium text-gray-900">
-          {isUnlimited ? (
-            <span className="text-green-600">غير محدود</span>
-          ) : (
-            `${used} / ${limit}`
-          )}
+        <span className={isUnlimited ? 'font-medium text-cyan-600' : 'font-medium text-gray-900'}>
+          {isUnlimited ? t('plans.unlimited', 'غير محدود') : `${used} / ${limit}`}
         </span>
       </div>
       {!isUnlimited && (
@@ -58,35 +71,30 @@ export function TeacherPlansUsageMeters({ usage, isLoading }: Props) {
 
   if (!usage) return null;
 
-  const isQuizWarning = usage.aiQuizGenerations.limit > 0 && usage.aiQuizGenerations.remaining < 5;
-  const isEssayWarning = usage.aiEssayGradings.limit > 0 && usage.aiEssayGradings.remaining < 10;
-
   return (
     <div className="space-y-4">
       <UsageMeter
-        label={t('plans.usage.aiQuizGenerations', 'إنشاء اختبارات بالذكاء الاصطناعي')}
+        label={t('plans.usage.aiQuizGenerations')}
         used={usage.aiQuizGenerations.used}
         limit={usage.aiQuizGenerations.limit}
-        variant={isQuizWarning ? 'warning' : 'default'}
       />
       <UsageMeter
-        label={t('plans.usage.aiEssayGradings', 'تصحيح الأسئلة المقالية بالذكاء الاصطناعي')}
+        label={t('plans.usage.aiEssayGradings')}
         used={usage.aiEssayGradings.used}
         limit={usage.aiEssayGradings.limit}
-        variant={isEssayWarning ? 'warning' : 'default'}
       />
       <UsageMeter
-        label={t('plans.usage.aiContentGenerations', 'إنشاء محتوى تعليمي بالذكاء الاصطناعي')}
+        label={t('plans.usage.aiContentGenerations')}
         used={usage.aiContentGenerations.used}
         limit={usage.aiContentGenerations.limit}
       />
       <UsageMeter
-        label={t('plans.usage.students', 'عدد الطلاب')}
+        label={t('plans.usage.students')}
         used={usage.students.used}
         limit={usage.students.limit}
       />
       <UsageMeter
-        label={t('plans.usage.storage', 'مساحة التخزين (ميجابايت)')}
+        label={t('plans.usage.storage')}
         used={usage.storageMb.used}
         limit={usage.storageMb.limit}
       />

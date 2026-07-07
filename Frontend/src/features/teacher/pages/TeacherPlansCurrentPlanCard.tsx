@@ -51,7 +51,7 @@ export function TeacherPlansCurrentPlanCard({ data, isLoading }: Props) {
           <h3 className="text-lg font-bold text-gray-900">
             {t('plans.currentPlan', 'الباقة الحالية')}
           </h3>
-          <p className="text-2xl font-bold text-navy-600">{data.currentPlan.displayName}</p>
+          <p className="text-2xl font-bold text-text-primary">{t(`plans.planNames.${data.currentPlan.code}`, data.currentPlan.displayName)}</p>
         </div>
         {data.subscription && (
           <Badge variant={statusColor[data.subscription.status] ?? 'default'}>
@@ -66,7 +66,7 @@ export function TeacherPlansCurrentPlanCard({ data, isLoading }: Props) {
       </div>
 
       {data.subscription && (
-        <div className="mb-4 grid grid-cols-2 gap-4 text-sm text-gray-600">
+        <div className="mb-4 grid grid-cols-2 gap-4 text-sm text-text-secondary">
           <div>
             <span className="block text-xs text-gray-400">
               {t('plans.periodStart', 'بداية الدورة')}
@@ -83,7 +83,7 @@ export function TeacherPlansCurrentPlanCard({ data, isLoading }: Props) {
       )}
 
       <div className="border-t pt-4">
-        <h4 className="mb-3 text-sm font-semibold text-gray-700">
+        <h4 className="mb-3 text-sm font-semibold text-text-primary">
           {t('plans.usageTitle', 'استخدام الباقة')}
         </h4>
         <TeacherPlansUsageMeters usage={data.usage} />
