@@ -27,6 +27,8 @@ import {
   validateQuizGeneratorDifficulty,
 } from '@/features/teacher/lib/quizDifficultyValidation';
 import { buildGenerateQuizPayload } from '@/features/teacher/lib/quizGeneratorPayload';
+import { buildMetadataMap } from '@/features/teacher/lib/quizReview';
+import { saveGeneratedMeta } from '@/features/teacher/lib/quizGeneratedMeta';
 
 const SESSION_KEY = 'quizGeneratorFormState_v2';
 
@@ -154,7 +156,14 @@ export function AiQuizGeneratorPage() {
     const payload = buildGenerateQuizPayload(form);
     try {
       const result = await generateQuiz.mutateAsync(payload);
-      navigate(`/teacher/quizzes/generator/review/${result.id}`);
+      // Teacher-only metadata (difficulty + source lesson/chapter) is not
+      // persisted server-side, so carry it to Step 2 via nav state and stash it
+      // in sessionStorage as a refresh-safe fallback.
+      const metadata = buildMetadataMap(result.questions);
+      saveGeneratedMeta(result.id, metadata);
+      navigate(`/teacher/quizzes/generator/review/${result.id}`, {
+        state: { generatedMeta: metadata },
+      });
     } catch {
       // Error surfaced via generationError banner below.
     }

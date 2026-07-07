@@ -186,6 +186,7 @@ export interface QuestionWriteBody {
   content: string;
   options: Record<string, string>;
   correctAnswer: string | null;
+  points?: number;
   sortOrder?: number;
 }
 

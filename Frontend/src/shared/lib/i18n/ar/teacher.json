@@ -469,10 +469,27 @@
         "mcqFourOptions": "يجب إدخال أربعة خيارات غير فارغة",
         "mcqDuplicateOptions": "لا يُسمح بخيارات مكررة",
         "correctAnswerRequired": "يجب تحديد الإجابة الصحيحة",
+        "pointsRequired": "درجة السؤال مطلوبة",
+        "pointsInteger": "يجب أن تكون الدرجة رقماً صحيحاً",
+        "pointsPositive": "يجب أن تكون الدرجة أكبر من صفر",
+        "pointsMax": "يجب ألا تتجاوز الدرجة 100",
         "saveFailed": "تعذّر حفظ السؤال. حاول مرة أخرى.",
         "deleteFailed": "تعذّر حذف السؤال.",
         "reorderFailed": "تعذّر حفظ الترتيب الجديد.",
+        "pointsSaveFailed": "تعذّر تحديث درجة السؤال.",
         "loadFailed": "تعذّر تحميل المسودة."
+      },
+      "metadata": {
+        "lesson": "الدرس",
+        "chapter": "الباب",
+        "level": "المستوى",
+        "questionType": "النوع",
+        "notSpecified": "غير محدد"
+      },
+      "difficulty": {
+        "easy": "سهل",
+        "medium": "متوسط",
+        "hard": "صعب"
       },
       "step3": {
         "title": "الخطوة الثالثة: النشر",
@@ -482,8 +499,10 @@
       "pageTitle": "مراجعة الأسئلة",
       "pageSubtitle": "راجع الأسئلة المولدة وعدّل أو احذف أو أعد ترتيبها حسب حاجتك",
       "pointsBadge": "{{count}} نقطة",
+      "totalPointsLabel": "إجمالي الدرجة: {{count}}",
       "questionLabel": "سؤال {{number}}",
       "pointsLabel": "{{count}} نقاط",
+      "pointsInputLabel": "درجة السؤال",
       "saveDraft": "حفظ كمسودة",
       "collapseAll": "طي الكل",
       "expandAll": "توسيع الكل",

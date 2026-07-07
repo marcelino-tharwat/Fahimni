@@ -121,6 +121,28 @@ export function QuestionEditor({
           )}
         </label>
 
+        {/* Points */}
+        <label className="flex flex-col gap-1">
+          <span className="font-cairo text-sm font-semibold text-text-primary">{tk('pointsInputLabel')}</span>
+          <input
+            type="number"
+            min={1}
+            max={100}
+            step={1}
+            inputMode="numeric"
+            value={Number.isFinite(draft.points) ? String(draft.points) : ''}
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, points: e.target.value === '' ? NaN : Number(e.target.value) }))
+            }
+            className="w-28 rounded-button border border-border bg-surface px-3 py-2 font-cairo text-sm text-text-primary"
+            aria-label={tk('pointsInputLabel')}
+            aria-invalid={Boolean(fieldError('points'))}
+          />
+          {fieldError('points') && (
+            <span className="font-cairo text-xs text-danger">{fieldError('points')}</span>
+          )}
+        </label>
+
         {/* MCQ options */}
         {draft.type === 'MCQ' && (
           <div className="flex flex-col gap-2">

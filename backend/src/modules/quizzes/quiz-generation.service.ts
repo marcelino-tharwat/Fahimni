@@ -52,6 +52,9 @@ const DIFFICULTY_LABEL_AR: Record<"easy" | "medium" | "hard", string> = {
   hard: "صعب",
 };
 
+/** Teacher-only difficulty label surfaced in the generation response. */
+export type QuestionDifficultyLabel = "EASY" | "MEDIUM" | "HARD";
+
 export interface GeneratedQuestionDTO {
   id: string;
   quizId: string;
@@ -61,6 +64,13 @@ export interface GeneratedQuestionDTO {
   correctAnswer: string | null;
   sortOrder: number;
   points: number;
+  // ── Teacher-only metadata (additive) ───────────────────────────────────────
+  // Returned only from the teacher generation endpoint. Not persisted (no
+  // schema column) and never included in any student-facing question payload.
+  difficulty: QuestionDifficultyLabel | null;
+  sourceLessonId: string | null;
+  sourceLessonTitle: string | null;
+  sourceChapterTitle: string | null;
 }
 
 export interface GeneratedQuizDTO {
@@ -100,6 +110,9 @@ interface ResolvedContent {
   sourceTitles: string[];
   chapterId: string;
   contentScope: QuizContentScope;
+  /** Teacher-only display metadata (see ResolvedQuizScope). */
+  chapterTitle: string | null;
+  lessons: Array<{ id: string; title: string }>;
 }
 
 /**
@@ -265,6 +278,7 @@ export class QuizGenerationService {
       content,
       teacherId,
       parsed.questions,
+      resolvedDifficulty,
     );
 
     logger.info("quiz_generation_completed", {
@@ -310,6 +324,8 @@ export class QuizGenerationService {
         sourceTitles: scope.sourceTitles,
         chapterId: scope.chapterId,
         contentScope: scope.contentScope,
+        chapterTitle: scope.chapterTitle,
+        lessons: scope.lessons,
       };
     }
 
@@ -324,6 +340,8 @@ export class QuizGenerationService {
         sourceTitles: scope.sourceTitles,
         chapterId: scope.chapterId,
         contentScope: scope.contentScope,
+        chapterTitle: scope.chapterTitle,
+        lessons: scope.lessons,
       };
     }
 
@@ -343,6 +361,8 @@ export class QuizGenerationService {
       sourceTitles: scope.sourceTitles,
       chapterId: scope.chapterId,
       contentScope: scope.contentScope,
+      chapterTitle: scope.chapterTitle,
+      lessons: scope.lessons,
     };
   }
 
@@ -474,6 +494,7 @@ export class QuizGenerationService {
     content: ResolvedContent,
     teacherId: string,
     questions: ParsedQuestion[],
+    resolvedDifficulty: ReturnType<typeof resolveQuizDifficulty>,
   ): Promise<GeneratedQuizDTO> {
     let created;
     try {
@@ -504,6 +525,9 @@ export class QuizGenerationService {
           options: (q.options ?? []) as Prisma.InputJsonValue,
           correctAnswer: q.correctAnswer,
           sortOrder: q.sortOrder,
+          // Persist the (possibly type-defaulted / model-supplied) points so the
+          // draft carries real per-question weights, not the schema default.
+          points: q.points,
         })),
       });
 
@@ -556,6 +580,33 @@ export class QuizGenerationService {
     );
     const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
 
+    // Per-question difficulty: prefer the model's own label, fall back to the
+    // requested distribution (deterministic, teacher-only, never persisted).
+    const difficultyFallback = this.buildDifficultyFallback(
+      resolvedDifficulty,
+      questions.length,
+    );
+    const difficultyBySortOrder = new Map<number, QuestionDifficultyLabel>();
+    questions.forEach((q, index) => {
+      const label = (q.difficulty ?? difficultyFallback[index] ?? "medium") as
+        | "easy"
+        | "medium"
+        | "hard";
+      difficultyBySortOrder.set(
+        q.sortOrder,
+        label.toUpperCase() as QuestionDifficultyLabel,
+      );
+    });
+
+    // Source lesson can only be attributed to a question when exactly one lesson
+    // fed the generation; otherwise only the chapter title (if unambiguous) is
+    // shown and the lesson fields are null (=> "غير محدد" in the UI).
+    const singleLesson =
+      content.lessons.length === 1 ? content.lessons[0]! : null;
+    const sourceLessonId = singleLesson?.id ?? null;
+    const sourceLessonTitle = singleLesson?.title ?? null;
+    const sourceChapterTitle = content.chapterTitle;
+
     const quizRow = created.quiz as unknown as Record<string, unknown>;
 
     return {
@@ -571,6 +622,7 @@ export class QuizGenerationService {
       updatedAt: quizRow.updatedAt as Date,
       questions: created.persistedQuestions.map((q) => {
         const row = q as unknown as Record<string, unknown>;
+        const sortOrder = row.sortOrder as number;
         return {
           id: row.id as string,
           quizId: row.quizId as string,
@@ -578,10 +630,35 @@ export class QuizGenerationService {
           content: row.text as string,
           options: row.options,
           correctAnswer: (row.correctAnswer as string | null) ?? null,
-          sortOrder: row.sortOrder as number,
-          points: pointsBySortOrder.get(row.sortOrder as number) ?? 1,
+          sortOrder,
+          points: pointsBySortOrder.get(sortOrder) ?? 1,
+          difficulty: difficultyBySortOrder.get(sortOrder) ?? null,
+          sourceLessonId,
+          sourceLessonTitle,
+          sourceChapterTitle,
         };
       }),
     };
+  }
+
+  /**
+   * Deterministic per-question difficulty labels (lowercase) used when the model
+   * did not tag a question. SINGLE → every question shares the requested level.
+   * MIXED → expand the resolved integer counts in enum order (easy→medium→hard).
+   */
+  private buildDifficultyFallback(
+    resolved: ReturnType<typeof resolveQuizDifficulty>,
+    total: number,
+  ): Array<"easy" | "medium" | "hard"> {
+    if (resolved.difficultyMode === "SINGLE") {
+      return Array.from({ length: total }, () => resolved.difficulty);
+    }
+    const out: Array<"easy" | "medium" | "hard"> = [];
+    (["easy", "medium", "hard"] as const).forEach((level) => {
+      for (let i = 0; i < resolved.questionCounts[level]; i += 1) {
+        out.push(level);
+      }
+    });
+    return out;
   }
 }

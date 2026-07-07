@@ -6,6 +6,32 @@
 
 export type ReviewQuestionType = 'MCQ' | 'TRUE_FALSE' | 'ESSAY';
 
+export type QuestionDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
+
+/** Points bounds — mirrors backend quizzes.validation (MAX_QUESTION_POINTS). */
+export const MIN_QUESTION_POINTS = 1;
+export const MAX_QUESTION_POINTS = 100;
+
+/** Default points per type when adding a question — mirrors the backend. */
+export const DEFAULT_POINTS_BY_TYPE: Record<ReviewQuestionType, number> = {
+  MCQ: 1,
+  TRUE_FALSE: 1,
+  ESSAY: 5,
+};
+
+/**
+ * Teacher-only generation metadata attached to a question. Not persisted by the
+ * backend (no schema column), so it is only available for the just-generated
+ * draft (threaded via navigation state / sessionStorage). Absent fields render
+ * as "غير محدد" and difficulty is simply hidden.
+ */
+export interface QuestionMetadata {
+  difficulty: QuestionDifficulty | null;
+  sourceLessonId: string | null;
+  sourceLessonTitle: string | null;
+  sourceChapterTitle: string | null;
+}
+
 /** A question as the Step 2 UI works with it (options always a clean string[]). */
 export interface ReviewQuestion {
   id: string;
@@ -16,6 +42,11 @@ export interface ReviewQuestion {
   correctAnswer: string | null;
   sortOrder: number;
   points: number;
+  // Teacher-only metadata (optional; only present for freshly generated drafts).
+  difficulty?: QuestionDifficulty | null;
+  sourceLessonId?: string | null;
+  sourceLessonTitle?: string | null;
+  sourceChapterTitle?: string | null;
 }
 
 /** Raw question shape returned by GET /api/quizzes/:id (options may be array or record). */
@@ -97,6 +128,18 @@ export function sortQuestions(questions: ReviewQuestion[]): ReviewQuestion[] {
   return [...questions].sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
+/**
+ * Total quiz score = sum of each question's points, with optional live overrides
+ * (id → points) taking precedence. Used for the dynamic "إجمالي الدرجة" badge so
+ * editing one question's points changes only that question's contribution.
+ */
+export function sumQuestionPoints(
+  questions: ReviewQuestion[],
+  overrides: Record<string, number> = {},
+): number {
+  return questions.reduce((sum, q) => sum + (overrides[q.id] ?? q.points), 0);
+}
+
 /** Convert an ordered options[] into the record map the backend expects. */
 export function optionsToRecord(options: string[]): Record<string, string> {
   const record: Record<string, string> = {};
@@ -112,13 +155,35 @@ export interface QuestionDraft {
   content: string;
   options: string[];
   correctAnswer: string | null;
+  points: number;
 }
 
 export type DraftErrors = Partial<{
   content: string;
   options: string;
   correctAnswer: string;
+  points: string;
 }>;
+
+/**
+ * Validate a points value. Returns an i18n key code when invalid, else null.
+ * Rules mirror the backend: required, whole number, > 0, <= MAX_QUESTION_POINTS.
+ */
+export function validatePoints(value: number): string | null {
+  if (!Number.isFinite(value)) {
+    return 'errors.pointsRequired';
+  }
+  if (!Number.isInteger(value)) {
+    return 'errors.pointsInteger';
+  }
+  if (value < MIN_QUESTION_POINTS) {
+    return 'errors.pointsPositive';
+  }
+  if (value > MAX_QUESTION_POINTS) {
+    return 'errors.pointsMax';
+  }
+  return null;
+}
 
 /**
  * Validate an editor draft. Returns i18n key codes (not text) per field so the
@@ -148,6 +213,11 @@ export function validateQuestionDraft(draft: QuestionDraft): DraftErrors {
   }
   // ESSAY: content-only (no options / correctAnswer required).
 
+  const pointsError = validatePoints(draft.points);
+  if (pointsError) {
+    errors.points = pointsError;
+  }
+
   return errors;
 }
 
@@ -161,9 +231,16 @@ export function draftToApiPayload(draft: QuestionDraft): {
   content: string;
   options: Record<string, string>;
   correctAnswer: string | null;
+  points: number;
 } {
   if (draft.type === 'ESSAY') {
-    return { type: draft.type, content: draft.content.trim(), options: {}, correctAnswer: null };
+    return {
+      type: draft.type,
+      content: draft.content.trim(),
+      options: {},
+      correctAnswer: null,
+      points: draft.points,
+    };
   }
   const options = draft.type === 'TRUE_FALSE' ? [...TF_OPTIONS] : draft.options.map((o) => o.trim());
   return {
@@ -171,31 +248,86 @@ export function draftToApiPayload(draft: QuestionDraft): {
     content: draft.content.trim(),
     options: optionsToRecord(options),
     correctAnswer: draft.correctAnswer,
+    points: draft.points,
   };
 }
 
 /** A blank draft for the "Add question" flow, defaulted to the given type. */
 export function blankDraft(type: ReviewQuestionType = 'MCQ'): QuestionDraft {
+  const points = DEFAULT_POINTS_BY_TYPE[type];
   if (type === 'MCQ') {
-    return { type, content: '', options: ['', '', '', ''], correctAnswer: null };
+    return { type, content: '', options: ['', '', '', ''], correctAnswer: null, points };
   }
   if (type === 'TRUE_FALSE') {
-    return { type, content: '', options: [...TF_OPTIONS], correctAnswer: null };
+    return { type, content: '', options: [...TF_OPTIONS], correctAnswer: null, points };
   }
-  return { type, content: '', options: [], correctAnswer: null };
+  return { type, content: '', options: [], correctAnswer: null, points };
 }
 
 /** Build a draft from an existing question for editing. */
 export function questionToDraft(q: ReviewQuestion): QuestionDraft {
+  const points = typeof q.points === 'number' ? q.points : DEFAULT_POINTS_BY_TYPE[q.type];
   if (q.type === 'MCQ') {
     const options = [...q.options];
     while (options.length < MCQ_OPTION_COUNT) options.push('');
-    return { type: q.type, content: q.content, options: options.slice(0, MCQ_OPTION_COUNT), correctAnswer: q.correctAnswer };
+    return { type: q.type, content: q.content, options: options.slice(0, MCQ_OPTION_COUNT), correctAnswer: q.correctAnswer, points };
   }
   if (q.type === 'TRUE_FALSE') {
-    return { type: q.type, content: q.content, options: [...TF_OPTIONS], correctAnswer: q.correctAnswer };
+    return { type: q.type, content: q.content, options: [...TF_OPTIONS], correctAnswer: q.correctAnswer, points };
   }
-  return { type: q.type, content: q.content, options: [], correctAnswer: null };
+  return { type: q.type, content: q.content, options: [], correctAnswer: null, points };
+}
+
+// ── Teacher-only generation metadata (threaded from Step 1) ──────────────────
+
+/** Raw generated question shape carrying optional teacher-only metadata. */
+export interface GeneratedMetaQuestion {
+  id: string;
+  difficulty?: string | null;
+  sourceLessonId?: string | null;
+  sourceLessonTitle?: string | null;
+  sourceChapterTitle?: string | null;
+}
+
+function normalizeDifficulty(value: unknown): QuestionDifficulty | null {
+  if (typeof value !== 'string') return null;
+  const key = value.trim().toUpperCase();
+  return key === 'EASY' || key === 'MEDIUM' || key === 'HARD' ? (key as QuestionDifficulty) : null;
+}
+
+/** Build a questionId → metadata map from a generation response's questions. */
+export function buildMetadataMap(
+  questions: GeneratedMetaQuestion[] | undefined | null,
+): Record<string, QuestionMetadata> {
+  const map: Record<string, QuestionMetadata> = {};
+  for (const q of questions ?? []) {
+    if (!q || typeof q.id !== 'string') continue;
+    map[q.id] = {
+      difficulty: normalizeDifficulty(q.difficulty),
+      sourceLessonId: q.sourceLessonId ?? null,
+      sourceLessonTitle: q.sourceLessonTitle ?? null,
+      sourceChapterTitle: q.sourceChapterTitle ?? null,
+    };
+  }
+  return map;
+}
+
+/** Merge a metadata map into review questions by id (leaves others untouched). */
+export function mergeMetadata(
+  questions: ReviewQuestion[],
+  metadata: Record<string, QuestionMetadata>,
+): ReviewQuestion[] {
+  return questions.map((q) => {
+    const meta = metadata[q.id];
+    if (!meta) return q;
+    return {
+      ...q,
+      difficulty: meta.difficulty,
+      sourceLessonId: meta.sourceLessonId,
+      sourceLessonTitle: meta.sourceLessonTitle,
+      sourceChapterTitle: meta.sourceChapterTitle,
+    };
+  });
 }
 
 /** Ordered list of question ids after a drag move (for the reorder API). */

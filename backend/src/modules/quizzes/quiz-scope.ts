@@ -17,6 +17,14 @@ export interface ResolvedQuizScope {
   contentScope: QuizContentScope;
   lessonIds: string[];
   sourceTitles: string[];
+  /**
+   * Teacher-only display metadata for the resolved source. `chapterTitle` is
+   * only unambiguous for single-chapter sources (null for multi-chapter /
+   * full-curriculum). `lessons` carries id+title so the generation layer can
+   * attach a source lesson to questions when exactly one lesson was used.
+   */
+  chapterTitle: string | null;
+  lessons: Array<{ id: string; title: string }>;
 }
 
 type PrismaLike = Pick<typeof defaultPrisma, "chapter" | "lesson">;
@@ -117,6 +125,8 @@ export async function resolveAndValidateQuizContentScope(
         contentScope: "CHAPTER",
         lessonIds: [],
         sourceTitles: [chapter.name],
+        chapterTitle: chapter.name,
+        lessons: [],
       };
     }
 
@@ -125,6 +135,8 @@ export async function resolveAndValidateQuizContentScope(
       contentScope: "CHAPTER",
       lessonIds: lessons.map((l) => l.id),
       sourceTitles: [chapter.name, ...lessons.map((l) => l.title)],
+      chapterTitle: chapter.name,
+      lessons: lessons.map((l) => ({ id: l.id, title: l.title })),
     };
 
     logger.info("quiz_generation_sources_resolved", {
@@ -177,6 +189,8 @@ export async function resolveAndValidateQuizContentScope(
     contentScope: "SELECTED_LESSONS",
     lessonIds: lessons.map((l) => l.id),
     sourceTitles: lessons.map((l) => l.title),
+    chapterTitle: chapter.name,
+    lessons: lessons.map((l) => ({ id: l.id, title: l.title })),
   };
 
   logger.info("quiz_generation_sources_resolved", {
@@ -258,6 +272,8 @@ export async function resolveMultiChapterScope(
       contentScope: "CHAPTER",
       lessonIds: [],
       sourceTitles: chapters.map((c) => c.name),
+      chapterTitle: null,
+      lessons: [],
     };
   }
 
@@ -273,6 +289,9 @@ export async function resolveMultiChapterScope(
     contentScope: "CHAPTER",
     lessonIds: lessons.map((l) => l.id),
     sourceTitles: [...chapters.map((c) => c.name), ...lessons.map((l) => l.title)],
+    // Multiple chapters → no single unambiguous chapter title.
+    chapterTitle: null,
+    lessons: lessons.map((l) => ({ id: l.id, title: l.title })),
   };
 }
 
@@ -326,6 +345,8 @@ export async function resolveFullCurriculumScope(
       contentScope: "CHAPTER",
       lessonIds: [],
       sourceTitles: [stage.name, ...chapters.map((c) => c.name)],
+      chapterTitle: null,
+      lessons: [],
     };
   }
 
@@ -342,6 +363,9 @@ export async function resolveFullCurriculumScope(
     contentScope: "CHAPTER",
     lessonIds: lessons.map((l) => l.id),
     sourceTitles: [stage.name, ...chapters.map((c) => c.name)],
+    // Whole-stage source spans many chapters → no single chapter title.
+    chapterTitle: null,
+    lessons: lessons.map((l) => ({ id: l.id, title: l.title })),
   };
 }
 

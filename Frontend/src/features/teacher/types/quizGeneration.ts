@@ -61,6 +61,11 @@ export interface GenerateQuizResponse {
     correctAnswer?: string | boolean | number;
     sortOrder: number;
     points: number;
+    // Teacher-only metadata (not persisted; present only in this response).
+    difficulty?: 'EASY' | 'MEDIUM' | 'HARD' | null;
+    sourceLessonId?: string | null;
+    sourceLessonTitle?: string | null;
+    sourceChapterTitle?: string | null;
   }[];
 }
 
