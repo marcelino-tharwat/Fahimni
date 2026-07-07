@@ -6,6 +6,7 @@ import { StudentLayout } from '@/shared/components/layout/StudentLayout';
 import { TeacherLayout } from '@/shared/components/layout/TeacherLayout';
 import { SupportLayout } from '@/shared/components/layout/SupportLayout';
 import { TeacherStageLayout } from '@/shared/components/layout/TeacherStageLayout';
+import { TeacherPlansLayout } from '@/shared/components/layout/TeacherPlansLayout';
 import { LessonLayout } from '@/shared/components/layout/LessonLayout';
 import { AdminLayout } from '@/shared/components/layout/AdminLayout';
 import { AuthGuard } from '@/shared/components/guards/AuthGuard';
@@ -141,8 +142,13 @@ const router = createBrowserRouter([
               { path: '/teacher/students/:studentId', element: <StudentDetailPage /> },
               { path: '/teacher/branding', element: <TeacherBrandingPage /> },
               { path: '/teacher/promo-codes', element: <AdminPromoCodesPage /> },
-              { path: '/teacher/plans', element: <TeacherPlansPage /> },
               { path: '/teacher/profile', element: <ProfilePage /> },
+            ],
+          },
+          {
+            element: <TeacherPlansLayout />,
+            children: [
+              { path: '/teacher/plans', element: <TeacherPlansPage /> },
             ],
           },
           {
