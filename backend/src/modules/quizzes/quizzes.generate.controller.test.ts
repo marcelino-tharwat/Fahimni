@@ -18,6 +18,16 @@ vi.mock("../../config/env.js", () => ({
   env: { JWT_SECRET: "x", NODE_ENV: "test" },
 }));
 
+vi.mock("../teacher-plans/teacher-plan-policy.service.js", () => ({
+  TeacherPlanPolicyService: class {
+    checkAiUsageQuota = vi.fn().mockResolvedValue(undefined);
+    recordAiUsage = vi.fn().mockResolvedValue(undefined);
+    getTeacherEffectivePlan = vi.fn().mockResolvedValue({ planId: "free", planCode: "FREE", limits: {} });
+    checkStudentLimit = vi.fn().mockResolvedValue(undefined);
+    checkStorageLimit = vi.fn().mockResolvedValue(undefined);
+  },
+}));
+
 import { QuizzesController } from "./quizzes.controller.js";
 import quizRouter from "./quizzes.routes.js";
 import { errorHandler } from "../../shared/middlewares/errorHandler.middleware.js";
@@ -48,6 +58,7 @@ describe("QuizzesController.generate", () => {
     const req = {
       body: { chapterId: "c", contentScope: "CHAPTER", lessonIds: [], questionCount: 3 },
       user: { id: "teacher-real" },
+      headers: { "accept-language": "en" },
     } as unknown as Request;
     const res = mockRes();
     const next = vi.fn() as unknown as NextFunction;
@@ -62,13 +73,17 @@ describe("QuizzesController.generate", () => {
     generateMock.mockResolvedValue(data);
     const controller = new QuizzesController();
     const req = {
-      body: { chapterId: "c", contentScope: "CHAPTER", lessonIds: [] },
+      body: { chapterId: "c", contentScope: "CHAPTER", lessonIds: [], questionCount: 3 },
       user: { id: "teacher-real" },
+      headers: { "accept-language": "en" },
     } as unknown as Request;
     const res = mockRes();
+    const next = vi.fn() as unknown as NextFunction;
 
-    await controller.generate(req, res, vi.fn() as unknown as NextFunction);
+    await controller.generate(req, res, next);
 
+    // Flush microtasks so the async body inside asyncHandler settles.
+    await new Promise((r) => setTimeout(r, 0));
     expect(res.statusCode).toBe(201);
     expect(res.body).toMatchObject({ success: true, data });
   });
@@ -79,6 +94,7 @@ describe("QuizzesController.generate", () => {
     const req = {
       body: { chapterId: "c", contentScope: "CHAPTER", lessonIds: [] },
       user: { id: "teacher-real" },
+      headers: { "accept-language": "en" },
     } as unknown as Request;
     const next = vi.fn() as unknown as NextFunction;
 
