@@ -140,6 +140,100 @@
       "aiUsage": "استخدام الذكاء"
     }
   },
+  "adminTeacherDetail": {
+    "back": "عودة إلى المدرسين",
+    "error": "تعذّر تحميل بيانات المدرس",
+    "retry": "إعادة المحاولة",
+    "currentPlan": "الباقة الحالية",
+    "pendingPaymentCard": "دفعة باقة معلّقة",
+    "status": { "ACTIVE": "نشط", "INACTIVE": "غير نشط", "BANNED": "محظور" },
+    "stats": {
+      "students": "الطلاب",
+      "enrollments": "الاشتراكات",
+      "stages": "المراحل",
+      "chapters": "الفصول",
+      "lessons": "الدروس",
+      "quizzes": "الاختبارات"
+    },
+    "tabs": {
+      "students": "الطلاب",
+      "enrollments": "اشتراكات الطلاب",
+      "content": "المحتوى",
+      "courseRevenue": "إيرادات محتوى المدرس",
+      "subscription": "مدفوعات باقة المدرس",
+      "aiUsage": "استخدام الذكاء الاصطناعي"
+    },
+    "students": {
+      "empty": "لا يوجد طلاب مرتبطون بهذا المدرس",
+      "active": "نشط",
+      "pending": "معلّق"
+    },
+    "enrollments": {
+      "empty": "لا توجد اشتراكات لهذا المدرس",
+      "filter": "تصفية الحالة",
+      "student": "الطالب",
+      "chapter": "الفصل",
+      "statusCol": "الحالة",
+      "price": "السعر",
+      "status": {
+        "ALL": "الكل",
+        "ACTIVE": "نشط",
+        "PAYMENT_PENDING": "بانتظار الدفع",
+        "DEACTIVATED": "موقوف"
+      }
+    },
+    "content": {
+      "empty": "لا يوجد محتوى لهذا المدرس",
+      "stages": "المراحل",
+      "chapters": "الفصول",
+      "lessons": "الدروس",
+      "quizzes": "الاختبارات",
+      "published": "منشورة",
+      "draft": "مسودة",
+      "chaptersCount": "{{count}} فصل",
+      "lessonsShort": "{{count}} درس",
+      "quizzesShort": "{{count}} اختبار"
+    },
+    "courseRevenue": {
+      "note": "أموال دفعها الطلاب مقابل محتوى هذا المدرس",
+      "confirmed": "الإيراد المؤكد",
+      "monthly": "إيراد هذا الشهر",
+      "successCount": "مدفوعات ناجحة",
+      "empty": "لا توجد مدفوعات كورسات",
+      "student": "الطالب",
+      "chapter": "الفصل",
+      "amount": "المبلغ",
+      "statusCol": "الحالة"
+    },
+    "subscription": {
+      "note": "إيراد للمنصة يدفعه المدرس مقابل باقته (منفصل عن إيرادات الكورسات)",
+      "noPlan": "لا توجد باقة حالية",
+      "pending": "دفعة معلّقة",
+      "pendingLabel": "دفعة معلّقة",
+      "successCount": "مدفوعات ناجحة",
+      "failedCount": "مدفوعات فاشلة",
+      "empty": "لا توجد مدفوعات باقة",
+      "plan": "الباقة",
+      "amount": "المبلغ",
+      "interval": "الفترة"
+    },
+    "aiUsage": {
+      "empty": "لا يوجد استخدام للذكاء الاصطناعي",
+      "totalEvents": "إجمالي العمليات",
+      "totalUnits": "إجمالي الوحدات",
+      "currentMonth": "هذا الشهر",
+      "type": "النوع",
+      "events": "العمليات",
+      "units": "الوحدات",
+      "types": {
+        "AI_QUIZ_GENERATION": "توليد اختبارات",
+        "AI_ESSAY_GRADING": "تصحيح مقالات",
+        "AI_CONTENT_GENERATION": "توليد محتوى",
+        "AI_LESSON_SUMMARY": "تلخيص دروس",
+        "AI_QUESTION_EXPLANATION": "شرح الأسئلة"
+      }
+    }
+  },
   "support": {
     "promoCodes": "أكواد الخصم",
     "createCode": "إنشاء كود جديد",
