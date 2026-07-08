@@ -20,8 +20,6 @@ function formatSize(bytes: number): string {
 export function PdfFileList({
   files,
   onRemove,
-  maxFiles = 10,
-  maxTotalSize = 500,
 }: PdfFileListProps) {
   const { t } = useTranslation('teacher');
 

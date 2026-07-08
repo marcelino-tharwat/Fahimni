@@ -27,7 +27,7 @@ function actionKeyFromAction(action: string): ActivityItem['actionKey'] {
   return ACTION_KEY_MAP[action] ?? 'edit';
 }
 
-function extractTitle(action: string, entityType: string, metadata: Record<string, unknown> | null): string | undefined {
+function extractTitle(_action: string, entityType: string, metadata: Record<string, unknown> | null): string | undefined {
   if (!metadata) return undefined;
   const nameKeyMap: Record<string, string[]> = {
     LESSON: ['lessonName', 'name', 'title'],

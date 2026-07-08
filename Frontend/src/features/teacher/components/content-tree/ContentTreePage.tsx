@@ -21,7 +21,7 @@ import { useDeleteLesson } from '@/features/teacher/hooks/useLessons';
 import { useReorderChapters } from '@/features/teacher/hooks/useChapters';
 import { useReorderLessons } from '@/features/teacher/hooks/useLessons';
 import { CONTENT_TREE_KEY } from '@/features/teacher/hooks/useContentTree';
-import { assertValidOrder, getLessonContainerId } from '@/features/teacher/components/reorder/helpers';
+import { assertValidOrder } from '@/features/teacher/components/reorder/helpers';
 import { cn } from '@/shared/lib/utils/cn';
 import type { ContentTreeChapter, ContentTreeLesson, ContentTreeStage } from '@/features/teacher/types/contentTree';
 import { ContentTreePanel } from './ContentTreePanel';
@@ -119,7 +119,7 @@ export function ContentTreePage() {
         const chapterId = activeContainer.replace('lesson:', '');
         const parentChapter = stage?.chapters.find((c) => c.id === chapterId);
         if (!parentChapter) return;
-        const items = (lessonItemsMap[chapterId] ?? null) ?? parentChapter.lessons;
+        const items = lessonItemsMap[chapterId] ?? parentChapter.lessons;
         const oldIdx = items.findIndex((l) => l.id === active.id);
         const newIdx = items.findIndex((l) => l.id === over.id);
         if (oldIdx === -1 || newIdx === -1) return;

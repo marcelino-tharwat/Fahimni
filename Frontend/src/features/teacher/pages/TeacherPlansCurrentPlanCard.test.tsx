@@ -16,6 +16,7 @@ const freeData: SubscriptionMeResponse = {
   subscription: null,
   effectivePlanCode: 'FREE',
   pendingRequest: null,
+  pendingPayment: null,
   usage: {
     periodStart: '2026-07-01T00:00:00.000Z',
     periodEnd: '2026-07-31T23:59:59.999Z',
@@ -39,6 +40,7 @@ const proData: SubscriptionMeResponse = {
   },
   effectivePlanCode: 'PRO',
   pendingRequest: null,
+  pendingPayment: null,
   usage: {
     periodStart: '2026-07-01T00:00:00.000Z',
     periodEnd: '2026-07-31T23:59:59.999Z',

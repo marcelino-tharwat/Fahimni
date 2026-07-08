@@ -202,7 +202,6 @@ export function PaymentPage() {
 /* ------------------------------------------------------------------ */
 
 function PaymentLoading() {
-  const { t } = useTranslation();
   return (
     <div className="mx-auto flex w-full max-w-[640px] items-center justify-center py-20">
       <Loader2 size={28} className="animate-spin text-cyan-500" />
