@@ -3,8 +3,11 @@ import { authenticateMiddleware } from "../../shared/middlewares/authenticate.mi
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { asyncHandler } from "../../shared/utils/asyncHandler.js";
+import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import userRoutes from "../users/user.routes.js";
 import { AdminStatsController } from "./admin-stats.controller.js";
+import { AdminTeachersController } from "./admin-teachers.controller.js";
+import { listTeachersQuerySchema } from "./admin-teachers.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -23,6 +26,7 @@ import { AdminStatsController } from "./admin-stats.controller.js";
  */
 const router = Router();
 const statsController = new AdminStatsController();
+const teachersController = new AdminTeachersController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -30,6 +34,13 @@ router.use(authenticateMiddleware, authorizeMiddleware("ADMIN"));
 
 /** Global platform metrics for the admin dashboard (overview only). */
 router.get("/stats", asyncHandler(statsController.getStats));
+
+/** Paginated teacher management list (User.role = OPERATION) with per-teacher stats. */
+router.get(
+  "/teachers",
+  validateRequest(listTeachersQuerySchema, "query"),
+  asyncHandler(teachersController.list),
+);
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */
 router.get("/me", (req, res) => {

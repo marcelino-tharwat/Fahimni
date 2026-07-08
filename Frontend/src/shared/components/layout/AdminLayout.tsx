@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { LayoutDashboard, Building2, Ticket } from 'lucide-react';
+import { LayoutDashboard, Building2, Ticket, GraduationCap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -9,6 +9,7 @@ export function AdminLayout() {
 
   const items: SidebarItem[] = [
     { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/admin/dashboard' },
+    { label: t('nav.teachers'), icon: GraduationCap, path: '/admin/teachers' },
     { label: t('nav.tenants'), icon: Building2, path: '/admin/tenants' },
     { label: t('nav.promoCodes'), icon: Ticket, path: '/admin/promo-codes' },
   ];

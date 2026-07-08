@@ -3,6 +3,7 @@
   "nav": {
     "home": "الرئيسية",
     "dashboard": "لوحة التحكم",
+    "teachers": "المدرسون",
     "courses": "الدورات",
     "contentManagement": "ادارة المحتوى",
     "quizGenerator": "مولّد الاختبارات",
@@ -109,6 +110,35 @@
     "revenue": "الإيراد",
     "students": "الطلاب",
     "noTopTeachers": "لا توجد بيانات بعد"
+  },
+  "adminTeachers": {
+    "title": "المدرسون",
+    "subtitle": "إدارة حسابات المدرسين وإحصاءاتهم",
+    "searchPlaceholder": "ابحث بالاسم أو البريد أو الجوال",
+    "statusFilter": "تصفية الحالة",
+    "currency": "ج.م",
+    "pendingPayment": "دفعة معلقة",
+    "viewDetails": "عرض التفاصيل",
+    "errorLoading": "تعذّر تحميل قائمة المدرسين",
+    "retry": "إعادة المحاولة",
+    "emptyTitle": "لا يوجد مدرسون",
+    "emptyDescription": "لم يتم العثور على مدرسين مطابقين لبحثك",
+    "totalCount": "{{count}} مدرس",
+    "status": {
+      "ALL": "الكل",
+      "ACTIVE": "نشط",
+      "INACTIVE": "غير نشط",
+      "BANNED": "محظور"
+    },
+    "col": {
+      "teacher": "المدرس",
+      "students": "الطلاب",
+      "enrollments": "الاشتراكات",
+      "courseRevenue": "إيرادات الكورسات",
+      "subscriptionPayment": "مدفوعات الباقة",
+      "currentPlan": "الباقة الحالية",
+      "aiUsage": "استخدام الذكاء"
+    }
   },
   "support": {
     "promoCodes": "أكواد الخصم",

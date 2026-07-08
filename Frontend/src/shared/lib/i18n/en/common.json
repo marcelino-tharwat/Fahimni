@@ -3,6 +3,7 @@
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
+    "teachers": "Teachers",
     "courses": "Courses",
     "contentManagement": "Content Management",
     "quizGenerator": "Quiz Generator",
@@ -110,6 +111,35 @@
     "revenue": "Revenue",
     "students": "Students",
     "noTopTeachers": "No data yet"
+  },
+  "adminTeachers": {
+    "title": "Teachers",
+    "subtitle": "Manage teacher accounts and their statistics",
+    "searchPlaceholder": "Search by name, email, or mobile",
+    "statusFilter": "Filter by status",
+    "currency": "EGP",
+    "pendingPayment": "Pending payment",
+    "viewDetails": "View details",
+    "errorLoading": "Failed to load the teachers list",
+    "retry": "Retry",
+    "emptyTitle": "No teachers found",
+    "emptyDescription": "No teachers matched your search",
+    "totalCount": "{{count}} teachers",
+    "status": {
+      "ALL": "All",
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive",
+      "BANNED": "Banned"
+    },
+    "col": {
+      "teacher": "Teacher",
+      "students": "Students",
+      "enrollments": "Enrollments",
+      "courseRevenue": "Course Revenue",
+      "subscriptionPayment": "Subscription Payment",
+      "currentPlan": "Current Plan",
+      "aiUsage": "AI Usage"
+    }
   },
   "support": {
     "promoCodes": "Promo Codes",
