@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Eye, FileText, AlertCircle } from 'lucide-react';
+import { useTranslation, type TFunction } from 'react-i18next';
+import { Eye, FileText, Download, AlertCircle } from 'lucide-react';
 import { Button } from '@/shared/components/ui';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import {
@@ -24,46 +24,23 @@ function formatFileSize(bytes: number): string {
   return `${toLocalNum(Math.round(kb))} KB`;
 }
 
-function MaterialStatusLabel({
-  material,
-  downloading,
-  error,
-}: {
-  material: StudentLessonMaterial;
-  downloading: boolean;
-  error: string | null;
-}) {
-  const { t } = useTranslation('student');
-
-  if (error) {
-    return (
-      <span className="font-cairo text-xs text-red-600">{t('lesson.materials.status.error')}</span>
-    );
-  }
-  if (downloading) {
-    return (
-      <span className="font-cairo text-xs text-gray-500">{t('lesson.materials.status.downloading')}</span>
-    );
-  }
-  if (!material.canDownload) {
-    return (
-      <span className="font-cairo text-xs text-gray-400">{t('lesson.materials.status.unavailable')}</span>
-    );
-  }
+function getStatusLabel(
+  material: StudentLessonMaterial,
+  downloading: boolean,
+  error: string | null,
+  t: TFunction,
+): string {
+  if (error) return t('lesson.materials.status.error');
+  if (downloading) return t('lesson.materials.status.downloading');
+  if (!material.canDownload) return t('lesson.materials.status.unavailable');
   if (material.hasDownloaded) {
-    return (
-      <span className="font-cairo text-xs text-success-600">
-        {material.firstDownloadedAt
-          ? t('lesson.materials.status.downloadedAt', {
-              date: new Date(material.firstDownloadedAt).toLocaleDateString(),
-            })
-          : t('lesson.materials.status.downloaded')}
-      </span>
-    );
+    return material.firstDownloadedAt
+      ? t('lesson.materials.status.downloadedAt', {
+          date: new Date(material.firstDownloadedAt).toLocaleDateString(),
+        })
+      : t('lesson.materials.status.downloaded');
   }
-  return (
-    <span className="font-cairo text-xs text-gray-500">{t('lesson.materials.status.notDownloaded')}</span>
-  );
+  return t('lesson.materials.status.notDownloaded');
 }
 
 function MaterialRow({
@@ -101,33 +78,35 @@ function MaterialRow({
   return (
     <>
       <div
-        className="flex flex-col gap-3 rounded-input border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
+        className="flex items-center gap-x-3 rounded-card p-2 transition hover:bg-gray-100"
         data-testid={`lesson-material-row-${material.id}`}
       >
-        <div className="flex min-w-0 items-start gap-3 sm:flex-1">
-          <FileText size={20} className="mt-0.5 shrink-0 text-accent" aria-hidden />
-          <div className="flex min-w-0 flex-col gap-1">
-            <span className="truncate font-cairo text-sm font-medium text-navy-900">
-              {material.displayName}
-            </span>
-            <span className="font-cairo text-xs text-gray-400">
-              {formatFileSize(material.fileSize)}
-            </span>
-            <MaterialStatusLabel material={material} downloading={downloading} error={error} />
-          </div>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-btn bg-cyan-50">
+          <FileText size={20} className="text-cyan-700" aria-hidden />
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-body font-semibold text-gray-900">
+            {material.displayName}
+          </p>
+          <p className="truncate text-small text-gray-500">
+            {formatFileSize(material.fileSize)}
+            <span> · </span>
+            {getStatusLabel(material, downloading, error, t)}
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           {material.canPreview && (
             <Button
               type="button"
               variant="outline"
               size="sm"
               disabled={downloading}
-              onClick={() => handlePreview()}
-              className="min-h-[44px] font-cairo"
+              onClick={handlePreview}
+              className="h-9 min-h-0 border border-gray-300 text-gray-700 hover:bg-gray-50"
             >
-              <Eye size={16} className="me-1.5" />
+              <Eye size={16} />
               {showPreview ? t('lesson.materials.closePreview', { defaultValue: 'إغلاق' }) : t('lesson.materials.preview')}
             </Button>
           )}
@@ -139,8 +118,9 @@ function MaterialRow({
               loading={downloading}
               disabled={showPreview}
               onClick={() => void handleDownload()}
-              className="min-h-[44px] font-cairo"
+              className="h-9 min-h-0 bg-cyan-500 text-white hover:bg-cyan-600"
             >
+              <Download size={16} />
               {t('lesson.download')}
             </Button>
           )}
@@ -176,30 +156,31 @@ export function LessonMaterialsSection({
 
   return (
     <section
-      className="flex flex-col gap-3 rounded-card border border-gray-200 bg-surface p-4 shadow-lg"
+      className="overflow-hidden rounded-card border border-gray-200 bg-white shadow-card"
       aria-labelledby={`lesson-materials-title-${lessonId}`}
     >
-      <div className="flex items-center gap-2 border-b border-border pb-3">
-        <FileText size={20} className="text-accent" aria-hidden />
+      <div className="flex items-center gap-2 border-b border-gray-200 p-4">
+        <FileText size={20} className="text-gray-600" aria-hidden />
         <h2
           id={`lesson-materials-title-${lessonId}`}
           className="font-cairo text-base font-semibold text-navy-900"
         >
-          {t('lesson.pdfMaterials')}
+          {t('lesson.fileCount', { count: materials.length })}
         </h2>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="divide-y divide-gray-200">
         {materials.map((material) => (
-          <MaterialRow
-            key={material.id}
-            material={material}
-            onDownloaded={onMaterialDownloaded}
-          />
+          <div key={material.id} className="p-2">
+            <MaterialRow
+              material={material}
+              onDownloaded={onMaterialDownloaded}
+            />
+          </div>
         ))}
       </div>
 
-      <div className="border-t border-border pt-3 font-cairo text-xs text-gray-500">
+      <div className="border-t border-gray-200 p-4 font-cairo text-xs text-gray-500">
         {t('lesson.totalFiles', { n: toLocalNum(materials.length) })}
       </div>
     </section>

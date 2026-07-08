@@ -118,6 +118,7 @@ function FullHeader({ showMenu }: { showMenu: boolean }) {
           <Menu size={22} />
         </button>
       )}
+      <Brand className="hidden md:flex" />
       {titleKey && (
         <h1 className="hidden font-cairo text-lg font-bold text-navy-900 md:block">
           {t(titleKey)}
