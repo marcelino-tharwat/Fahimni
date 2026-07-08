@@ -13,6 +13,7 @@ const REASON_I18N_KEY: Record<string, string> = {
   INVALID_AI_OUTPUT: 'generationErrorInvalidOutput',
   SAFETY_BLOCKED: 'generationErrorSafety',
   PERSISTENCE_FAILED: 'generationErrorPersistence',
+  FOREIGN_KEY_CONSTRAINT: 'generationErrorPersistence',
   DATABASE_SCHEMA_OUT_OF_DATE: 'generationErrorSchema',
   DATABASE_ERROR: 'generationErrorGeneric',
   GENERATION_FAILED: 'generationErrorGeneric',

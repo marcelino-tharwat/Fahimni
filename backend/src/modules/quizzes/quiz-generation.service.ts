@@ -695,7 +695,11 @@ export class QuizGenerationService {
           contentScope: plan.contentScope,
           prismaCode: error.code,
         });
-        throw error;
+        throw new QuizGenerationPersistenceError(
+          error.code === "P2003"
+            ? "المحتوى المرتبط (الفصل أو الدرس) لم يعد متاحاً. يرجى التحقق من المحتوى ثم إعادة المحاولة."
+            : undefined,
+        );
       }
       logger.error("quiz_generation_persist_failed", {
         teacherId,

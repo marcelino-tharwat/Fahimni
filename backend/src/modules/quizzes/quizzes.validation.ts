@@ -27,7 +27,11 @@ export const createQuizSchema = z.object({
     .max(2000, "Description must not exceed 2000 characters")
     .optional()
     .nullable(),
-  chapterId: z.string().optional().nullable(),
+  chapterId: z
+    .string()
+    .uuid("chapterId must be a valid UUID")
+    .optional()
+    .nullable(),
   durationMinutes: z
     .number()
     .int("Duration must be an integer")

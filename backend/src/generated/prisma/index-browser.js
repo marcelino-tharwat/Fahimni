@@ -374,6 +374,18 @@ exports.Prisma.PromoCodeScalarFieldEnum = {
   expiresAt: 'expiresAt'
 };
 
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  type: 'type',
+  resourceTitle: 'resourceTitle',
+  resourceType: 'resourceType',
+  resourceId: 'resourceId',
+  courseContextId: 'courseContextId',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.TeacherRegistrationRequestScalarFieldEnum = {
   id: 'id',
   publicReference: 'publicReference',
@@ -592,6 +604,11 @@ exports.AttemptSubmissionReason = exports.$Enums.AttemptSubmissionReason = {
   TIME_EXPIRED: 'TIME_EXPIRED'
 };
 
+exports.NotificationType = exports.$Enums.NotificationType = {
+  NEW_LESSON: 'NEW_LESSON',
+  NEW_QUIZ: 'NEW_QUIZ'
+};
+
 exports.TeacherRequestStatus = exports.$Enums.TeacherRequestStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
@@ -659,6 +676,7 @@ exports.Prisma.ModelName = {
   Question: 'Question',
   QuizAttempt: 'QuizAttempt',
   PromoCode: 'PromoCode',
+  Notification: 'Notification',
   TeacherRegistrationRequest: 'TeacherRegistrationRequest',
   AiConversation: 'AiConversation',
   AiMessage: 'AiMessage',
