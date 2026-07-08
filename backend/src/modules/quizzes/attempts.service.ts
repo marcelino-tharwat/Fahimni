@@ -57,6 +57,8 @@ import {
   listStudentAccessibleChapters,
 } from "../progression/student-chapter-access.js";
 import { deriveQuizDisplayStatus } from "./quiz-attempt-display.js";
+import { resolveStudentQuizSourceScopes } from "./quiz-scope.js";
+import type { QuizSourceScopeRow } from "./quiz-scope.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import type { QuestionType, AttemptSubmissionReason } from "../../generated/prisma/client.js";
 
@@ -104,6 +106,9 @@ export class AttemptsService {
         durationMinutes: true,
         chapterId: true,
         passingScore: true,
+        sourceScope: true,
+        sourceChapterIds: true,
+        sourceStageId: true,
       },
       orderBy: { id: "asc" },
     });
@@ -113,10 +118,25 @@ export class AttemptsService {
     }
 
     const allQuizIds = quizzes.map((q) => q.id);
-    const attempts = await prisma.quizAttempt.findMany({
-      where: { studentId, quizId: { in: allQuizIds } },
-      select: { id: true, quizId: true, status: true, score: true, totalPoints: true },
-    });
+    // Attempts and source-scope resolution are independent reads — run together.
+    // Source scope is resolved server-side (never trusted from the client) and
+    // filtered to the student-safe shape (scope + accessible chapters / stage,
+    // never the raw id arrays).
+    const [attempts, sourceScopes] = await Promise.all([
+      prisma.quizAttempt.findMany({
+        where: { studentId, quizId: { in: allQuizIds } },
+        select: { id: true, quizId: true, status: true, score: true, totalPoints: true },
+      }),
+      resolveStudentQuizSourceScopes(
+        quizzes.map((q) => ({
+          id: q.id,
+          sourceScope: q.sourceScope,
+          sourceChapterIds: q.sourceChapterIds,
+          sourceStageId: q.sourceStageId,
+        })) as QuizSourceScopeRow[],
+        studentId,
+      ),
+    ]);
     const attemptByQuiz = new Map(attempts.map((a) => [a.quizId, a]));
 
     type QuizStatus = "new" | "passed" | "failed" | "pending";
@@ -153,6 +173,7 @@ export class AttemptsService {
         }
         totalCount++;
 
+        const src = sourceScopes.get(q.id);
         return {
           id: q.id,
           title: q.title,
@@ -163,6 +184,12 @@ export class AttemptsService {
           status: display.status as QuizStatus,
           attemptId: attempt?.id ?? null,
           attemptStatus: attempt?.status ?? null,
+          // Student-safe source provenance from the backend read projection.
+          // Legacy quizzes default to SINGLE_CHAPTER (schema default), so this is
+          // always present. chapters/stage are only added when resolvable.
+          sourceScope: src?.sourceScope ?? q.sourceScope,
+          ...(src?.chapters && src.chapters.length > 0 ? { sourceChapters: src.chapters } : {}),
+          ...(src?.stage ? { sourceStage: src.stage } : {}),
           ...(display.score !== undefined ? { score: display.score } : {}),
           ...(display.retakeAllowed !== undefined ? { retakeAllowed: display.retakeAllowed } : {}),
         };

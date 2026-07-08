@@ -77,6 +77,20 @@
       "completed": "Completed",
       "new": "New Quizzes"
     },
+    "sections": {
+      "fullCurriculum": {
+        "title": "Full Curriculum Quizzes",
+        "subtitle": "Cover the entire curriculum",
+        "badge": "Full curriculum"
+      },
+      "multiChapter": {
+        "title": "Multi-Chapter Quizzes",
+        "subtitle": "Cover multiple chapters",
+        "badge": "Multi-chapter",
+        "chapterCount": "{{count}} chapter",
+        "chapterCount_plural": "{{count}} chapters"
+      }
+    },
     "chapter": {
       "quizCount": "{{count}} quizzes",
       "progress": "{{done}}/{{total}} completed",

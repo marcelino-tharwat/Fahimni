@@ -24,7 +24,7 @@ import {
   QuizGenerationTimeoutError,
 } from "./quiz-generation.errors.js";
 import { quizPublicFields, questionPublicFields } from "./quizzes.types.js";
-import type { GenerateQuizInput } from "./dto/generate-quiz.dto.js";
+import type { GenerateQuizInput, SourceScope } from "./dto/generate-quiz.dto.js";
 import type { QuestionType, QuizStatus } from "../../generated/prisma/client.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 import { Prisma as PrismaNamespace } from "../../generated/prisma/client.js";
@@ -81,6 +81,10 @@ export interface GeneratedQuizDTO {
   description: string | null;
   chapterId: string | null;
   contentScope: QuizContentScope;
+  // Server-derived source provenance (teacher-only draft response).
+  sourceScope: SourceScope;
+  sourceChapterIds: string[];
+  sourceStageId: string | null;
   status: QuizStatus;
   questionCount: number;
   totalPoints: number;
@@ -641,6 +645,11 @@ export class QuizGenerationService {
             description,
             chapterId: plan.chapterId,
             contentScope: plan.contentScope,
+            // Source provenance is server-derived from the validated, ownership-
+            // checked allocation plan — never read from the raw client body.
+            sourceScope: plan.sourceScope,
+            sourceChapterIds: plan.sourceChapterIds,
+            sourceStageId: plan.sourceStageId,
             createdBy: teacherId,
           },
           select: quizPublicFields,
@@ -726,6 +735,9 @@ export class QuizGenerationService {
       description: (quizRow.description as string | null) ?? null,
       chapterId: (quizRow.chapterId as string | null) ?? null,
       contentScope: (quizRow.contentScope as QuizContentScope) ?? "CHAPTER",
+      sourceScope: plan.sourceScope,
+      sourceChapterIds: plan.sourceChapterIds,
+      sourceStageId: plan.sourceStageId,
       status: quizRow.status as QuizStatus,
       questionCount: created.persistedQuestions.length,
       totalPoints,
