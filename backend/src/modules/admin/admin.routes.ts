@@ -13,6 +13,11 @@ import {
   teacherEnrollmentsQuerySchema,
   teacherStudentsQuerySchema,
 } from "./admin-teacher-detail.validation.js";
+import { AdminStudentsController } from "./admin-students.controller.js";
+import {
+  listStudentsQuerySchema,
+  studentEnrollmentsQuerySchema,
+} from "./admin-students.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -33,6 +38,7 @@ const router = Router();
 const statsController = new AdminStatsController();
 const teachersController = new AdminTeachersController();
 const teacherDetailController = new AdminTeacherDetailController();
+const studentsController = new AdminStudentsController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -67,6 +73,23 @@ router.get("/teachers/:teacherId/content", asyncHandler(teacherDetailController.
 router.get("/teachers/:teacherId/revenue", asyncHandler(teacherDetailController.getRevenue));
 router.get("/teachers/:teacherId/subscription", asyncHandler(teacherDetailController.getSubscription));
 router.get("/teachers/:teacherId/ai-usage", asyncHandler(teacherDetailController.getAiUsage));
+
+// ── Students management (global). Static list route before dynamic :studentId. ──
+// Each detail handler resolves the student (404 if missing / non-STUDENT) and
+// returns safe, non-sensitive fields only.
+router.get(
+  "/students",
+  validateRequest(listStudentsQuerySchema, "query"),
+  asyncHandler(studentsController.list),
+);
+router.get("/students/:studentId", asyncHandler(studentsController.getDetail));
+router.get(
+  "/students/:studentId/enrollments",
+  validateRequest(studentEnrollmentsQuerySchema, "query"),
+  asyncHandler(studentsController.getEnrollments),
+);
+router.get("/students/:studentId/payments", asyncHandler(studentsController.getPayments));
+router.get("/students/:studentId/learning-summary", asyncHandler(studentsController.getLearningSummary));
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */
 router.get("/me", (req, res) => {

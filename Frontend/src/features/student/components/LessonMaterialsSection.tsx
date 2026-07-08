@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { useTranslation, type TFunction } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Eye, FileText, Download, AlertCircle } from 'lucide-react';
 import { Button } from '@/shared/components/ui';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';

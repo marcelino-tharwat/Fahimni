@@ -235,6 +235,54 @@
       }
     }
   },
+  "adminStudents": {
+    "title": "Students",
+    "subtitle": "Manage student accounts and their enrollments",
+    "searchPlaceholder": "Search by name, email, or mobile",
+    "viewDetails": "View details",
+    "errorLoading": "Failed to load the students list",
+    "retry": "Retry",
+    "emptyTitle": "No students found",
+    "emptyDescription": "No students match this filter",
+    "totalCount": "{{count}} students",
+    "teachersCount": "{{count}} teachers",
+    "tabs": {
+      "all": "All Students",
+      "active": "Active Enrollments",
+      "without_enrollment": "Without Any Enrollment",
+      "without_active_teacher": "Without Active Teacher",
+      "payment_pending": "Payment Pending"
+    },
+    "status": { "ACTIVE": "Active", "INACTIVE": "Inactive", "BANNED": "Banned" },
+    "enrollmentStatus": { "ACTIVE": "Active", "PAYMENT_PENDING": "Payment pending", "DEACTIVATED": "Deactivated" },
+    "col": {
+      "student": "Student",
+      "teachers": "Teachers",
+      "activeEnrollments": "Active Enrollments",
+      "pending": "Pending",
+      "createdAt": "Created"
+    },
+    "detail": {
+      "title": "Student Details",
+      "close": "Close",
+      "error": "Failed to load student data",
+      "enrollments": "Enrollments",
+      "active": "Active",
+      "teachers": "Teachers",
+      "quizAttempts": "Quiz Attempts",
+      "avgScore": "Average Score",
+      "confirmedPayments": "Confirmed Payments",
+      "teachersList": "Teachers",
+      "noTeachers": "No teachers",
+      "enrollmentsList": "Enrollments",
+      "noEnrollments": "No enrollments",
+      "paymentsList": "Payments",
+      "noPayments": "No payments",
+      "learning": "Learning Summary",
+      "completedLessons": "Completed Lessons",
+      "noLearning": "No learning data"
+    }
+  },
   "support": {
     "promoCodes": "Promo Codes",
     "createCode": "Create New Code",
