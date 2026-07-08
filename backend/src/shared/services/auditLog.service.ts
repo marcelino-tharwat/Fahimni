@@ -36,6 +36,8 @@ export type AuditLogAction =
   // Admin (platform-level) actions — not scoped to a single teacher.
   | "USER_CREATED"
   | "USER_STATUS_CHANGED"
+  | "TEACHER_REQUEST_APPROVED"
+  | "TEACHER_REQUEST_REJECTED"
   // Legacy values retained so historical rows remain readable.
   | "DELETE_STAGE"
   | "DELETE_CHAPTER"

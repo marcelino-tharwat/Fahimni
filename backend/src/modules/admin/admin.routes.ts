@@ -18,6 +18,12 @@ import {
   listStudentsQuerySchema,
   studentEnrollmentsQuerySchema,
 } from "./admin-students.validation.js";
+import { AdminTeacherRequestsController } from "./admin-teacher-requests.controller.js";
+import {
+  approveRequestSchema,
+  listTeacherRequestsQuerySchema,
+  rejectRequestSchema,
+} from "./admin-teacher-requests.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -39,6 +45,7 @@ const statsController = new AdminStatsController();
 const teachersController = new AdminTeachersController();
 const teacherDetailController = new AdminTeacherDetailController();
 const studentsController = new AdminStudentsController();
+const teacherRequestsController = new AdminTeacherRequestsController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -90,6 +97,30 @@ router.get(
 );
 router.get("/students/:studentId/payments", asyncHandler(studentsController.getPayments));
 router.get("/students/:studentId/learning-summary", asyncHandler(studentsController.getLearningSummary));
+
+// ── Teacher registration requests review. Static list before dynamic :requestId. ──
+// Read is safe (no raw storage paths); approve/reject are PENDING-only, write an
+// AuditLog, and never expose passwords/tokens.
+router.get(
+  "/teacher-requests",
+  validateRequest(listTeacherRequestsQuerySchema, "query"),
+  asyncHandler(teacherRequestsController.list),
+);
+router.get("/teacher-requests/:requestId", asyncHandler(teacherRequestsController.getDetail));
+router.get(
+  "/teacher-requests/:requestId/documents/:documentIndex/signed-url",
+  asyncHandler(teacherRequestsController.getDocumentSignedUrl),
+);
+router.patch(
+  "/teacher-requests/:requestId/approve",
+  validateRequest(approveRequestSchema, "body"),
+  asyncHandler(teacherRequestsController.approve),
+);
+router.patch(
+  "/teacher-requests/:requestId/reject",
+  validateRequest(rejectRequestSchema, "body"),
+  asyncHandler(teacherRequestsController.reject),
+);
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */
 router.get("/me", (req, res) => {
