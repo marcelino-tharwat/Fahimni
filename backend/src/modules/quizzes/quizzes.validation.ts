@@ -1,5 +1,20 @@
 import { z } from "zod";
 
+/** Upper bound on a single question's points (mirrors the generation parser). */
+export const MAX_QUESTION_POINTS = 100;
+
+/**
+ * Per-question points: required-when-present, integer, > 0, <= 100. The DB
+ * column is Int, so decimals are rejected. Optional at the schema level so
+ * old clients / partial updates that omit points keep working (the service
+ * applies a type-based default on create).
+ */
+const questionPointsSchema = z
+  .number()
+  .int("Points must be a whole number")
+  .gt(0, "Points must be greater than 0")
+  .max(MAX_QUESTION_POINTS, `Points must not exceed ${MAX_QUESTION_POINTS}`);
+
 export const createQuizSchema = z.object({
   title: z
     .string()
@@ -67,6 +82,7 @@ export const addQuestionSchema = z.object({
   options: z.record(z.string(), z.string()),
   correctAnswer: z.string().optional().nullable(),
   explanation: z.string().trim().max(2000).optional(),
+  points: questionPointsSchema.optional(),
   sortOrder: z
     .number()
     .int("Sort order must be an integer")
@@ -86,6 +102,7 @@ export const updateQuestionSchema = z
     options: z.record(z.string(), z.string()).optional(),
     correctAnswer: z.string().optional().nullable(),
     explanation: z.string().trim().max(2000).optional(),
+    points: questionPointsSchema.optional(),
     sortOrder: z
       .number()
       .int("Sort order must be an integer")

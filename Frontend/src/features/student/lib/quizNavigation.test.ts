@@ -28,10 +28,20 @@ describe('resolveQuizStudentAction', () => {
     ).toBe('viewResult');
   });
 
-  it('failed quiz → viewResult', () => {
+  it('failed quiz with retake allowed → retake', () => {
+    // Failed + retakeAllowed surfaces the retake action (the lesson flow renders
+    // a dedicated retake button / gate-retake hint from it).
     expect(
       resolveQuizStudentAction(
         quiz({ status: 'failed', attemptId: 'a1', score: 30, retakeAllowed: true }),
+      ),
+    ).toBe('retake');
+  });
+
+  it('failed quiz without retake → viewResult', () => {
+    expect(
+      resolveQuizStudentAction(
+        quiz({ status: 'failed', attemptId: 'a1', score: 30 }),
       ),
     ).toBe('viewResult');
   });

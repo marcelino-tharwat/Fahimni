@@ -1,4 +1,8 @@
 import type { QuestionType, QuizStatus } from "../../generated/prisma/client.js";
+import type {
+  QuizSourceScope,
+  QuizSourceRefDTO,
+} from "./quiz-scope.js";
 
 export const quizPublicFields = {
   id: true,
@@ -14,6 +18,19 @@ export const quizPublicFields = {
   publishedAt: true,
 } as const;
 
+/**
+ * Teacher-only projection: the public fields plus the raw source-scope columns.
+ * NOT used on any student-facing path — students get the resolved, access-
+ * filtered shape from {@link resolveStudentQuizSourceScopes} instead, never the
+ * raw id array.
+ */
+export const quizTeacherFields = {
+  ...quizPublicFields,
+  sourceScope: true,
+  sourceChapterIds: true,
+  sourceStageId: true,
+} as const;
+
 export const questionPublicFields = {
   id: true,
   quizId: true,
@@ -23,6 +40,7 @@ export const questionPublicFields = {
   correctAnswer: true,
   explanation: true,
   sortOrder: true,
+  points: true,
   createdAt: true,
   updatedAt: true,
 } as const;
@@ -62,6 +80,13 @@ export interface QuizResponseDTO {
   updatedAt: Date;
   publishedAt: Date | null;
   scope?: QuizScopeSummaryDTO;
+  // Source provenance (teacher-facing). Raw columns are always present on
+  // teacher reads; the resolved title arrays are attached by list/detail.
+  sourceScope: QuizSourceScope;
+  sourceChapterIds: string[];
+  sourceStageId: string | null;
+  sourceChapters?: QuizSourceRefDTO[];
+  sourceStage?: QuizSourceRefDTO | null;
 }
 
 export interface QuizDetailResponseDTO extends QuizResponseDTO {
@@ -77,6 +102,7 @@ export interface QuestionResponseDTO {
   correctAnswer: string | null;
   explanation: string | null;
   sortOrder: number;
+  points: number;
   createdAt: Date;
   updatedAt: Date;
 }

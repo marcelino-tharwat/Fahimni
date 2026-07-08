@@ -24,18 +24,20 @@ import {
   QuizGenerationTimeoutError,
 } from "./quiz-generation.errors.js";
 import { quizPublicFields, questionPublicFields } from "./quizzes.types.js";
-import type { GenerateQuizInput } from "./dto/generate-quiz.dto.js";
+import type { GenerateQuizInput, SourceScope } from "./dto/generate-quiz.dto.js";
 import type { QuestionType, QuizStatus } from "../../generated/prisma/client.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 import { Prisma as PrismaNamespace } from "../../generated/prisma/client.js";
 import {
-  resolveAndValidateQuizContentScope,
-  resolveMultiChapterScope,
-  resolveFullCurriculumScope,
   persistQuizLessonRelations,
   type QuizContentScope,
 } from "./quiz-scope.js";
 import { resolveQuizDifficulty } from "./quiz-difficulty.js";
+import {
+  buildAllocationPlan,
+  type AllocationPlan,
+  type AllocationBucket,
+} from "./quiz-generation-allocation.service.js";
 
 // Canonical STORY-45 budgets, env-configurable (defaults: total 25s, Gemini 20s;
 // the Gemini call timeout must remain < the total endpoint deadline).
@@ -52,6 +54,9 @@ const DIFFICULTY_LABEL_AR: Record<"easy" | "medium" | "hard", string> = {
   hard: "صعب",
 };
 
+/** Teacher-only difficulty label surfaced in the generation response. */
+export type QuestionDifficultyLabel = "EASY" | "MEDIUM" | "HARD";
+
 export interface GeneratedQuestionDTO {
   id: string;
   quizId: string;
@@ -61,6 +66,13 @@ export interface GeneratedQuestionDTO {
   correctAnswer: string | null;
   sortOrder: number;
   points: number;
+  // ── Teacher-only metadata (additive) ───────────────────────────────────────
+  // Returned only from the teacher generation endpoint. Not persisted (no
+  // schema column) and never included in any student-facing question payload.
+  difficulty: QuestionDifficultyLabel | null;
+  sourceLessonId: string | null;
+  sourceLessonTitle: string | null;
+  sourceChapterTitle: string | null;
 }
 
 export interface GeneratedQuizDTO {
@@ -69,6 +81,10 @@ export interface GeneratedQuizDTO {
   description: string | null;
   chapterId: string | null;
   contentScope: QuizContentScope;
+  // Server-derived source provenance (teacher-only draft response).
+  sourceScope: SourceScope;
+  sourceChapterIds: string[];
+  sourceStageId: string | null;
   status: QuizStatus;
   questionCount: number;
   totalPoints: number;
@@ -95,11 +111,16 @@ export interface QuizGenerationServiceDeps {
   maxPromptChars?: number;
 }
 
-interface ResolvedContent {
-  lessonIds: string[];
-  sourceTitles: string[];
-  chapterId: string;
-  contentScope: QuizContentScope;
+/**
+ * A parsed question paired with its resolved teacher-only source metadata.
+ * The metadata is response-only (never persisted) and never reaches students.
+ */
+interface QuestionWithSource {
+  parsed: ParsedQuestion;
+  difficulty: QuestionDifficultyLabel | null;
+  sourceLessonId: string | null;
+  sourceLessonTitle: string | null;
+  sourceChapterTitle: string | null;
 }
 
 /**
@@ -170,180 +191,315 @@ export class QuizGenerationService {
   ): Promise<GeneratedQuizDTO> {
     const startedAt = Date.now();
 
-    // 1. Resolve & authorize the requested content source.
-    const content = await this.resolveContent(input, teacherId);
-    const resolvedDifficulty = resolveQuizDifficulty(
-      input.difficultyMode === "SINGLE"
-        ? {
-            difficultyMode: "SINGLE",
-            difficulty: input.difficulty,
-            questionCount: input.questionCount,
-          }
-        : {
-            difficultyMode: "MIXED",
-            difficultyDistribution: input.difficultyDistribution,
-            questionCount: input.questionCount,
-          },
-    );
+    // 1. Resolve, authorize & allocate the requested content source.
+    const plan = await buildAllocationPlan(input, teacherId, this.prisma);
 
     logger.info("quiz_generation_started", {
       teacherId,
-      chapterId: content.chapterId,
-      contentScope: content.contentScope,
-      selectedLessonCount: content.contentScope === "SELECTED_LESSONS"
-        ? content.lessonIds.length
-        : 0,
-      resolvedLessonCount: content.lessonIds.length,
+      chapterId: plan.chapterId,
+      sourceScope: plan.sourceScope,
+      allocationMode: plan.allocationMode,
+      contentScope: plan.contentScope,
+      bucketCount: plan.buckets.length,
+      resolvedLessonCount: plan.lessonIds.length,
       questionCount: input.questionCount,
-      difficultyMode: resolvedDifficulty.difficultyMode,
+      difficultyMode: input.difficultyMode,
     });
 
-    // 2. RAG precondition: there must be usable indexed chunks.
-    const chunkCount = await this.rag.countChunksInLessons(content.lessonIds);
+    const result =
+      plan.allocationMode === "AUTO"
+        ? await this.generateSinglePass(input, plan, teacherId, deadline)
+        : await this.generateMultiPass(input, plan, teacherId, deadline);
+
+    logger.info("quiz_generation_completed", {
+      teacherId,
+      quizId: result.id,
+      chapterId: plan.chapterId,
+      sourceScope: plan.sourceScope,
+      allocationMode: plan.allocationMode,
+      contentScope: plan.contentScope,
+      questionCount: result.questions.length,
+      totalMs: Date.now() - startedAt,
+    });
+
+    return result;
+  }
+
+  /**
+   * AUTO allocation: a single grounded generation pass over all resolved
+   * content. Preserves the original single-chapter behavior (one Gemini call,
+   * exact-total + full-type-coverage validation, single-lesson attribution).
+   */
+  private async generateSinglePass(
+    input: GenerateQuizInput,
+    plan: AllocationPlan,
+    teacherId: string,
+    deadline: number,
+  ): Promise<GeneratedQuizDTO> {
+    const resolvedDifficulty = this.resolveDifficultyFor(input, input.questionCount);
+
+    // RAG precondition: there must be usable indexed chunks.
+    const chunkCount = await this.rag.countChunksInLessons(plan.lessonIds);
     if (chunkCount === 0) {
       throw new ContentNotIndexedError();
     }
 
-    // 3. Build a scoped semantic query and retrieve top-K chunks.
-    const ragQuery = this.buildRagQuery(input, content.sourceTitles, resolvedDifficulty);
-    const ragStart = Date.now();
+    const preparedChunks = await this.retrieveChunks(
+      input,
+      plan.lessonIds,
+      plan.sourceTitles,
+      resolvedDifficulty,
+    );
+
+    const prompt = this.buildPrompt(
+      input,
+      preparedChunks,
+      input.questionCount,
+      plan.sourceTitles,
+      resolvedDifficulty,
+      input.types,
+    );
+
+    const raw = await this.callGemini(prompt);
+    this.assertDeadline(deadline);
+
+    const parsed = parseQuizGenerationResponse(raw, {
+      questionCount: input.questionCount,
+      requestedTypes: input.types,
+    });
+
+    const difficultyLabels = this.deriveDifficultyLabels(
+      parsed.questions,
+      resolvedDifficulty,
+    );
+
+    // Source lesson can only be attributed when exactly one lesson fed the pass.
+    const singleLesson =
+      plan.lessons.length === 1 ? plan.lessons[0]! : null;
+
+    const items: QuestionWithSource[] = parsed.questions.map((q, index) => ({
+      parsed: q,
+      difficulty: difficultyLabels[index] ?? null,
+      sourceLessonId: singleLesson?.id ?? null,
+      sourceLessonTitle: singleLesson?.title ?? null,
+      sourceChapterTitle: plan.chapterTitle,
+    }));
+
+    const title = this.resolveTitle(parsed.title, input, plan.sourceTitles);
+    const description = parsed.description
+      ? parsed.description.slice(0, MAX_DESCRIPTION_LENGTH)
+      : null;
+
+    this.assertDeadline(deadline);
+    return this.persistPlan(title, description, plan, teacherId, items);
+  }
+
+  /**
+   * BY_CHAPTER / BY_LESSON allocation: one grounded generation pass per bucket,
+   * run in parallel, then merged into a single draft quiz. Each pass produces
+   * exactly its bucket's questionCount; the merged quiz's total therefore equals
+   * the requested questionCount. Every question keeps real per-bucket source
+   * attribution (chapter/lesson). All-or-nothing: any pass failing (empty
+   * content, safety block, parse error) fails the whole request before persist.
+   */
+  private async generateMultiPass(
+    input: GenerateQuizInput,
+    plan: AllocationPlan,
+    teacherId: string,
+    deadline: number,
+  ): Promise<GeneratedQuizDTO> {
+    // Fail fast: every bucket must have usable indexed content before any
+    // Gemini call, so we never persist a partial quiz.
+    const chunkCounts = await Promise.all(
+      plan.buckets.map((b) => this.rag.countChunksInLessons(b.lessonIds)),
+    );
+    plan.buckets.forEach((bucket, i) => {
+      if ((chunkCounts[i] ?? 0) === 0) {
+        const label = bucket.lessonTitle ?? bucket.chapterTitle ?? "المحدد";
+        throw new ContentNotIndexedError(
+          `لا يحتوي «${label}» على محتوى مفهرس كافٍ لتوليد الأسئلة.`,
+        );
+      }
+    });
+
+    // Run all bucket passes concurrently; the outer 25s deadline still bounds
+    // the whole operation and each Gemini call is independently capped.
+    const perBucket = await Promise.all(
+      plan.buckets.map((bucket) =>
+        this.runBucketPass(input, bucket, deadline),
+      ),
+    );
+
+    this.assertDeadline(deadline);
+
+    // Merge in bucket order, reassigning a stable 1-based sortOrder.
+    const items: QuestionWithSource[] = [];
+    perBucket.forEach(({ bucket, questions, difficultyLabels }) => {
+      questions.forEach((q, index) => {
+        const withOrder: ParsedQuestion = {
+          ...q,
+          sortOrder: items.length + 1,
+        };
+        items.push({
+          parsed: withOrder,
+          difficulty: difficultyLabels[index] ?? null,
+          sourceLessonId: bucket.lessonId,
+          sourceLessonTitle: bucket.lessonTitle,
+          sourceChapterTitle: bucket.chapterTitle,
+        });
+      });
+    });
+
+    const geminiTitle = perBucket.find((p) => p.title)?.title ?? null;
+    const title = this.resolveTitle(geminiTitle, input, plan.sourceTitles);
+    const description = perBucket.find((p) => p.description)?.description
+      ? perBucket.find((p) => p.description)!.description!.slice(0, MAX_DESCRIPTION_LENGTH)
+      : null;
+
+    this.assertDeadline(deadline);
+    return this.persistPlan(title, description, plan, teacherId, items);
+  }
+
+  /** Run a single bucket's grounded generation pass (scoped RAG → Gemini → parse). */
+  private async runBucketPass(
+    input: GenerateQuizInput,
+    bucket: AllocationBucket,
+    deadline: number,
+  ): Promise<{
+    bucket: AllocationBucket;
+    questions: ParsedQuestion[];
+    difficultyLabels: Array<QuestionDifficultyLabel | null>;
+    title: string | null;
+    description: string | null;
+  }> {
+    const resolvedDifficulty = this.resolveDifficultyFor(input, bucket.questionCount);
+    const sourceTitles = [bucket.chapterTitle, bucket.lessonTitle].filter(
+      (t): t is string => Boolean(t),
+    );
+
+    const preparedChunks = await this.retrieveChunks(
+      input,
+      bucket.lessonIds,
+      sourceTitles,
+      resolvedDifficulty,
+    );
+
+    const prompt = this.buildPrompt(
+      input,
+      preparedChunks,
+      bucket.questionCount,
+      sourceTitles,
+      resolvedDifficulty,
+      input.types,
+    );
+
+    const raw = await this.callGemini(prompt);
+    this.assertDeadline(deadline);
+
+    // Per-bucket buckets may be smaller than the number of requested types, so
+    // full type coverage is enforced on the merged quiz, not per bucket.
+    const parsed = parseQuizGenerationResponse(raw, {
+      questionCount: bucket.questionCount,
+      requestedTypes: input.types,
+      requireEveryRequestedType: false,
+    });
+
+    return {
+      bucket,
+      questions: parsed.questions,
+      difficultyLabels: this.deriveDifficultyLabels(
+        parsed.questions,
+        resolvedDifficulty,
+      ),
+      title: parsed.title,
+      description: parsed.description,
+    };
+  }
+
+  /** Resolve the difficulty plan for a given question count (SINGLE or MIXED). */
+  private resolveDifficultyFor(
+    input: GenerateQuizInput,
+    questionCount: number,
+  ): ReturnType<typeof resolveQuizDifficulty> {
+    return resolveQuizDifficulty(
+      input.difficultyMode === "SINGLE"
+        ? {
+            difficultyMode: "SINGLE",
+            difficulty: input.difficulty,
+            questionCount,
+          }
+        : {
+            difficultyMode: "MIXED",
+            difficultyDistribution: input.difficultyDistribution,
+            questionCount,
+          },
+    );
+  }
+
+  /** Scoped semantic retrieval + chunk preparation for a lesson set. */
+  private async retrieveChunks(
+    input: GenerateQuizInput,
+    lessonIds: string[],
+    sourceTitles: string[],
+    resolvedDifficulty: ReturnType<typeof resolveQuizDifficulty>,
+  ): Promise<Array<{ index: number; content: string }>> {
+    const ragQuery = this.buildRagQuery(input, sourceTitles, resolvedDifficulty);
     const rawChunks = await this.rag.similaritySearchInLessons(
       ragQuery,
-      content.lessonIds,
+      lessonIds,
       this.topK,
     );
-    const ragMs = Date.now() - ragStart;
-
     const preparedChunks = this.prepareChunks(rawChunks);
     if (preparedChunks.length === 0) {
       throw new ContentNotIndexedError(
         "لم يتم العثور على محتوى مفهرس قابل للاستخدام للمعايير المحددة.",
       );
     }
+    return preparedChunks;
+  }
 
-    // 4. Build the controlled, grounded prompt.
-    const prompt = buildQuizGenerationPrompt({
-      chunks: preparedChunks,
-      questionCount: input.questionCount,
-      types: input.types,
+  /** Build the controlled, grounded generation prompt for a pass. */
+  private buildPrompt(
+    input: GenerateQuizInput,
+    chunks: Array<{ index: number; content: string }>,
+    questionCount: number,
+    sourceTitles: string[],
+    resolvedDifficulty: ReturnType<typeof resolveQuizDifficulty>,
+    types: GenerateQuizInput["types"],
+  ): string {
+    return buildQuizGenerationPrompt({
+      chunks,
+      questionCount,
+      types,
       difficultyMode: resolvedDifficulty.difficultyMode,
       difficultyQuestionCounts: resolvedDifficulty.questionCounts,
-      sourceTitles: content.sourceTitles,
+      sourceTitles,
       ...(resolvedDifficulty.difficultyMode === "SINGLE"
         ? { difficulty: resolvedDifficulty.difficulty }
         : {}),
       ...(input.topicFocus !== undefined ? { topicFocus: input.topicFocus } : {}),
     });
-
-    // 5. Call Gemini (capped at 20s) and map provider failures to safe 422s.
-    const geminiStart = Date.now();
-    const raw = await this.callGemini(prompt);
-    const geminiMs = Date.now() - geminiStart;
-
-    this.assertDeadline(deadline);
-
-    // 6. Parse & validate strictly — no partial persistence on failure.
-    const parseStart = Date.now();
-    const parsed = parseQuizGenerationResponse(raw, {
-      questionCount: input.questionCount,
-      requestedTypes: input.types,
-    });
-    const parseMs = Date.now() - parseStart;
-
-    const title = this.resolveTitle(parsed.title, input, content);
-    const description = parsed.description
-      ? parsed.description.slice(0, MAX_DESCRIPTION_LENGTH)
-      : null;
-
-    // 7. Final deadline guard so a late result never reaches the database.
-    this.assertDeadline(deadline);
-
-    const persistStart = Date.now();
-    const result = await this.persist(
-      title,
-      description,
-      content,
-      teacherId,
-      parsed.questions,
-    );
-
-    logger.info("quiz_generation_completed", {
-      teacherId,
-      quizId: result.id,
-      chapterId: content.chapterId,
-      contentScope: content.contentScope,
-      questionCount: parsed.questions.length,
-    });
-    const persistMs = Date.now() - persistStart;
-
-    logger.info(
-      `[QuizGeneration] success scope=${content.contentScope} ` +
-        `chapterId=${content.chapterId} lessons=${content.lessonIds.length} ` +
-        `chunks=${preparedChunks.length} questions=${parsed.questions.length} ` +
-        `types=${input.types.join("|")} ragMs=${ragMs} geminiMs=${geminiMs} ` +
-        `parseMs=${parseMs} persistMs=${persistMs} totalMs=${Date.now() - startedAt}`,
-    );
-
-    return result;
   }
 
   /**
-   * Resolve the content source. Branches on the requested source scope; the
-   * default (SINGLE_CHAPTER / omitted) preserves the original single-chapter
-   * behavior byte-for-byte. Source scope is independent of quiz placement and
-   * progression gating.
+   * Per-question difficulty labels (uppercased, teacher-only). Prefers the
+   * model's own label, falling back to the resolved distribution in enum order.
    */
-  private async resolveContent(
-    input: GenerateQuizInput,
-    teacherId: string,
-  ): Promise<ResolvedContent> {
-    const sourceScope = input.sourceScope ?? "SINGLE_CHAPTER";
-
-    if (sourceScope === "MULTI_CHAPTER") {
-      const scope = await resolveMultiChapterScope(
-        input.chapterIds ?? [],
-        teacherId,
-        this.prisma,
-      );
-      return {
-        lessonIds: scope.lessonIds,
-        sourceTitles: scope.sourceTitles,
-        chapterId: scope.chapterId,
-        contentScope: scope.contentScope,
-      };
-    }
-
-    if (sourceScope === "FULL_CURRICULUM") {
-      const scope = await resolveFullCurriculumScope(
-        input.stageId ?? "",
-        teacherId,
-        this.prisma,
-      );
-      return {
-        lessonIds: scope.lessonIds,
-        sourceTitles: scope.sourceTitles,
-        chapterId: scope.chapterId,
-        contentScope: scope.contentScope,
-      };
-    }
-
-    // SINGLE_CHAPTER (default / legacy).
-    const scope = await resolveAndValidateQuizContentScope(
-      {
-        chapterId: input.chapterId ?? "",
-        contentScope: input.contentScope,
-        lessonIds: input.lessonIds,
-      },
-      teacherId,
-      this.prisma,
+  private deriveDifficultyLabels(
+    questions: ParsedQuestion[],
+    resolvedDifficulty: ReturnType<typeof resolveQuizDifficulty>,
+  ): Array<QuestionDifficultyLabel | null> {
+    const fallback = this.buildDifficultyFallback(
+      resolvedDifficulty,
+      questions.length,
     );
-
-    return {
-      lessonIds: scope.lessonIds,
-      sourceTitles: scope.sourceTitles,
-      chapterId: scope.chapterId,
-      contentScope: scope.contentScope,
-    };
+    return questions.map((q, index) => {
+      const label = (q.difficulty ?? fallback[index] ?? "medium") as
+        | "easy"
+        | "medium"
+        | "hard";
+      return label.toUpperCase() as QuestionDifficultyLabel;
+    });
   }
 
   /** Build the semantic search query, prioritizing topicFocus when present. */
@@ -452,12 +608,12 @@ export class QuizGenerationService {
   private resolveTitle(
     geminiTitle: string | null,
     input: GenerateQuizInput,
-    content: ResolvedContent,
+    sourceTitles: string[],
   ): string {
     const candidate =
       geminiTitle?.trim() ||
       input.topicFocus?.trim() ||
-      content.sourceTitles[0] ||
+      sourceTitles[0] ||
       "اختبار مُولّد بالذكاء الاصطناعي";
 
     const base = candidate.startsWith("اختبار")
@@ -467,54 +623,67 @@ export class QuizGenerationService {
     return base.slice(0, MAX_TITLE_LENGTH);
   }
 
-  /** Single all-or-nothing transaction: create the draft quiz + its questions. */
-  private async persist(
+  /**
+   * Single all-or-nothing transaction: create the draft quiz + its questions.
+   * `items` carry each question's resolved teacher-only source metadata; the
+   * metadata is echoed in the response only and never written to the database.
+   */
+  private async persistPlan(
     title: string,
     description: string | null,
-    content: ResolvedContent,
+    plan: AllocationPlan,
     teacherId: string,
-    questions: ParsedQuestion[],
+    items: QuestionWithSource[],
   ): Promise<GeneratedQuizDTO> {
+    const questions = items.map((i) => i.parsed);
     let created;
     try {
       created = await this.prisma.$transaction(async (tx) => {
-      const quiz = await tx.quiz.create({
-        data: {
-          title,
-          description,
-          chapterId: content.chapterId,
-          contentScope: content.contentScope,
-          createdBy: teacherId,
-        },
-        select: quizPublicFields,
+        const quiz = await tx.quiz.create({
+          data: {
+            title,
+            description,
+            chapterId: plan.chapterId,
+            contentScope: plan.contentScope,
+            // Source provenance is server-derived from the validated, ownership-
+            // checked allocation plan — never read from the raw client body.
+            sourceScope: plan.sourceScope,
+            sourceChapterIds: plan.sourceChapterIds,
+            sourceStageId: plan.sourceStageId,
+            createdBy: teacherId,
+          },
+          select: quizPublicFields,
+        });
+
+        await persistQuizLessonRelations(
+          tx,
+          quiz.id,
+          plan.contentScope,
+          plan.contentScope === "SELECTED_LESSONS" ? plan.lessonIds : [],
+        );
+
+        await tx.question.createMany({
+          data: questions.map((q) => ({
+            quizId: quiz.id,
+            type: q.type,
+            text: q.content,
+            options: (q.options ?? []) as Prisma.InputJsonValue,
+            correctAnswer: q.correctAnswer,
+            sortOrder: q.sortOrder,
+            // Persist the (possibly type-defaulted / model-supplied) points so the
+            // draft carries real per-question weights, not the schema default.
+            points: q.points,
+          })),
+        });
+
+        const persistedQuestions = await tx.question.findMany({
+          where: { quizId: quiz.id },
+          orderBy: { sortOrder: "asc" },
+          select: questionPublicFields,
+        });
+
+        return { quiz, persistedQuestions };
       });
-
-      await persistQuizLessonRelations(
-        tx,
-        quiz.id,
-        content.contentScope,
-        content.contentScope === "SELECTED_LESSONS" ? content.lessonIds : [],
-      );
-
-      await tx.question.createMany({
-        data: questions.map((q) => ({
-          quizId: quiz.id,
-          type: q.type,
-          text: q.content,
-          options: (q.options ?? []) as Prisma.InputJsonValue,
-          correctAnswer: q.correctAnswer,
-          sortOrder: q.sortOrder,
-        })),
-      });
-
-      const persistedQuestions = await tx.question.findMany({
-        where: { quizId: quiz.id },
-        orderBy: { sortOrder: "asc" },
-        select: questionPublicFields,
-      });
-
-      return { quiz, persistedQuestions };
-    });
     } catch (error) {
       if (error instanceof QuizGenerationError) {
         throw error;
@@ -522,8 +691,8 @@ export class QuizGenerationService {
       if (error instanceof PrismaNamespace.PrismaClientKnownRequestError) {
         logger.error("quiz_generation_persist_failed", {
           teacherId,
-          chapterId: content.chapterId,
-          contentScope: content.contentScope,
+          chapterId: plan.chapterId,
+          contentScope: plan.contentScope,
           prismaCode: error.code,
         });
         throw new QuizGenerationPersistenceError(
@@ -534,8 +703,8 @@ export class QuizGenerationService {
       }
       logger.error("quiz_generation_persist_failed", {
         teacherId,
-        chapterId: content.chapterId,
-        contentScope: content.contentScope,
+        chapterId: plan.chapterId,
+        contentScope: plan.contentScope,
       });
       throw new QuizGenerationPersistenceError();
     }
@@ -549,17 +718,19 @@ export class QuizGenerationService {
       scopeTeacherId: teacherId,
       details: {
         title,
-        chapterId: content.chapterId,
-        contentScope: content.contentScope,
+        chapterId: plan.chapterId,
+        contentScope: plan.contentScope,
+        sourceScope: plan.sourceScope,
+        allocationMode: plan.allocationMode,
         questionCount: questions.length,
       },
     });
 
-    const pointsBySortOrder = new Map(
-      questions.map((q) => [q.sortOrder, q.points]),
+    // Index the resolved teacher-only metadata by sortOrder for the response.
+    const metaBySortOrder = new Map(
+      items.map((i) => [i.parsed.sortOrder, i]),
     );
     const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
-
     const quizRow = created.quiz as unknown as Record<string, unknown>;
 
     return {
@@ -568,6 +739,9 @@ export class QuizGenerationService {
       description: (quizRow.description as string | null) ?? null,
       chapterId: (quizRow.chapterId as string | null) ?? null,
       contentScope: (quizRow.contentScope as QuizContentScope) ?? "CHAPTER",
+      sourceScope: plan.sourceScope,
+      sourceChapterIds: plan.sourceChapterIds,
+      sourceStageId: plan.sourceStageId,
       status: quizRow.status as QuizStatus,
       questionCount: created.persistedQuestions.length,
       totalPoints,
@@ -575,6 +749,8 @@ export class QuizGenerationService {
       updatedAt: quizRow.updatedAt as Date,
       questions: created.persistedQuestions.map((q) => {
         const row = q as unknown as Record<string, unknown>;
+        const sortOrder = row.sortOrder as number;
+        const meta = metaBySortOrder.get(sortOrder);
         return {
           id: row.id as string,
           quizId: row.quizId as string,
@@ -582,10 +758,35 @@ export class QuizGenerationService {
           content: row.text as string,
           options: row.options,
           correctAnswer: (row.correctAnswer as string | null) ?? null,
-          sortOrder: row.sortOrder as number,
-          points: pointsBySortOrder.get(row.sortOrder as number) ?? 1,
+          sortOrder,
+          points: meta?.parsed.points ?? 1,
+          difficulty: meta?.difficulty ?? null,
+          sourceLessonId: meta?.sourceLessonId ?? null,
+          sourceLessonTitle: meta?.sourceLessonTitle ?? null,
+          sourceChapterTitle: meta?.sourceChapterTitle ?? null,
         };
       }),
     };
+  }
+
+  /**
+   * Deterministic per-question difficulty labels (lowercase) used when the model
+   * did not tag a question. SINGLE → every question shares the requested level.
+   * MIXED → expand the resolved integer counts in enum order (easy→medium→hard).
+   */
+  private buildDifficultyFallback(
+    resolved: ReturnType<typeof resolveQuizDifficulty>,
+    total: number,
+  ): Array<"easy" | "medium" | "hard"> {
+    if (resolved.difficultyMode === "SINGLE") {
+      return Array.from({ length: total }, () => resolved.difficulty);
+    }
+    const out: Array<"easy" | "medium" | "hard"> = [];
+    (["easy", "medium", "hard"] as const).forEach((level) => {
+      for (let i = 0; i < resolved.questionCounts[level]; i += 1) {
+        out.push(level);
+      }
+    });
+    return out;
   }
 }

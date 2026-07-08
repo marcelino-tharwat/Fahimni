@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import {
-  BrainCircuit, BookOpen, ListChecks, Gauge, Minus, Plus, AlertCircle, AlertTriangle,
+  BrainCircuit, BookOpen, ListChecks, Gauge, Minus, Plus, AlertCircle, AlertTriangle, Layers,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/shared/components/ui';
@@ -12,6 +12,7 @@ import {
   useStagesList,
   useChaptersByStage,
   useLessonsByChapter,
+  useGeneratorSources,
   useGenerateQuiz,
 } from '@/features/teacher/hooks/useQuizGeneration';
 import {
@@ -19,14 +20,27 @@ import {
   ContentSelector,
   QuestionTypeCards,
   DifficultySelector,
+  AllocationControls,
 } from '@/features/teacher/components/quiz-generator';
 import { ContentIndexingDialog } from '@/features/teacher/components/quiz-generator/ContentIndexingDialog';
-import type { QuizGeneratorFormState } from '@/features/teacher/types/quizGeneration';
+import type {
+  GeneratorSourceLesson,
+  QuizGeneratorFormState,
+} from '@/features/teacher/types/quizGeneration';
 import { resolveQuizGenerationError } from '@/features/teacher/lib/quizGenerationErrors';
 import {
   validateQuizGeneratorDifficulty,
 } from '@/features/teacher/lib/quizDifficultyValidation';
 import { buildGenerateQuizPayload } from '@/features/teacher/lib/quizGeneratorPayload';
+import {
+  allowedAllocationModes,
+  computeAllocationTotal,
+  distributeEvenly,
+  validateAllocation,
+  type ChapterLessonsMap,
+} from '@/features/teacher/lib/quizAllocation';
+import { buildMetadataMap } from '@/features/teacher/lib/quizReview';
+import { saveGeneratedMeta } from '@/features/teacher/lib/quizGeneratedMeta';
 
 const SESSION_KEY = 'quizGeneratorFormState_v2';
 
@@ -37,6 +51,9 @@ const DEFAULT_FORM: QuizGeneratorFormState = {
   chapterIds: [],
   contentScope: 'CHAPTER',
   lessonIds: [],
+  allocationMode: 'AUTO',
+  chapterQuestionCounts: {},
+  lessonQuestionCounts: {},
   title: '',
   questionCount: 0,
   timeLimit: 0,
@@ -83,7 +100,9 @@ export function AiQuizGeneratorPage() {
   const [form, dispatch] = useReducer(formReducer, DEFAULT_FORM, (initial) => {
     try {
       const saved = sessionStorage.getItem(SESSION_KEY);
-      return saved ? (JSON.parse(saved) as QuizGeneratorFormState) : initial;
+      // Merge over defaults so sessions saved before the allocation fields
+      // existed still hydrate with valid allocation state.
+      return saved ? { ...initial, ...(JSON.parse(saved) as QuizGeneratorFormState) } : initial;
     } catch {
       return initial;
     }
@@ -96,7 +115,55 @@ export function AiQuizGeneratorPage() {
   const { data: stages = [], isLoading: stagesLoading, isError: stagesIsError, refetch: refetchStages } = useStagesList();
   const { data: chapters = [], isLoading: chaptersLoading, isError: chaptersIsError, refetch: refetchChapters } = useChaptersByStage(form.stageId);
   const { data: lessons = [], isLoading: lessonsLoading, isError: lessonsIsError, refetch: refetchLessons } = useLessonsByChapter(form.chapterId);
+  const { data: sources } = useGeneratorSources(form.stageId);
   const generateQuiz = useGenerateQuiz();
+
+  // Derive chapter names + lessons (with content flags) from the eligibility
+  // snapshot, falling back to the plain chapter/lesson lists when it is absent.
+  const { chapterNameById, lessonsByChapter, chapterLessonsMap } = useMemo(() => {
+    const nameById: Record<string, string> = {};
+    const byChapter: Record<string, GeneratorSourceLesson[]> = {};
+    if (sources) {
+      for (const stage of sources.stages) {
+        for (const chapter of stage.chapters) {
+          nameById[chapter.id] = chapter.name;
+          byChapter[chapter.id] = chapter.lessons;
+        }
+      }
+    }
+    for (const c of chapters) {
+      nameById[c.id] = nameById[c.id] ?? c.name;
+    }
+    if (!byChapter[form.chapterId] && lessons.length > 0) {
+      byChapter[form.chapterId] = lessons.map((l) => ({
+        id: l.id,
+        title: l.title,
+        hasUsableContent: true,
+      }));
+    }
+    const idMap: ChapterLessonsMap = {};
+    for (const [cid, ls] of Object.entries(byChapter)) {
+      idMap[cid] = ls.map((l) => l.id);
+    }
+    return { chapterNameById: nameById, lessonsByChapter: byChapter, chapterLessonsMap: idMap };
+  }, [sources, chapters, lessons, form.chapterId]);
+
+  const totalAllocated = useMemo(
+    () => computeAllocationTotal(form, chapterLessonsMap),
+    [form, chapterLessonsMap],
+  );
+
+  const fullCurriculumSummary = useMemo(() => {
+    if (form.sourceScope !== 'FULL_CURRICULUM' || !sources) return null;
+    const stage = sources.stages.find((s) => s.id === form.stageId);
+    if (!stage) return null;
+    return {
+      eligibleChapters: stage.eligibleChapters,
+      eligibleLessons: stage.eligibleLessons,
+      canGenerate: stage.canGenerateFullCurriculum,
+      warnings: sources.warnings,
+    };
+  }, [form.sourceScope, form.stageId, sources]);
 
   const { data: subscriptionData } = useQuery({
     queryKey: ['teacher', 'subscription', 'me'],
@@ -116,6 +183,37 @@ export function AiQuizGeneratorPage() {
   const setField = useCallback(<K extends keyof QuizGeneratorFormState>(field: K, value: QuizGeneratorFormState[K]) => {
     dispatch({ type: 'SET_FIELD', field, value } as Action);
   }, []);
+
+  const setChapterCount = useCallback((cid: string, v: number) => {
+    setField('chapterQuestionCounts', { ...form.chapterQuestionCounts, [cid]: v });
+  }, [form.chapterQuestionCounts, setField]);
+
+  const setLessonCount = useCallback((lid: string, v: number) => {
+    setField('lessonQuestionCounts', { ...form.lessonQuestionCounts, [lid]: v });
+  }, [form.lessonQuestionCounts, setField]);
+
+  const autoDistribute = useCallback(() => {
+    const mode = form.allocationMode ?? 'AUTO';
+    if (mode === 'BY_CHAPTER') {
+      const counts = distributeEvenly(form.questionCount, form.chapterIds.length);
+      const next: Record<string, number> = {};
+      form.chapterIds.forEach((cid, i) => { next[cid] = counts[i] ?? 0; });
+      setField('chapterQuestionCounts', next);
+      return;
+    }
+    if (mode === 'BY_LESSON') {
+      const chapterIds =
+        form.sourceScope === 'SINGLE_CHAPTER' ? [form.chapterId] : form.chapterIds;
+      // Prefer lessons that have usable content; fall back to all lessons.
+      const all = chapterIds.flatMap((cid) => lessonsByChapter[cid] ?? []);
+      const eligible = all.filter((l) => l.hasUsableContent);
+      const target = eligible.length > 0 ? eligible : all;
+      const counts = distributeEvenly(form.questionCount, target.length);
+      const next: Record<string, number> = {};
+      target.forEach((l, i) => { next[l.id] = counts[i] ?? 0; });
+      setField('lessonQuestionCounts', next);
+    }
+  }, [form.allocationMode, form.questionCount, form.chapterIds, form.chapterId, form.sourceScope, lessonsByChapter, setField]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [indexOpen, setIndexOpen] = useState(false);
@@ -140,25 +238,45 @@ export function AiQuizGeneratorPage() {
         errs.chapterIds = t('teacher:quizGenerator.validationMultiChapters');
       }
     }
-    // FULL_CURRICULUM only needs a stage, already validated above.
+    if (scope === 'FULL_CURRICULUM' && fullCurriculumSummary && !fullCurriculumSummary.canGenerate) {
+      errs.fullCurriculum = t('teacher:quizGenerator.allocation.fullCurriculumUnavailable');
+    }
     if (form.questionTypes.length === 0) errs.questionTypes = t('teacher:quizGenerator.validationQuestionType');
     if (form.questionCount < 1) errs.questionCount = t('teacher:quizGenerator.requiredQuestionCount');
     Object.assign(errs, validateQuizGeneratorDifficulty(form, t));
+    Object.assign(errs, validateAllocation(form, chapterLessonsMap, t));
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  }, [form, t]);
+  }, [form, t, chapterLessonsMap, fullCurriculumSummary]);
 
   const handleSubmit = useCallback(async () => {
     if (!validate()) return;
     generateQuiz.reset();
-    const payload = buildGenerateQuizPayload(form);
+    const payload = buildGenerateQuizPayload(form, { chapterLessons: chapterLessonsMap });
     try {
       const result = await generateQuiz.mutateAsync(payload);
-      navigate(`/teacher/quizzes/generator/review/${result.id}`);
+      // Teacher-only metadata (difficulty + source lesson/chapter) is not
+      // persisted server-side, so carry it to Step 2 via nav state and stash it
+      // in sessionStorage as a refresh-safe fallback.
+      const metadata = buildMetadataMap(result.questions);
+      saveGeneratedMeta(result.id, metadata);
+      navigate(`/teacher/quizzes/generator/review/${result.id}`, {
+        state: { generatedMeta: metadata },
+      });
     } catch {
       // Error surfaced via generationError banner below.
     }
-  }, [form, validate, generateQuiz, navigate]);
+  }, [form, validate, generateQuiz, navigate, chapterLessonsMap]);
+
+  // Live allocation validity, used to disable the generate button early.
+  const allocationInvalid = useMemo(
+    () => Object.keys(validateAllocation(form, chapterLessonsMap, t)).length > 0,
+    [form, chapterLessonsMap, t],
+  );
+  const fullCurriculumBlocked =
+    form.sourceScope === 'FULL_CURRICULUM' &&
+    !!fullCurriculumSummary &&
+    !fullCurriculumSummary.canGenerate;
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 bg-background min-h-screen py-8 px-4">
@@ -244,6 +362,10 @@ export function AiQuizGeneratorPage() {
             setField('chapterIds', []);
             setField('lessonIds', []);
             setField('contentScope', 'CHAPTER');
+            // Reset allocation so a mode invalid for the new scope never sticks.
+            setField('allocationMode', 'AUTO');
+            setField('chapterQuestionCounts', {});
+            setField('lessonQuestionCounts', {});
           }}
           onChaptersChange={(ids) => setField('chapterIds', ids)}
           onStageChange={(id) => {
@@ -251,10 +373,13 @@ export function AiQuizGeneratorPage() {
             setField('chapterId', '');
             setField('chapterIds', []);
             setField('lessonIds', []);
+            setField('chapterQuestionCounts', {});
+            setField('lessonQuestionCounts', {});
           }}
           onChapterChange={(id) => {
             setField('chapterId', id);
             setField('lessonIds', []);
+            setField('lessonQuestionCounts', {});
           }}
           onContentScopeChange={(scope) => {
             setField('contentScope', scope);
@@ -383,6 +508,43 @@ export function AiQuizGeneratorPage() {
           </div>
         </div>
 
+        {(() => {
+          const scope = form.sourceScope ?? 'SINGLE_CHAPTER';
+          const hasSource =
+            (scope === 'SINGLE_CHAPTER' && !!form.chapterId) ||
+            (scope === 'MULTI_CHAPTER' && new Set(form.chapterIds).size >= 2) ||
+            scope === 'FULL_CURRICULUM';
+          // Only offer allocation controls when there is more than AUTO to choose.
+          if (!hasSource || allowedAllocationModes(scope).length < 2) {
+            // Full curriculum still shows its summary/eligibility block.
+            if (scope !== 'FULL_CURRICULUM') return null;
+          }
+          return (
+            <>
+              <FormDivider />
+              <SectionHead icon={<Layers size={18} />} title={t('teacher:quizGenerator.allocation.sectionTitle')} />
+              <AllocationControls
+                sourceScope={scope}
+                allocationMode={form.allocationMode ?? 'AUTO'}
+                onAllocationModeChange={(mode) => setField('allocationMode', mode)}
+                chapterId={form.chapterId}
+                chapterIds={form.chapterIds}
+                questionCount={form.questionCount}
+                chapterQuestionCounts={form.chapterQuestionCounts}
+                lessonQuestionCounts={form.lessonQuestionCounts}
+                onChapterCountChange={setChapterCount}
+                onLessonCountChange={setLessonCount}
+                onAutoDistribute={autoDistribute}
+                chapterNameById={chapterNameById}
+                lessonsByChapter={lessonsByChapter}
+                totalAllocated={totalAllocated}
+                fullCurriculum={fullCurriculumSummary}
+                error={errors.allocation ?? errors.allocationTotal ?? errors.fullCurriculum ?? null}
+              />
+            </>
+          );
+        })()}
+
         <FormDivider />
 
         <SectionHead icon={<Gauge size={18} />} title={t('teacher:quizGenerator.difficulty')} />
@@ -445,7 +607,7 @@ export function AiQuizGeneratorPage() {
             variant="primary"
             onClick={handleSubmit}
             loading={generateQuiz.isPending}
-            disabled={quotaExhausted}
+            disabled={quotaExhausted || allocationInvalid || fullCurriculumBlocked}
             className="min-w-[200px] h-12 px-8 gap-2.5 transition-all duration-200 bg-[linear-gradient(135deg,#00C9DB,#0EA5E9)] text-white font-bold text-base rounded-full active:scale-[0.98] disabled:opacity-90 shadow-[0_8px_24px_-6px_rgba(0,201,219,0.5)] hover:shadow-[0_0_20px_rgba(0,201,219,0.6),0_8px_24px_-6px_rgba(0,201,219,0.5)]"
           >
             {generateQuiz.isPending ? t('teacher:quizGenerator.generating') : t('teacher:quizGenerator.generateBtn')}

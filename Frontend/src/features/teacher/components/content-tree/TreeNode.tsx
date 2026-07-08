@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
 import { TreeNodeMenu } from './TreeNodeMenu';
+import type { SortableRenderProps } from '@/features/teacher/components/reorder/SortableItem';
 import type { MenuAction, NodeType } from './types';
 
 const ICON_BY_TYPE: Record<NodeType, LucideIcon> = {
@@ -29,13 +30,12 @@ const TEXT_BY_TYPE: Record<NodeType, string> = {
   lesson: 'font-normal text-navy-700',
 };
 
-interface DragHandleRenderProps {
-  attributes: Record<string, unknown>;
-  listeners: Record<string, unknown>;
-  setNodeRef: (el: HTMLElement | null) => void;
-  style?: React.CSSProperties;
-  isDragging: boolean;
-}
+// Reuse the exact render-prop shape SortableItem produces so the dnd-kit
+// attribute/listener types line up (no lossy Record<string, unknown>).
+type DragHandleRenderProps = Pick<
+  SortableRenderProps,
+  'attributes' | 'listeners' | 'setNodeRef' | 'style' | 'isDragging'
+>;
 
 interface TreeNodeProps {
   type: NodeType;

@@ -3,7 +3,10 @@ export interface AdminUserStats {
   activeTeachers: number;
   totalStudents: number;
   activeStudents: number;
+  /** Students with no ACTIVE enrollment (→ not connected to any teacher). */
   studentsWithoutTeacher: number;
+  /** Students with zero enrollments of any status. */
+  studentsWithoutAnyEnrollment: number;
 }
 
 export interface AdminContentStats {
@@ -25,7 +28,9 @@ export interface AdminLearningStats {
 }
 
 export interface AdminFinanceStats {
-  confirmedRevenue: number;
+  confirmedCourseRevenue: number;
+  confirmedTeacherSubscriptionRevenue: number;
+  totalConfirmedRevenue: number;
   monthlyConfirmedRevenue: number;
   estimatedSubscriptionRevenue: number;
   currency: string;
@@ -36,11 +41,14 @@ export interface AdminOperationsStats {
   pendingTeacherRequests: number;
   activeTeacherSubscriptions: number;
   pendingTeacherSubscriptionRequests: number;
+  pendingTeacherSubscriptionPayments: number;
+  failedTeacherSubscriptionPayments: number;
 }
 
 export interface AdminAiStats {
   quizGenerations: number;
   essayGrading: number;
+  totalAiEvents: number;
 }
 
 export interface TopTeacherByRevenue {

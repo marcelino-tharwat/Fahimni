@@ -41,7 +41,7 @@ export function AllStagesPage() {
   const user = useAppSelector((state) => state.auth.user);
   const canReorder = user?.role === 'OPERATION';
 
-  const { data: stages, isLoading, isError, error, refetch } = useStages();
+  const { data: stages, isLoading, isError, error } = useStages();
   const deleteStage = useDeleteStage();
   const reorderStages = useReorderStages();
   const [search, setSearch] = useState('');

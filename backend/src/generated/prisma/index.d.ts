@@ -186,6 +186,15 @@ export namespace $Enums {
 export type QuizContentScope = (typeof QuizContentScope)[keyof typeof QuizContentScope]
 
 
+export const QuizSourceScope: {
+  SINGLE_CHAPTER: 'SINGLE_CHAPTER',
+  MULTI_CHAPTER: 'MULTI_CHAPTER',
+  FULL_CURRICULUM: 'FULL_CURRICULUM'
+};
+
+export type QuizSourceScope = (typeof QuizSourceScope)[keyof typeof QuizSourceScope]
+
+
 export const PendingEssayResultMode: {
   HIDE_ALL_RESULTS: 'HIDE_ALL_RESULTS',
   SHOW_OBJECTIVE_ONLY: 'SHOW_OBJECTIVE_ONLY',
@@ -360,6 +369,10 @@ export type AiUsageType = (typeof AiUsageType)[keyof typeof AiUsageType]
 export type QuizContentScope = $Enums.QuizContentScope
 
 export const QuizContentScope: typeof $Enums.QuizContentScope
+
+export type QuizSourceScope = $Enums.QuizSourceScope
+
+export const QuizSourceScope: typeof $Enums.QuizSourceScope
 
 export type PendingEssayResultMode = $Enums.PendingEssayResultMode
 
@@ -23318,6 +23331,8 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     contentScope: $Enums.QuizContentScope | null
+    sourceScope: $Enums.QuizSourceScope | null
+    sourceStageId: string | null
     status: $Enums.QuizStatus | null
     durationMinutes: number | null
     questionCount: number | null
@@ -23342,6 +23357,8 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     contentScope: $Enums.QuizContentScope | null
+    sourceScope: $Enums.QuizSourceScope | null
+    sourceStageId: string | null
     status: $Enums.QuizStatus | null
     durationMinutes: number | null
     questionCount: number | null
@@ -23366,6 +23383,9 @@ export namespace Prisma {
     description: number
     chapterId: number
     contentScope: number
+    sourceScope: number
+    sourceChapterIds: number
+    sourceStageId: number
     status: number
     durationMinutes: number
     questionCount: number
@@ -23406,6 +23426,8 @@ export namespace Prisma {
     description?: true
     chapterId?: true
     contentScope?: true
+    sourceScope?: true
+    sourceStageId?: true
     status?: true
     durationMinutes?: true
     questionCount?: true
@@ -23430,6 +23452,8 @@ export namespace Prisma {
     description?: true
     chapterId?: true
     contentScope?: true
+    sourceScope?: true
+    sourceStageId?: true
     status?: true
     durationMinutes?: true
     questionCount?: true
@@ -23454,6 +23478,9 @@ export namespace Prisma {
     description?: true
     chapterId?: true
     contentScope?: true
+    sourceScope?: true
+    sourceChapterIds?: true
+    sourceStageId?: true
     status?: true
     durationMinutes?: true
     questionCount?: true
@@ -23565,6 +23592,9 @@ export namespace Prisma {
     description: string | null
     chapterId: string | null
     contentScope: $Enums.QuizContentScope
+    sourceScope: $Enums.QuizSourceScope
+    sourceChapterIds: string[]
+    sourceStageId: string | null
     status: $Enums.QuizStatus
     durationMinutes: number | null
     questionCount: number
@@ -23608,6 +23638,9 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     contentScope?: boolean
+    sourceScope?: boolean
+    sourceChapterIds?: boolean
+    sourceStageId?: boolean
     status?: boolean
     durationMinutes?: boolean
     questionCount?: boolean
@@ -23639,6 +23672,9 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     contentScope?: boolean
+    sourceScope?: boolean
+    sourceChapterIds?: boolean
+    sourceStageId?: boolean
     status?: boolean
     durationMinutes?: boolean
     questionCount?: boolean
@@ -23665,6 +23701,9 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     contentScope?: boolean
+    sourceScope?: boolean
+    sourceChapterIds?: boolean
+    sourceStageId?: boolean
     status?: boolean
     durationMinutes?: boolean
     questionCount?: boolean
@@ -23691,6 +23730,9 @@ export namespace Prisma {
     description?: boolean
     chapterId?: boolean
     contentScope?: boolean
+    sourceScope?: boolean
+    sourceChapterIds?: boolean
+    sourceStageId?: boolean
     status?: boolean
     durationMinutes?: boolean
     questionCount?: boolean
@@ -23709,7 +23751,7 @@ export namespace Prisma {
     pendingEssayResultMode?: boolean
   }
 
-  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "contentScope" | "status" | "durationMinutes" | "questionCount" | "totalPoints" | "passingScore" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt" | "resultSettingsConfigured" | "showCorrectAnswers" | "showPerQuestionScores" | "showFinalScore" | "showStudentAnswers" | "showExplanations" | "pendingEssayResultMode", ExtArgs["result"]["quiz"]>
+  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "contentScope" | "sourceScope" | "sourceChapterIds" | "sourceStageId" | "status" | "durationMinutes" | "questionCount" | "totalPoints" | "passingScore" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt" | "resultSettingsConfigured" | "showCorrectAnswers" | "showPerQuestionScores" | "showFinalScore" | "showStudentAnswers" | "showExplanations" | "pendingEssayResultMode", ExtArgs["result"]["quiz"]>
   export type QuizInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
@@ -23744,6 +23786,9 @@ export namespace Prisma {
       description: string | null
       chapterId: string | null
       contentScope: $Enums.QuizContentScope
+      sourceScope: $Enums.QuizSourceScope
+      sourceChapterIds: string[]
+      sourceStageId: string | null
       status: $Enums.QuizStatus
       durationMinutes: number | null
       questionCount: number
@@ -24194,6 +24239,9 @@ export namespace Prisma {
     readonly description: FieldRef<"Quiz", 'String'>
     readonly chapterId: FieldRef<"Quiz", 'String'>
     readonly contentScope: FieldRef<"Quiz", 'QuizContentScope'>
+    readonly sourceScope: FieldRef<"Quiz", 'QuizSourceScope'>
+    readonly sourceChapterIds: FieldRef<"Quiz", 'String[]'>
+    readonly sourceStageId: FieldRef<"Quiz", 'String'>
     readonly status: FieldRef<"Quiz", 'QuizStatus'>
     readonly durationMinutes: FieldRef<"Quiz", 'Int'>
     readonly questionCount: FieldRef<"Quiz", 'Int'>
@@ -40198,6 +40246,9 @@ export namespace Prisma {
     description: 'description',
     chapterId: 'chapterId',
     contentScope: 'contentScope',
+    sourceScope: 'sourceScope',
+    sourceChapterIds: 'sourceChapterIds',
+    sourceStageId: 'sourceStageId',
     status: 'status',
     durationMinutes: 'durationMinutes',
     questionCount: 'questionCount',
@@ -40673,6 +40724,20 @@ export namespace Prisma {
    * Reference to a field of type 'QuizContentScope[]'
    */
   export type ListEnumQuizContentScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuizContentScope[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'QuizSourceScope'
+   */
+  export type EnumQuizSourceScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuizSourceScope'>
+    
+
+
+  /**
+   * Reference to a field of type 'QuizSourceScope[]'
+   */
+  export type ListEnumQuizSourceScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuizSourceScope[]'>
     
 
 
@@ -42136,6 +42201,9 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     contentScope?: EnumQuizContentScopeFilter<"Quiz"> | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFilter<"Quiz"> | $Enums.QuizSourceScope
+    sourceChapterIds?: StringNullableListFilter<"Quiz">
+    sourceStageId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
     durationMinutes?: IntNullableFilter<"Quiz"> | number | null
     questionCount?: IntFilter<"Quiz"> | number
@@ -42166,6 +42234,9 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     chapterId?: SortOrderInput | SortOrder
     contentScope?: SortOrder
+    sourceScope?: SortOrder
+    sourceChapterIds?: SortOrder
+    sourceStageId?: SortOrderInput | SortOrder
     status?: SortOrder
     durationMinutes?: SortOrderInput | SortOrder
     questionCount?: SortOrder
@@ -42199,6 +42270,9 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     contentScope?: EnumQuizContentScopeFilter<"Quiz"> | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFilter<"Quiz"> | $Enums.QuizSourceScope
+    sourceChapterIds?: StringNullableListFilter<"Quiz">
+    sourceStageId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
     durationMinutes?: IntNullableFilter<"Quiz"> | number | null
     questionCount?: IntFilter<"Quiz"> | number
@@ -42229,6 +42303,9 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     chapterId?: SortOrderInput | SortOrder
     contentScope?: SortOrder
+    sourceScope?: SortOrder
+    sourceChapterIds?: SortOrder
+    sourceStageId?: SortOrderInput | SortOrder
     status?: SortOrder
     durationMinutes?: SortOrderInput | SortOrder
     questionCount?: SortOrder
@@ -42261,6 +42338,9 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Quiz"> | string | null
     chapterId?: StringNullableWithAggregatesFilter<"Quiz"> | string | null
     contentScope?: EnumQuizContentScopeWithAggregatesFilter<"Quiz"> | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeWithAggregatesFilter<"Quiz"> | $Enums.QuizSourceScope
+    sourceChapterIds?: StringNullableListFilter<"Quiz">
+    sourceStageId?: StringNullableWithAggregatesFilter<"Quiz"> | string | null
     status?: EnumQuizStatusWithAggregatesFilter<"Quiz"> | $Enums.QuizStatus
     durationMinutes?: IntNullableWithAggregatesFilter<"Quiz"> | number | null
     questionCount?: IntWithAggregatesFilter<"Quiz"> | number
@@ -44775,6 +44855,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -44804,6 +44887,9 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -44831,6 +44917,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -44860,6 +44949,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -44888,6 +44980,9 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -44911,6 +45006,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -44934,6 +45032,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -47518,6 +47619,21 @@ export namespace Prisma {
     not?: NestedEnumQuizContentScopeFilter<$PrismaModel> | $Enums.QuizContentScope
   }
 
+  export type EnumQuizSourceScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuizSourceScope | EnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.QuizSourceScope[] | ListEnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuizSourceScope[] | ListEnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuizSourceScopeFilter<$PrismaModel> | $Enums.QuizSourceScope
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type EnumQuizStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.QuizStatus | EnumQuizStatusFieldRefInput<$PrismaModel>
     in?: $Enums.QuizStatus[] | ListEnumQuizStatusFieldRefInput<$PrismaModel>
@@ -47569,6 +47685,9 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     contentScope?: SortOrder
+    sourceScope?: SortOrder
+    sourceChapterIds?: SortOrder
+    sourceStageId?: SortOrder
     status?: SortOrder
     durationMinutes?: SortOrder
     questionCount?: SortOrder
@@ -47600,6 +47719,8 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     contentScope?: SortOrder
+    sourceScope?: SortOrder
+    sourceStageId?: SortOrder
     status?: SortOrder
     durationMinutes?: SortOrder
     questionCount?: SortOrder
@@ -47624,6 +47745,8 @@ export namespace Prisma {
     description?: SortOrder
     chapterId?: SortOrder
     contentScope?: SortOrder
+    sourceScope?: SortOrder
+    sourceStageId?: SortOrder
     status?: SortOrder
     durationMinutes?: SortOrder
     questionCount?: SortOrder
@@ -47657,6 +47780,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumQuizContentScopeFilter<$PrismaModel>
     _max?: NestedEnumQuizContentScopeFilter<$PrismaModel>
+  }
+
+  export type EnumQuizSourceScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuizSourceScope | EnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.QuizSourceScope[] | ListEnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuizSourceScope[] | ListEnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuizSourceScopeWithAggregatesFilter<$PrismaModel> | $Enums.QuizSourceScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuizSourceScopeFilter<$PrismaModel>
+    _max?: NestedEnumQuizSourceScopeFilter<$PrismaModel>
   }
 
   export type EnumQuizStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -50269,6 +50402,10 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRefreshTokensInput, UserUpdateWithoutRefreshTokensInput>, UserUncheckedUpdateWithoutRefreshTokensInput>
   }
 
+  export type QuizCreatesourceChapterIdsInput = {
+    set: string[]
+  }
+
   export type QuestionCreateNestedManyWithoutQuizInput = {
     create?: XOR<QuestionCreateWithoutQuizInput, QuestionUncheckedCreateWithoutQuizInput> | QuestionCreateWithoutQuizInput[] | QuestionUncheckedCreateWithoutQuizInput[]
     connectOrCreate?: QuestionCreateOrConnectWithoutQuizInput | QuestionCreateOrConnectWithoutQuizInput[]
@@ -50339,6 +50476,15 @@ export namespace Prisma {
 
   export type EnumQuizContentScopeFieldUpdateOperationsInput = {
     set?: $Enums.QuizContentScope
+  }
+
+  export type EnumQuizSourceScopeFieldUpdateOperationsInput = {
+    set?: $Enums.QuizSourceScope
+  }
+
+  export type QuizUpdatesourceChapterIdsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type EnumQuizStatusFieldUpdateOperationsInput = {
@@ -51511,6 +51657,13 @@ export namespace Prisma {
     not?: NestedEnumQuizContentScopeFilter<$PrismaModel> | $Enums.QuizContentScope
   }
 
+  export type NestedEnumQuizSourceScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuizSourceScope | EnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.QuizSourceScope[] | ListEnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuizSourceScope[] | ListEnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuizSourceScopeFilter<$PrismaModel> | $Enums.QuizSourceScope
+  }
+
   export type NestedEnumQuizStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.QuizStatus | EnumQuizStatusFieldRefInput<$PrismaModel>
     in?: $Enums.QuizStatus[] | ListEnumQuizStatusFieldRefInput<$PrismaModel>
@@ -51538,6 +51691,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumQuizContentScopeFilter<$PrismaModel>
     _max?: NestedEnumQuizContentScopeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumQuizSourceScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuizSourceScope | EnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.QuizSourceScope[] | ListEnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuizSourceScope[] | ListEnumQuizSourceScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuizSourceScopeWithAggregatesFilter<$PrismaModel> | $Enums.QuizSourceScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuizSourceScopeFilter<$PrismaModel>
+    _max?: NestedEnumQuizSourceScopeFilter<$PrismaModel>
   }
 
   export type NestedEnumQuizStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -52035,6 +52198,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -52063,6 +52229,9 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -52727,6 +52896,9 @@ export namespace Prisma {
     description?: StringNullableFilter<"Quiz"> | string | null
     chapterId?: StringNullableFilter<"Quiz"> | string | null
     contentScope?: EnumQuizContentScopeFilter<"Quiz"> | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFilter<"Quiz"> | $Enums.QuizSourceScope
+    sourceChapterIds?: StringNullableListFilter<"Quiz">
+    sourceStageId?: StringNullableFilter<"Quiz"> | string | null
     status?: EnumQuizStatusFilter<"Quiz"> | $Enums.QuizStatus
     durationMinutes?: IntNullableFilter<"Quiz"> | number | null
     questionCount?: IntFilter<"Quiz"> | number
@@ -53889,6 +54061,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -53916,6 +54091,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -54296,6 +54474,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -54324,6 +54505,9 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -54507,6 +54691,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -54535,6 +54722,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -56736,6 +56926,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -56764,6 +56957,9 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -56849,6 +57045,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -56877,6 +57076,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -56952,6 +57154,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -56980,6 +57185,9 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -57022,6 +57230,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -57050,6 +57261,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -57076,6 +57290,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -57104,6 +57321,9 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -57217,6 +57437,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -57245,6 +57468,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -59712,6 +59938,9 @@ export namespace Prisma {
     description?: string | null
     chapterId?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -60095,6 +60324,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -60123,6 +60355,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -60150,6 +60385,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     chapterId?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -60645,6 +60883,9 @@ export namespace Prisma {
     title: string
     description?: string | null
     contentScope?: $Enums.QuizContentScope
+    sourceScope?: $Enums.QuizSourceScope
+    sourceChapterIds?: QuizCreatesourceChapterIdsInput | string[]
+    sourceStageId?: string | null
     status?: $Enums.QuizStatus
     durationMinutes?: number | null
     questionCount?: number
@@ -60782,6 +61023,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -60809,6 +61053,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number
@@ -60836,6 +61083,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     contentScope?: EnumQuizContentScopeFieldUpdateOperationsInput | $Enums.QuizContentScope
+    sourceScope?: EnumQuizSourceScopeFieldUpdateOperationsInput | $Enums.QuizSourceScope
+    sourceChapterIds?: QuizUpdatesourceChapterIdsInput | string[]
+    sourceStageId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumQuizStatusFieldUpdateOperationsInput | $Enums.QuizStatus
     durationMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     questionCount?: IntFieldUpdateOperationsInput | number

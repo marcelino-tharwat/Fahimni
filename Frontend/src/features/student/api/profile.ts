@@ -1,5 +1,6 @@
 import { apiClient } from '@/shared/lib/api/client';
 import { store } from '@/shared/store';
+import type { UserRole, UserStatus } from '@/shared/types/user';
 import type {
   StudentProfile,
   UpdateStudentProfileInput,
@@ -33,8 +34,8 @@ export const studentProfileApi = {
         fullName: string;
         email: string;
         mobile: string;
-        role: string;
-        status: string;
+        role: UserRole;
+        status: UserStatus;
         createdAt: string;
         updatedAt: string;
         studentProfile: {

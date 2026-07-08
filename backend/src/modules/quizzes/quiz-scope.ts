@@ -17,6 +17,23 @@ export interface ResolvedQuizScope {
   contentScope: QuizContentScope;
   lessonIds: string[];
   sourceTitles: string[];
+  /**
+   * Teacher-only display metadata for the resolved source. `chapterTitle` is
+   * only unambiguous for single-chapter sources (null for multi-chapter /
+   * full-curriculum). `lessons` carries id+title so the generation layer can
+   * attach a source lesson to questions when exactly one lesson was used.
+   */
+  chapterTitle: string | null;
+  lessons: Array<{ id: string; title: string }>;
+  /**
+   * Every owned chapter the source spans, ordered by sortOrder (single → one id;
+   * multi → all selected; full → every chapter of the stage). Drives the
+   * persisted Quiz.sourceChapterIds so multi-chapter provenance is not lost to
+   * the single chapterId placement column.
+   */
+  chapterIds: string[];
+  /** The owning stage for full-curriculum sources; null otherwise. */
+  stageId: string | null;
 }
 
 type PrismaLike = Pick<typeof defaultPrisma, "chapter" | "lesson">;
@@ -117,6 +134,10 @@ export async function resolveAndValidateQuizContentScope(
         contentScope: "CHAPTER",
         lessonIds: [],
         sourceTitles: [chapter.name],
+        chapterTitle: chapter.name,
+        lessons: [],
+        chapterIds: [chapter.id],
+        stageId: null,
       };
     }
 
@@ -125,6 +146,10 @@ export async function resolveAndValidateQuizContentScope(
       contentScope: "CHAPTER",
       lessonIds: lessons.map((l) => l.id),
       sourceTitles: [chapter.name, ...lessons.map((l) => l.title)],
+      chapterTitle: chapter.name,
+      lessons: lessons.map((l) => ({ id: l.id, title: l.title })),
+      chapterIds: [chapter.id],
+      stageId: null,
     };
 
     logger.info("quiz_generation_sources_resolved", {
@@ -177,6 +202,10 @@ export async function resolveAndValidateQuizContentScope(
     contentScope: "SELECTED_LESSONS",
     lessonIds: lessons.map((l) => l.id),
     sourceTitles: lessons.map((l) => l.title),
+    chapterTitle: chapter.name,
+    lessons: lessons.map((l) => ({ id: l.id, title: l.title })),
+    chapterIds: [chapter.id],
+    stageId: null,
   };
 
   logger.info("quiz_generation_sources_resolved", {
@@ -258,6 +287,10 @@ export async function resolveMultiChapterScope(
       contentScope: "CHAPTER",
       lessonIds: [],
       sourceTitles: chapters.map((c) => c.name),
+      chapterTitle: null,
+      lessons: [],
+      chapterIds: chapters.map((c) => c.id),
+      stageId: null,
     };
   }
 
@@ -273,6 +306,11 @@ export async function resolveMultiChapterScope(
     contentScope: "CHAPTER",
     lessonIds: lessons.map((l) => l.id),
     sourceTitles: [...chapters.map((c) => c.name), ...lessons.map((l) => l.title)],
+    // Multiple chapters → no single unambiguous chapter title.
+    chapterTitle: null,
+    lessons: lessons.map((l) => ({ id: l.id, title: l.title })),
+    chapterIds: chapters.map((c) => c.id),
+    stageId: null,
   };
 }
 
@@ -326,6 +364,10 @@ export async function resolveFullCurriculumScope(
       contentScope: "CHAPTER",
       lessonIds: [],
       sourceTitles: [stage.name, ...chapters.map((c) => c.name)],
+      chapterTitle: null,
+      lessons: [],
+      chapterIds: chapters.map((c) => c.id),
+      stageId: stage.id,
     };
   }
 
@@ -342,6 +384,11 @@ export async function resolveFullCurriculumScope(
     contentScope: "CHAPTER",
     lessonIds: lessons.map((l) => l.id),
     sourceTitles: [stage.name, ...chapters.map((c) => c.name)],
+    // Whole-stage source spans many chapters → no single chapter title.
+    chapterTitle: null,
+    lessons: lessons.map((l) => ({ id: l.id, title: l.title })),
+    chapterIds: chapters.map((c) => c.id),
+    stageId: stage.id,
   };
 }
 
@@ -407,4 +454,188 @@ export async function loadQuizScopeSummary(
       title: r.lesson.title,
     })),
   };
+}
+
+// ── Source scope (single/multi/full) read projections ──────────────────────
+// Distinct from the intra-chapter content scope above. These resolve the
+// persisted Quiz.sourceScope / sourceChapterIds / sourceStageId into display
+// shapes, scoped to who is asking (teacher owns everything; student only sees
+// what they can already access).
+
+export type QuizSourceScope = "SINGLE_CHAPTER" | "MULTI_CHAPTER" | "FULL_CURRICULUM";
+
+export interface QuizSourceRefDTO {
+  id: string;
+  title: string;
+}
+
+/** Raw persisted source-scope columns a read projection needs. */
+export interface QuizSourceScopeRow {
+  id: string;
+  sourceScope: QuizSourceScope;
+  sourceChapterIds: string[];
+  sourceStageId: string | null;
+}
+
+/** Teacher-facing: full provenance resolved against the teacher's own content. */
+export interface TeacherQuizSourceScopeDTO {
+  sourceScope: QuizSourceScope;
+  sourceChapterIds: string[];
+  sourceStageId: string | null;
+  sourceChapters: QuizSourceRefDTO[];
+  sourceStage: QuizSourceRefDTO | null;
+}
+
+/**
+ * Student-facing: only what the student may already see. Raw id arrays are never
+ * exposed — MULTI_CHAPTER resolves to `chapters` filtered to accessible content,
+ * FULL_CURRICULUM to a single `stage`, SINGLE_CHAPTER adds nothing extra.
+ */
+export interface StudentQuizSourceScopeDTO {
+  sourceScope: QuizSourceScope;
+  chapters?: QuizSourceRefDTO[];
+  stage?: QuizSourceRefDTO;
+}
+
+type SourceScopeDb = Pick<typeof defaultPrisma, "chapter" | "stage">;
+
+/**
+ * Batch-resolve teacher source scopes. One chapter query + one stage query for
+ * the whole page (no N+1). Only the teacher's own, non-deleted content is
+ * resolvable; ids that don't resolve are silently dropped from the display
+ * arrays (the raw ids are still returned for completeness).
+ */
+export async function resolveTeacherQuizSourceScopes(
+  rows: QuizSourceScopeRow[],
+  teacherId: string,
+  db: SourceScopeDb = defaultPrisma,
+): Promise<Map<string, TeacherQuizSourceScopeDTO>> {
+  const chapterIds = new Set<string>();
+  const stageIds = new Set<string>();
+  for (const row of rows) {
+    if (row.sourceScope === "MULTI_CHAPTER") {
+      row.sourceChapterIds.forEach((id) => chapterIds.add(id));
+    }
+    if (row.sourceScope === "FULL_CURRICULUM" && row.sourceStageId) {
+      stageIds.add(row.sourceStageId);
+    }
+  }
+
+  const [chapters, stages] = await Promise.all([
+    chapterIds.size > 0
+      ? db.chapter.findMany({
+          where: {
+            id: { in: [...chapterIds] },
+            deletedAt: null,
+            stage: { teacherId, deletedAt: null },
+          },
+          select: { id: true, name: true },
+        })
+      : Promise.resolve([]),
+    stageIds.size > 0
+      ? db.stage.findMany({
+          where: { id: { in: [...stageIds] }, deletedAt: null, teacherId },
+          select: { id: true, name: true },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const chapterTitleById = new Map(chapters.map((c) => [c.id, c.name]));
+  const stageTitleById = new Map(stages.map((s) => [s.id, s.name]));
+
+  const out = new Map<string, TeacherQuizSourceScopeDTO>();
+  for (const row of rows) {
+    const sourceChapters =
+      row.sourceScope === "MULTI_CHAPTER"
+        ? row.sourceChapterIds
+            .filter((id) => chapterTitleById.has(id))
+            .map((id) => ({ id, title: chapterTitleById.get(id)! }))
+        : [];
+    const sourceStage =
+      row.sourceScope === "FULL_CURRICULUM" &&
+      row.sourceStageId &&
+      stageTitleById.has(row.sourceStageId)
+        ? { id: row.sourceStageId, title: stageTitleById.get(row.sourceStageId)! }
+        : null;
+
+    out.set(row.id, {
+      sourceScope: row.sourceScope,
+      sourceChapterIds: row.sourceChapterIds,
+      sourceStageId: row.sourceStageId,
+      sourceChapters,
+      sourceStage,
+    });
+  }
+  return out;
+}
+
+/**
+ * Batch-resolve student source scopes. Multi-chapter provenance is filtered to
+ * the chapters the student may already access (enrolled or free, same policy as
+ * lesson/quiz visibility); raw id arrays are never surfaced. Full-curriculum
+ * exposes the stage name when it resolves. Single-chapter adds nothing.
+ */
+export async function resolveStudentQuizSourceScopes(
+  rows: QuizSourceScopeRow[],
+  studentId: string,
+  db: SourceScopeDb = defaultPrisma,
+  loadAccessibleChapters?: (
+    studentId: string,
+  ) => Promise<Array<{ id: string; name: string }>>,
+): Promise<Map<string, StudentQuizSourceScopeDTO>> {
+  const hasMulti = rows.some((r) => r.sourceScope === "MULTI_CHAPTER");
+  const stageIds = new Set(
+    rows
+      .filter((r) => r.sourceScope === "FULL_CURRICULUM" && r.sourceStageId)
+      .map((r) => r.sourceStageId as string),
+  );
+
+  // Default loader lazy-imports the progression policy to avoid a static import
+  // cycle (progression → quizzes → progression); tests inject a fake.
+  const loadChapters =
+    loadAccessibleChapters ??
+    ((sid: string) =>
+      import("../progression/student-chapter-access.js").then((m) =>
+        m.listStudentAccessibleChapters(sid),
+      ));
+
+  const [accessibleChapters, stages] = await Promise.all([
+    hasMulti ? loadChapters(studentId) : Promise.resolve([]),
+    stageIds.size > 0
+      ? db.stage.findMany({
+          where: { id: { in: [...stageIds] }, deletedAt: null },
+          select: { id: true, name: true },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const accessibleTitleById = new Map(
+    accessibleChapters.map((c) => [c.id, c.name]),
+  );
+  const stageTitleById = new Map(stages.map((s) => [s.id, s.name]));
+
+  const out = new Map<string, StudentQuizSourceScopeDTO>();
+  for (const row of rows) {
+    if (row.sourceScope === "MULTI_CHAPTER") {
+      const chapters = row.sourceChapterIds
+        .filter((id) => accessibleTitleById.has(id))
+        .map((id) => ({ id, title: accessibleTitleById.get(id)! }));
+      out.set(row.id, { sourceScope: row.sourceScope, chapters });
+    } else if (
+      row.sourceScope === "FULL_CURRICULUM" &&
+      row.sourceStageId &&
+      stageTitleById.has(row.sourceStageId)
+    ) {
+      out.set(row.id, {
+        sourceScope: row.sourceScope,
+        stage: {
+          id: row.sourceStageId,
+          title: stageTitleById.get(row.sourceStageId)!,
+        },
+      });
+    } else {
+      out.set(row.id, { sourceScope: row.sourceScope });
+    }
+  }
+  return out;
 }

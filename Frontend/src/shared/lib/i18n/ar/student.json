@@ -77,6 +77,20 @@
       "completed": "المكتملة",
       "new": "الاختبارات الجديدة"
     },
+    "sections": {
+      "fullCurriculum": {
+        "title": "الاختبارات الشاملة",
+        "subtitle": "تغطي المنهج بالكامل",
+        "badge": "شاملة"
+      },
+      "multiChapter": {
+        "title": "اختبارات متعددة الفصول",
+        "subtitle": "تغطي عدة فصول",
+        "badge": "متعدد الفصول",
+        "chapterCount": "{{count}} فصل",
+        "chapterCount_plural": "{{count}} فصول"
+      }
+    },
     "chapter": {
       "quizCount": "{{count}} اختبار",
       "quizCount_plural": "{{count}} اختبارات",

@@ -60,8 +60,6 @@ export function ContentTreePanel({
   onRequestDelete,
   chapterItems,
   lessonItemsMap,
-  onChapterReorder,
-  onLessonReorder,
   canReorder,
   isDirty,
   isMutating,
@@ -142,7 +140,7 @@ export function ContentTreePanel({
               {displayChapters.map((chapter, idx) => {
                 const chapterExpanded = expandedNodes.has(chapter.id);
                 const displayLessons =
-                  (lessonItemsMap[chapter.id] ?? null) ?? chapter.lessons;
+                  lessonItemsMap[chapter.id] ?? chapter.lessons;
 
                 return (
                   <SortableItem

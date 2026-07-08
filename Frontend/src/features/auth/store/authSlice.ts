@@ -11,6 +11,7 @@ import {
   clearUser,
   removeRefreshToken,
 } from '@/features/auth/lib/token';
+import { clearPendingPayment } from '@/shared/lib/pendingPayment';
 import type { User, UserRole } from '@/shared/types/user';
 
 /* ------------------------------------------------------------------ */
@@ -201,8 +202,10 @@ const authSlice = createSlice({
       state.error = null;
       clearUser();
       removeRefreshToken();
-      // Prevent stale payment state from persisting across auth sessions
-      sessionStorage.removeItem('pending_payment');
+      // Prevent stale payment state from persisting across auth sessions.
+      // Delegated to a guarded shared helper so the slice never touches browser
+      // web storage directly (auth-storage contract).
+      clearPendingPayment();
     },
     clearError(state) {
       state.error = null;
@@ -292,7 +295,9 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload ?? 'حصل خطأ غير متوقع.';
+        // `register` rejects with a `RegisterReject` object; store its message
+        // (field errors are read from the rejected payload via `unwrap()`).
+        state.error = action.payload?.message ?? 'حصل خطأ غير متوقع.';
       });
   },
 });

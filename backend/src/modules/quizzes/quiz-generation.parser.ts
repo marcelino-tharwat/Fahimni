@@ -10,6 +10,9 @@ import {
 } from "./quiz-generation.mapping.js";
 import { QuizGenerationParseError } from "./quiz-generation.errors.js";
 
+/** Teacher-only difficulty label extracted from the model output (advisory). */
+export type ParsedDifficulty = "easy" | "medium" | "hard";
+
 export interface ParsedQuestion {
   type: QuestionType;
   content: string;
@@ -19,6 +22,13 @@ export interface ParsedQuestion {
   correctAnswer: string | null;
   points: number;
   sortOrder: number;
+  /**
+   * Per-question difficulty the model labelled the question with, when it
+   * supplied one. Teacher-only metadata — never persisted (no schema column)
+   * and never surfaced to students. `null` means the model omitted/garbled it,
+   * in which case the caller falls back to the requested distribution.
+   */
+  difficulty: ParsedDifficulty | null;
 }
 
 export interface ParsedQuiz {
@@ -30,6 +40,14 @@ export interface ParsedQuiz {
 export interface ParseExpectations {
   questionCount: number;
   requestedTypes: PublicQuestionType[];
+  /**
+   * When true (default) every requested type must appear in the output. Small
+   * per-lesson/per-chapter allocation buckets may hold fewer questions than the
+   * number of requested types, so multi-pass generation sets this false per
+   * bucket and enforces type coverage on the merged quiz instead. The
+   * "only requested types may appear" guard is always enforced.
+   */
+  requireEveryRequestedType?: boolean;
 }
 
 /**
@@ -77,14 +95,47 @@ function asString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function normalizePoints(value: unknown): number {
+/**
+ * Sensible default points per question type when the model omits `points`.
+ * Objective questions default to 1; essays are worth more by convention.
+ * Teachers can override any of these per question before saving.
+ */
+const DEFAULT_POINTS_BY_TYPE: Record<QuestionType, number> = {
+  MCQ: 1,
+  TRUE_FALSE: 1,
+  ESSAY: 5,
+};
+
+/** Upper bound mirrored by the teacher CRUD validation (see quizzes.validation). */
+const MAX_POINTS = 100;
+
+function normalizePoints(value: unknown, type: QuestionType): number {
   if (value === undefined || value === null) {
-    return 1;
+    return DEFAULT_POINTS_BY_TYPE[type];
   }
   if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
     throw new QuizGenerationParseError("قيمة درجات السؤال غير صالحة.");
   }
-  return value;
+  // A generous model value never fails the whole generation — clamp to the max.
+  return Math.min(value, MAX_POINTS);
+}
+
+const DIFFICULTY_ALIASES: Record<string, ParsedDifficulty> = {
+  easy: "easy",
+  medium: "medium",
+  hard: "hard",
+  سهل: "easy",
+  متوسط: "medium",
+  صعب: "hard",
+};
+
+/** Tolerant extraction of an optional per-question difficulty label. */
+function normalizeDifficulty(value: unknown): ParsedDifficulty | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const key = value.trim().toLowerCase();
+  return DIFFICULTY_ALIASES[key] ?? DIFFICULTY_ALIASES[value.trim()] ?? null;
 }
 
 function normalizeMcq(raw: Record<string, unknown>): {
@@ -183,7 +234,8 @@ export function parseQuizGenerationResponse(
     seenContent.add(dedupeKey);
 
     const dbType: QuestionType = mapPublicTypeToDb(publicType);
-    const points = normalizePoints(q.points);
+    const points = normalizePoints(q.points, dbType);
+    const difficulty = normalizeDifficulty(q.difficulty);
 
     let options: string[] | null;
     let correctAnswer: string | null;
@@ -209,6 +261,7 @@ export function parseQuizGenerationResponse(
       correctAnswer,
       points,
       sortOrder: questions.length + 1,
+      difficulty,
     });
   }
 
@@ -229,11 +282,13 @@ export function parseQuizGenerationResponse(
       );
     }
   }
-  for (const requested of requestedTypes) {
-    if (!producedTypes.has(requested)) {
-      throw new QuizGenerationParseError(
-        `نوع سؤال مطلوب لم يظهر في المخرجات: ${requested}.`,
-      );
+  if (expected.requireEveryRequestedType !== false) {
+    for (const requested of requestedTypes) {
+      if (!producedTypes.has(requested)) {
+        throw new QuizGenerationParseError(
+          `نوع سؤال مطلوب لم يظهر في المخرجات: ${requested}.`,
+        );
+      }
     }
   }
 

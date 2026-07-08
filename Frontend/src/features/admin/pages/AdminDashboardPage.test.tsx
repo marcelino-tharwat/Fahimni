@@ -21,17 +21,18 @@ vi.mock('@/features/admin/hooks/useAdminStats', () => ({
 const mockUseAdminStats = useAdminStats as unknown as ReturnType<typeof vi.fn>;
 
 const SAMPLE: AdminStats = {
-  users: { totalTeachers: 3, activeTeachers: 2, totalStudents: 10, activeStudents: 8, studentsWithoutTeacher: 4 },
+  users: { totalTeachers: 3, activeTeachers: 2, totalStudents: 10, activeStudents: 8, studentsWithoutTeacher: 4, studentsWithoutAnyEnrollment: 2 },
   content: { totalStages: 2, totalChapters: 5, totalLessons: 20, totalMaterials: 7, totalQuizzes: 6, publishedQuizzes: 4, draftQuizzes: 2 },
   learning: { totalEnrollments: 15, activeEnrollments: 12, pendingEnrollments: 3, quizAttempts: 40, averageQuizScore: 72.5 },
   finance: {
-    confirmedRevenue: 1000, monthlyConfirmedRevenue: 200, estimatedSubscriptionRevenue: 500,
+    confirmedCourseRevenue: 8000, confirmedTeacherSubscriptionRevenue: 2000, totalConfirmedRevenue: 10000,
+    monthlyConfirmedRevenue: 1200, estimatedSubscriptionRevenue: 0,
     currency: 'EGP', reliabilityWarnings: ['تحذير تجريبي حول الإيرادات'],
   },
-  operations: { pendingTeacherRequests: 2, activeTeacherSubscriptions: 1, pendingTeacherSubscriptionRequests: 1 },
-  ai: { quizGenerations: 12, essayGrading: 7 },
+  operations: { pendingTeacherRequests: 2, activeTeacherSubscriptions: 1, pendingTeacherSubscriptionRequests: 1, pendingTeacherSubscriptionPayments: 3, failedTeacherSubscriptionPayments: 1 },
+  ai: { quizGenerations: 12, essayGrading: 7, totalAiEvents: 19 },
   topTeachers: {
-    byRevenue: [{ teacherId: 't1', fullName: 'Ahmed Revenue', revenue: 1000 }],
+    byRevenue: [{ teacherId: 't1', fullName: 'Ahmed Revenue', revenue: 8000 }],
     byStudents: [{ teacherId: 't2', fullName: 'Sara Students', studentCount: 5 }],
   },
 };
@@ -42,6 +43,10 @@ function renderPage() {
       <AdminDashboardPage />
     </MemoryRouter>,
   );
+}
+
+function loaded() {
+  mockUseAdminStats.mockReturnValue({ isLoading: false, isError: false, data: SAMPLE, refetch: vi.fn(), isFetching: false });
 }
 
 afterEach(() => cleanup());
@@ -61,44 +66,68 @@ describe('AdminDashboardPage — rendering', () => {
     expect(screen.getByText('common:status.retry')).toBeInTheDocument();
   });
 
-  it('2. renders the stats sections and values', () => {
-    mockUseAdminStats.mockReturnValue({ isLoading: false, isError: false, data: SAMPLE, refetch: vi.fn(), isFetching: false });
+  it('2. renders the stats sections', () => {
+    loaded();
     renderPage();
     expect(screen.getByText('adminDashboard.title')).toBeInTheDocument();
     expect(screen.getByText('adminDashboard.usersSection')).toBeInTheDocument();
     expect(screen.getByText('adminDashboard.financeSection')).toBeInTheDocument();
-    expect(screen.getByText('adminDashboard.contentSection')).toBeInTheDocument();
+    expect(screen.getByText('adminDashboard.operationsSection')).toBeInTheDocument();
     expect(screen.getByText('adminDashboard.aiSection')).toBeInTheDocument();
+    expect(screen.getByText('adminDashboard.totalAiEvents')).toBeInTheDocument();
   });
 
-  it('3. renders the students-without-teacher card linking to the unassigned filter', () => {
-    mockUseAdminStats.mockReturnValue({ isLoading: false, isError: false, data: SAMPLE, refetch: vi.fn(), isFetching: false });
+  it('3. renders the students-without-teacher card (without_active_teacher link)', () => {
+    loaded();
     const { container } = renderPage();
     expect(screen.getByText('adminDashboard.studentsWithoutTeacher')).toBeInTheDocument();
-    expect(container.querySelector('a[href="/admin/students?filter=unassigned"]')).not.toBeNull();
+    expect(container.querySelector('a[href="/admin/students?filter=without_active_teacher"]')).not.toBeNull();
   });
 
-  it('4. renders top teachers by revenue and by students with detail links', () => {
-    mockUseAdminStats.mockReturnValue({ isLoading: false, isError: false, data: SAMPLE, refetch: vi.fn(), isFetching: false });
+  it('4. renders the students-without-any-enrollment card', () => {
+    loaded();
     const { container } = renderPage();
-    expect(screen.getByText('Ahmed Revenue')).toBeInTheDocument();
-    expect(screen.getByText('Sara Students')).toBeInTheDocument();
-    expect(container.querySelector('a[href="/admin/teachers/t1"]')).not.toBeNull();
-    expect(container.querySelector('a[href="/admin/teachers/t2"]')).not.toBeNull();
+    expect(screen.getByText('adminDashboard.studentsWithoutAnyEnrollment')).toBeInTheDocument();
+    expect(container.querySelector('a[href="/admin/students?filter=without_enrollment"]')).not.toBeNull();
   });
 
-  it('5. renders revenue reliability warnings', () => {
-    mockUseAdminStats.mockReturnValue({ isLoading: false, isError: false, data: SAMPLE, refetch: vi.fn(), isFetching: false });
+  it('5. renders the revenue cards (total + course) linking revenue to /admin/revenue', () => {
+    loaded();
+    const { container } = renderPage();
+    expect(screen.getByText('adminDashboard.totalConfirmedRevenue')).toBeInTheDocument();
+    expect(screen.getByText('adminDashboard.confirmedCourseRevenue')).toBeInTheDocument();
+    expect(screen.getByText('adminDashboard.monthlyConfirmedRevenue')).toBeInTheDocument();
+    expect(container.querySelector('a[href="/admin/revenue"]')).not.toBeNull();
+  });
+
+  it('6. renders the teacher subscription revenue card', () => {
+    loaded();
+    renderPage();
+    expect(screen.getByText('adminDashboard.confirmedTeacherSubscriptionRevenue')).toBeInTheDocument();
+  });
+
+  it('renders pending subscription payments card linking to /admin/subscriptions', () => {
+    loaded();
+    const { container } = renderPage();
+    expect(screen.getByText('adminDashboard.pendingTeacherSubscriptionPayments')).toBeInTheDocument();
+    expect(container.querySelector('a[href="/admin/subscriptions"]')).not.toBeNull();
+    expect(container.querySelector('a[href="/admin/teacher-requests"]')).not.toBeNull();
+  });
+
+  it('7. renders revenue reliability warnings', () => {
+    loaded();
     renderPage();
     expect(screen.getByText('adminDashboard.reliabilityTitle')).toBeInTheDocument();
     expect(screen.getByText('تحذير تجريبي حول الإيرادات')).toBeInTheDocument();
   });
 
-  it('links revenue card to /admin/revenue and pending requests to /admin/teacher-requests', () => {
-    mockUseAdminStats.mockReturnValue({ isLoading: false, isError: false, data: SAMPLE, refetch: vi.fn(), isFetching: false });
+  it('8. renders top teachers with detail links', () => {
+    loaded();
     const { container } = renderPage();
-    expect(container.querySelector('a[href="/admin/revenue"]')).not.toBeNull();
-    expect(container.querySelector('a[href="/admin/teacher-requests"]')).not.toBeNull();
+    expect(screen.getByText('Ahmed Revenue')).toBeInTheDocument();
+    expect(screen.getByText('Sara Students')).toBeInTheDocument();
+    expect(container.querySelector('a[href="/admin/teachers/t1"]')).not.toBeNull();
+    expect(container.querySelector('a[href="/admin/teachers/t2"]')).not.toBeNull();
   });
 });
 
@@ -107,12 +136,12 @@ describe('AdminDashboardPage — source guards', () => {
   const page = readFileSync(resolve(here, './AdminDashboardPage.tsx'), 'utf8');
   const router = readFileSync(resolve(here, '../../../app/router.tsx'), 'utf8');
 
-  it('6. uses the real API hook and contains no mock data', () => {
+  it('9. uses the real API hook and contains no mock data', () => {
     expect(page).toContain('useAdminStats');
     expect(page).not.toMatch(/@\/shared\/mocks|mockStats|fakeStats|dummyStats/);
   });
 
-  it('7. the /admin/dashboard route is admin-only (super_admin RoleGuard)', () => {
+  it('10. the /admin/dashboard route is admin-only (super_admin RoleGuard)', () => {
     expect(router).toContain("allowedRoles={['super_admin']}");
     expect(router).toContain("path: '/admin/dashboard'");
   });

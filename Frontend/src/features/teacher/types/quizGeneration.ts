@@ -9,6 +9,9 @@ export type QuizContentScope = 'CHAPTER' | 'SELECTED_LESSONS';
 /** Content source scope for AI generation. Defaults to SINGLE_CHAPTER (legacy). */
 export type SourceScope = 'SINGLE_CHAPTER' | 'MULTI_CHAPTER' | 'FULL_CURRICULUM';
 
+/** How the total question count is spread across the source. AUTO ⇒ legacy. */
+export type AllocationMode = 'AUTO' | 'BY_CHAPTER' | 'BY_LESSON';
+
 export interface QuizGeneratorFormState {
   stageId: string;
   chapterId: string;
@@ -17,6 +20,10 @@ export interface QuizGeneratorFormState {
   chapterIds: string[];
   contentScope: QuizContentScope;
   lessonIds: string[];
+  // Additive: per-chapter / per-lesson question allocation.
+  allocationMode: AllocationMode;
+  chapterQuestionCounts: Record<string, number>;
+  lessonQuestionCounts: Record<string, number>;
   title: string;
   questionCount: number;
   timeLimit: number;
@@ -26,11 +33,25 @@ export interface QuizGeneratorFormState {
   mixedDifficulty: { easy: number; medium: number; hard: number };
 }
 
+export interface LessonAllocationPayload {
+  lessonId: string;
+  questionCount: number;
+}
+
+export interface ChapterAllocationPayload {
+  chapterId: string;
+  questionCount?: number;
+  lessonAllocations?: LessonAllocationPayload[];
+}
+
 export interface GenerateQuizPayload {
   // Optional so a legacy chapterId-only body still validates as SINGLE_CHAPTER.
   chapterId?: string;
   sourceScope?: SourceScope;
+  allocationMode?: AllocationMode;
   chapterIds?: string[];
+  chapterAllocations?: ChapterAllocationPayload[];
+  lessonAllocations?: LessonAllocationPayload[];
   stageId?: string;
   contentScope: QuizContentScope;
   lessonIds: string[];
@@ -40,6 +61,41 @@ export interface GenerateQuizPayload {
   difficulty?: 'easy' | 'medium' | 'hard';
   difficultyDistribution?: { easy: number; medium: number; hard: number };
   topicFocus?: string;
+}
+
+// ── Generator eligibility (GET /quizzes/generator/sources) ────────────────
+export interface GeneratorSourceLesson {
+  id: string;
+  title: string;
+  hasUsableContent: boolean;
+}
+export interface GeneratorSourceChapter {
+  id: string;
+  name: string;
+  hasUsableContent: boolean;
+  totalLessons: number;
+  eligibleLessons: number;
+  lessons: GeneratorSourceLesson[];
+}
+export interface GeneratorSourceStage {
+  id: string;
+  name: string;
+  canGenerateFullCurriculum: boolean;
+  totalChapters: number;
+  eligibleChapters: number;
+  totalLessons: number;
+  eligibleLessons: number;
+  chapters: GeneratorSourceChapter[];
+}
+export interface GeneratorSourcesResult {
+  canGenerateFullCurriculum: boolean;
+  totalStages: number;
+  totalChapters: number;
+  eligibleChapters: number;
+  totalLessons: number;
+  eligibleLessons: number;
+  warnings: string[];
+  stages: GeneratorSourceStage[];
 }
 
 export interface GenerateQuizResponse {
@@ -61,6 +117,11 @@ export interface GenerateQuizResponse {
     correctAnswer?: string | boolean | number;
     sortOrder: number;
     points: number;
+    // Teacher-only metadata (not persisted; present only in this response).
+    difficulty?: 'EASY' | 'MEDIUM' | 'HARD' | null;
+    sourceLessonId?: string | null;
+    sourceLessonTitle?: string | null;
+    sourceChapterTitle?: string | null;
   }[];
 }
 

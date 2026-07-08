@@ -1,6 +1,7 @@
 import type { QuizContentScope } from "../../generated/prisma/client.js";
 import type { AttemptState } from "./attempts.service.js";
 import type { QuizDisplayStatus } from "./quiz-attempt-display.js";
+import type { QuizSourceScope, QuizSourceRefDTO } from "./quiz-scope.js";
 
 export interface StudentQuizVisibilityDTO {
   id: string;
@@ -9,6 +10,12 @@ export interface StudentQuizVisibilityDTO {
   chapterId: string;
   status: "PUBLISHED";
   contentScope: QuizContentScope;
+  // Student-safe source provenance. `chapters` is populated only for
+  // MULTI_CHAPTER (filtered to what the student can access); `stage` only for
+  // FULL_CURRICULUM. The raw sourceChapterIds array is never exposed here.
+  sourceScope: QuizSourceScope;
+  sourceChapters?: QuizSourceRefDTO[];
+  sourceStage?: QuizSourceRefDTO;
   linkedLessonIds: string[];
   isRequiredForProgression: boolean;
   requiredForLessonId: string | null;

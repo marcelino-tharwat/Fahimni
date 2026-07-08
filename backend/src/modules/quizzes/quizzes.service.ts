@@ -5,6 +5,7 @@ import { notificationsService } from "../notifications/notifications.service.js"
 import { assertChapterOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
 import {
   quizPublicFields,
+  quizTeacherFields,
   questionPublicFields,
   studentQuestionPublicFields,
 } from "./quizzes.types.js";
@@ -13,6 +14,8 @@ import type {
   QuizDetailResponseDTO,
   QuestionResponseDTO,
 } from "./quizzes.types.js";
+import { resolveTeacherQuizSourceScopes } from "./quiz-scope.js";
+import type { QuizSourceScopeRow } from "./quiz-scope.js";
 import type {
   CreateQuizInput,
   UpdateQuizInput,
@@ -36,10 +39,22 @@ function toQuestionResponseDTO(
     correctAnswer: (row.correctAnswer as string | null) ?? null,
     explanation: (row.explanation as string | null) ?? null,
     sortOrder: row.sortOrder as number,
+    points: typeof row.points === "number" ? (row.points as number) : 1,
     createdAt: row.createdAt as Date,
     updatedAt: row.updatedAt as Date,
   };
 }
+
+/**
+ * Default points applied when a question is created without an explicit value.
+ * Objective questions are worth 1; essays are worth more by convention. Kept in
+ * sync with the AI generator's DEFAULT_POINTS_BY_TYPE.
+ */
+const DEFAULT_POINTS_BY_TYPE: Record<"MCQ" | "TRUE_FALSE" | "ESSAY", number> = {
+  MCQ: 1,
+  TRUE_FALSE: 1,
+  ESSAY: 5,
+};
 
 export class QuizService {
   private async assertQuizOwned(
@@ -90,7 +105,7 @@ export class QuizService {
         durationMinutes: input.durationMinutes ?? null,
         createdBy: teacherId,
       },
-      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+      select: { ...quizTeacherFields, _count: { select: { questions: true } } },
     });
 
     const { _count: count, ...quizFields } =
@@ -121,14 +136,33 @@ export class QuizService {
         createdBy: teacherId,
         ...(status ? { status: status as "DRAFT" | "PUBLISHED" } : {}),
       },
-      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+      select: { ...quizTeacherFields, _count: { select: { questions: true } } },
       orderBy: { createdAt: "desc" },
     });
 
-    return quizzes.map((q) => {
+    const mapped = quizzes.map((q) => {
       const { _count: count, ...rest } =
         q as unknown as { _count: { questions: number } } & Record<string, unknown>;
       return { ...rest, questionCount: count.questions } as unknown as QuizResponseDTO;
+    });
+
+    // Resolve source provenance to display titles (batched, teacher-scoped).
+    const resolved = await resolveTeacherQuizSourceScopes(
+      mapped.map((q) => ({
+        id: q.id,
+        sourceScope: q.sourceScope,
+        sourceChapterIds: q.sourceChapterIds,
+        sourceStageId: q.sourceStageId,
+      })) as QuizSourceScopeRow[],
+      teacherId,
+    );
+    return mapped.map((q) => {
+      const r = resolved.get(q.id);
+      return {
+        ...q,
+        sourceChapters: r?.sourceChapters ?? [],
+        sourceStage: r?.sourceStage ?? null,
+      };
     });
   }
 
@@ -139,7 +173,7 @@ export class QuizService {
     const row = await prisma.quiz.findFirst({
       where: { id, createdBy: teacherId },
       select: {
-        ...quizPublicFields,
+        ...quizTeacherFields,
         _count: { select: { questions: true } },
         questions: {
           orderBy: { sortOrder: "asc" },
@@ -161,10 +195,25 @@ export class QuizService {
       (rest.chapterId as string | null) ?? null,
     );
 
+    const resolved = await resolveTeacherQuizSourceScopes(
+      [
+        {
+          id,
+          sourceScope: rest.sourceScope as QuizSourceScopeRow["sourceScope"],
+          sourceChapterIds: (rest.sourceChapterIds as string[]) ?? [],
+          sourceStageId: (rest.sourceStageId as string | null) ?? null,
+        },
+      ],
+      teacherId,
+    );
+    const source = resolved.get(id);
+
     return {
       ...rest,
       questionCount: count.questions,
       scope,
+      sourceChapters: source?.sourceChapters ?? [],
+      sourceStage: source?.sourceStage ?? null,
       questions: (questions as Record<string, unknown>[]).map(toQuestionResponseDTO),
     } as unknown as QuizDetailResponseDTO;
   }
@@ -195,7 +244,7 @@ export class QuizService {
     const quiz = await prisma.quiz.update({
       where: { id },
       data,
-      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+      select: { ...quizTeacherFields, _count: { select: { questions: true } } },
     });
 
     const { _count: count, ...quizFields } =
@@ -258,6 +307,7 @@ export class QuizService {
         correctAnswer: input.correctAnswer ?? null,
         explanation: input.explanation ?? null,
         sortOrder: input.sortOrder ?? (maxQuestion._max.sortOrder ?? 0) + 1,
+        points: input.points ?? DEFAULT_POINTS_BY_TYPE[input.type],
       },
       select: questionPublicFields,
     });
@@ -308,6 +358,9 @@ export class QuizService {
     }
     if (input.explanation !== undefined) {
       data.explanation = input.explanation;
+    }
+    if (input.points !== undefined) {
+      data.points = input.points;
     }
     if (input.sortOrder !== undefined) {
       data.sortOrder = input.sortOrder;
@@ -475,7 +528,7 @@ export class QuizService {
 
     const quiz = await prisma.quiz.findUniqueOrThrow({
       where: { id: quizId },
-      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+      select: { ...quizTeacherFields, _count: { select: { questions: true } } },
     });
 
     const { _count: count, ...quizFields } =
@@ -534,7 +587,7 @@ export class QuizService {
         status: "DRAFT",
         publishedAt: null,
       },
-      select: { ...quizPublicFields, _count: { select: { questions: true } } },
+      select: { ...quizTeacherFields, _count: { select: { questions: true } } },
     });
 
     const { _count: count, ...quizFields } =
@@ -586,7 +639,7 @@ export class QuizService {
     if (existing.chapterId === chapterId) {
       const quiz = await prisma.quiz.findUniqueOrThrow({
         where: { id: quizId },
-        select: { ...quizPublicFields, _count: { select: { questions: true } } },
+        select: { ...quizTeacherFields, _count: { select: { questions: true } } },
       });
       const { _count: count, ...quizFields } =
         quiz as unknown as { _count: { questions: number } } & Record<string, unknown>;
@@ -636,7 +689,7 @@ export class QuizService {
       return tx.quiz.update({
         where: { id: quizId },
         data: updateData,
-        select: { ...quizPublicFields, _count: { select: { questions: true } } },
+        select: { ...quizTeacherFields, _count: { select: { questions: true } } },
       });
     });
 

@@ -304,6 +304,9 @@ exports.Prisma.QuizScalarFieldEnum = {
   description: 'description',
   chapterId: 'chapterId',
   contentScope: 'contentScope',
+  sourceScope: 'sourceScope',
+  sourceChapterIds: 'sourceChapterIds',
+  sourceStageId: 'sourceStageId',
   status: 'status',
   durationMinutes: 'durationMinutes',
   questionCount: 'questionCount',
@@ -565,6 +568,12 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
 exports.QuizContentScope = exports.$Enums.QuizContentScope = {
   CHAPTER: 'CHAPTER',
   SELECTED_LESSONS: 'SELECTED_LESSONS'
+};
+
+exports.QuizSourceScope = exports.$Enums.QuizSourceScope = {
+  SINGLE_CHAPTER: 'SINGLE_CHAPTER',
+  MULTI_CHAPTER: 'MULTI_CHAPTER',
+  FULL_CURRICULUM: 'FULL_CURRICULUM'
 };
 
 exports.QuizStatus = exports.$Enums.QuizStatus = {

@@ -2,6 +2,11 @@ import { useTranslation } from 'react-i18next';
 import type { DifficultyLevel } from '@/features/teacher/types/quizGeneration';
 import { cn } from '@/shared/lib/utils/cn';
 
+// The three selectable levels. `DifficultyLevel` also allows '' (the unselected
+// state), but every lookup table and the level list below are only ever keyed by
+// a concrete level, so they use this narrower type.
+type ConcreteDifficulty = Exclude<DifficultyLevel, ''>;
+
 interface DifficultySelectorProps {
   mode: 'uniform' | 'mixed';
   uniformValue: DifficultyLevel;
@@ -11,25 +16,25 @@ interface DifficultySelectorProps {
   onMixedChange: (val: { easy: number; medium: number; hard: number }) => void;
 }
 
-const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
+const DIFFICULTY_COLORS: Record<ConcreteDifficulty, string> = {
   easy: '#10b981',
   medium: '#f59e0b',
   hard: '#f43f5e',
 };
 
-const SLIDER_LABEL_CLASSES: Record<DifficultyLevel, string> = {
+const SLIDER_LABEL_CLASSES: Record<ConcreteDifficulty, string> = {
   easy: 'text-emerald-500',
   medium: 'text-amber-500',
   hard: 'text-rose-500',
 };
 
-const SLIDER_INPUT_CLASSES: Record<DifficultyLevel, string> = {
+const SLIDER_INPUT_CLASSES: Record<ConcreteDifficulty, string> = {
   easy: 'border-emerald-300 text-emerald-600',
   medium: 'border-amber-300 text-amber-600',
   hard: 'border-rose-300 text-rose-600',
 };
 
-const DIFF_CONFIG: Record<DifficultyLevel, { selBg: string; selBorder: string; selText: string }> = {
+const DIFF_CONFIG: Record<ConcreteDifficulty, { selBg: string; selBorder: string; selText: string }> = {
   easy:   { selBg: '#ECFDF5', selBorder: '#10B981', selText: '#059669' },
   medium: { selBg: '#FFFBEB', selBorder: '#F59E0B', selText: '#B45309' },
   hard:   { selBg: '#FEF2F2', selBorder: '#EF4444', selText: '#DC2626' },
@@ -44,7 +49,7 @@ export function DifficultySelector({
   onMixedChange,
 }: DifficultySelectorProps) {
   const { t } = useTranslation();
-  const levels: { value: DifficultyLevel; label: string }[] = [
+  const levels: { value: ConcreteDifficulty; label: string }[] = [
     { value: 'easy', label: t('teacher:quizGenerator.easy') },
     { value: 'medium', label: t('teacher:quizGenerator.medium') },
     { value: 'hard', label: t('teacher:quizGenerator.hard') },
