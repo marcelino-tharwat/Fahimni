@@ -141,6 +141,100 @@
       "aiUsage": "AI Usage"
     }
   },
+  "adminTeacherDetail": {
+    "back": "Back to teachers",
+    "error": "Failed to load teacher data",
+    "retry": "Retry",
+    "currentPlan": "Current Plan",
+    "pendingPaymentCard": "Pending subscription payment",
+    "status": { "ACTIVE": "Active", "INACTIVE": "Inactive", "BANNED": "Banned" },
+    "stats": {
+      "students": "Students",
+      "enrollments": "Enrollments",
+      "stages": "Stages",
+      "chapters": "Chapters",
+      "lessons": "Lessons",
+      "quizzes": "Quizzes"
+    },
+    "tabs": {
+      "students": "Students",
+      "enrollments": "Student Enrollments",
+      "content": "Content",
+      "courseRevenue": "Teacher Content Revenue",
+      "subscription": "Teacher Plan Payments",
+      "aiUsage": "AI Usage"
+    },
+    "students": {
+      "empty": "No students connected to this teacher",
+      "active": "Active",
+      "pending": "Pending"
+    },
+    "enrollments": {
+      "empty": "No enrollments for this teacher",
+      "filter": "Filter by status",
+      "student": "Student",
+      "chapter": "Chapter",
+      "statusCol": "Status",
+      "price": "Price",
+      "status": {
+        "ALL": "All",
+        "ACTIVE": "Active",
+        "PAYMENT_PENDING": "Payment pending",
+        "DEACTIVATED": "Deactivated"
+      }
+    },
+    "content": {
+      "empty": "No content for this teacher",
+      "stages": "Stages",
+      "chapters": "Chapters",
+      "lessons": "Lessons",
+      "quizzes": "Quizzes",
+      "published": "Published",
+      "draft": "Draft",
+      "chaptersCount": "{{count}} chapters",
+      "lessonsShort": "{{count}} lessons",
+      "quizzesShort": "{{count}} quizzes"
+    },
+    "courseRevenue": {
+      "note": "Money students paid for this teacher's content",
+      "confirmed": "Confirmed revenue",
+      "monthly": "This month",
+      "successCount": "Successful payments",
+      "empty": "No course payments",
+      "student": "Student",
+      "chapter": "Chapter",
+      "amount": "Amount",
+      "statusCol": "Status"
+    },
+    "subscription": {
+      "note": "Platform revenue the teacher pays for their plan (separate from course revenue)",
+      "noPlan": "No current plan",
+      "pending": "Pending payment",
+      "pendingLabel": "Pending payment",
+      "successCount": "Successful payments",
+      "failedCount": "Failed payments",
+      "empty": "No subscription payments",
+      "plan": "Plan",
+      "amount": "Amount",
+      "interval": "Interval"
+    },
+    "aiUsage": {
+      "empty": "No AI usage",
+      "totalEvents": "Total events",
+      "totalUnits": "Total units",
+      "currentMonth": "This month",
+      "type": "Type",
+      "events": "Events",
+      "units": "Units",
+      "types": {
+        "AI_QUIZ_GENERATION": "Quiz generation",
+        "AI_ESSAY_GRADING": "Essay grading",
+        "AI_CONTENT_GENERATION": "Content generation",
+        "AI_LESSON_SUMMARY": "Lesson summary",
+        "AI_QUESTION_EXPLANATION": "Question explanation"
+      }
+    }
+  },
   "support": {
     "promoCodes": "Promo Codes",
     "createCode": "Create New Code",

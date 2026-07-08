@@ -8,6 +8,11 @@ import userRoutes from "../users/user.routes.js";
 import { AdminStatsController } from "./admin-stats.controller.js";
 import { AdminTeachersController } from "./admin-teachers.controller.js";
 import { listTeachersQuerySchema } from "./admin-teachers.validation.js";
+import { AdminTeacherDetailController } from "./admin-teacher-detail.controller.js";
+import {
+  teacherEnrollmentsQuerySchema,
+  teacherStudentsQuerySchema,
+} from "./admin-teacher-detail.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -27,6 +32,7 @@ import { listTeachersQuerySchema } from "./admin-teachers.validation.js";
 const router = Router();
 const statsController = new AdminStatsController();
 const teachersController = new AdminTeachersController();
+const teacherDetailController = new AdminTeacherDetailController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -41,6 +47,26 @@ router.get(
   validateRequest(listTeachersQuerySchema, "query"),
   asyncHandler(teachersController.list),
 );
+
+// ── Teacher detail (all scoped to :teacherId; OPERATION-role or 404) ──────────
+// Registered after the static "/teachers" route above. Each handler resolves the
+// teacher (404 if missing / non-OPERATION) before returning safe, teacher-scoped
+// data — course revenue and subscription payments are kept as separate figures.
+router.get("/teachers/:teacherId", asyncHandler(teacherDetailController.getDetail));
+router.get(
+  "/teachers/:teacherId/students",
+  validateRequest(teacherStudentsQuerySchema, "query"),
+  asyncHandler(teacherDetailController.getStudents),
+);
+router.get(
+  "/teachers/:teacherId/enrollments",
+  validateRequest(teacherEnrollmentsQuerySchema, "query"),
+  asyncHandler(teacherDetailController.getEnrollments),
+);
+router.get("/teachers/:teacherId/content", asyncHandler(teacherDetailController.getContent));
+router.get("/teachers/:teacherId/revenue", asyncHandler(teacherDetailController.getRevenue));
+router.get("/teachers/:teacherId/subscription", asyncHandler(teacherDetailController.getSubscription));
+router.get("/teachers/:teacherId/ai-usage", asyncHandler(teacherDetailController.getAiUsage));
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */
 router.get("/me", (req, res) => {
