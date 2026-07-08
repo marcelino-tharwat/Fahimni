@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,11 +13,14 @@ import {
   Play,
   Eye,
   AlertCircle,
+  GraduationCap,
+  Layers,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
-import { Skeleton, Badge } from '@/shared/components/ui';
+import { Badge } from '@/shared/components/ui';
 import { useStudentQuizzes } from '@/features/student/hooks/useStudentQuizzes';
 import { resolveQuizStudentAction } from '@/features/student/lib/quizNavigation';
+import { partitionQuizzesByScope } from '@/features/student/lib/partitionQuizzesByScope';
 import type { ChapterGroup, QuizItem } from '@/features/student/types/studentQuiz';
 
 const statusConfig: Record<
@@ -80,10 +83,13 @@ function QuizRow({
   quiz,
   onStart,
   onViewResult,
+  scopeMeta,
 }: {
   quiz: QuizItem;
   onStart: (id: string) => void;
   onViewResult: (quizId: string, attemptId: string) => void;
+  /** Optional scope badge/chips rendered under the title (top-level sections). */
+  scopeMeta?: ReactNode;
 }) {
   const { t } = useTranslation();
   const cfg = statusConfig[quiz.status];
@@ -98,6 +104,9 @@ function QuizRow({
 
       <div className="min-w-0 flex-1">
         <p className="truncate font-cairo text-body font-semibold text-navy-800">{quiz.title}</p>
+        {scopeMeta && (
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">{scopeMeta}</div>
+        )}
         <div className="mt-1 flex flex-wrap items-center gap-3 font-cairo text-caption text-gray-600">
           <span className="inline-flex items-center gap-1">
             <FileText size={12} />
@@ -274,6 +283,64 @@ function ChapterAccordion({
   );
 }
 
+/** Small neutral chip using existing tokens (matches the stats pills). */
+function ScopeChip({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-badge bg-cyan-50 px-2.5 py-0.5 font-cairo text-caption font-medium text-cyan-700">
+      {children}
+    </span>
+  );
+}
+
+/**
+ * A top-level scope section (Full Curriculum / Multi-Chapter). Visually distinct
+ * from chapter accordions — an icon-led header with a subtitle, and no collapse —
+ * while reusing the same QuizRow and card tokens for consistency.
+ */
+function ScopeSection({
+  icon: Icon,
+  title,
+  subtitle,
+  quizzes,
+  onStart,
+  onViewResult,
+  renderScopeMeta,
+}: {
+  icon: typeof GraduationCap;
+  title: string;
+  subtitle: string;
+  quizzes: QuizItem[];
+  onStart: (id: string) => void;
+  onViewResult: (quizId: string, attemptId: string) => void;
+  renderScopeMeta: (quiz: QuizItem) => ReactNode;
+}) {
+  return (
+    <section className="overflow-hidden rounded-card bg-white shadow-card">
+      <div className="flex items-center gap-3 border-b-2 border-cyan-100 bg-cyan-50/40 px-5 py-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-gradient shadow-glow">
+          <Icon size={20} className="text-white" />
+        </div>
+        <div className="min-w-0">
+          <h2 className="truncate font-cairo text-h3 text-navy-900">{title}</h2>
+          <p className="truncate font-cairo text-caption text-gray-600">{subtitle}</p>
+        </div>
+      </div>
+      <div>
+        {quizzes.map((quiz) => (
+          <div key={quiz.id} className="border-b border-gray-300 last:border-b-0">
+            <QuizRow
+              quiz={quiz}
+              onStart={onStart}
+              onViewResult={onViewResult}
+              scopeMeta={renderScopeMeta(quiz)}
+            />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function StudentQuizListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -304,6 +371,13 @@ export function StudentQuizListPage() {
     (quizId: string, attemptId: string) =>
       navigate(`/student/quizzes/${quizId}/results/${attemptId}`),
     [navigate],
+  );
+
+  // Re-group the flat list into three top-level scope buckets. Scope is resolved
+  // by the backend read projection; this only partitions what it returned.
+  const partitioned = useMemo(
+    () => (data ? partitionQuizzesByScope(data) : null),
+    [data],
   );
 
   if (isLoading) {
@@ -337,7 +411,13 @@ export function StudentQuizListPage() {
     );
   }
 
-  if (!data || data.chapters.length === 0) {
+  if (
+    !data ||
+    !partitioned ||
+    (partitioned.fullCurriculum.length === 0 &&
+      partitioned.multiChapter.length === 0 &&
+      partitioned.chapters.length === 0)
+  ) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
         <div className="flex items-center justify-center rounded-xl bg-gray-200 p-5">
@@ -423,18 +503,81 @@ export function StudentQuizListPage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
-        {data.chapters.map((chapter) => (
-          <ChapterAccordion
-            key={chapter.id}
-            chapter={chapter}
-            isOpen={isAccordionOpen(chapter.id)}
-            onToggle={() => toggleAccordion(chapter.id)}
-            onStart={handleStart}
-            onViewResult={handleViewResult}
-          />
-        ))}
-      </div>
+      {partitioned.fullCurriculum.length > 0 && (
+        <ScopeSection
+          icon={GraduationCap}
+          title={t('student:quizzes.sections.fullCurriculum.title')}
+          subtitle={t('student:quizzes.sections.fullCurriculum.subtitle')}
+          quizzes={partitioned.fullCurriculum}
+          onStart={handleStart}
+          onViewResult={handleViewResult}
+          renderScopeMeta={(quiz) => (
+            <>
+              <Badge variant="info">
+                {t('student:quizzes.sections.fullCurriculum.badge')}
+              </Badge>
+              {quiz.sourceStage?.title && (
+                <ScopeChip>
+                  <GraduationCap size={12} />
+                  {quiz.sourceStage.title}
+                </ScopeChip>
+              )}
+            </>
+          )}
+        />
+      )}
+
+      {partitioned.multiChapter.length > 0 && (
+        <ScopeSection
+          icon={Layers}
+          title={t('student:quizzes.sections.multiChapter.title')}
+          subtitle={t('student:quizzes.sections.multiChapter.subtitle')}
+          quizzes={partitioned.multiChapter}
+          onStart={handleStart}
+          onViewResult={handleViewResult}
+          renderScopeMeta={(quiz) => {
+            const chapters = quiz.sourceChapters ?? [];
+            return (
+              <>
+                <Badge variant="info">
+                  {t('student:quizzes.sections.multiChapter.badge')}
+                </Badge>
+                {chapters.length > 0 &&
+                  (chapters.length <= 3 ? (
+                    chapters.map((ch) => (
+                      <ScopeChip key={ch.id}>
+                        <BookOpen size={12} />
+                        {ch.title}
+                      </ScopeChip>
+                    ))
+                  ) : (
+                    <ScopeChip>
+                      <Layers size={12} />
+                      {t('student:quizzes.sections.multiChapter.chapterCount', {
+                        count: chapters.length,
+                      })}
+                    </ScopeChip>
+                  ))}
+              </>
+            );
+          }}
+        />
+      )}
+
+      {partitioned.chapters.length > 0 && (
+        <div className="flex flex-col gap-4">
+          {partitioned.chapters.map((chapter) => (
+            <ChapterAccordion
+              key={chapter.id}
+              chapter={chapter}
+              isOpen={isAccordionOpen(chapter.id)}
+              onToggle={() => toggleAccordion(chapter.id)}
+              onStart={handleStart}
+              onViewResult={handleViewResult}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
