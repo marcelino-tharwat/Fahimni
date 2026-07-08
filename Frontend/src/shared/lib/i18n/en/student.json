@@ -267,7 +267,8 @@
     "videoUnavailable": "Video currently unavailable",
     "lessonLabel": "Lesson {{order}}",
     "minutes": "minutes",
-    "pdfMaterials": "Lesson files",
+    "fileCount_one": "{{count}} file",
+    "fileCount_other": "{{count}} files",
     "download": "Download",
     "materials": {
       "empty": "No files for this lesson",
