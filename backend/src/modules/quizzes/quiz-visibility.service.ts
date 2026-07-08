@@ -6,6 +6,12 @@ import type {
   StudentQuizVisibilityDTO,
 } from "./quiz-visibility.types.js";
 import type { AttemptState } from "./attempts.service.js";
+import { resolveStudentQuizSourceScopes } from "./quiz-scope.js";
+import type {
+  QuizSourceScope,
+  QuizSourceScopeRow,
+  QuizSourceRefDTO,
+} from "./quiz-scope.js";
 
 const quizVisibilitySelect = {
   id: true,
@@ -14,6 +20,9 @@ const quizVisibilitySelect = {
   chapterId: true,
   status: true,
   contentScope: true,
+  sourceScope: true,
+  sourceChapterIds: true,
+  sourceStageId: true,
   questionCount: true,
   totalPoints: true,
   durationMinutes: true,
@@ -28,6 +37,9 @@ type QuizRow = {
   chapterId: string | null;
   status: string;
   contentScope: "CHAPTER" | "SELECTED_LESSONS";
+  sourceScope: QuizSourceScope;
+  sourceChapterIds: string[];
+  sourceStageId: string | null;
   questionCount: number;
   totalPoints: number;
   durationMinutes: number | null;
@@ -50,6 +62,7 @@ function buildVisibilityDto(
   options: {
     requiredForLessonId: string | null;
     linkedLessonIds: string[];
+    source?: { chapters?: QuizSourceRefDTO[]; stage?: QuizSourceRefDTO };
   },
 ): StudentQuizVisibilityDTO {
   const display = deriveQuizDisplayStatus(
@@ -70,6 +83,9 @@ function buildVisibilityDto(
     chapterId: quiz.chapterId!,
     status: "PUBLISHED",
     contentScope: quiz.contentScope,
+    sourceScope: quiz.sourceScope,
+    ...(options.source?.chapters ? { sourceChapters: options.source.chapters } : {}),
+    ...(options.source?.stage ? { sourceStage: options.source.stage } : {}),
     linkedLessonIds: options.linkedLessonIds,
     isRequiredForProgression: options.requiredForLessonId !== null,
     requiredForLessonId: options.requiredForLessonId,
@@ -172,7 +188,7 @@ export class QuizVisibilityService {
     if (quizzes.length === 0) return [];
 
     const quizIds = quizzes.map((q) => q.id);
-    const [attempts, gateLessons] = await Promise.all([
+    const [attempts, gateLessons, sourceScopes] = await Promise.all([
       prisma.quizAttempt.findMany({
         where: { studentId, quizId: { in: quizIds } },
         select: {
@@ -187,6 +203,15 @@ export class QuizVisibilityService {
         where: { requiredQuizId: { in: quizIds }, deletedAt: null },
         select: { id: true, requiredQuizId: true },
       }),
+      resolveStudentQuizSourceScopes(
+        quizzes.map((q) => ({
+          id: q.id,
+          sourceScope: q.sourceScope,
+          sourceChapterIds: q.sourceChapterIds,
+          sourceStageId: q.sourceStageId,
+        })) as QuizSourceScopeRow[],
+        studentId,
+      ),
     ]);
 
     const attemptByQuiz = new Map(attempts.map((a) => [a.quizId, a]));
@@ -206,9 +231,18 @@ export class QuizVisibilityService {
             ? gateLessonId
             : null;
 
+      const src = sourceScopes.get(quiz.id);
       return buildVisibilityDto(quiz, attemptByQuiz.get(quiz.id), {
         requiredForLessonId,
         linkedLessonIds,
+        ...(src
+          ? {
+              source: {
+                ...(src.chapters ? { chapters: src.chapters } : {}),
+                ...(src.stage ? { stage: src.stage } : {}),
+              },
+            }
+          : {}),
       });
     });
   }

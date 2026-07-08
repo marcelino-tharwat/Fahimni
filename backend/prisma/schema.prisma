@@ -303,6 +303,14 @@ model Quiz {
   description            String?
   chapterId              String?
   contentScope           QuizContentScope @default(CHAPTER) @map("content_scope")
+  // ── Generation source scope (additive, orthogonal to contentScope) ─────────
+  // contentScope (CHAPTER vs SELECTED_LESSONS) describes intra-chapter lesson
+  // placement. sourceScope describes how many chapters/stages the questions were
+  // generated FROM (single chapter, several chapters, or a whole stage). Defaults
+  // keep every legacy row valid: SINGLE_CHAPTER, empty chapter list, no stage.
+  sourceScope            QuizSourceScope  @default(SINGLE_CHAPTER) @map("source_scope")
+  sourceChapterIds       String[]         @default([]) @map("source_chapter_ids")
+  sourceStageId          String?          @map("source_stage_id")
   status                 QuizStatus       @default(DRAFT)
   durationMinutes        Int?             @map("duration_minutes")
   questionCount          Int              @default(0)
@@ -349,6 +357,12 @@ model QuizLesson {
 enum QuizContentScope {
   CHAPTER
   SELECTED_LESSONS
+}
+
+enum QuizSourceScope {
+  SINGLE_CHAPTER
+  MULTI_CHAPTER
+  FULL_CURRICULUM
 }
 
 /// Controls what a student sees on the result page while a quiz still has

@@ -51,6 +51,12 @@ export interface AllocationPlan {
   sourceTitles: string[];
   lessonIds: string[];
   lessons: Array<{ id: string; title: string }>;
+  // Persisted source provenance (final Quiz.sourceChapterIds / sourceStageId
+  // semantics per scope): MULTI_CHAPTER → the deduped, sortOrder-ordered owned
+  // chapters that fed generation; FULL_CURRICULUM → sourceStageId set, chapters
+  // empty; SINGLE_CHAPTER → both empty/null (the existing chapterId is enough).
+  sourceChapterIds: string[];
+  sourceStageId: string | null;
 }
 
 interface OwnedChapter {
@@ -165,7 +171,28 @@ async function buildAutoPlan(
     sourceTitles: scope.sourceTitles,
     lessonIds: scope.lessonIds,
     lessons: scope.lessons,
+    ...deriveSourceProvenance(sourceScope, scope.chapterIds, scope.stageId),
   };
+}
+
+/**
+ * Map a resolved scope onto the persisted provenance columns. MULTI_CHAPTER
+ * keeps the ordered owned chapter ids; FULL_CURRICULUM keeps the stage id (and
+ * an empty chapter list — the whole stage is implied); SINGLE_CHAPTER keeps
+ * neither (the single chapterId placement column already captures it).
+ */
+function deriveSourceProvenance(
+  sourceScope: SourceScope,
+  chapterIds: string[],
+  stageId: string | null,
+): { sourceChapterIds: string[]; sourceStageId: string | null } {
+  if (sourceScope === "MULTI_CHAPTER") {
+    return { sourceChapterIds: chapterIds, sourceStageId: null };
+  }
+  if (sourceScope === "FULL_CURRICULUM") {
+    return { sourceChapterIds: [], sourceStageId: stageId };
+  }
+  return { sourceChapterIds: [], sourceStageId: null };
 }
 
 /** MULTI_CHAPTER + BY_CHAPTER: one bucket per selected chapter. */
@@ -241,6 +268,8 @@ async function buildByChapterPlan(
     sourceTitles: chapters.map((c) => c.name),
     lessonIds: allLessons.map((l) => l.id),
     lessons: allLessons,
+    sourceChapterIds: chapters.map((c) => c.id),
+    sourceStageId: null,
   };
 }
 
@@ -296,6 +325,8 @@ async function buildByLessonPlan(
       sourceTitles: scope.sourceTitles,
       lessonIds: scope.lessonIds,
       lessons: scope.lessons,
+      sourceChapterIds: [],
+      sourceStageId: null,
     };
   }
 
@@ -359,5 +390,7 @@ async function buildByLessonPlan(
     sourceTitles: chapters.map((c) => c.name),
     lessonIds: allLessons.map((l) => l.id),
     lessons: allLessons,
+    sourceChapterIds: chapters.map((c) => c.id),
+    sourceStageId: null,
   };
 }
