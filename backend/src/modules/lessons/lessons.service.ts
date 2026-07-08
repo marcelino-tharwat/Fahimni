@@ -3,6 +3,7 @@ import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { logger } from "../../config/logger.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
+import { notificationsService } from "../notifications/notifications.service.js";
 import { FilesService } from "../files/files.service.js";
 import type { LessonResponseDTO } from "./lessons.types.js";
 import type { CreateLessonInput, UpdateLessonInput } from "./lessons.validation.js";
@@ -134,6 +135,14 @@ export class LessonsService {
       actorType: "TEACHER",
       scopeTeacherId: teacherId,
       details: { title: lesson.title, chapterId },
+    });
+
+    await notificationsService.notifyChapterEnrolledStudents(chapterId, {
+      type: "NEW_LESSON",
+      resourceTitle: lesson.title,
+      resourceType: "LESSON",
+      resourceId: lesson.id,
+      courseContextId: chapterId,
     });
 
     return toFullDTO(lesson as unknown as Record<string, unknown>);

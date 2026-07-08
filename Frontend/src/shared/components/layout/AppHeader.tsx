@@ -7,6 +7,7 @@ import { logoutUser } from '@/features/auth/store/authSlice';
 import { toggleSidebar } from '@/shared/store/slices/uiSlice';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { useTeacherProfile } from '@/features/teacher/hooks/useTeacherProfile';
+import { NotificationBell } from '@/features/notifications/components/NotificationBell';
 import { Avatar } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils/cn';
 
@@ -124,53 +125,56 @@ function FullHeader({ showMenu }: { showMenu: boolean }) {
         </h1>
       )}
       {user && (
-        <div className="relative ms-auto" ref={menuRef}>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            aria-haspopup="menu"
-            aria-expanded={menuOpen}
-            className="flex items-center gap-2 rounded-btn p-1 transition-colors hover:bg-gray-100"
-          >
-            <Avatar name={user.fullName} src={avatarUrl} size="sm" />
-            <span className="hidden flex-col text-start leading-tight sm:flex">
-              <span className="font-cairo text-sm font-medium text-navy-900">{user.fullName}</span>
-              <span className="font-cairo text-xs text-gray-500">
-                {t(`roles.${user.role}`)}
-              </span>
-            </span>
-            <ChevronDown size={16} className="text-gray-500" />
-          </button>
-
-          {menuOpen && (
-            <div
-              role="menu"
-              className="absolute end-0 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+        <div className="ms-auto flex items-center gap-3">
+          {user.role === 'STUDENT' && <NotificationBell />}
+          <div className="relative" ref={menuRef}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              className="flex items-center gap-2 rounded-btn p-1 transition-colors hover:bg-gray-100"
             >
-              <button
-                type="button"
-                role="menuitem"
-                onClick={toggleLanguage}
-                className="flex w-full items-center gap-3 px-4 py-2 font-cairo text-sm text-navy-900 transition-colors hover:bg-gray-50"
+              <Avatar name={user.fullName} src={avatarUrl} size="sm" />
+              <span className="hidden flex-col text-start leading-tight sm:flex">
+                <span className="font-cairo text-sm font-medium text-navy-900">{user.fullName}</span>
+                <span className="font-cairo text-xs text-gray-500">
+                  {t(`roles.${user.role}`)}
+                </span>
+              </span>
+              <ChevronDown size={16} className="text-gray-500" />
+            </button>
+
+            {menuOpen && (
+              <div
+                role="menu"
+                className="absolute end-0 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
               >
-                <Globe size={18} className="text-navy-600" />
-                <span>{languageLabel}</span>
-              </button>
-              <div className="my-1 border-t border-gray-200" />
-              <button
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  setMenuOpen(false);
-                  dispatch(logoutUser());
-                }}
-                className="flex w-full items-center gap-3 px-4 py-2 font-cairo text-sm text-danger-500 transition-colors hover:bg-gray-50"
-              >
-                <LogOut size={18} />
-                <span>{t('actions.logout')}</span>
-              </button>
-            </div>
-          )}
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={toggleLanguage}
+                  className="flex w-full items-center gap-3 px-4 py-2 font-cairo text-sm text-navy-900 transition-colors hover:bg-gray-50"
+                >
+                  <Globe size={18} className="text-navy-600" />
+                  <span>{languageLabel}</span>
+                </button>
+                <div className="my-1 border-t border-gray-200" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    dispatch(logoutUser());
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-2 font-cairo text-sm text-danger-500 transition-colors hover:bg-gray-50"
+                >
+                  <LogOut size={18} />
+                  <span>{t('actions.logout')}</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </>

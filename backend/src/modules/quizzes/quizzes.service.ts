@@ -1,6 +1,7 @@
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
+import { notificationsService } from "../notifications/notifications.service.js";
 import { assertChapterOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
 import {
   quizPublicFields,
@@ -66,7 +67,7 @@ export class QuizService {
     input: CreateQuizInput,
     teacherId: string,
   ): Promise<QuizResponseDTO> {
-    let chapterId: string | null = input.chapterId ?? null;
+    let chapterId: string | null = input.chapterId?.trim() ? input.chapterId : null;
     let contentScope: "CHAPTER" | "SELECTED_LESSONS" = "CHAPTER";
 
     if (chapterId) {
@@ -489,6 +490,16 @@ export class QuizService {
       scopeTeacherId: teacherId,
       details: { title: existing.title, questionCount: questions.length },
     });
+
+    if (existing.chapterId) {
+      await notificationsService.notifyChapterEnrolledStudents(existing.chapterId, {
+        type: "NEW_QUIZ",
+        resourceTitle: existing.title,
+        resourceType: "QUIZ",
+        resourceId: quizId,
+        courseContextId: existing.chapterId,
+      });
+    }
 
     if (options?.progressionGateLessonIds?.length) {
       const { applyQuizProgressionGates } = await import(

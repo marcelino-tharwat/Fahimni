@@ -316,6 +316,16 @@
       "unavailable": "هذا الدرس غير متاح بعد."
     }
   },
+  "notifications": {
+    "emptyTitle": "لا توجد إشعارات",
+    "emptyDescription": "سيتم عرض الإشعارات الجديدة هنا",
+    "justNow": "الآن",
+    "minutesAgo": "دقائق",
+    "hoursAgo": "ساعات",
+    "daysAgo": "أيام",
+    "newLesson": "تم إضافة درس جديد: {{title}}",
+    "newQuiz": "تم نشر اختبار جديد: {{title}}"
+  },
   "support": {
     "whatsapp": {
       "tooltip": "تحتاج مساعدة؟ تواصل معنا عبر واتساب",

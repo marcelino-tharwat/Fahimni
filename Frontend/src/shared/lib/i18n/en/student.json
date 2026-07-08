@@ -312,6 +312,16 @@
       "unavailable": "This lesson is not available yet."
     }
   },
+  "notifications": {
+    "emptyTitle": "No notifications yet",
+    "emptyDescription": "New notifications will appear here",
+    "justNow": "Just now",
+    "minutesAgo": "minute(s) ago",
+    "hoursAgo": "hour(s) ago",
+    "daysAgo": "day(s) ago",
+    "newLesson": "New lesson added: {{title}}",
+    "newQuiz": "New quiz published: {{title}}"
+  },
   "support": {
     "whatsapp": {
       "tooltip": "Need help? Chat with us on WhatsApp",

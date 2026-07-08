@@ -29,6 +29,7 @@ import contentProtectionRoutes from "./modules/content-protection/contentProtect
 import { teacherRequestRoutes } from "./modules/teacher-request/index.js";
 import teacherPlanRoutes from "./modules/teacher-plans/teacher-plan.routes.js";
 import adminRoutes from "./modules/admin/admin.routes.js";
+import notificationRoutes from "./modules/notifications/notifications.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -91,6 +92,8 @@ export function createApp(): Application {
   app.use("/api/teacher-registration-requests", teacherRequestRoutes);
 
   app.use("/api/teacher", teacherPlanRoutes);
+
+  app.use("/api/notifications", notificationRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
