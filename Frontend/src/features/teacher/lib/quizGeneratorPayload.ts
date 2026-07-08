@@ -4,25 +4,17 @@ import type {
   QuizGeneratorFormState,
 } from '@/features/teacher/types/quizGeneration';
 import { mapFormDifficultyMode } from '@/features/teacher/lib/quizDifficultyValidation';
+import {
+  buildAllocationFields,
+  type ChapterLessonsMap,
+} from '@/features/teacher/lib/quizAllocation';
 
 /** Build the canonical generate-quiz request body from form state. */
 export function buildGenerateQuizPayload(
-  form: Pick<
-    QuizGeneratorFormState,
-    | 'sourceScope'
-    | 'stageId'
-    | 'chapterId'
-    | 'chapterIds'
-    | 'contentScope'
-    | 'lessonIds'
-    | 'questionCount'
-    | 'questionTypes'
-    | 'difficultyMode'
-    | 'difficulty'
-    | 'mixedDifficulty'
-  >,
-  topicFocus?: string,
+  form: QuizGeneratorFormState,
+  options: { topicFocus?: string; chapterLessons?: ChapterLessonsMap } = {},
 ): GenerateQuizPayload {
+  const { topicFocus, chapterLessons = {} } = options;
   // Default to SINGLE_CHAPTER so callers/forms that never set sourceScope keep
   // producing the exact legacy chapterId-only payload.
   const sourceScope = form.sourceScope ?? 'SINGLE_CHAPTER';
@@ -58,8 +50,13 @@ export function buildGenerateQuizPayload(
     };
   }
 
+  // Allocation fields (empty for AUTO ⇒ legacy body). May override
+  // contentScope/lessonIds for single-chapter BY_LESSON.
+  const allocationFields = buildAllocationFields(form, chapterLessons);
+
   const base = {
     ...scopeFields,
+    ...allocationFields,
     questionCount: form.questionCount,
     types: form.questionTypes,
     difficultyMode: mapFormDifficultyMode(form.difficultyMode),

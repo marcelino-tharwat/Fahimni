@@ -40,6 +40,14 @@ export interface ParsedQuiz {
 export interface ParseExpectations {
   questionCount: number;
   requestedTypes: PublicQuestionType[];
+  /**
+   * When true (default) every requested type must appear in the output. Small
+   * per-lesson/per-chapter allocation buckets may hold fewer questions than the
+   * number of requested types, so multi-pass generation sets this false per
+   * bucket and enforces type coverage on the merged quiz instead. The
+   * "only requested types may appear" guard is always enforced.
+   */
+  requireEveryRequestedType?: boolean;
 }
 
 /**
@@ -274,11 +282,13 @@ export function parseQuizGenerationResponse(
       );
     }
   }
-  for (const requested of requestedTypes) {
-    if (!producedTypes.has(requested)) {
-      throw new QuizGenerationParseError(
-        `نوع سؤال مطلوب لم يظهر في المخرجات: ${requested}.`,
-      );
+  if (expected.requireEveryRequestedType !== false) {
+    for (const requested of requestedTypes) {
+      if (!producedTypes.has(requested)) {
+        throw new QuizGenerationParseError(
+          `نوع سؤال مطلوب لم يظهر في المخرجات: ${requested}.`,
+        );
+      }
     }
   }
 
