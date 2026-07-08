@@ -234,6 +234,54 @@
       }
     }
   },
+  "adminStudents": {
+    "title": "الطلاب",
+    "subtitle": "إدارة حسابات الطلاب واشتراكاتهم",
+    "searchPlaceholder": "ابحث بالاسم أو البريد أو الجوال",
+    "viewDetails": "عرض التفاصيل",
+    "errorLoading": "تعذّر تحميل قائمة الطلاب",
+    "retry": "إعادة المحاولة",
+    "emptyTitle": "لا يوجد طلاب",
+    "emptyDescription": "لا يوجد طلاب مطابقون لهذا التصنيف",
+    "totalCount": "{{count}} طالب",
+    "teachersCount": "{{count}} مدرس",
+    "tabs": {
+      "all": "كل الطلاب",
+      "active": "لديهم اشتراكات نشطة",
+      "without_enrollment": "بدون أي اشتراك",
+      "without_active_teacher": "بدون مدرس نشط",
+      "payment_pending": "مدفوعات معلقة"
+    },
+    "status": { "ACTIVE": "نشط", "INACTIVE": "غير نشط", "BANNED": "محظور" },
+    "enrollmentStatus": { "ACTIVE": "نشط", "PAYMENT_PENDING": "بانتظار الدفع", "DEACTIVATED": "موقوف" },
+    "col": {
+      "student": "الطالب",
+      "teachers": "المدرسون",
+      "activeEnrollments": "اشتراكات نشطة",
+      "pending": "معلّق",
+      "createdAt": "تاريخ الإنشاء"
+    },
+    "detail": {
+      "title": "تفاصيل الطالب",
+      "close": "إغلاق",
+      "error": "تعذّر تحميل بيانات الطالب",
+      "enrollments": "الاشتراكات",
+      "active": "نشطة",
+      "teachers": "المدرسون",
+      "quizAttempts": "محاولات الاختبار",
+      "avgScore": "متوسط الدرجات",
+      "confirmedPayments": "مدفوعات مؤكدة",
+      "teachersList": "المدرسون",
+      "noTeachers": "لا يوجد مدرسون",
+      "enrollmentsList": "الاشتراكات",
+      "noEnrollments": "لا توجد اشتراكات",
+      "paymentsList": "المدفوعات",
+      "noPayments": "لا توجد مدفوعات",
+      "learning": "ملخّص التعلّم",
+      "completedLessons": "دروس مكتملة",
+      "noLearning": "لا توجد بيانات تعلّم"
+    }
+  },
   "support": {
     "promoCodes": "أكواد الخصم",
     "createCode": "إنشاء كود جديد",
