@@ -29,6 +29,18 @@ export function useLessonsByChapter(chapterId: string | undefined) {
   });
 }
 
+export const GENERATOR_SOURCES_KEY = ['teacher', 'generator-sources'];
+
+/** Curriculum eligibility for the generator (per-stage when stageId is set). */
+export function useGeneratorSources(stageId: string | undefined) {
+  return useQuery({
+    queryKey: [...GENERATOR_SOURCES_KEY, stageId ?? 'all'],
+    queryFn: () => quizGenerationApi.getGeneratorSources(stageId),
+    enabled: !!stageId,
+    staleTime: 30_000,
+  });
+}
+
 export function useGenerateQuiz() {
   return useMutation({
     mutationFn: (payload: GenerateQuizPayload) => quizGenerationApi.generateQuiz(payload),

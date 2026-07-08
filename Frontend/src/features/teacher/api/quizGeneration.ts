@@ -2,7 +2,11 @@ import { apiClient } from '@/shared/lib/api/client';
 import type { ApiResponse } from '@/shared/types/api';
 import type { Stage, Chapter } from '@/shared/types/content';
 import type { Lesson } from '@/features/teacher/types/lesson';
-import type { GenerateQuizPayload, GenerateQuizResponse } from '@/features/teacher/types/quizGeneration';
+import type {
+  GenerateQuizPayload,
+  GenerateQuizResponse,
+  GeneratorSourcesResult,
+} from '@/features/teacher/types/quizGeneration';
 
 export const quizGenerationApi = {
   getStages: async (): Promise<Stage[]> => {
@@ -17,6 +21,15 @@ export const quizGenerationApi = {
 
   getLessonsByChapter: async (chapterId: string): Promise<Lesson[]> => {
     const { data } = await apiClient.get<ApiResponse<Lesson[]>>(`/chapters/${chapterId}/lessons`);
+    return data.data;
+  },
+
+  /** GET /quizzes/generator/sources — curriculum eligibility for the generator UI. */
+  getGeneratorSources: async (stageId?: string): Promise<GeneratorSourcesResult> => {
+    const { data } = await apiClient.get<ApiResponse<GeneratorSourcesResult>>(
+      '/quizzes/generator/sources',
+      stageId ? { params: { stageId } } : undefined,
+    );
     return data.data;
   },
 

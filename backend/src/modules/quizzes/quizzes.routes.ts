@@ -49,6 +49,15 @@ quizStandaloneRouter.post(
   quizController.generate,
 );
 
+// Curriculum eligibility for the generator UI (source/allocation selection).
+// Static path — registered before the parameterized /:id routes below.
+quizStandaloneRouter.get(
+  "/generator/sources",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  quizController.generatorSources,
+);
+
 quizStandaloneRouter.get(
   "/essay-grading",
   authenticateMiddleware,

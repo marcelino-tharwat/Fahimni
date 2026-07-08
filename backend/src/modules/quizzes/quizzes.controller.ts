@@ -5,6 +5,10 @@ import { AppError } from "../../shared/utils/AppError.js";
 import { QuizService } from "./quizzes.service.js";
 import { QuizGenerationService } from "./quiz-generation.service.js";
 import { TeacherPlanPolicyService } from "../teacher-plans/teacher-plan-policy.service.js";
+import {
+  getGeneratorSources,
+  type GeneratorSourcesResult,
+} from "./quiz-generator-sources.service.js";
 import type {
   GeneratedQuizDTO,
 } from "./quiz-generation.service.js";
@@ -38,6 +42,30 @@ export class QuizzesController {
           okResponse<GeneratedQuizDTO>(
             "تم إنشاء مسودة الاختبار بنجاح.",
             quiz,
+          ),
+        );
+    },
+  );
+
+  /**
+   * GET /api/quizzes/generator/sources[?stageId=...]
+   * Curriculum eligibility snapshot for the generator UI: which owned stages /
+   * chapters / lessons have usable indexed content. Read-only, teacher-scoped.
+   */
+  public generatorSources = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const teacherId = req.user!.id;
+      const stageId =
+        typeof req.query.stageId === "string" ? req.query.stageId : undefined;
+
+      const sources = await getGeneratorSources(teacherId, stageId);
+
+      res
+        .status(200)
+        .json(
+          okResponse<GeneratorSourcesResult>(
+            "تم جلب مصادر توليد الاختبار.",
+            sources,
           ),
         );
     },
