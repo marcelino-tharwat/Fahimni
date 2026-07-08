@@ -1,10 +1,12 @@
+import type { UserRole, UserStatus } from '@/shared/types/user';
+
 export interface StudentProfileUser {
   id: string;
   fullName: string;
   email: string;
   mobile: string;
-  role: string;
-  status: string;
+  role: UserRole;
+  status: UserStatus;
   createdAt: string;
   updatedAt: string;
 }

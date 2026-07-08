@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { quizGenerationApi } from '@/features/teacher/api/quizGeneration';
-import type { QuizListItem, UpdateQuizBody } from '@/features/teacher/api/quizGeneration';
+import type { UpdateQuizBody } from '@/features/teacher/api/quizGeneration';
 
 export const QUIZ_LIST_KEY = ['teacher', 'quizzes'] as const;
 

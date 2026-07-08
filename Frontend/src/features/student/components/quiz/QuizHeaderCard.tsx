@@ -30,7 +30,7 @@ export function QuizHeaderCard({ meta }: QuizHeaderCardProps) {
         </div>
         <div className="flex items-center gap-1.5 text-body text-gray-600">
           <Clock size={15} />
-          <span>{t('quiz:duration')}: {toLocalNum(meta.durationMinutes)} {t('common:minutes', { defaultValue: 'دقائق' })}</span>
+          <span>{t('quiz:duration')}: {toLocalNum(meta.durationMinutes ?? 0)} {t('common:minutes', { defaultValue: 'دقائق' })}</span>
         </div>
         <div className="flex items-center gap-1.5 text-body text-gray-600">
           <AlertCircle size={15} />

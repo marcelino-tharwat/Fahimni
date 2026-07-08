@@ -3,8 +3,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 export interface SortableRenderProps {
-  attributes: Record<string, unknown>;
-  listeners: Record<string, unknown>;
+  attributes: ReturnType<typeof useSortable>['attributes'];
+  listeners: ReturnType<typeof useSortable>['listeners'];
   setNodeRef: (el: HTMLElement | null) => void;
   style: CSSProperties | undefined;
   isDragging: boolean;
