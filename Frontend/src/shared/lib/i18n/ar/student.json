@@ -285,7 +285,8 @@
     "videoUnavailable": "الفيديو غير متاح حالياً",
     "lessonLabel": "الدرس {{order}}",
     "minutes": "دقيقة",
-    "pdfMaterials": "ملفات الدرس",
+    "fileCount_one": "ملف {{count}}",
+    "fileCount_other": "{{count}} ملفات",
     "download": "تحميل",
     "materials": {
       "empty": "لا توجد ملفات لهذا الدرس",

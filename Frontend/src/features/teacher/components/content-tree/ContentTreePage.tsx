@@ -38,7 +38,7 @@ export function ContentTreePage() {
   const user = useAppSelector((state) => state.auth.user);
   const canReorder = user?.role === 'OPERATION';
 
-  const { data: tree, isLoading, isError, isFetching, refetch } = useContentTree();
+  const { data: tree, isLoading, isError, refetch } = useContentTree();
   const deleteStage = useDeleteStage();
   const deleteChapter = useDeleteChapter();
   const deleteLesson = useDeleteLesson();
@@ -416,8 +416,6 @@ export function ContentTreePage() {
             chapters={stage?.chapters ?? []}
             isLoading={isLoading}
             isError={isError}
-            isFetching={isFetching}
-            onRefresh={() => void refetch()}
             onRetry={() => void refetch()}
             expandedNodes={expandedNodes}
             onToggle={toggleNode}

@@ -172,7 +172,7 @@ export function LessonPage() {
 
       if (!isEnrollment && lockCode) {
         return (
-          <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 py-20 text-center">
+          <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-center gap-4 py-20 text-center">
             <span className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
               <Lock size={40} className="text-gray-500" />
             </span>
@@ -196,7 +196,7 @@ export function LessonPage() {
       }
 
       return (
-        <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 py-20 text-center">
+        <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-center gap-4 py-20 text-center">
           <span className="flex h-20 w-20 items-center justify-center rounded-full bg-warning-50">
             <Lock size={40} className="text-warning-500" />
           </span>
@@ -217,7 +217,7 @@ export function LessonPage() {
     }
 
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-4 py-20 text-center">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-center gap-4 py-20 text-center">
         <span className="flex h-20 w-20 items-center justify-center rounded-full bg-danger-50">
           <AlertCircle size={40} className="text-danger-500" />
         </span>
@@ -241,7 +241,7 @@ export function LessonPage() {
   const showVideo = youtubeId !== null;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <button
         type="button"
         onClick={() => navigate(-1)}
@@ -430,7 +430,7 @@ export function LessonPage() {
 
 function LessonSkeleton() {
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       <div className="flex items-center gap-2">
         <Skeleton className="h-4 w-20" />
         <Skeleton className="h-4 w-4" />

@@ -16,6 +16,7 @@ type AppHeaderVariant = 'full' | 'minimal' | 'auth';
 interface AppHeaderProps {
   variant?: AppHeaderVariant;
   showMenu?: boolean;
+  showBrand?: boolean;
 }
 
 const pageTitleByPath: Record<string, string> = {
@@ -67,7 +68,7 @@ function LanguageToggle() {
   );
 }
 
-function FullHeader({ showMenu }: { showMenu: boolean }) {
+function FullHeader({ showMenu, showBrand }: { showMenu: boolean; showBrand: boolean }) {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const { pathname } = useLocation();
@@ -119,6 +120,7 @@ function FullHeader({ showMenu }: { showMenu: boolean }) {
           <Menu size={22} />
         </button>
       )}
+      {showBrand && <Brand className="hidden md:flex" />}
       {titleKey && (
         <h1 className="hidden font-cairo text-lg font-bold text-navy-900 md:block">
           {t(titleKey)}
@@ -181,7 +183,7 @@ function FullHeader({ showMenu }: { showMenu: boolean }) {
   );
 }
 
-export function AppHeader({ variant = 'full', showMenu = true }: AppHeaderProps) {
+export function AppHeader({ variant = 'full', showMenu = true, showBrand = false }: AppHeaderProps) {
   if (variant === 'minimal') {
     return (
       <header className="flex h-16 items-center border-b border-border bg-surface px-4 md:px-6">
@@ -204,7 +206,7 @@ export function AppHeader({ variant = 'full', showMenu = true }: AppHeaderProps)
 
   return (
     <header className="flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-4">
-      <FullHeader showMenu={showMenu} />
+      <FullHeader showMenu={showMenu} showBrand={showBrand} />
     </header>
   );
 }

@@ -2,7 +2,6 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft,
   Search,
   Plus,
   BookOpen,
@@ -201,16 +200,6 @@ export function AllStagesPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      {/* Back button */}
-      <button
-        type="button"
-        onClick={() => navigate('/teacher/dashboard')}
-        className="mb-4 flex items-center gap-1.5 font-cairo text-sm font-medium text-navy-600 transition-colors hover:text-navy-900"
-      >
-        <ArrowLeft size={18} />
-        {t('actions.back')}
-      </button>
-
       {/* Page header + Save button row */}
       <div className="mb-6 flex items-center justify-between">
         <div>
