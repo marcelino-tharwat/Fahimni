@@ -6,7 +6,7 @@ export function LessonLayout() {
     <div className="flex h-screen overflow-hidden bg-background">
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="shrink-0">
-          <AppHeader />
+          <AppHeader showBrand />
         </header>
         <main className="flex-1 overflow-y-auto p-3 md:p-4 lg:p-6">
           <Outlet />

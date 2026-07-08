@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Layers, Plus, RefreshCw } from 'lucide-react';
-import { cn } from '@/shared/lib/utils/cn';
+import { AlertTriangle, Layers, Plus } from 'lucide-react';
 import type { ContentTreeChapter, ContentTreeLesson } from '@/features/teacher/types/contentTree';
 import { SortableItem } from '@/features/teacher/components/reorder/SortableItem';
 import { SortableList } from '@/features/teacher/components/reorder/SortableList';
@@ -18,8 +17,6 @@ interface ContentTreePanelProps {
   chapters: ContentTreeChapter[];
   isLoading: boolean;
   isError: boolean;
-  isFetching: boolean;
-  onRefresh: () => void;
   onRetry: () => void;
   expandedNodes: Set<string>;
   onToggle: (id: string) => void;
@@ -48,8 +45,6 @@ export function ContentTreePanel({
   chapters,
   isLoading,
   isError,
-  isFetching,
-  onRefresh,
   onRetry,
   expandedNodes,
   onToggle,
@@ -78,14 +73,6 @@ export function ContentTreePanel({
         <h2 className="flex-1 truncate font-cairo text-base font-bold text-navy-900">
           {stageName}
         </h2>
-        <button
-          type="button"
-          onClick={onRefresh}
-          aria-label={t('actions.refresh', 'Refresh')}
-          className="rounded-btn p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-navy-600"
-        >
-          <RefreshCw size={16} className={cn(isFetching && 'animate-spin')} />
-        </button>
         <TreeNodeMenu
           nodeType="stage"
           actions={['edit', 'delete']}
