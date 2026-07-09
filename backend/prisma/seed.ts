@@ -447,6 +447,11 @@ async function seedAll(): Promise<void> {
       // Teacher lifecycle demo accounts (unified-registration flow):
       //  - pending: INACTIVE + PENDING_REVIEW, linked to a PENDING request.
       //  - rejected: INACTIVE + REJECTED, linked to a REJECTED request.
+      //  - approved-free: APPROVED + ACTIVE, no paid subscription → FREE plan
+      //    (full access, NOT blocked; can upgrade any time).
+      //  - pending-payment-only / failed-payment-only: APPROVED + ACTIVE with a
+      //    PENDING / FAILED payment but NO active subscription → still FREE
+      //    (an unconfirmed/failed payment neither upgrades nor removes FREE access).
       const LIFECYCLE_TEACHERS = [
         {
           id: sid("teacher-pending"),
@@ -471,14 +476,40 @@ async function seedAll(): Promise<void> {
           status: "INACTIVE" as const,
         },
         {
-          // Approved but UNPAID: can log in, is payment-gated (no active subscription).
+          // Approved with NO paid subscription → FREE plan. Full access, can upgrade.
           id: sid("teacher-approved-unpaid"),
           profileId: sid("profile-approved-unpaid"),
           email: "teacher.approved.unpaid" + DEMO_EMAIL_DOMAIN,
           fullName: "أ. ليلى المدرّسة المعتمدة",
           mobile: "01000000060",
           subject: "التاريخ",
-          bio: "معتمدة بانتظار إتمام الدفع لتفعيل الحساب.",
+          bio: "معتمدة على الباقة المجانية ويمكنها الترقية في أي وقت.",
+          state: "APPROVED" as const,
+          status: "ACTIVE" as const,
+        },
+        {
+          // Approved, has a PENDING (unconfirmed) payment but no active subscription
+          // → still FREE (a pending payment does not upgrade).
+          id: sid("teacher-pending-payment"),
+          profileId: sid("profile-pending-payment"),
+          email: "teacher.pending.payment" + DEMO_EMAIL_DOMAIN,
+          fullName: "أ. مراد صاحب الدفع المعلّق",
+          mobile: "01000000070",
+          subject: "الجغرافيا",
+          bio: "معتمد، لديه عملية دفع بانتظار التأكيد — يبقى على الباقة المجانية.",
+          state: "APPROVED" as const,
+          status: "ACTIVE" as const,
+        },
+        {
+          // Approved, has a FAILED payment but no active subscription → still FREE
+          // (a failed payment neither upgrades nor removes FREE access).
+          id: sid("teacher-failed-payment"),
+          profileId: sid("profile-failed-payment"),
+          email: "teacher.failed.payment" + DEMO_EMAIL_DOMAIN,
+          fullName: "أ. هالة صاحبة الدفع الفاشل",
+          mobile: "01000000080",
+          subject: "الفلسفة",
+          bio: "معتمدة، فشلت عملية الدفع الأخيرة — تبقى على الباقة المجانية.",
           state: "APPROVED" as const,
           status: "ACTIVE" as const,
         },
@@ -966,6 +997,29 @@ async function seedAll(): Promise<void> {
           path: "teacher-registration-requests/DEMO_FAKE/certificate.pdf",
         },
       ];
+      // Multi-document set exercising the admin previewType distinction: a PDF, an
+      // image, and one "fake" doc with NO storable path (renders as UNAVAILABLE and
+      // yields DOCUMENT_UNAVAILABLE from the signed-url endpoint).
+      const multiDocProofDocuments = [
+        {
+          originalName: "teaching-certificate.pdf",
+          mimeType: "application/pdf",
+          size: 204800,
+          path: "teacher-registration-requests/DEMO_FAKE/teaching-certificate.pdf",
+        },
+        {
+          originalName: "national-id.jpg",
+          mimeType: "image/jpeg",
+          size: 98304,
+          path: "teacher-registration-requests/DEMO_FAKE/national-id.jpg",
+        },
+        {
+          originalName: "unavailable-scan.png",
+          mimeType: "image/png",
+          size: 51200,
+          // No path → UNAVAILABLE in admin detail; signed-url → DOCUMENT_UNAVAILABLE.
+        },
+      ];
       await tx.teacherRegistrationRequest.upsert({
         where: { publicReference: DEMO_REF_PREFIX + "REQ_004" },
         update: { status: "PENDING", userId: sid("teacher-pending"), proofDocuments: fakeProofDocuments },
@@ -1003,10 +1057,16 @@ async function seedAll(): Promise<void> {
         },
       });
 
-      // Approved-but-unpaid linked request → teacher is login-capable + payment-gated.
+      // Approved FREE linked request → teacher is login-capable on the FREE plan.
+      // Carries the multi-document proof set (PDF + image + unavailable) so admin
+      // detail demonstrates the previewType distinction and UNAVAILABLE handling.
       await tx.teacherRegistrationRequest.upsert({
         where: { publicReference: DEMO_REF_PREFIX + "REQ_006" },
-        update: { status: "APPROVED", userId: sid("teacher-approved-unpaid") },
+        update: {
+          status: "APPROVED",
+          userId: sid("teacher-approved-unpaid"),
+          proofDocuments: multiDocProofDocuments,
+        },
         create: {
           id: sid("req-approved-linked"),
           publicReference: DEMO_REF_PREFIX + "REQ_006",
@@ -1014,12 +1074,52 @@ async function seedAll(): Promise<void> {
           email: "teacher.approved.unpaid" + DEMO_EMAIL_DOMAIN,
           mobile: "01000000060",
           subject: "التاريخ",
-          bio: "معتمدة بانتظار إتمام الدفع لتفعيل الحساب.",
+          bio: "معتمدة على الباقة المجانية.",
           status: "APPROVED",
-          proofDocuments: [],
+          proofDocuments: multiDocProofDocuments,
           reviewedById: ADMIN.id,
           reviewedAt: daysAgo(2),
           userId: sid("teacher-approved-unpaid"),
+        },
+      });
+
+      // Approved FREE teachers that also have a PENDING / FAILED payment — linked
+      // requests so their lifecycle mirrors the unified-registration flow.
+      await tx.teacherRegistrationRequest.upsert({
+        where: { publicReference: DEMO_REF_PREFIX + "REQ_007" },
+        update: { status: "APPROVED", userId: sid("teacher-pending-payment") },
+        create: {
+          id: sid("req-pending-payment-linked"),
+          publicReference: DEMO_REF_PREFIX + "REQ_007",
+          fullName: "أ. مراد صاحب الدفع المعلّق",
+          email: "teacher.pending.payment" + DEMO_EMAIL_DOMAIN,
+          mobile: "01000000070",
+          subject: "الجغرافيا",
+          bio: "معتمد على الباقة المجانية مع عملية دفع معلّقة.",
+          status: "APPROVED",
+          proofDocuments: [],
+          reviewedById: ADMIN.id,
+          reviewedAt: daysAgo(1),
+          userId: sid("teacher-pending-payment"),
+        },
+      });
+
+      await tx.teacherRegistrationRequest.upsert({
+        where: { publicReference: DEMO_REF_PREFIX + "REQ_008" },
+        update: { status: "APPROVED", userId: sid("teacher-failed-payment") },
+        create: {
+          id: sid("req-failed-payment-linked"),
+          publicReference: DEMO_REF_PREFIX + "REQ_008",
+          fullName: "أ. هالة صاحبة الدفع الفاشل",
+          email: "teacher.failed.payment" + DEMO_EMAIL_DOMAIN,
+          mobile: "01000000080",
+          subject: "الفلسفة",
+          bio: "معتمدة على الباقة المجانية مع عملية دفع فاشلة.",
+          status: "APPROVED",
+          proofDocuments: [],
+          reviewedById: ADMIN.id,
+          reviewedAt: daysAgo(3),
+          userId: sid("teacher-failed-payment"),
         },
       });
 
@@ -1135,6 +1235,35 @@ async function seedAll(): Promise<void> {
             status: "FAILED",
             errorMessage: "رصيد غير كافٍ",
             createdAt: daysAgo(60),
+          },
+          {
+            // Approved FREE teacher with a PENDING payment and NO subscription:
+            // proves a pending payment does NOT upgrade (teacher stays FREE).
+            id: sid("tsp-pending-free"),
+            teacherId: sid("teacher-pending-payment"),
+            planId: planBasicId,
+            provider: "PAYMOB",
+            providerOrderId: DEMO_ORDER_PREFIX + "SUB_ORD_005",
+            amount: 199,
+            currency: "EGP",
+            billingInterval: "MONTHLY",
+            status: "PENDING",
+            createdAt: daysAgo(1),
+          },
+          {
+            // Approved FREE teacher with a FAILED payment and NO subscription:
+            // proves a failed payment neither upgrades nor removes FREE access.
+            id: sid("tsp-failed-free"),
+            teacherId: sid("teacher-failed-payment"),
+            planId: planBasicId,
+            provider: "PAYMOB",
+            providerOrderId: DEMO_ORDER_PREFIX + "SUB_ORD_006",
+            amount: 199,
+            currency: "EGP",
+            billingInterval: "MONTHLY",
+            status: "FAILED",
+            errorMessage: "فشلت عملية الدفع",
+            createdAt: daysAgo(3),
           },
         ],
         skipDuplicates: true,

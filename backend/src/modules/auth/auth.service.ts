@@ -92,15 +92,17 @@ export class AuthService {
 
     const { password: _, ...safeUser } = user;
 
-    // For an approved teacher, tell the client whether payment is still required
-    // so it can route to /teacher/plans vs the dashboard without a second call.
-    let accessState: "ACTIVE_TEACHER" | "TEACHER_PAYMENT_REQUIRED" | undefined;
+    // For an approved teacher, report the entitlement so the client can badge the
+    // plan. An APPROVED + ACTIVE teacher always has feature access — FREE_PLAN when
+    // there is no active paid subscription, PAID_PLAN when there is. Neither is
+    // payment-blocked (the corrected FREE-plan policy), so login always succeeds.
+    let accessState: "ACTIVE_TEACHER" | "FREE_TEACHER" | undefined;
     if (user.role === "OPERATION" && user.teacherApprovalState === "APPROVED") {
       const activeSub = await prisma.teacherSubscription.findFirst({
         where: { teacherId: user.id, status: "ACTIVE", currentPeriodEnd: { gt: new Date() } },
         select: { id: true },
       });
-      accessState = activeSub ? "ACTIVE_TEACHER" : "TEACHER_PAYMENT_REQUIRED";
+      accessState = activeSub ? "ACTIVE_TEACHER" : "FREE_TEACHER";
     }
 
     return { user: safeUser, accessState, ...result };
@@ -296,7 +298,9 @@ export class AuthService {
       }
     }
 
-    return { pending: true as const, user: user.created };
+    // The public reference lets the teacher track their request status later
+    // (paired with their email/mobile on the public track endpoint).
+    return { pending: true as const, user: user.created, trackingReference: publicReference };
   }
 
   public async forgotPassword(input: ForgotPasswordInput) {

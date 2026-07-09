@@ -25,6 +25,7 @@ import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage';
 import { TeacherRequestPage } from '@/features/teacher-request/pages/TeacherRequestPage';
 import { TeacherPendingReviewPage } from '@/features/teacher/pages/TeacherPendingReviewPage';
 import { TeacherRejectedPage } from '@/features/teacher/pages/TeacherRejectedPage';
+import { TeacherRequestTrackPage } from '@/features/teacher-request/pages/TeacherRequestTrackPage';
 import { TeacherAccessGuard } from '@/shared/components/guards/TeacherAccessGuard';
 
 // Student pages
@@ -64,6 +65,7 @@ import { StudentLookupPage } from '@/features/support/pages/StudentLookupPage';
 
 // Admin pages
 import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage';
+import { AdminUsersPage } from '@/features/admin/pages/AdminUsersPage';
 import { AdminTeachersPage } from '@/features/admin/pages/AdminTeachersPage';
 import { AdminTeacherDetailPage } from '@/features/admin/pages/AdminTeacherDetailPage';
 import { AdminStudentsPage } from '@/features/admin/pages/AdminStudentsPage';
@@ -84,6 +86,7 @@ const router = createBrowserRouter([
       { path: '/become-teacher', element: <TeacherRequestPage /> },
       { path: '/teacher/pending-review', element: <TeacherPendingReviewPage /> },
       { path: '/teacher/rejected', element: <TeacherRejectedPage /> },
+      { path: '/teacher/track', element: <TeacherRequestTrackPage /> },
       { path: '/t/:tenantSlug', element: <LandingPage /> },
       {
         element: <GuestGuard />,
@@ -201,6 +204,7 @@ const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { path: '/admin/dashboard', element: <AdminDashboardPage /> },
+              { path: '/admin/users', element: <AdminUsersPage /> },
               { path: '/admin/teachers', element: <AdminTeachersPage /> },
               { path: '/admin/teachers/:teacherId', element: <AdminTeacherDetailPage /> },
               { path: '/admin/students', element: <AdminStudentsPage /> },

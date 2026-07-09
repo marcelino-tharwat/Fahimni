@@ -61,6 +61,13 @@ export interface PendingPaymentInfo {
   createdAt: string;
 }
 
+export type TeacherAccessState =
+  | 'PENDING_REVIEW'
+  | 'REJECTED'
+  | 'NOT_APPROVED'
+  | 'FREE_PLAN'
+  | 'PAID_PLAN';
+
 export interface SubscriptionMeResponse {
   currentPlan: CurrentPlanInfo;
   subscription: SubscriptionInfo | null;
@@ -68,6 +75,12 @@ export interface SubscriptionMeResponse {
   pendingRequest: PendingRequestInfo | null;
   pendingPayment: PendingPaymentInfo | null;
   effectivePlanCode: string;
+  /** Entitlement single source of truth (mirrors backend). FREE_PLAN = approved
+   * teacher with no active paid subscription → full access, NOT blocked. */
+  accessState: TeacherAccessState;
+  entitlementSource: 'DEFAULT_FREE_PLAN' | 'ACTIVE_SUBSCRIPTION' | null;
+  paymentRequired: boolean;
+  upgradeAvailable: boolean;
 }
 
 export interface CheckoutInput {

@@ -31,5 +31,19 @@
     "mobileInvalid": "Must be a valid Egyptian number (e.g. 01012345678)",
     "subjectMax": "Subject must not exceed 200 characters",
     "bioMax": "Bio must not exceed 1000 characters"
+  },
+  "track": {
+    "title": "Track Request Status",
+    "subtitle": "Enter your tracking number and your email or mobile",
+    "referencePlaceholder": "Tracking number (e.g. TR-2026-123456)",
+    "contactPlaceholder": "Email or mobile number",
+    "submit": "Search",
+    "searching": "Searching...",
+    "notFound": "No matching request found",
+    "statusPending": "Under review",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "reference": "Tracking number",
+    "backToLogin": "Back to login"
   }
 }

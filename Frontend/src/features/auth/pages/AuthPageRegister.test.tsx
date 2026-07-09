@@ -94,11 +94,32 @@ describe('AuthPage — register account types', () => {
     fireEvent.change(screen.getByPlaceholderText('auth:subject'), { target: { value: 'Biology' } });
     fireEvent.click(screen.getByText('auth:registerButton'));
     // Teacher registration is submitted as multipart/form-data (proof docs ride along).
-    await waitFor(() => expect(mApi.post).toHaveBeenCalledWith('/v1/auth/register', expect.any(FormData)));
+    await waitFor(() => expect(mApi.post).toHaveBeenCalledWith(
+      '/v1/auth/register',
+      expect.any(FormData),
+      expect.objectContaining({ headers: expect.objectContaining({ 'Content-Type': 'multipart/form-data' }) }),
+    ));
     const fd = mApi.post.mock.calls.at(-1)![1] as FormData;
     expect(fd.get('role')).toBe('OPERATION');
     expect(fd.get('email')).toBe('teacher@example.com');
     expect(await screen.findByTestId('teacher-pending-message')).toBeInTheDocument();
+  });
+
+  it('8. teacher registration shows the tracking reference returned by the API', async () => {
+    mApi.post.mockResolvedValue({ data: { data: { pendingReview: true, trackingReference: 'TR-2026-654321' } } });
+    renderAuth();
+    goToRegister();
+    fireEvent.click(screen.getByText('auth:accountTypeTeacher'));
+    fireEvent.change(screen.getByPlaceholderText('auth:fullName'), { target: { value: 'Ref Teacher' } });
+    fireEvent.change(screen.getByPlaceholderText('auth:email'), { target: { value: 'ref@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('auth:mobile'), { target: { value: '01012345678' } });
+    fireEvent.change(screen.getByPlaceholderText('auth:password'), { target: { value: 'Passw0rd!' } });
+    fireEvent.change(screen.getByPlaceholderText('auth:confirmPassword'), { target: { value: 'Passw0rd!' } });
+    fireEvent.change(screen.getByPlaceholderText('auth:subject'), { target: { value: 'Biology' } });
+    fireEvent.click(screen.getByText('auth:registerButton'));
+    const refBlock = await screen.findByTestId('tracking-reference');
+    expect(refBlock).toHaveTextContent('TR-2026-654321');
+    expect(screen.getByTestId('copy-tracking-reference')).toBeInTheDocument();
   });
 });
 

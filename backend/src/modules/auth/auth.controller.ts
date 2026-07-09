@@ -43,7 +43,8 @@ export class AuthController {
         message: "Login successful",
         data: {
           user: result.user,
-          // Present only for approved teachers: ACTIVE_TEACHER | TEACHER_PAYMENT_REQUIRED.
+          // Present only for approved teachers: ACTIVE_TEACHER (active paid sub) |
+          // FREE_TEACHER (no paid sub → FREE plan). Both grant feature access.
           ...(result.accessState ? { accessState: result.accessState } : {}),
         },
       });
@@ -83,6 +84,7 @@ export class AuthController {
           data: {
             user: result.user,
             pendingReview: true,
+            trackingReference: result.trackingReference,
           },
         });
         return;
