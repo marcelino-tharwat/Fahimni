@@ -128,6 +128,7 @@ exports.Prisma.UserScalarFieldEnum = {
   mobile: 'mobile',
   role: 'role',
   status: 'status',
+  teacherApprovalState: 'teacherApprovalState',
   tokenVersion: 'tokenVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -399,6 +400,7 @@ exports.Prisma.TeacherRegistrationRequestScalarFieldEnum = {
   adminNotes: 'adminNotes',
   reviewedById: 'reviewedById',
   reviewedAt: 'reviewedAt',
+  userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -540,6 +542,13 @@ exports.Status = exports.$Enums.Status = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
   BANNED: 'BANNED'
+};
+
+exports.TeacherApprovalState = exports.$Enums.TeacherApprovalState = {
+  NONE: 'NONE',
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
 };
 
 exports.OtpType = exports.$Enums.OtpType = {

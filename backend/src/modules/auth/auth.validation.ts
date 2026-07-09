@@ -24,10 +24,22 @@ export const registerSchema = z
       .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "Invalid Egyptian phone number"),
     email: z.string().trim().email("Invalid email address").toLowerCase(),
     password: passwordSchema,
+    // Optional: when the client sends it (unified register form) it must match.
+    // Kept optional so existing callers that omit it stay backward-compatible.
+    confirmPassword: z.string().optional(),
     role: z.enum(["STUDENT", "OPERATION"]).default("STUDENT"),
     stageId: z.preprocess(
       (v) => (v === "" ? undefined : v),
       z.string().uuid("Stage must be a valid UUID").optional(),
+    ),
+    // Teacher-only optional profile fields captured at unified registration.
+    subject: z.preprocess(
+      (v) => (v === "" ? undefined : v),
+      z.string().trim().min(2).max(200).optional(),
+    ),
+    bio: z.preprocess(
+      (v) => (v === "" ? undefined : v),
+      z.string().trim().max(1000).optional(),
     ),
   })
   .refine(
@@ -38,6 +50,12 @@ export const registerSchema = z
       return true;
     },
     { message: "Please select your stage", path: ["stageId"] },
+  )
+  .refine(
+    (data) =>
+      data.confirmPassword === undefined ||
+      data.confirmPassword === data.password,
+    { message: "Passwords do not match", path: ["confirmPassword"] },
   );
 
 export const loginSchema = z.object({

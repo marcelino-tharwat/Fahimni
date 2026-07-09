@@ -13,6 +13,7 @@ import { useAppDispatch } from "@/shared/store/hooks";
 import { apiClient } from "@/shared/lib/api/client";
 import { login as loginThunk, register as registerThunk, googleLogin as googleLoginThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
 import type { PublicStage } from "@/features/student/types/student";
+import { ProofUpload } from "@/features/teacher-request/components/ProofUpload";
 
 /* ------------------------------------------------------------------ */
 /*  Field                                                              */
@@ -201,12 +202,27 @@ function LoginForm() {
 /*  Register Form                                                      */
 /* ------------------------------------------------------------------ */
 
+type AccountType = "student" | "teacher";
+type RegisterFormValues = {
+  fullName: string;
+  email: string;
+  mobile: string;
+  password: string;
+  confirmPassword: string;
+  stageId: string;
+  subject: string;
+  bio: string;
+};
+
 function RegisterForm() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [accountType, setAccountType] = useState<AccountType>("student");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [teacherPending, setTeacherPending] = useState(false);
+  const [proofFiles, setProofFiles] = useState<{ id: string; file: File }[]>([]);
   const [stages, setStages] = useState<PublicStage[]>([]);
   const [stagesLoading, setStagesLoading] = useState(true);
   const inFlightRef = useRef(false);
@@ -223,24 +239,43 @@ function RegisterForm() {
     handleSubmit,
     formState: { errors },
     setValue,
+    getValues,
     setError: setFieldError,
-  } = useForm<{ fullName: string; email: string; mobile: string; password: string; stageId: string }>({
-    defaultValues: { fullName: "", email: "", mobile: "", password: "", stageId: "" },
+  } = useForm<RegisterFormValues>({
+    defaultValues: { fullName: "", email: "", mobile: "", password: "", confirmPassword: "", stageId: "", subject: "", bio: "" },
   });
+
+  const isTeacher = accountType === "teacher";
 
   const stageIdRegister = register("stageId", {
-    required: { value: true, message: t("auth:errStageRequired") },
+    validate: (v) => isTeacher || !!v || t("auth:errStageRequired"),
   });
 
-  const onSubmit = async (v: { fullName: string; email: string; mobile: string; password: string; stageId: string }) => {
-    if (inFlightRef.current) {
-      return;
-    }
+  const onSubmit = async (v: RegisterFormValues) => {
+    if (inFlightRef.current) return;
     inFlightRef.current = true;
     setError(null);
     setLoading(true);
     try {
-      const res = await dispatch(registerThunk({ ...v, role: 'STUDENT' })).unwrap();
+      if (isTeacher) {
+        // Teacher registration is pending-review: call the API directly so no
+        // session is established (the backend issues no tokens for a pending
+        // teacher). Sent as multipart/form-data so proof documents ride along.
+        const fd = new FormData();
+        fd.append('fullName', v.fullName);
+        fd.append('email', v.email);
+        fd.append('mobile', v.mobile);
+        fd.append('password', v.password);
+        fd.append('confirmPassword', v.confirmPassword);
+        fd.append('role', 'OPERATION');
+        if (v.subject) fd.append('subject', v.subject);
+        if (v.bio) fd.append('bio', v.bio);
+        for (const pf of proofFiles) fd.append('proofDocuments', pf.file);
+        await apiClient.post('/v1/auth/register', fd);
+        setTeacherPending(true);
+        return;
+      }
+      const res = await dispatch(registerThunk({ fullName: v.fullName, email: v.email, mobile: v.mobile, password: v.password, stageId: v.stageId, role: 'STUDENT' })).unwrap();
       navigate(dashboardPathByRole[res.user.role]);
     } catch (err) {
       const reject = err as { message?: string; fieldErrors?: Record<string, string[]> } | string;
@@ -248,11 +283,11 @@ function RegisterForm() {
       const fieldErrors = typeof reject === "object" ? reject.fieldErrors : undefined;
 
       if (fieldErrors) {
-        const knownFields = new Set(["fullName", "email", "mobile", "password", "stageId"]);
+        const knownFields = new Set(["fullName", "email", "mobile", "password", "confirmPassword", "stageId", "subject", "bio"]);
         let hasFieldError = false;
         for (const [field, msgs] of Object.entries(fieldErrors)) {
           if (knownFields.has(field) && msgs.length > 0) {
-            setFieldError(field as any, { message: msgs[0], type: "server" });
+            setFieldError(field as keyof RegisterFormValues, { message: msgs[0], type: "server" });
             hasFieldError = true;
           }
         }
@@ -266,8 +301,46 @@ function RegisterForm() {
     }
   };
 
+  // Teacher pending-review success state.
+  if (teacherPending) {
+    return (
+      <div className="flex flex-col gap-4 text-center" data-testid="teacher-pending-message">
+        <p className="rounded-md bg-emerald-50 px-4 py-3 text-body font-medium text-emerald-700">
+          {t("auth:teacherPendingMessage", "تم إرسال طلبك للمراجعة من الإدارة")}
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate("/teacher/pending-review")}
+          className="text-small font-semibold text-cyan-600 hover:underline"
+        >
+          {t("auth:teacherPendingCta", "عرض حالة الطلب")}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      {/* Account type selector */}
+      <div className="flex gap-2" role="group" aria-label={t("auth:accountType", "نوع الحساب")}>
+        <button
+          type="button"
+          onClick={() => setAccountType("student")}
+          aria-pressed={!isTeacher}
+          className={`flex-1 rounded-lg border px-3 py-2 text-small font-semibold transition-colors ${!isTeacher ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-gray-300 text-gray-600"}`}
+        >
+          {t("auth:accountTypeStudent", "طالب")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setAccountType("teacher")}
+          aria-pressed={isTeacher}
+          className={`flex-1 rounded-lg border px-3 py-2 text-small font-semibold transition-colors ${isTeacher ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-gray-300 text-gray-600"}`}
+        >
+          {t("auth:accountTypeTeacher", "مدرس")}
+        </button>
+      </div>
+
       {error && (
         <p className="rounded-md bg-red-50 px-3 py-2 text-small text-red-600">
           {error}
@@ -322,15 +395,50 @@ function RegisterForm() {
           },
         })}
       />
-      {/* Hidden input so react-hook-form tracks stageId validation */}
-      <input type="hidden" {...stageIdRegister} />
-      {/* Stage selector */}
-      <StageSelect
-        stages={stages}
-        loading={stagesLoading}
-        error={errors.stageId?.message}
-        onChange={(id) => setValue("stageId", id, { shouldValidate: true })}
+      <Field
+        icon={Lock}
+        isPassword
+        autoComplete="new-password"
+        placeholder={t("auth:confirmPassword", "تأكيد كلمة المرور")}
+        error={errors.confirmPassword?.message}
+        registration={register("confirmPassword", {
+          required: t("auth:errPasswordRequired"),
+          validate: (v: string) => v === getValues("password") || t("auth:errConfirmMismatch", "كلمتا المرور غير متطابقتين"),
+        })}
       />
+
+      {isTeacher ? (
+        <>
+          <Field
+            icon={User}
+            placeholder={t("auth:subject", "التخصص")}
+            error={errors.subject?.message}
+            registration={register("subject", {
+              required: t("auth:validation.required"),
+              minLength: { value: 2, message: t("auth:errNameMin") },
+            })}
+          />
+          <Field
+            icon={User}
+            placeholder={t("auth:bio", "نبذة (اختياري)")}
+            error={errors.bio?.message}
+            registration={register("bio")}
+          />
+          <ProofUpload files={proofFiles} onChange={setProofFiles} />
+        </>
+      ) : (
+        <>
+          {/* Hidden input so react-hook-form tracks stageId validation */}
+          <input type="hidden" {...stageIdRegister} />
+          <StageSelect
+            stages={stages}
+            loading={stagesLoading}
+            error={errors.stageId?.message}
+            onChange={(id) => setValue("stageId", id, { shouldValidate: true })}
+          />
+        </>
+      )}
+
       <p className="text-right text-small text-gray-500">
         {t("auth:termsPrefix")}{" "}
         <a href="/terms" className="text-cyan-600">{t("auth:termsOfService")}</a>

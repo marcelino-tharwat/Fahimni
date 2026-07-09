@@ -308,6 +308,16 @@ export const TeacherRequestStatus: {
 export type TeacherRequestStatus = (typeof TeacherRequestStatus)[keyof typeof TeacherRequestStatus]
 
 
+export const TeacherApprovalState: {
+  NONE: 'NONE',
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+export type TeacherApprovalState = (typeof TeacherApprovalState)[keyof typeof TeacherApprovalState]
+
+
 export const AiMessageRole: {
   STUDENT: 'STUDENT',
   ASSISTANT: 'ASSISTANT'
@@ -425,6 +435,10 @@ export const NotificationType: typeof $Enums.NotificationType
 export type TeacherRequestStatus = $Enums.TeacherRequestStatus
 
 export const TeacherRequestStatus: typeof $Enums.TeacherRequestStatus
+
+export type TeacherApprovalState = $Enums.TeacherApprovalState
+
+export const TeacherApprovalState: typeof $Enums.TeacherApprovalState
 
 export type AiMessageRole = $Enums.AiMessageRole
 
@@ -4394,6 +4408,7 @@ export namespace Prisma {
     mobile: string | null
     role: $Enums.Role | null
     status: $Enums.Status | null
+    teacherApprovalState: $Enums.TeacherApprovalState | null
     tokenVersion: number | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4407,6 +4422,7 @@ export namespace Prisma {
     mobile: string | null
     role: $Enums.Role | null
     status: $Enums.Status | null
+    teacherApprovalState: $Enums.TeacherApprovalState | null
     tokenVersion: number | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4420,6 +4436,7 @@ export namespace Prisma {
     mobile: number
     role: number
     status: number
+    teacherApprovalState: number
     tokenVersion: number
     createdAt: number
     updatedAt: number
@@ -4443,6 +4460,7 @@ export namespace Prisma {
     mobile?: true
     role?: true
     status?: true
+    teacherApprovalState?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4456,6 +4474,7 @@ export namespace Prisma {
     mobile?: true
     role?: true
     status?: true
+    teacherApprovalState?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4469,6 +4488,7 @@ export namespace Prisma {
     mobile?: true
     role?: true
     status?: true
+    teacherApprovalState?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4569,6 +4589,7 @@ export namespace Prisma {
     mobile: string
     role: $Enums.Role
     status: $Enums.Status
+    teacherApprovalState: $Enums.TeacherApprovalState
     tokenVersion: number
     createdAt: Date
     updatedAt: Date
@@ -4601,10 +4622,12 @@ export namespace Prisma {
     mobile?: boolean
     role?: boolean
     status?: boolean
+    teacherApprovalState?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    teacherRegistrationRequest?: boolean | User$teacherRegistrationRequestArgs<ExtArgs>
     createdPromoCodes?: boolean | User$createdPromoCodesArgs<ExtArgs>
     usedPromoCodes?: boolean | User$usedPromoCodesArgs<ExtArgs>
     enrollments?: boolean | User$enrollmentsArgs<ExtArgs>
@@ -4636,6 +4659,7 @@ export namespace Prisma {
     mobile?: boolean
     role?: boolean
     status?: boolean
+    teacherApprovalState?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4649,6 +4673,7 @@ export namespace Prisma {
     mobile?: boolean
     role?: boolean
     status?: boolean
+    teacherApprovalState?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4662,14 +4687,16 @@ export namespace Prisma {
     mobile?: boolean
     role?: boolean
     status?: boolean
+    teacherApprovalState?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fullName" | "email" | "password" | "mobile" | "role" | "status" | "tokenVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fullName" | "email" | "password" | "mobile" | "role" | "status" | "teacherApprovalState" | "tokenVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    teacherRegistrationRequest?: boolean | User$teacherRegistrationRequestArgs<ExtArgs>
     createdPromoCodes?: boolean | User$createdPromoCodesArgs<ExtArgs>
     usedPromoCodes?: boolean | User$usedPromoCodesArgs<ExtArgs>
     enrollments?: boolean | User$enrollmentsArgs<ExtArgs>
@@ -4699,6 +4726,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+      teacherRegistrationRequest: Prisma.$TeacherRegistrationRequestPayload<ExtArgs> | null
       createdPromoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
       usedPromoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
       enrollments: Prisma.$EnrollmentPayload<ExtArgs>[]
@@ -4728,6 +4756,7 @@ export namespace Prisma {
       mobile: string
       role: $Enums.Role
       status: $Enums.Status
+      teacherApprovalState: $Enums.TeacherApprovalState
       tokenVersion: number
       createdAt: Date
       updatedAt: Date
@@ -5126,6 +5155,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    teacherRegistrationRequest<T extends User$teacherRegistrationRequestArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherRegistrationRequestArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     createdPromoCodes<T extends User$createdPromoCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdPromoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     usedPromoCodes<T extends User$usedPromoCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$usedPromoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     enrollments<T extends User$enrollmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5182,6 +5212,7 @@ export namespace Prisma {
     readonly mobile: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'Role'>
     readonly status: FieldRef<"User", 'Status'>
+    readonly teacherApprovalState: FieldRef<"User", 'TeacherApprovalState'>
     readonly tokenVersion: FieldRef<"User", 'Int'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
@@ -5599,6 +5630,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.teacherRegistrationRequest
+   */
+  export type User$teacherRegistrationRequestArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherRegistrationRequest
+     */
+    select?: TeacherRegistrationRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherRegistrationRequest
+     */
+    omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
+    where?: TeacherRegistrationRequestWhereInput
   }
 
   /**
@@ -30525,6 +30575,7 @@ export namespace Prisma {
     adminNotes: string | null
     reviewedById: string | null
     reviewedAt: Date | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -30541,6 +30592,7 @@ export namespace Prisma {
     adminNotes: string | null
     reviewedById: string | null
     reviewedAt: Date | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -30558,6 +30610,7 @@ export namespace Prisma {
     adminNotes: number
     reviewedById: number
     reviewedAt: number
+    userId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -30576,6 +30629,7 @@ export namespace Prisma {
     adminNotes?: true
     reviewedById?: true
     reviewedAt?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -30592,6 +30646,7 @@ export namespace Prisma {
     adminNotes?: true
     reviewedById?: true
     reviewedAt?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -30609,6 +30664,7 @@ export namespace Prisma {
     adminNotes?: true
     reviewedById?: true
     reviewedAt?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -30699,6 +30755,7 @@ export namespace Prisma {
     adminNotes: string | null
     reviewedById: string | null
     reviewedAt: Date | null
+    userId: string | null
     createdAt: Date
     updatedAt: Date
     _count: TeacherRegistrationRequestCountAggregateOutputType | null
@@ -30733,8 +30790,10 @@ export namespace Prisma {
     adminNotes?: boolean
     reviewedById?: boolean
     reviewedAt?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | TeacherRegistrationRequest$userArgs<ExtArgs>
   }, ExtArgs["result"]["teacherRegistrationRequest"]>
 
   export type TeacherRegistrationRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -30750,8 +30809,10 @@ export namespace Prisma {
     adminNotes?: boolean
     reviewedById?: boolean
     reviewedAt?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | TeacherRegistrationRequest$userArgs<ExtArgs>
   }, ExtArgs["result"]["teacherRegistrationRequest"]>
 
   export type TeacherRegistrationRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -30767,8 +30828,10 @@ export namespace Prisma {
     adminNotes?: boolean
     reviewedById?: boolean
     reviewedAt?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | TeacherRegistrationRequest$userArgs<ExtArgs>
   }, ExtArgs["result"]["teacherRegistrationRequest"]>
 
   export type TeacherRegistrationRequestSelectScalar = {
@@ -30784,15 +30847,27 @@ export namespace Prisma {
     adminNotes?: boolean
     reviewedById?: boolean
     reviewedAt?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TeacherRegistrationRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "publicReference" | "fullName" | "email" | "mobile" | "subject" | "bio" | "status" | "proofDocuments" | "adminNotes" | "reviewedById" | "reviewedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherRegistrationRequest"]>
+  export type TeacherRegistrationRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "publicReference" | "fullName" | "email" | "mobile" | "subject" | "bio" | "status" | "proofDocuments" | "adminNotes" | "reviewedById" | "reviewedAt" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherRegistrationRequest"]>
+  export type TeacherRegistrationRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | TeacherRegistrationRequest$userArgs<ExtArgs>
+  }
+  export type TeacherRegistrationRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | TeacherRegistrationRequest$userArgs<ExtArgs>
+  }
+  export type TeacherRegistrationRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | TeacherRegistrationRequest$userArgs<ExtArgs>
+  }
 
   export type $TeacherRegistrationRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TeacherRegistrationRequest"
-    objects: {}
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       publicReference: string
@@ -30809,6 +30884,7 @@ export namespace Prisma {
       adminNotes: string | null
       reviewedById: string | null
       reviewedAt: Date | null
+      userId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["teacherRegistrationRequest"]>
@@ -31205,6 +31281,7 @@ export namespace Prisma {
    */
   export interface Prisma__TeacherRegistrationRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends TeacherRegistrationRequest$userArgs<ExtArgs> = {}>(args?: Subset<T, TeacherRegistrationRequest$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -31246,6 +31323,7 @@ export namespace Prisma {
     readonly adminNotes: FieldRef<"TeacherRegistrationRequest", 'String'>
     readonly reviewedById: FieldRef<"TeacherRegistrationRequest", 'String'>
     readonly reviewedAt: FieldRef<"TeacherRegistrationRequest", 'DateTime'>
+    readonly userId: FieldRef<"TeacherRegistrationRequest", 'String'>
     readonly createdAt: FieldRef<"TeacherRegistrationRequest", 'DateTime'>
     readonly updatedAt: FieldRef<"TeacherRegistrationRequest", 'DateTime'>
   }
@@ -31265,6 +31343,10 @@ export namespace Prisma {
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
+    /**
      * Filter, which TeacherRegistrationRequest to fetch.
      */
     where: TeacherRegistrationRequestWhereUniqueInput
@@ -31283,6 +31365,10 @@ export namespace Prisma {
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
+    /**
      * Filter, which TeacherRegistrationRequest to fetch.
      */
     where: TeacherRegistrationRequestWhereUniqueInput
@@ -31300,6 +31386,10 @@ export namespace Prisma {
      * Omit specific fields from the TeacherRegistrationRequest
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
     /**
      * Filter, which TeacherRegistrationRequest to fetch.
      */
@@ -31349,6 +31439,10 @@ export namespace Prisma {
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
+    /**
      * Filter, which TeacherRegistrationRequest to fetch.
      */
     where?: TeacherRegistrationRequestWhereInput
@@ -31396,6 +31490,10 @@ export namespace Prisma {
      * Omit specific fields from the TeacherRegistrationRequest
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
     /**
      * Filter, which TeacherRegistrationRequests to fetch.
      */
@@ -31445,6 +31543,10 @@ export namespace Prisma {
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
+    /**
      * The data needed to create a TeacherRegistrationRequest.
      */
     data: XOR<TeacherRegistrationRequestCreateInput, TeacherRegistrationRequestUncheckedCreateInput>
@@ -31478,6 +31580,10 @@ export namespace Prisma {
      */
     data: TeacherRegistrationRequestCreateManyInput | TeacherRegistrationRequestCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -31492,6 +31598,10 @@ export namespace Prisma {
      * Omit specific fields from the TeacherRegistrationRequest
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
     /**
      * The data needed to update a TeacherRegistrationRequest.
      */
@@ -31544,6 +31654,10 @@ export namespace Prisma {
      * Limit how many TeacherRegistrationRequests to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -31558,6 +31672,10 @@ export namespace Prisma {
      * Omit specific fields from the TeacherRegistrationRequest
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
     /**
      * The filter to search for the TeacherRegistrationRequest to update in case it exists.
      */
@@ -31585,6 +31703,10 @@ export namespace Prisma {
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
+    /**
      * Filter which TeacherRegistrationRequest to delete.
      */
     where: TeacherRegistrationRequestWhereUniqueInput
@@ -31605,6 +31727,25 @@ export namespace Prisma {
   }
 
   /**
+   * TeacherRegistrationRequest.user
+   */
+  export type TeacherRegistrationRequest$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * TeacherRegistrationRequest without action
    */
   export type TeacherRegistrationRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -31616,6 +31757,10 @@ export namespace Prisma {
      * Omit specific fields from the TeacherRegistrationRequest
      */
     omit?: TeacherRegistrationRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherRegistrationRequestInclude<ExtArgs> | null
   }
 
 
@@ -40022,6 +40167,7 @@ export namespace Prisma {
     mobile: 'mobile',
     role: 'role',
     status: 'status',
+    teacherApprovalState: 'teacherApprovalState',
     tokenVersion: 'tokenVersion',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -40359,6 +40505,7 @@ export namespace Prisma {
     adminNotes: 'adminNotes',
     reviewedById: 'reviewedById',
     reviewedAt: 'reviewedAt',
+    userId: 'userId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -40577,6 +40724,20 @@ export namespace Prisma {
    * Reference to a field of type 'Status[]'
    */
   export type ListEnumStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Status[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TeacherApprovalState'
+   */
+  export type EnumTeacherApprovalStateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeacherApprovalState'>
+    
+
+
+  /**
+   * Reference to a field of type 'TeacherApprovalState[]'
+   */
+  export type ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeacherApprovalState[]'>
     
 
 
@@ -40937,10 +41098,12 @@ export namespace Prisma {
     mobile?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
     status?: EnumStatusFilter<"User"> | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFilter<"User"> | $Enums.TeacherApprovalState
     tokenVersion?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     auditLogs?: AuditLogListRelationFilter
+    teacherRegistrationRequest?: XOR<TeacherRegistrationRequestNullableScalarRelationFilter, TeacherRegistrationRequestWhereInput> | null
     createdPromoCodes?: PromoCodeListRelationFilter
     usedPromoCodes?: PromoCodeListRelationFilter
     enrollments?: EnrollmentListRelationFilter
@@ -40971,10 +41134,12 @@ export namespace Prisma {
     mobile?: SortOrder
     role?: SortOrder
     status?: SortOrder
+    teacherApprovalState?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     auditLogs?: AuditLogOrderByRelationAggregateInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestOrderByWithRelationInput
     createdPromoCodes?: PromoCodeOrderByRelationAggregateInput
     usedPromoCodes?: PromoCodeOrderByRelationAggregateInput
     enrollments?: EnrollmentOrderByRelationAggregateInput
@@ -41008,10 +41173,12 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
     status?: EnumStatusFilter<"User"> | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFilter<"User"> | $Enums.TeacherApprovalState
     tokenVersion?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     auditLogs?: AuditLogListRelationFilter
+    teacherRegistrationRequest?: XOR<TeacherRegistrationRequestNullableScalarRelationFilter, TeacherRegistrationRequestWhereInput> | null
     createdPromoCodes?: PromoCodeListRelationFilter
     usedPromoCodes?: PromoCodeListRelationFilter
     enrollments?: EnrollmentListRelationFilter
@@ -41042,6 +41209,7 @@ export namespace Prisma {
     mobile?: SortOrder
     role?: SortOrder
     status?: SortOrder
+    teacherApprovalState?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -41063,6 +41231,7 @@ export namespace Prisma {
     mobile?: StringWithAggregatesFilter<"User"> | string
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     status?: EnumStatusWithAggregatesFilter<"User"> | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateWithAggregatesFilter<"User"> | $Enums.TeacherApprovalState
     tokenVersion?: IntWithAggregatesFilter<"User"> | number
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -42774,8 +42943,10 @@ export namespace Prisma {
     adminNotes?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
     reviewedById?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
     reviewedAt?: DateTimeNullableFilter<"TeacherRegistrationRequest"> | Date | string | null
+    userId?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
     createdAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type TeacherRegistrationRequestOrderByWithRelationInput = {
@@ -42791,13 +42962,16 @@ export namespace Prisma {
     adminNotes?: SortOrderInput | SortOrder
     reviewedById?: SortOrderInput | SortOrder
     reviewedAt?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
   }
 
   export type TeacherRegistrationRequestWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     publicReference?: string
+    userId?: string
     AND?: TeacherRegistrationRequestWhereInput | TeacherRegistrationRequestWhereInput[]
     OR?: TeacherRegistrationRequestWhereInput[]
     NOT?: TeacherRegistrationRequestWhereInput | TeacherRegistrationRequestWhereInput[]
@@ -42813,7 +42987,8 @@ export namespace Prisma {
     reviewedAt?: DateTimeNullableFilter<"TeacherRegistrationRequest"> | Date | string | null
     createdAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
-  }, "id" | "publicReference">
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id" | "publicReference" | "userId">
 
   export type TeacherRegistrationRequestOrderByWithAggregationInput = {
     id?: SortOrder
@@ -42828,6 +43003,7 @@ export namespace Prisma {
     adminNotes?: SortOrderInput | SortOrder
     reviewedById?: SortOrderInput | SortOrder
     reviewedAt?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TeacherRegistrationRequestCountOrderByAggregateInput
@@ -42851,6 +43027,7 @@ export namespace Prisma {
     adminNotes?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
     reviewedById?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
     reviewedAt?: DateTimeNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | Date | string | null
+    userId?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"TeacherRegistrationRequest"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TeacherRegistrationRequest"> | Date | string
   }
@@ -43501,10 +43678,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -43535,10 +43714,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -43569,10 +43750,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -43603,10 +43786,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -43637,6 +43822,7 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -43650,6 +43836,7 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43663,6 +43850,7 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -45487,6 +45675,7 @@ export namespace Prisma {
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutTeacherRegistrationRequestInput
   }
 
   export type TeacherRegistrationRequestUncheckedCreateInput = {
@@ -45502,6 +45691,7 @@ export namespace Prisma {
     adminNotes?: string | null
     reviewedById?: string | null
     reviewedAt?: Date | string | null
+    userId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -45521,6 +45711,7 @@ export namespace Prisma {
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutTeacherRegistrationRequestNestedInput
   }
 
   export type TeacherRegistrationRequestUncheckedUpdateInput = {
@@ -45536,6 +45727,7 @@ export namespace Prisma {
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -45553,6 +45745,7 @@ export namespace Prisma {
     adminNotes?: string | null
     reviewedById?: string | null
     reviewedAt?: Date | string | null
+    userId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -45587,6 +45780,7 @@ export namespace Prisma {
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -46322,6 +46516,13 @@ export namespace Prisma {
     not?: NestedEnumStatusFilter<$PrismaModel> | $Enums.Status
   }
 
+  export type EnumTeacherApprovalStateFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherApprovalState | EnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherApprovalState[] | ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherApprovalState[] | ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherApprovalStateFilter<$PrismaModel> | $Enums.TeacherApprovalState
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -46348,6 +46549,11 @@ export namespace Prisma {
     every?: AuditLogWhereInput
     some?: AuditLogWhereInput
     none?: AuditLogWhereInput
+  }
+
+  export type TeacherRegistrationRequestNullableScalarRelationFilter = {
+    is?: TeacherRegistrationRequestWhereInput | null
+    isNot?: TeacherRegistrationRequestWhereInput | null
   }
 
   export type PromoCodeListRelationFilter = {
@@ -46542,6 +46748,7 @@ export namespace Prisma {
     mobile?: SortOrder
     role?: SortOrder
     status?: SortOrder
+    teacherApprovalState?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -46559,6 +46766,7 @@ export namespace Prisma {
     mobile?: SortOrder
     role?: SortOrder
     status?: SortOrder
+    teacherApprovalState?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -46572,6 +46780,7 @@ export namespace Prisma {
     mobile?: SortOrder
     role?: SortOrder
     status?: SortOrder
+    teacherApprovalState?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -46617,6 +46826,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumStatusFilter<$PrismaModel>
     _max?: NestedEnumStatusFilter<$PrismaModel>
+  }
+
+  export type EnumTeacherApprovalStateWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherApprovalState | EnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherApprovalState[] | ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherApprovalState[] | ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherApprovalStateWithAggregatesFilter<$PrismaModel> | $Enums.TeacherApprovalState
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTeacherApprovalStateFilter<$PrismaModel>
+    _max?: NestedEnumTeacherApprovalStateFilter<$PrismaModel>
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -48177,6 +48396,7 @@ export namespace Prisma {
     adminNotes?: SortOrder
     reviewedById?: SortOrder
     reviewedAt?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -48193,6 +48413,7 @@ export namespace Prisma {
     adminNotes?: SortOrder
     reviewedById?: SortOrder
     reviewedAt?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -48209,6 +48430,7 @@ export namespace Prisma {
     adminNotes?: SortOrder
     reviewedById?: SortOrder
     reviewedAt?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -48679,6 +48901,12 @@ export namespace Prisma {
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
+  export type TeacherRegistrationRequestCreateNestedOneWithoutUserInput = {
+    create?: XOR<TeacherRegistrationRequestCreateWithoutUserInput, TeacherRegistrationRequestUncheckedCreateWithoutUserInput>
+    connectOrCreate?: TeacherRegistrationRequestCreateOrConnectWithoutUserInput
+    connect?: TeacherRegistrationRequestWhereUniqueInput
+  }
+
   export type PromoCodeCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<PromoCodeCreateWithoutCreatedByInput, PromoCodeUncheckedCreateWithoutCreatedByInput> | PromoCodeCreateWithoutCreatedByInput[] | PromoCodeUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: PromoCodeCreateOrConnectWithoutCreatedByInput | PromoCodeCreateOrConnectWithoutCreatedByInput[]
@@ -48822,6 +49050,12 @@ export namespace Prisma {
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
     createMany?: AuditLogCreateManyUserInputEnvelope
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
+  export type TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<TeacherRegistrationRequestCreateWithoutUserInput, TeacherRegistrationRequestUncheckedCreateWithoutUserInput>
+    connectOrCreate?: TeacherRegistrationRequestCreateOrConnectWithoutUserInput
+    connect?: TeacherRegistrationRequestWhereUniqueInput
   }
 
   export type PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput = {
@@ -48974,6 +49208,10 @@ export namespace Prisma {
     set?: $Enums.Status
   }
 
+  export type EnumTeacherApprovalStateFieldUpdateOperationsInput = {
+    set?: $Enums.TeacherApprovalState
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -48998,6 +49236,16 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type TeacherRegistrationRequestUpdateOneWithoutUserNestedInput = {
+    create?: XOR<TeacherRegistrationRequestCreateWithoutUserInput, TeacherRegistrationRequestUncheckedCreateWithoutUserInput>
+    connectOrCreate?: TeacherRegistrationRequestCreateOrConnectWithoutUserInput
+    upsert?: TeacherRegistrationRequestUpsertWithoutUserInput
+    disconnect?: TeacherRegistrationRequestWhereInput | boolean
+    delete?: TeacherRegistrationRequestWhereInput | boolean
+    connect?: TeacherRegistrationRequestWhereUniqueInput
+    update?: XOR<XOR<TeacherRegistrationRequestUpdateToOneWithWhereWithoutUserInput, TeacherRegistrationRequestUpdateWithoutUserInput>, TeacherRegistrationRequestUncheckedUpdateWithoutUserInput>
   }
 
   export type PromoCodeUpdateManyWithoutCreatedByNestedInput = {
@@ -49284,6 +49532,16 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<TeacherRegistrationRequestCreateWithoutUserInput, TeacherRegistrationRequestUncheckedCreateWithoutUserInput>
+    connectOrCreate?: TeacherRegistrationRequestCreateOrConnectWithoutUserInput
+    upsert?: TeacherRegistrationRequestUpsertWithoutUserInput
+    disconnect?: TeacherRegistrationRequestWhereInput | boolean
+    delete?: TeacherRegistrationRequestWhereInput | boolean
+    connect?: TeacherRegistrationRequestWhereUniqueInput
+    update?: XOR<XOR<TeacherRegistrationRequestUpdateToOneWithWhereWithoutUserInput, TeacherRegistrationRequestUpdateWithoutUserInput>, TeacherRegistrationRequestUncheckedUpdateWithoutUserInput>
   }
 
   export type PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput = {
@@ -50789,8 +51047,24 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
   }
 
+  export type UserCreateNestedOneWithoutTeacherRegistrationRequestInput = {
+    create?: XOR<UserCreateWithoutTeacherRegistrationRequestInput, UserUncheckedCreateWithoutTeacherRegistrationRequestInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTeacherRegistrationRequestInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type EnumTeacherRequestStatusFieldUpdateOperationsInput = {
     set?: $Enums.TeacherRequestStatus
+  }
+
+  export type UserUpdateOneWithoutTeacherRegistrationRequestNestedInput = {
+    create?: XOR<UserCreateWithoutTeacherRegistrationRequestInput, UserUncheckedCreateWithoutTeacherRegistrationRequestInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTeacherRegistrationRequestInput
+    upsert?: UserUpsertWithoutTeacherRegistrationRequestInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTeacherRegistrationRequestInput, UserUpdateWithoutTeacherRegistrationRequestInput>, UserUncheckedUpdateWithoutTeacherRegistrationRequestInput>
   }
 
   export type UserCreateNestedOneWithoutAiConversationsInput = {
@@ -51313,6 +51587,13 @@ export namespace Prisma {
     not?: NestedEnumStatusFilter<$PrismaModel> | $Enums.Status
   }
 
+  export type NestedEnumTeacherApprovalStateFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherApprovalState | EnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherApprovalState[] | ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherApprovalState[] | ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherApprovalStateFilter<$PrismaModel> | $Enums.TeacherApprovalState
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -51370,6 +51651,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumStatusFilter<$PrismaModel>
     _max?: NestedEnumStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTeacherApprovalStateWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherApprovalState | EnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherApprovalState[] | ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherApprovalState[] | ListEnumTeacherApprovalStateFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherApprovalStateWithAggregatesFilter<$PrismaModel> | $Enums.TeacherApprovalState
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTeacherApprovalStateFilter<$PrismaModel>
+    _max?: NestedEnumTeacherApprovalStateFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -51993,6 +52284,45 @@ export namespace Prisma {
   export type AuditLogCreateManyUserInputEnvelope = {
     data: AuditLogCreateManyUserInput | AuditLogCreateManyUserInput[]
     skipDuplicates?: boolean
+  }
+
+  export type TeacherRegistrationRequestCreateWithoutUserInput = {
+    id?: string
+    publicReference: string
+    fullName: string
+    email: string
+    mobile: string
+    subject?: string | null
+    bio?: string | null
+    status?: $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: string | null
+    reviewedById?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherRegistrationRequestUncheckedCreateWithoutUserInput = {
+    id?: string
+    publicReference: string
+    fullName: string
+    email: string
+    mobile: string
+    subject?: string | null
+    bio?: string | null
+    status?: $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: string | null
+    reviewedById?: string | null
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherRegistrationRequestCreateOrConnectWithoutUserInput = {
+    where: TeacherRegistrationRequestWhereUniqueInput
+    create: XOR<TeacherRegistrationRequestCreateWithoutUserInput, TeacherRegistrationRequestUncheckedCreateWithoutUserInput>
   }
 
   export type PromoCodeCreateWithoutCreatedByInput = {
@@ -52697,6 +53027,51 @@ export namespace Prisma {
     scopeTeacherId?: StringNullableFilter<"AuditLog"> | string | null
   }
 
+  export type TeacherRegistrationRequestUpsertWithoutUserInput = {
+    update: XOR<TeacherRegistrationRequestUpdateWithoutUserInput, TeacherRegistrationRequestUncheckedUpdateWithoutUserInput>
+    create: XOR<TeacherRegistrationRequestCreateWithoutUserInput, TeacherRegistrationRequestUncheckedCreateWithoutUserInput>
+    where?: TeacherRegistrationRequestWhereInput
+  }
+
+  export type TeacherRegistrationRequestUpdateToOneWithWhereWithoutUserInput = {
+    where?: TeacherRegistrationRequestWhereInput
+    data: XOR<TeacherRegistrationRequestUpdateWithoutUserInput, TeacherRegistrationRequestUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TeacherRegistrationRequestUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicReference?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherRegistrationRequestUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    publicReference?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
+    proofDocuments?: JsonNullValueInput | InputJsonValue
+    adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PromoCodeUpsertWithWhereUniqueWithoutCreatedByInput = {
     where: PromoCodeWhereUniqueInput
     update: XOR<PromoCodeUpdateWithoutCreatedByInput, PromoCodeUncheckedUpdateWithoutCreatedByInput>
@@ -53321,10 +53696,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -53354,10 +53731,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -53432,10 +53811,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -53465,10 +53846,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -53533,10 +53916,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -53566,10 +53951,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -53615,10 +54002,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -53648,10 +54037,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -53747,10 +54138,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -53780,10 +54173,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -53887,10 +54282,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -53920,10 +54317,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -54754,10 +55153,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -54787,10 +55188,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -54836,10 +55239,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -54869,10 +55274,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -54939,10 +55346,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
@@ -54972,10 +55381,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
@@ -55064,10 +55475,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
@@ -55097,10 +55510,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
@@ -55130,10 +55545,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -55163,10 +55580,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -55249,10 +55668,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -55282,10 +55703,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -55401,10 +55824,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -55434,10 +55859,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -55532,10 +55959,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -55565,10 +55994,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -55730,10 +56161,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -55763,10 +56196,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -55839,10 +56274,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -55872,10 +56309,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -56030,10 +56469,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -56063,10 +56504,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -56112,10 +56555,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -56145,10 +56590,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -56178,9 +56625,11 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -56211,9 +56660,11 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -56260,9 +56711,11 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -56293,9 +56746,11 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -56326,10 +56781,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -56359,10 +56816,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -56408,10 +56867,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -56441,10 +56902,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -56657,10 +57120,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -56690,10 +57155,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -56863,10 +57330,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -56896,10 +57365,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -57358,10 +57829,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -57391,10 +57864,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -57511,10 +57986,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -57544,10 +58021,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -57577,10 +58056,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
@@ -57610,10 +58091,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
@@ -57648,10 +58131,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
@@ -57681,10 +58166,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
@@ -57767,10 +58254,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
@@ -57800,10 +58289,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
@@ -57844,10 +58335,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
@@ -57877,10 +58370,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
@@ -57953,10 +58448,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -57986,10 +58483,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -58035,10 +58534,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -58068,6 +58569,163 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+  }
+
+  export type UserCreateWithoutTeacherRegistrationRequestInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserUncheckedCreateWithoutTeacherRegistrationRequestInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserCreateOrConnectWithoutTeacherRegistrationRequestInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTeacherRegistrationRequestInput, UserUncheckedCreateWithoutTeacherRegistrationRequestInput>
+  }
+
+  export type UserUpsertWithoutTeacherRegistrationRequestInput = {
+    update: XOR<UserUpdateWithoutTeacherRegistrationRequestInput, UserUncheckedUpdateWithoutTeacherRegistrationRequestInput>
+    create: XOR<UserCreateWithoutTeacherRegistrationRequestInput, UserUncheckedCreateWithoutTeacherRegistrationRequestInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTeacherRegistrationRequestInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTeacherRegistrationRequestInput, UserUncheckedUpdateWithoutTeacherRegistrationRequestInput>
+  }
+
+  export type UserUpdateWithoutTeacherRegistrationRequestInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTeacherRegistrationRequestInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58091,6 +58749,7 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type UserCreateWithoutAiConversationsInput = {
@@ -58101,10 +58760,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -58134,10 +58795,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -58217,10 +58880,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -58250,10 +58915,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -58583,10 +59250,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -58616,10 +59285,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -58790,10 +59461,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -58823,10 +59496,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -58943,10 +59618,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -58976,10 +59653,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -59074,10 +59753,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -59107,10 +59788,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -59195,10 +59878,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -59228,10 +59913,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -59363,10 +60050,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -59396,10 +60085,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -59527,10 +60218,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
@@ -59560,10 +60253,12 @@ export namespace Prisma {
     mobile: string
     role?: $Enums.Role
     status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -59695,10 +60390,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
@@ -59728,10 +60425,12 @@ export namespace Prisma {
     mobile?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput

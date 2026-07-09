@@ -3,6 +3,7 @@ import { QuizzesController } from "./quizzes.controller.js";
 import { QuestionsController } from "./questions.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import {
   createQuizSchema,
@@ -27,14 +28,14 @@ export const quizStandaloneRouter = Router();
 quizStandaloneRouter.get(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   quizController.list,
 );
 
 quizStandaloneRouter.post(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(createQuizSchema),
   quizController.create,
 );
@@ -44,7 +45,7 @@ quizStandaloneRouter.post(
 quizStandaloneRouter.post(
   "/generate",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(generateQuizSchema),
   quizController.generate,
 );
@@ -54,14 +55,14 @@ quizStandaloneRouter.post(
 quizStandaloneRouter.get(
   "/generator/sources",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   quizController.generatorSources,
 );
 
 quizStandaloneRouter.get(
   "/essay-grading",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   attemptsController.getEssayGradingHub,
 );
 
@@ -94,7 +95,7 @@ const questionNestedRouter = Router({ mergeParams: true });
 questionNestedRouter.patch(
   "/reorder",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(reorderSchema),
   questionsController.reorderQuestions,
 );
@@ -102,7 +103,7 @@ questionNestedRouter.patch(
 questionNestedRouter.post(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(addQuestionSchema),
   questionsController.addQuestion,
 );
@@ -110,7 +111,7 @@ questionNestedRouter.post(
 questionNestedRouter.put(
   "/:qId",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(updateQuestionSchema),
   questionsController.updateQuestion,
 );
@@ -118,7 +119,7 @@ questionNestedRouter.put(
 questionNestedRouter.delete(
   "/:qId",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   questionsController.deleteQuestion,
 );
 
@@ -130,21 +131,21 @@ quizStandaloneRouter.use("/:quizId/questions", questionNestedRouter);
 quizStandaloneRouter.get(
   "/:quizId/essay-submissions",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   attemptsController.getEssaySubmissions,
 );
 
 quizStandaloneRouter.get(
   "/:quizId/results/ungraded",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   attemptsController.getUngradedResults,
 );
 
 quizStandaloneRouter.get(
   "/:quizId/results/export",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   attemptsController.exportResults,
 );
 
@@ -154,7 +155,7 @@ quizStandaloneRouter.get(
 quizStandaloneRouter.get(
   "/:quizId/results",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   attemptsController.getResults,
 );
 
@@ -163,14 +164,14 @@ quizStandaloneRouter.get(
 quizStandaloneRouter.get(
   "/:id/result-settings",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   attemptsController.getResultSettings,
 );
 
 quizStandaloneRouter.put(
   "/:id/result-settings",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(resultSettingsSchema),
   attemptsController.updateResultSettings,
 );
@@ -179,7 +180,7 @@ quizStandaloneRouter.put(
 quizStandaloneRouter.patch(
   "/:id/publish",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(publishQuizSchema),
   quizController.publishQuiz,
 );
@@ -187,14 +188,14 @@ quizStandaloneRouter.patch(
 quizStandaloneRouter.post(
   "/:id/unpublish",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   quizController.unpublishQuiz,
 );
 
 quizStandaloneRouter.post(
   "/:id/assign",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(assignQuizSchema),
   quizController.assignQuiz,
 );
@@ -203,14 +204,14 @@ quizStandaloneRouter.post(
 quizStandaloneRouter.get(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   quizController.getById,
 );
 
 quizStandaloneRouter.put(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(updateQuizSchema),
   quizController.update,
 );
@@ -218,7 +219,7 @@ quizStandaloneRouter.put(
 quizStandaloneRouter.delete(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   quizController.delete,
 );
 

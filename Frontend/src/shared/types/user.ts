@@ -6,6 +6,8 @@
 export type UserRole = "ADMIN" | "OPERATION" | "STUDENT";
 export type UserStatus = "ACTIVE" | "INACTIVE" | "BANNED";
 
+export type TeacherApprovalState = 'NONE' | 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED';
+
 export interface User {
   id: string;
   fullName: string;
@@ -13,6 +15,7 @@ export interface User {
   mobile: string;
   role: UserRole;
   status: UserStatus;
+  teacherApprovalState?: TeacherApprovalState;
   createdAt: string;
   updatedAt?: string;
 }

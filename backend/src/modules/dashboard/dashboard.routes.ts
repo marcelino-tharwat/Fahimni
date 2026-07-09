@@ -2,6 +2,7 @@ import { Router } from "express";
 import { DashboardController } from "./dashboard.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import { teacherStudentDetailParamSchema } from "./student-engagement.validation.js";
 
@@ -13,7 +14,7 @@ const controller = new DashboardController();
 router.get(
   "/teacher/stats",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.getTeacherStats,
 );
 
@@ -21,7 +22,7 @@ router.get(
 router.get(
   "/teacher/students",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.getTeacherStudents,
 );
 
@@ -29,7 +30,7 @@ router.get(
 router.get(
   "/teacher/students/:studentId",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(teacherStudentDetailParamSchema, "params"),
   controller.getTeacherStudentDetail,
 );

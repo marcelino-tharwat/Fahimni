@@ -31,9 +31,17 @@ async function main(): Promise<void> {
   check("At least 5 students", students.length >= 5, `${students.length} found`);
   const studentIds = students.map((s) => s.id);
 
-  // 4. All seed accounts have ACTIVE status
+  // 4. All seed accounts have ACTIVE status — EXCEPT teachers deliberately left
+  //    INACTIVE by the lifecycle demo (PENDING_REVIEW / REJECTED are not active).
   const allSeed = await prisma.user.findMany({ where: { email: { endsWith: DEMO_EMAIL_DOMAIN } } });
-  check("All seed accounts ACTIVE", allSeed.every((u) => u.status === "ACTIVE"), `${allSeed.length} users`);
+  const shouldBeActive = allSeed.filter(
+    (u) => u.teacherApprovalState !== "PENDING_REVIEW" && u.teacherApprovalState !== "REJECTED",
+  );
+  check(
+    "All active-lifecycle seed accounts ACTIVE",
+    shouldBeActive.every((u) => u.status === "ACTIVE"),
+    `${shouldBeActive.length}/${allSeed.length} users`,
+  );
 
   // 5. Student without any enrollment
   const enrolledStudentIds = (
@@ -151,6 +159,69 @@ async function main(): Promise<void> {
     where: { publicReference: { startsWith: DEMO_REF_PREFIX } },
   });
   check("Registration requests exist", regRequests >= 3, `${regRequests} found`);
+
+  // 20a. A linked PENDING teacher request exists (unified-registration flow) with a
+  //      pending OPERATION user in teacherApprovalState = PENDING_REVIEW.
+  const linkedPending = await prisma.teacherRegistrationRequest.findFirst({
+    where: { status: "PENDING", userId: { not: null } },
+    select: { userId: true },
+  });
+  check("Linked pending teacher request exists", !!linkedPending, linkedPending ? "found" : "missing");
+  if (linkedPending?.userId) {
+    const pendingUser = await prisma.user.findUnique({
+      where: { id: linkedPending.userId },
+      select: { role: true, teacherApprovalState: true, status: true },
+    });
+    check(
+      "Linked pending teacher user is OPERATION + PENDING_REVIEW",
+      pendingUser?.role === "OPERATION" &&
+        pendingUser?.teacherApprovalState === "PENDING_REVIEW",
+      `role=${pendingUser?.role} state=${pendingUser?.teacherApprovalState}`,
+    );
+  }
+
+  // 20b. STUDENT users carry teacherApprovalState = NONE.
+  const studentsWithTeacherState = await prisma.user.count({
+    where: { role: "STUDENT", teacherApprovalState: { not: "NONE" } },
+  });
+  check("STUDENT users have teacherApprovalState = NONE", studentsWithTeacherState === 0, `${studentsWithTeacherState} deviating`);
+
+  // 20c. Teacher lifecycle cases for the payment-gate flow.
+  const rejectedTeacher = await prisma.user.findFirst({
+    where: { role: "OPERATION", teacherApprovalState: "REJECTED" },
+    select: { status: true },
+  });
+  check(
+    "Rejected teacher exists and is INACTIVE (blocked)",
+    rejectedTeacher?.status === "INACTIVE",
+    rejectedTeacher ? `status=${rejectedTeacher.status}` : "missing",
+  );
+
+  const approvedTeachers = await prisma.user.findMany({
+    where: { role: "OPERATION", teacherApprovalState: "APPROVED" },
+    select: { id: true, status: true },
+  });
+  const now = new Date();
+  let approvedUnpaid = false;
+  let activePaid = false;
+  for (const t of approvedTeachers) {
+    if (t.status !== "ACTIVE") continue;
+    const activeSub = await prisma.teacherSubscription.findFirst({
+      where: { teacherId: t.id, status: "ACTIVE", currentPeriodEnd: { gt: now } },
+      select: { id: true },
+    });
+    if (activeSub) activePaid = true;
+    else approvedUnpaid = true;
+  }
+  check("Approved-unpaid teacher exists (ACTIVE, APPROVED, no active sub → payment-gated)", approvedUnpaid);
+  check("Active-paid teacher exists (APPROVED + ACTIVE + active subscription)", activePaid);
+
+  // 20d. A linked request carries fake proofDocuments.
+  const reqWithDocs = await prisma.teacherRegistrationRequest.findFirst({
+    where: { userId: { not: null }, NOT: { proofDocuments: { equals: [] } } },
+    select: { id: true },
+  });
+  check("Linked request with proofDocuments exists", !!reqWithDocs, reqWithDocs ? "found" : "missing");
 
   // 21. AI usage events exist
   const aiEvents = await prisma.teacherAiUsageEvent.count({

@@ -17,6 +17,8 @@ import type {
 } from "./auth.validation.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import type { ApiError } from "../../shared/types/common.types.js";
+import { logger } from "../../config/logger.js";
+import { uploadProofDocuments } from "./proof-documents.js";
 
 export class AuthService {
   constructor(private readonly tokenService = new TokenService()) {}
@@ -56,14 +58,8 @@ export class AuthService {
       throw error;
     }
 
-    if (user.status === "INACTIVE" || user.status === "BANNED") {
-      const error = new Error(
-        "Account is inactive. Contact support.",
-      ) as ApiError;
-      error.status = 403;
-      throw error;
-    }
-
+    // Verify the password BEFORE surfacing any account-state detail, so
+    // teacher-state codes are only ever returned to the authenticated owner.
     const isPasswordValid = await bcrypt.compare(input.password, user.password);
 
     if (!isPasswordValid) {
@@ -72,14 +68,48 @@ export class AuthService {
       throw error;
     }
 
+    // Teacher lifecycle gating with specific codes (never the generic inactive
+    // message). Checked before the generic INACTIVE guard because pending/rejected
+    // teachers are INACTIVE by design.
+    if (user.role === "OPERATION") {
+      if (user.teacherApprovalState === "PENDING_REVIEW") {
+        throw new AppError("حسابك قيد المراجعة من الإدارة", 403, "TEACHER_PENDING_REVIEW");
+      }
+      if (user.teacherApprovalState === "REJECTED") {
+        throw new AppError("تم رفض طلب انضمامك", 403, "TEACHER_REJECTED");
+      }
+    }
+
+    if (user.status === "INACTIVE" || user.status === "BANNED") {
+      const error = new Error(
+        "Account is inactive. Contact support.",
+      ) as ApiError;
+      error.status = 403;
+      throw error;
+    }
+
     const result = await this.generateSession(user.id);
 
     const { password: _, ...safeUser } = user;
 
-    return { user: safeUser, ...result };
+    // For an approved teacher, tell the client whether payment is still required
+    // so it can route to /teacher/plans vs the dashboard without a second call.
+    let accessState: "ACTIVE_TEACHER" | "TEACHER_PAYMENT_REQUIRED" | undefined;
+    if (user.role === "OPERATION" && user.teacherApprovalState === "APPROVED") {
+      const activeSub = await prisma.teacherSubscription.findFirst({
+        where: { teacherId: user.id, status: "ACTIVE", currentPeriodEnd: { gt: new Date() } },
+        select: { id: true },
+      });
+      accessState = activeSub ? "ACTIVE_TEACHER" : "TEACHER_PAYMENT_REQUIRED";
+    }
+
+    return { user: safeUser, accessState, ...result };
   }
 
-  public async registerUser(input: RegisterInput) {
+  public async registerUser(
+    input: RegisterInput,
+    files: Express.Multer.File[] = [],
+  ) {
     // Check mobile uniqueness
     const existingMobile = await prisma.user.findUnique({
       where: { mobile: input.mobile },
@@ -106,10 +136,17 @@ export class AuthService {
       }
     }
 
-    // Hash password with salt rounds = 12
+    // Hash password with salt rounds = 12 (both roles — no plaintext is stored).
     const hashedPassword = await bcrypt.hash(input.password, 12);
 
-    // Create user + optional StudentProfile in a single transaction
+    // Teacher registration follows the pending-review flow (no immediate access):
+    // creates an INACTIVE OPERATION user in PENDING_REVIEW + a linked PENDING
+    // request. It intentionally returns NO tokens.
+    if (input.role === "OPERATION") {
+      return this.registerTeacherPending(input, hashedPassword, files);
+    }
+
+    // Student registration (unchanged): active account + StudentProfile + tokens.
     const user = await prisma.$transaction(async (tx) => {
       const created = await tx.user.create({
         data: {
@@ -117,26 +154,18 @@ export class AuthService {
           mobile: input.mobile,
           email: input.email,
           password: hashedPassword,
-          role: input.role === "OPERATION" ? Role.OPERATION : Role.STUDENT,
+          role: Role.STUDENT,
           status: Status.ACTIVE,
         },
         select: userPublicFields,
       });
 
-      if (input.role === "OPERATION") {
-        await tx.teacherProfile.create({
-          data: { userId: created.id },
-        });
+      if (!input.stageId) {
+        throw new AppError("Stage is required for student registration", 400);
       }
-
-      if (input.role === "STUDENT") {
-        if (!input.stageId) {
-          throw new AppError("Stage is required for student registration", 400);
-        }
-        await tx.studentProfile.create({
-          data: { userId: created.id, stageId: input.stageId },
-        });
-      }
+      await tx.studentProfile.create({
+        data: { userId: created.id, stageId: input.stageId },
+      });
 
       return created;
     });
@@ -161,7 +190,113 @@ export class AuthService {
       data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
     });
 
-    return { user, accessToken, refreshToken };
+    return { pending: false as const, user, accessToken, refreshToken };
+  }
+
+  /** TR-YYYY-NNNNNN public reference with retry-on-collision (unique column is the guard). */
+  private async generatePublicReference(): Promise<string> {
+    const year = new Date().getFullYear();
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const seq = String(100000 + crypto.randomInt(0, 900000));
+      const ref = `TR-${year}-${seq}`;
+      const exists = await prisma.teacherRegistrationRequest.findUnique({
+        where: { publicReference: ref },
+        select: { id: true },
+      });
+      if (!exists) return ref;
+    }
+    return `TR-${year}-${crypto.randomUUID().slice(0, 8)}`;
+  }
+
+  /**
+   * Teacher registration → pending review. Creates an INACTIVE OPERATION user in
+   * PENDING_REVIEW (login is blocked by the existing INACTIVE check, so no teacher
+   * endpoint is reachable) plus a linked PENDING TeacherRegistrationRequest. No
+   * random password is generated (the teacher's own password is hashed here) and
+   * NO tokens are issued.
+   */
+  private async registerTeacherPending(
+    input: RegisterInput,
+    hashedPassword: string,
+    files: Express.Multer.File[] = [],
+  ) {
+    // Reject if a legacy public request is already pending for this email/mobile.
+    const pendingRequest = await prisma.teacherRegistrationRequest.findFirst({
+      where: {
+        status: "PENDING",
+        OR: [{ email: input.email }, { mobile: input.mobile }],
+      },
+      select: { id: true },
+    });
+    if (pendingRequest) {
+      throw new AppError(
+        "لديك طلب قيد المراجعة بالفعل",
+        409,
+        "DUPLICATE_PENDING_REQUEST",
+      );
+    }
+
+    const publicReference = await this.generatePublicReference();
+
+    const user = await prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          fullName: input.fullName,
+          mobile: input.mobile,
+          email: input.email,
+          password: hashedPassword,
+          role: Role.OPERATION,
+          status: Status.INACTIVE,
+          teacherApprovalState: "PENDING_REVIEW",
+        },
+        select: userPublicFields,
+      });
+
+      await tx.teacherProfile.create({
+        data: {
+          userId: created.id,
+          subject: input.subject ?? null,
+          bio: input.bio ?? null,
+        },
+      });
+
+      const request = await tx.teacherRegistrationRequest.create({
+        data: {
+          publicReference,
+          fullName: input.fullName,
+          email: input.email,
+          mobile: input.mobile,
+          subject: input.subject ?? null,
+          bio: input.bio ?? null,
+          status: "PENDING",
+          proofDocuments: [],
+          userId: created.id,
+        },
+        select: { id: true },
+      });
+
+      return { created, requestId: request.id };
+    });
+
+    // Upload proof documents (if any) after the request exists, then attach their
+    // metadata. Registration is already committed, so an upload hiccup only means
+    // documents render as UNAVAILABLE — it never fails the registration.
+    if (files.length > 0) {
+      try {
+        const docs = await uploadProofDocuments(user.requestId, files);
+        await prisma.teacherRegistrationRequest.update({
+          where: { id: user.requestId },
+          data: { proofDocuments: JSON.parse(JSON.stringify(docs)) },
+        });
+      } catch (err) {
+        logger.warn("teacher_register_proof_attach_failed", {
+          requestId: user.requestId,
+          errorName: err instanceof Error ? err.name : "UnknownError",
+        });
+      }
+    }
+
+    return { pending: true as const, user: user.created };
   }
 
   public async forgotPassword(input: ForgotPasswordInput) {

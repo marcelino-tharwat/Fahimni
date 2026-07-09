@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AuthController } from './auth.controller.js';
 import { authenticateMiddleware } from '../../shared/middlewares/authenticate.middleware.js';
+import { uploadProofDocuments } from '../../shared/middlewares/upload.middleware.js';
 
 const router = Router();
 const controller = new AuthController();
@@ -11,7 +12,10 @@ router.post('/login', controller.login);
 // POST /api/v1/auth/google
 router.post('/google', controller.googleAuth);
 // POST /api/v1/auth/register
-router.post('/register', controller.register);
+// `uploadProofDocuments` parses multipart teacher registrations (proof files land
+// in req.files, text fields in req.body); JSON/student registrations pass straight
+// through unaffected.
+router.post('/register', uploadProofDocuments, controller.register);
 
 // POST /api/v1/auth/forgot-password
 router.post('/forgot-password', controller.forgotPassword);

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ContentController } from "./content.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 
 const router = Router();
 const controller = new ContentController();
@@ -9,7 +10,7 @@ const controller = new ContentController();
 router.get(
   "/tree",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.getTree,
 );
 

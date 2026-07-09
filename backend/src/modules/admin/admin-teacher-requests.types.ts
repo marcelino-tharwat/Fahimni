@@ -76,9 +76,10 @@ export interface SignedUrlResponse {
  *  - CONFLICT: email/mobile belongs to a non-matching account — no user created.
  */
 export type AccountProvisioning =
-  | "CREATED_PENDING_PASSWORD_RESET"
-  | "SKIPPED"
+  | "APPROVED_LINKED_USER_PAYMENT_REQUIRED"
   | "EXISTING_USER_LINKED"
+  | "LEGACY_MANUAL_PROVISIONING_REQUIRED"
+  | "SKIPPED"
   | "CONFLICT";
 
 export interface ApproveResponse {
@@ -86,6 +87,10 @@ export interface ApproveResponse {
   accountProvisioning: AccountProvisioning;
   conflictReason: string | null;
   createdTeacherId: string | null;
+  paymentRequired: boolean;
+  teacherUserId: string | null;
+  teacherApprovalState: "APPROVED" | null;
+  userStatus: "ACTIVE" | null;
 }
 
 export interface RejectResponse {

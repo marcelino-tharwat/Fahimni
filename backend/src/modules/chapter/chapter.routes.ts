@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ChapterController } from "./chapter.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import { createChapterSchema, updateChapterSchema, reorderSchema } from "./chapter.validation.js";
 import { lessonNestedRouter } from "../lessons/lessons.routes.js";
@@ -14,7 +15,7 @@ export const chapterNestedRouter = Router({ mergeParams: true });
 chapterNestedRouter.patch(
   "/reorder",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(reorderSchema),
   controller.reorder,
 );
@@ -22,7 +23,7 @@ chapterNestedRouter.patch(
 chapterNestedRouter.post(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(createChapterSchema),
   controller.create,
 );
@@ -30,7 +31,7 @@ chapterNestedRouter.post(
 chapterNestedRouter.get(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.list,
 );
 
@@ -51,7 +52,7 @@ chapterStandaloneRouter.get(
 chapterStandaloneRouter.patch(
   "/reorder",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(reorderSchema),
   controller.reorder,
 );
@@ -66,7 +67,7 @@ chapterStandaloneRouter.get(
 chapterStandaloneRouter.put(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(updateChapterSchema),
   controller.update,
 );
@@ -74,7 +75,7 @@ chapterStandaloneRouter.put(
 chapterStandaloneRouter.delete(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.delete,
 );
 

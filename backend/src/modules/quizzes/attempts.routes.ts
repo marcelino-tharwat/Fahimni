@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AttemptsController } from "./attempts.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import {
   submitAttemptSchema,
@@ -37,7 +38,7 @@ attemptsRouter.post(
 // alias. Both map to the same handler + validation.
 const gradeEssaysChain = [
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(gradeEssaysSchema),
   controller.gradeEssays,
 ] as const;
@@ -49,7 +50,7 @@ attemptsRouter.patch("/:attemptId/grade-essays", ...gradeEssaysChain);
 attemptsRouter.get(
   "/:attemptId/essay-grading",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.getEssayGradingDetail,
 );
 
@@ -57,7 +58,7 @@ attemptsRouter.get(
 attemptsRouter.post(
   "/:attemptId/essay-suggestions",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.generateEssaySuggestions,
 );
 

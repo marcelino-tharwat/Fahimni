@@ -162,6 +162,15 @@ export function TeacherPlansPage() {
         </p>
       </div>
 
+      {subscription?.subscription?.status !== 'ACTIVE' && (
+        <div
+          className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
+          data-testid="payment-required-banner"
+        >
+          {t('auth:teacherPaymentRequired', 'تم قبول طلبك. اختر الباقة المناسبة وادفع لتفعيل حسابك.')}
+        </div>
+      )}
+
       {successMsg && (
         <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
           {successMsg}
