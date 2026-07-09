@@ -7,7 +7,7 @@ export interface TeacherPlan {
   yearlyPrice: number | null;
   currency: string;
   isRecommended: boolean;
-  features: string[];
+  features: Record<string, boolean>;
   limits: Record<string, unknown>;
 }
 

@@ -207,7 +207,7 @@ type PlanItem = {
   isActive: boolean;
   isRecommended: boolean;
   sortOrder: number;
-  features: string[];
+  features: Record<string, boolean>;
   limits: Record<string, unknown>;
   stats: {
     freeEntitlementsCount: number;
