@@ -7,7 +7,10 @@ import { AppError } from "../../shared/utils/AppError.js";
 import { userPublicFields } from "../users/user.types.js";
 import { studentPublicFields } from "./student.types.js";
 import { getStudentProfileOverview } from "./student-profile.service.js";
-import { assertStudentVisibleToTeacher } from "../teacher-access/teacher-access.service.js";
+import {
+  assertStudentVisibleToTeacher,
+  assertStageOwnedByTeacher,
+} from "../teacher-access/teacher-access.service.js";
 import type {
   CreateStudentInput,
   UpdateStudentInput,
@@ -177,6 +180,14 @@ export class StudentController {
         return next(new AppError("Invalid student ID", 400));
       }
 
+      // A teacher may only delete a student who is visible to them (has an active
+      // enrollment in this teacher's own content). This mirrors the getById/update
+      // scoping and prevents deleting another teacher's student. The teacher id is
+      // taken from the auth context, never from the request.
+      if (req.user?.role === "OPERATION") {
+        await assertStudentVisibleToTeacher(id, req.user.id);
+      }
+
       const profile = await Student.findUnique({ where: { userId: id } });
       if (!profile) {
         return next(new AppError("Student not found", 404));
@@ -192,6 +203,13 @@ export class StudentController {
     try {
       const { fullName, email, password, mobile, stageId } =
         req.body as CreateStudentInput;
+
+      // A teacher may only create a student under one of their own stages, so a
+      // teacher cannot attach a student to another teacher's stage. The teacher id
+      // is taken from the auth context, never from the request body.
+      if (req.user?.role === "OPERATION") {
+        await assertStageOwnedByTeacher(stageId, req.user.id);
+      }
 
       const existing = await prisma.user.findFirst({
         where: { OR: [{ email }, { mobile }] },

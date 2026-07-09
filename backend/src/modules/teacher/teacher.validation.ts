@@ -22,7 +22,10 @@ export const updateTeacherProfileSchema = z
       .string()
       .trim()
       .regex(
-        /^01[0-9]{9}$/,
+        // Match the format registration accepts and stores — both the local
+        // "01…" form and the international "+20…" form (prefixes 10/11/12/15).
+        // A stricter "^01[0-9]{9}$" rejected teachers whose stored mobile is "+20…".
+        /^(\+20|0)(10|11|12|15)[0-9]{8}$/,
         "Mobile number must be a valid Egyptian number (e.g. 01012345678)",
       )
       .optional(),

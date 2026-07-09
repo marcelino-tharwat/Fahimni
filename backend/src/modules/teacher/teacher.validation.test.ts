@@ -50,3 +50,18 @@ describe("updateTeacherProfileSchema.aiTutorDailyQueryLimit", () => {
     ).toBe(false);
   });
 });
+
+describe("updateTeacherProfileSchema.mobile", () => {
+  it("accepts the local 01… format", () => {
+    expect(updateTeacherProfileSchema.safeParse({ mobile: "01012345678" }).success).toBe(true);
+  });
+
+  it("accepts the international +20… format that registration stores", () => {
+    // Regression: teachers registered with "+20…" could not save their profile.
+    expect(updateTeacherProfileSchema.safeParse({ mobile: "+201068805472" }).success).toBe(true);
+  });
+
+  it("rejects a clearly invalid mobile", () => {
+    expect(updateTeacherProfileSchema.safeParse({ mobile: "12345" }).success).toBe(false);
+  });
+});

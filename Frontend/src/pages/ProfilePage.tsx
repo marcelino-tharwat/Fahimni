@@ -104,15 +104,13 @@ function mapProfileData(
 ) {
   return {
     profile: data ?? null,
-    reviewCount: 32,
+    reviewCount: 0,
     stats: dashboardData ?? { stages: 0, chapters: 0, students: 0, lessons: 0 },
     completion: { rate: 0, completed: 0, total: dashboardData?.students ?? 0 },
-    engagement: { total: 390, trend: 20 },
-    grades: [
-      { labelKey: 'studentEngagement.grades.first', count: 12, percentage: 65, barColor: 'bg-cyan-500' },
-      { labelKey: 'studentEngagement.grades.second', count: 18, percentage: 85, barColor: 'bg-purple-500' },
-      { labelKey: 'studentEngagement.grades.third', count: 9, percentage: 45, barColor: 'bg-success-500' },
-    ] as const,
+    // Real, teacher-scoped enrolled-student count from the (scoped) dashboard
+    // stats. Trend and grade-distribution have no backend source yet, so they are
+    // intentionally omitted rather than shown as fabricated numbers.
+    engagement: { total: dashboardData?.students ?? 0 },
   };
 }
 
@@ -158,8 +156,6 @@ export function ProfilePage() {
         <StudentEngagementCard
           isLoading={isLoading}
           totalEnrolled={mapped.engagement.total}
-          trend={mapped.engagement.trend}
-          grades={mapped.grades}
         />
         <SupportSettingsCard
           isLoading={isLoading}

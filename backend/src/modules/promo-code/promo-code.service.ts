@@ -64,12 +64,29 @@ export class PromoCodeService {
     return code;
   }
 
-  public async create(createdById: string, chapterId: string): Promise<PromoCodeResponseDTO> {
-    const chapter = await prisma.chapter.findUnique({
-      where: { id: chapterId },
-      select: { id: true, deletedAt: true },
+  /**
+   * Create a promo code for a chapter. When `ownerTeacherId` is provided (an
+   * OPERATION caller) the chapter MUST belong to that teacher — a teacher can
+   * only mint codes for their own chapters, never for another teacher's content.
+   * When it is omitted (an ADMIN caller) any existing chapter is allowed.
+   */
+  public async create(
+    createdById: string,
+    chapterId: string,
+    ownerTeacherId?: string,
+  ): Promise<PromoCodeResponseDTO> {
+    const chapter = await prisma.chapter.findFirst({
+      where: {
+        id: chapterId,
+        deletedAt: null,
+        // Scope to the teacher's own content when the caller is a teacher.
+        ...(ownerTeacherId
+          ? { stage: { teacherId: ownerTeacherId, deletedAt: null } }
+          : {}),
+      },
+      select: { id: true },
     });
-    if (!chapter || chapter.deletedAt) {
+    if (!chapter) {
       throw new AppError("Chapter not found", 404, "CHAPTER_NOT_FOUND");
     }
 
@@ -86,11 +103,21 @@ export class PromoCodeService {
     return promoCode as PromoCodeResponseDTO;
   }
 
+  /**
+   * List promo codes. When `ownerTeacherId` is provided (an OPERATION caller)
+   * the list is scoped to codes that teacher created — a teacher never sees
+   * another teacher's (or the admin's) promo codes. When omitted (ADMIN) all
+   * codes are returned (global).
+   */
   public async findAll(
     params: ListPromoCodesQuery,
+    ownerTeacherId?: string,
   ): Promise<PaginatedPromoCodes> {
     const { page, limit, isUsed } = params;
-    const where = isUsed === undefined ? {} : { isUsed };
+    const where = {
+      ...(isUsed === undefined ? {} : { isUsed }),
+      ...(ownerTeacherId ? { createdById: ownerTeacherId } : {}),
+    };
 
     const [total, items] = await prisma.$transaction([
       prisma.promoCode.count({ where }),

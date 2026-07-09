@@ -20,6 +20,7 @@ router.get(
 router.put(
   "/profile",
   authenticateMiddleware,
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(updateTeacherProfileSchema),
   controller.updateProfile,
 );

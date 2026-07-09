@@ -21,7 +21,16 @@ export class PromoCodeController {
       const createdById = req.user!.id;
       const { chapterId } = req.body as { chapterId: string };
 
-      const promoCode = await promoCodeService.create(createdById, chapterId);
+      // A teacher (OPERATION) may only create codes for their own chapters; an
+      // ADMIN may target any chapter. Ownership is derived from the auth context.
+      const ownerTeacherId =
+        req.user!.role === "OPERATION" ? req.user!.id : undefined;
+
+      const promoCode = await promoCodeService.create(
+        createdById,
+        chapterId,
+        ownerTeacherId,
+      );
 
       res
         .status(201)
@@ -36,7 +45,11 @@ export class PromoCodeController {
     async (req: Request, res: Response, _next: NextFunction) => {
       const query = listPromoCodesSchema.parse(req.query);
 
-      const result = await promoCodeService.findAll(query);
+      // A teacher (OPERATION) sees only their own codes; an ADMIN sees all.
+      const ownerTeacherId =
+        req.user!.role === "OPERATION" ? req.user!.id : undefined;
+
+      const result = await promoCodeService.findAll(query, ownerTeacherId);
 
       res
         .status(200)

@@ -7,12 +7,15 @@ import type { GradeEngagement } from '@/types/profile.types';
 interface StudentEngagementCardProps {
   isLoading: boolean;
   totalEnrolled: number;
-  trend: number;
-  grades: readonly GradeEngagement[];
+  /** Optional period-over-period trend (%). Hidden when not available. */
+  trend?: number;
+  /** Optional grade distribution. Hidden when empty/unavailable. */
+  grades?: readonly GradeEngagement[];
 }
 
 export function StudentEngagementCard({ isLoading, totalEnrolled, trend, grades }: StudentEngagementCardProps) {
   const { t } = useTranslation('profile');
+  const gradeList = grades ?? [];
 
   if (isLoading) {
     return (
@@ -50,17 +53,20 @@ export function StudentEngagementCard({ isLoading, totalEnrolled, trend, grades 
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="rounded-full bg-navy-700 px-3 py-1 font-cairo text-small text-cyan-400">
-            {trend > 0 ? `${toLocalNum(trend)}↑` : `${toLocalNum(Math.abs(trend))}↓`}٪
-          </span>
+          {typeof trend === 'number' && (
+            <span className="rounded-full bg-navy-700 px-3 py-1 font-cairo text-small text-cyan-400">
+              {trend > 0 ? `${toLocalNum(trend)}↑` : `${toLocalNum(Math.abs(trend))}↓`}٪
+            </span>
+          )}
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500">
             <Users size={20} className="text-white" />
           </span>
         </div>
       </div>
 
+      {gradeList.length > 0 && (
       <div className="space-y-4">
-        {grades.map(({ labelKey, count, percentage, barColor }) => (
+        {gradeList.map(({ labelKey, count, percentage, barColor }) => (
           <div key={labelKey}>
             <div className="mb-1 flex items-center justify-between">
               <span className="font-cairo text-body text-navy-900">{t(labelKey)}</span>
@@ -82,15 +88,18 @@ export function StudentEngagementCard({ isLoading, totalEnrolled, trend, grades 
           </div>
         ))}
       </div>
+      )}
 
+      {gradeList.length > 0 && (
       <div className="mt-4 flex items-center gap-4">
-        {grades.map(({ labelKey, barColor }) => (
+        {gradeList.map(({ labelKey, barColor }) => (
           <div key={labelKey} className="flex items-center gap-1.5">
             <span className={`h-2.5 w-2.5 rounded-full ${barColor}`} />
             <span className="font-cairo text-caption text-gray-600">{t(labelKey)}</span>
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }
