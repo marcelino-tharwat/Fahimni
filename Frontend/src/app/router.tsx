@@ -23,6 +23,9 @@ import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage';
 
 // Teacher request page
 import { TeacherRequestPage } from '@/features/teacher-request/pages/TeacherRequestPage';
+import { TeacherPendingReviewPage } from '@/features/teacher/pages/TeacherPendingReviewPage';
+import { TeacherRejectedPage } from '@/features/teacher/pages/TeacherRejectedPage';
+import { TeacherAccessGuard } from '@/shared/components/guards/TeacherAccessGuard';
 
 // Student pages
 import { StudentDashboardPage } from '@/features/student/pages/StudentDashboardPage';
@@ -78,6 +81,8 @@ const router = createBrowserRouter([
       { path: '/', element: <LandingPage /> },
       { path: '/forgot-password', element: <ResetPasswordPage /> },
       { path: '/become-teacher', element: <TeacherRequestPage /> },
+      { path: '/teacher/pending-review', element: <TeacherPendingReviewPage /> },
+      { path: '/teacher/rejected', element: <TeacherRejectedPage /> },
       { path: '/t/:tenantSlug', element: <LandingPage /> },
       {
         element: <GuestGuard />,
@@ -129,6 +134,12 @@ const router = createBrowserRouter([
       {
         element: <RoleGuard allowedRoles={['teacher']} />,
         children: [
+          // Feature routes require an approved teacher WITH an active subscription
+          // (payment gate). Plans/checkout stay outside this guard so an approved
+          // unpaid teacher can still pay.
+          {
+            element: <TeacherAccessGuard />,
+            children: [
           {
             element: <TeacherLayout />,
             children: [
@@ -151,16 +162,20 @@ const router = createBrowserRouter([
             ],
           },
           {
-            element: <TeacherPlansLayout />,
-            children: [
-              { path: '/teacher/plans', element: <TeacherPlansPage /> },
-            ],
-          },
-          {
             element: <TeacherStageLayout />,
             children: [
               { path: '/teacher/content/new', element: <CreateStagePage /> },
               { path: '/teacher/content/:stageId', element: <StageDetailPage /> },
+            ],
+          },
+            ],
+          },
+          // Plans/checkout: reachable by an approved-but-unpaid teacher (outside the
+          // payment gate) so they can complete payment.
+          {
+            element: <TeacherPlansLayout />,
+            children: [
+              { path: '/teacher/plans', element: <TeacherPlansPage /> },
             ],
           },
         ],

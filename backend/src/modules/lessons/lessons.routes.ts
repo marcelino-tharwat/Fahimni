@@ -2,6 +2,7 @@ import { Router } from "express";
 import { LessonsController } from "./lessons.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import { createLessonSchema, updateLessonSchema, reorderSchema } from "./lessons.validation.js";
 
@@ -13,7 +14,7 @@ export const lessonNestedRouter = Router({ mergeParams: true });
 lessonNestedRouter.patch(
   "/reorder",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(reorderSchema),
   controller.reorder,
 );
@@ -21,7 +22,7 @@ lessonNestedRouter.patch(
 lessonNestedRouter.post(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(createLessonSchema),
   controller.create,
 );
@@ -29,7 +30,7 @@ lessonNestedRouter.post(
 lessonNestedRouter.get(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.list,
 );
 
@@ -39,7 +40,7 @@ export const lessonStandaloneRouter = Router();
 lessonStandaloneRouter.patch(
   "/reorder",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(reorderSchema),
   controller.reorder,
 );
@@ -47,14 +48,14 @@ lessonStandaloneRouter.patch(
 lessonStandaloneRouter.get(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.getById,
 );
 
 lessonStandaloneRouter.put(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(updateLessonSchema),
   controller.update,
 );
@@ -62,7 +63,7 @@ lessonStandaloneRouter.put(
 lessonStandaloneRouter.delete(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.delete,
 );
 

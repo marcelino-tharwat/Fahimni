@@ -121,8 +121,9 @@ describe("POST /generate route registration", () => {
     ).find((l) => l.route?.path === "/generate" && l.route.methods.post);
 
     expect(layer).toBeDefined();
-    // authenticate + authorize + validate + controller.generate
-    expect(layer!.route!.stack.length).toBe(4);
+    // authenticate + authorize + requireActiveTeacherSubscription (payment gate)
+    // + validate + controller.generate
+    expect(layer!.route!.stack.length).toBe(5);
   });
 });
 

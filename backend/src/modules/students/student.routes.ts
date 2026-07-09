@@ -2,6 +2,7 @@ import { Router } from "express";
 import { StudentController } from "./student.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import {
   createStudentSchema,
@@ -22,7 +23,7 @@ router.get(
 router.get(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.list,
 );
 router.get(
@@ -34,7 +35,7 @@ router.get(
 router.post(
   "/",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   validateRequest(createStudentSchema),
   controller.create,
 );
@@ -48,7 +49,7 @@ router.patch(
 router.delete(
   "/:id",
   authenticateMiddleware,
-  authorizeMiddleware("OPERATION"),
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
   controller.delete,
 );
 

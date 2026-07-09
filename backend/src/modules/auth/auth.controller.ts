@@ -43,6 +43,8 @@ export class AuthController {
         message: "Login successful",
         data: {
           user: result.user,
+          // Present only for approved teachers: ACTIVE_TEACHER | TEACHER_PAYMENT_REQUIRED.
+          ...(result.accessState ? { accessState: result.accessState } : {}),
         },
       });
     } catch (error) {
@@ -68,7 +70,23 @@ export class AuthController {
         return;
       }
 
-      const result = await authService.registerUser(parsed.data);
+      // Proof documents (teacher registration) arrive as multipart files; absent
+      // for JSON/student registration.
+      const files = (req.files as Express.Multer.File[] | undefined) ?? [];
+      const result = await authService.registerUser(parsed.data, files);
+
+      // Teacher registration is pending admin review — no session/tokens issued,
+      // so the teacher cannot reach any teacher endpoint until approved + active.
+      if (result.pending) {
+        res.status(201).json({
+          message: "تم إرسال طلبك للمراجعة من الإدارة",
+          data: {
+            user: result.user,
+            pendingReview: true,
+          },
+        });
+        return;
+      }
 
       setAuthCookies(res, result.accessToken, result.refreshToken);
 

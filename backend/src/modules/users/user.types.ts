@@ -1,4 +1,4 @@
-import type { Role, Status } from "../../generated/prisma/client.js";
+import type { Role, Status, TeacherApprovalState } from "../../generated/prisma/client.js";
 
 export interface UserRecord {
   id: string;
@@ -7,6 +7,7 @@ export interface UserRecord {
   mobile: string;
   role: Role;
   status: Status;
+  teacherApprovalState: TeacherApprovalState;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,6 +21,7 @@ export const userPublicFields = {
   mobile: true,
   role: true,
   status: true,
+  teacherApprovalState: true,
   createdAt: true,
   updatedAt: true,
 } as const;

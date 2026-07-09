@@ -15,10 +15,15 @@ model User {
   mobile              String               @unique
   role                Role                 @default(STUDENT)
   status              Status               @default(ACTIVE)
+  // Teacher lifecycle state, orthogonal to `status`. NONE for non-teachers and
+  // legacy rows; teachers move PENDING_REVIEW → APPROVED | REJECTED. The derived
+  // "active teacher" (APPROVED + active subscription) is not stored here.
+  teacherApprovalState TeacherApprovalState @default(NONE)
   tokenVersion        Int                  @default(0)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   auditLogs           AuditLog[]
+  teacherRegistrationRequest TeacherRegistrationRequest?
   createdPromoCodes   PromoCode[]              @relation("PromoCodeCreatedBy")
   usedPromoCodes      PromoCode[]              @relation("PromoCodeUsedBy")
   enrollments         Enrollment[]
@@ -523,6 +528,16 @@ enum TeacherRequestStatus {
   REJECTED
 }
 
+/// Teacher account lifecycle, orthogonal to User.status. NONE for non-teachers
+/// and legacy rows. Teachers created via unified registration start
+/// PENDING_REVIEW; admin approval sets APPROVED, rejection sets REJECTED.
+enum TeacherApprovalState {
+  NONE
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
 /// Prospective teacher applications submitted for admin review.
 model TeacherRegistrationRequest {
   id               String               @id @default(uuid())
@@ -538,6 +553,10 @@ model TeacherRegistrationRequest {
   adminNotes     String?
   reviewedById   String?
   reviewedAt     DateTime?
+  // Optional link to the pending OPERATION user created at unified registration.
+  // Null for legacy requests (public /become-teacher form, which creates no user).
+  userId         String?              @unique
+  user           User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
 

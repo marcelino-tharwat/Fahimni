@@ -418,7 +418,8 @@ async function seedAll(): Promise<void> {
         const t = TEACHERS[ti]!;
         await tx.user.upsert({
           where: { email: t.email },
-          update: { status: "ACTIVE", fullName: t.fullName },
+          // Existing seeded teachers are established/active → APPROVED lifecycle state.
+          update: { status: "ACTIVE", fullName: t.fullName, teacherApprovalState: "APPROVED" },
           create: {
             id: t.id,
             email: t.email,
@@ -427,6 +428,7 @@ async function seedAll(): Promise<void> {
             password: demoPasswordHash,
             role: t.role,
             status: "ACTIVE",
+            teacherApprovalState: "APPROVED",
           },
         });
         await tx.teacherProfile.upsert({
@@ -439,6 +441,67 @@ async function seedAll(): Promise<void> {
             bio: t.bio,
             aiTutorDailyQueryLimit: 30,
           },
+        });
+      }
+
+      // Teacher lifecycle demo accounts (unified-registration flow):
+      //  - pending: INACTIVE + PENDING_REVIEW, linked to a PENDING request.
+      //  - rejected: INACTIVE + REJECTED, linked to a REJECTED request.
+      const LIFECYCLE_TEACHERS = [
+        {
+          id: sid("teacher-pending"),
+          profileId: sid("profile-pending"),
+          email: "teacher.pending" + DEMO_EMAIL_DOMAIN,
+          fullName: "أ. سلمى المدرّسة المنتظرة",
+          mobile: "01000000040",
+          subject: "الأحياء",
+          bio: "مدرّسة أحياء بانتظار مراجعة الإدارة.",
+          state: "PENDING_REVIEW" as const,
+          status: "INACTIVE" as const,
+        },
+        {
+          id: sid("teacher-rejected-user"),
+          profileId: sid("profile-rejected-user"),
+          email: "teacher.rejected.user" + DEMO_EMAIL_DOMAIN,
+          fullName: "أ. سامي المدرّس المرفوض",
+          mobile: "01000000050",
+          subject: "اللغة الإنجليزية",
+          bio: "طلب مرفوض من الإدارة.",
+          state: "REJECTED" as const,
+          status: "INACTIVE" as const,
+        },
+        {
+          // Approved but UNPAID: can log in, is payment-gated (no active subscription).
+          id: sid("teacher-approved-unpaid"),
+          profileId: sid("profile-approved-unpaid"),
+          email: "teacher.approved.unpaid" + DEMO_EMAIL_DOMAIN,
+          fullName: "أ. ليلى المدرّسة المعتمدة",
+          mobile: "01000000060",
+          subject: "التاريخ",
+          bio: "معتمدة بانتظار إتمام الدفع لتفعيل الحساب.",
+          state: "APPROVED" as const,
+          status: "ACTIVE" as const,
+        },
+      ];
+      for (const lt of LIFECYCLE_TEACHERS) {
+        await tx.user.upsert({
+          where: { email: lt.email },
+          update: { status: lt.status, fullName: lt.fullName, teacherApprovalState: lt.state },
+          create: {
+            id: lt.id,
+            email: lt.email,
+            fullName: lt.fullName,
+            mobile: lt.mobile,
+            password: demoPasswordHash,
+            role: "OPERATION",
+            status: lt.status,
+            teacherApprovalState: lt.state,
+          },
+        });
+        await tx.teacherProfile.upsert({
+          where: { userId: lt.id },
+          update: { subject: lt.subject, bio: lt.bio },
+          create: { id: lt.profileId, userId: lt.id, subject: lt.subject, bio: lt.bio },
         });
       }
 
@@ -888,6 +951,75 @@ async function seedAll(): Promise<void> {
           reviewedAt: daysAgo(10),
           adminNotes:
             "المستندات المقدمة غير مكتملة. يُرجى إعادة التقديم بعد استكمال الأوراق.",
+        },
+      });
+
+      // Linked requests (unified-registration flow): tied to a real pending/rejected
+      // OPERATION user via userId. These are the shape the approval phase consumes.
+      // Fake/safe proof documents: metadata only + a synthetic storage path that
+      // cannot be signed (admin detail shows the name; signed-url → DOCUMENT_UNAVAILABLE).
+      const fakeProofDocuments = [
+        {
+          originalName: "certificate.pdf",
+          mimeType: "application/pdf",
+          size: 12345,
+          path: "teacher-registration-requests/DEMO_FAKE/certificate.pdf",
+        },
+      ];
+      await tx.teacherRegistrationRequest.upsert({
+        where: { publicReference: DEMO_REF_PREFIX + "REQ_004" },
+        update: { status: "PENDING", userId: sid("teacher-pending"), proofDocuments: fakeProofDocuments },
+        create: {
+          id: sid("req-pending-linked"),
+          publicReference: DEMO_REF_PREFIX + "REQ_004",
+          fullName: "أ. سلمى المدرّسة المنتظرة",
+          email: "teacher.pending" + DEMO_EMAIL_DOMAIN,
+          mobile: "01000000040",
+          subject: "الأحياء",
+          bio: "مدرّسة أحياء بانتظار مراجعة الإدارة.",
+          status: "PENDING",
+          proofDocuments: fakeProofDocuments,
+          userId: sid("teacher-pending"),
+        },
+      });
+
+      await tx.teacherRegistrationRequest.upsert({
+        where: { publicReference: DEMO_REF_PREFIX + "REQ_005" },
+        update: { status: "REJECTED", userId: sid("teacher-rejected-user") },
+        create: {
+          id: sid("req-rejected-linked"),
+          publicReference: DEMO_REF_PREFIX + "REQ_005",
+          fullName: "أ. سامي المدرّس المرفوض",
+          email: "teacher.rejected.user" + DEMO_EMAIL_DOMAIN,
+          mobile: "01000000050",
+          subject: "اللغة الإنجليزية",
+          bio: "طلب مرفوض من الإدارة.",
+          status: "REJECTED",
+          proofDocuments: [],
+          reviewedById: ADMIN.id,
+          reviewedAt: daysAgo(5),
+          adminNotes: "لم تُستوفَ متطلبات المراجعة.",
+          userId: sid("teacher-rejected-user"),
+        },
+      });
+
+      // Approved-but-unpaid linked request → teacher is login-capable + payment-gated.
+      await tx.teacherRegistrationRequest.upsert({
+        where: { publicReference: DEMO_REF_PREFIX + "REQ_006" },
+        update: { status: "APPROVED", userId: sid("teacher-approved-unpaid") },
+        create: {
+          id: sid("req-approved-linked"),
+          publicReference: DEMO_REF_PREFIX + "REQ_006",
+          fullName: "أ. ليلى المدرّسة المعتمدة",
+          email: "teacher.approved.unpaid" + DEMO_EMAIL_DOMAIN,
+          mobile: "01000000060",
+          subject: "التاريخ",
+          bio: "معتمدة بانتظار إتمام الدفع لتفعيل الحساب.",
+          status: "APPROVED",
+          proofDocuments: [],
+          reviewedById: ADMIN.id,
+          reviewedAt: daysAgo(2),
+          userId: sid("teacher-approved-unpaid"),
         },
       });
 

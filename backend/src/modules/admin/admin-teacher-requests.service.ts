@@ -1,5 +1,3 @@
-import crypto from "node:crypto";
-import bcrypt from "bcryptjs";
 import { prisma } from "../../config/database.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../../shared/utils/AppError.js";
@@ -53,6 +51,7 @@ type RequestRow = {
   adminNotes: string | null;
   reviewedById: string | null;
   reviewedAt: Date | null;
+  userId: string | null;
   createdAt: Date;
 };
 
@@ -68,6 +67,7 @@ const requestSelect = {
   adminNotes: true,
   reviewedById: true,
   reviewedAt: true,
+  userId: true,
   createdAt: true,
 } as const;
 
@@ -235,60 +235,42 @@ export class AdminTeacherRequestsService {
       throw new AppError("Only a pending request can be approved", 409, "REQUEST_NOT_PENDING");
     }
 
-    const createAccount = input.createAccount ?? true;
-    let accountProvisioning: ApproveResponse["accountProvisioning"] = "SKIPPED";
+    // Resolve which teacher user (if any) to activate — NO random password is ever
+    // generated. Preferred path: the request is linked (userId) to the pending user
+    // created at unified registration. Legacy fallback: link an existing OPERATION
+    // user with the same email; otherwise approve the request only.
+    let accountProvisioning: ApproveResponse["accountProvisioning"];
     let conflictReason: string | null = null;
-    let createdTeacherId: string | null = null;
+    let teacherUserId: string | null = null;
 
-    // Resolve account-provisioning outcome BEFORE the transaction (read-only checks).
-    if (createAccount) {
-      const [byEmail, byMobile] = await Promise.all([
-        prisma.user.findUnique({ where: { email: row.email }, select: { id: true, role: true } }),
-        prisma.user.findUnique({ where: { mobile: row.mobile }, select: { id: true, role: true } }),
-      ]);
-
-      if (byEmail) {
-        if (byEmail.role === "OPERATION") {
-          accountProvisioning = "EXISTING_USER_LINKED";
-          createdTeacherId = byEmail.id;
-        } else {
-          accountProvisioning = "CONFLICT";
-          conflictReason = "EMAIL_IN_USE_BY_NON_TEACHER";
-        }
-      } else if (byMobile) {
+    if (row.userId) {
+      accountProvisioning = "APPROVED_LINKED_USER_PAYMENT_REQUIRED";
+      teacherUserId = row.userId;
+    } else {
+      const byEmail = await prisma.user.findUnique({
+        where: { email: row.email },
+        select: { id: true, role: true },
+      });
+      if (byEmail && byEmail.role === "OPERATION") {
+        accountProvisioning = "EXISTING_USER_LINKED";
+        teacherUserId = byEmail.id;
+      } else if (byEmail) {
         accountProvisioning = "CONFLICT";
-        conflictReason = "MOBILE_IN_USE";
+        conflictReason = "EMAIL_IN_USE_BY_NON_TEACHER";
       } else {
-        accountProvisioning = "CREATED_PENDING_PASSWORD_RESET";
+        // No safe user to provision without inventing a password → manual follow-up.
+        accountProvisioning = "LEGACY_MANUAL_PROVISIONING_REQUIRED";
       }
     }
 
     const updated = await prisma.$transaction(async (tx) => {
-      // Provision the teacher account inside the same transaction as the review
-      // so a failure rolls the whole approval back.
-      if (accountProvisioning === "CREATED_PENDING_PASSWORD_RESET") {
-        // Random, un-disclosed password — NEVER returned or logged. The teacher
-        // activates their login via the existing self-service password-reset flow.
-        const randomPassword = crypto.randomBytes(24).toString("base64url");
-        const hashed = await bcrypt.hash(randomPassword, 10);
-        const created = await tx.user.create({
-          data: {
-            fullName: row.fullName,
-            email: row.email,
-            mobile: row.mobile,
-            password: hashed,
-            role: "OPERATION",
-            status: "ACTIVE",
-            teacherProfile: {
-              create: {
-                subject: row.subject ?? null,
-                bio: row.bio ?? null,
-              },
-            },
-          },
-          select: { id: true },
+      // Activate the linked/existing teacher: APPROVED + ACTIVE so they can log in
+      // and reach the payment gate. Password is left untouched.
+      if (teacherUserId) {
+        await tx.user.update({
+          where: { id: teacherUserId },
+          data: { teacherApprovalState: "APPROVED", status: "ACTIVE" },
         });
-        createdTeacherId = created.id;
       }
 
       const req = await tx.teacherRegistrationRequest.update({
@@ -297,6 +279,8 @@ export class AdminTeacherRequestsService {
           status: "APPROVED",
           reviewedById: reviewerId,
           reviewedAt: new Date(),
+          // Backfill the link when we resolved an existing user for a legacy request.
+          ...(row.userId ? {} : teacherUserId ? { userId: teacherUserId } : {}),
           ...(input.adminNotes !== undefined ? { adminNotes: input.adminNotes } : {}),
         },
         select: requestSelect,
@@ -312,7 +296,7 @@ export class AdminTeacherRequestsService {
           details: {
             publicReference: req.publicReference,
             accountProvisioning,
-            ...(createdTeacherId ? { createdTeacherId } : {}),
+            ...(teacherUserId ? { teacherUserId } : {}),
             ...(conflictReason ? { conflictReason } : {}),
           },
         },
@@ -327,7 +311,11 @@ export class AdminTeacherRequestsService {
       request: this.toListItem(updated, reviewerName),
       accountProvisioning,
       conflictReason,
-      createdTeacherId,
+      createdTeacherId: teacherUserId,
+      paymentRequired: teacherUserId !== null,
+      teacherUserId,
+      teacherApprovalState: teacherUserId ? "APPROVED" : null,
+      userStatus: teacherUserId ? "ACTIVE" : null,
     };
   }
 
@@ -338,6 +326,14 @@ export class AdminTeacherRequestsService {
     }
 
     const updated = await prisma.$transaction(async (tx) => {
+      // Block the linked teacher account (if any): REJECTED + INACTIVE.
+      if (row.userId) {
+        await tx.user.update({
+          where: { id: row.userId },
+          data: { teacherApprovalState: "REJECTED", status: "INACTIVE" },
+        });
+      }
+
       const req = await tx.teacherRegistrationRequest.update({
         where: { id: requestId },
         data: {
@@ -355,7 +351,7 @@ export class AdminTeacherRequestsService {
           resourceId: requestId,
           actorId: reviewerId,
           actorType: "ADMIN",
-          details: { publicReference: req.publicReference },
+          details: { publicReference: req.publicReference, ...(row.userId ? { teacherUserId: row.userId } : {}) },
         },
         tx,
       );
