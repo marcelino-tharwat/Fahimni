@@ -545,7 +545,20 @@
       "stages": "المراحل",
       "subscriptions": "الاشتراكات",
       "recentAuditLogs": "النشاط الأخير"
-    }
+    },
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "resetPasswordTitle": "إعادة تعيين كلمة المرور",
+    "cannotResetOwnPassword": "لا يمكنك إعادة تعيين كلمة المرور الخاصة بك من لوحة الإدارة.",
+    "newPassword": "كلمة المرور الجديدة",
+    "newPasswordPlaceholder": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirmPasswordPlaceholder": "تأكيد كلمة المرور",
+    "passwordStrengthHint": "8 أحرف على الأقل، حرف كبير، حرف صغير، رقم، رمز خاص",
+    "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
+    "forceLogout": "تسجيل الخروج القسري (إبطال جميع الجلسات الحالية)",
+    "resetPasswordReason": "السبب",
+    "resetPasswordReasonPlaceholder": "أدخل سبب إعادة تعيين كلمة المرور...",
+    "passwordResetSuccess": "تم إعادة تعيين كلمة المرور بنجاح"
   },
   "language": { "ar": "العربية", "en": "English" }
 }
