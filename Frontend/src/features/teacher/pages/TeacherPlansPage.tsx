@@ -357,12 +357,14 @@ export function TeacherPlansPage() {
 
               <div className="mt-4 flex-1 rounded-card bg-gray-50 px-5 py-4">
                 <ul className="space-y-3">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-text-secondary">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-success-500" />
-                      <span>{t(`plans.planFeatures.${plan.code}.${i}`, feature)}</span>
-                    </li>
-                  ))}
+                  {Object.entries(plan.features)
+                    .filter(([, enabled]) => enabled)
+                    .map(([key]) => (
+                      <li key={key} className="flex items-start gap-3 text-sm text-text-secondary">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-success-500" />
+                        <span>{t(`plans.planFeatures.${plan.code}.${key}`, key)}</span>
+                      </li>
+                    ))}
                 </ul>
               </div>
             </Card>

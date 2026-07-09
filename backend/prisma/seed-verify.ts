@@ -105,6 +105,8 @@ async function main(): Promise<void> {
   // 12. Teacher plans exist
   const planCount = await prisma.teacherPlan.count({ where: { isActive: true } });
   check("Teacher plans exist", planCount >= 3, `${planCount} active plans`);
+  const totalPlanCount = await prisma.teacherPlan.count();
+  check("Total teacher plans >= 5 (with inactive)", totalPlanCount >= 5, `${totalPlanCount} total`);
 
   // 12a. FREE plan exists and is always active
   const freePlan = await prisma.teacherPlan.findUnique({ where: { code: "FREE" } });
@@ -114,6 +116,13 @@ async function main(): Promise<void> {
   // 12b. Recommended plan exists (exactly one)
   const recommendedPlans = await prisma.teacherPlan.findMany({ where: { isRecommended: true } });
   check("Exactly one recommended plan", recommendedPlans.length === 1, `${recommendedPlans.length} found`);
+
+  // 12b1. Inactive paid plan exists and is NOT active
+  const inactivePlan = await prisma.teacherPlan.findUnique({ where: { code: "ARCHIVED_PAID" } });
+  check("ARCHIVED_PAID plan exists", !!inactivePlan, inactivePlan ? "found" : "missing");
+  check("ARCHIVED_PAID plan is not active", inactivePlan?.isActive === false);
+  // Verify it's a paid plan
+  check("ARCHIVED_PAID plan has a price > 0", (inactivePlan?.monthlyPrice ?? 0) > 0, `${inactivePlan?.monthlyPrice ?? 0}`);
 
   // 12c. Plans have non-empty features (Record<string, boolean>)
   const allPlans = await prisma.teacherPlan.findMany({ select: { code: true, features: true } });

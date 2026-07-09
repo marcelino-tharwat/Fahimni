@@ -26,7 +26,7 @@ export interface PlanPublicDTO {
   currency: string;
   isRecommended: boolean;
   sortOrder: number;
-  features: string[];
+  features: Record<string, boolean>;
   limits: Record<string, unknown>;
 }
 
