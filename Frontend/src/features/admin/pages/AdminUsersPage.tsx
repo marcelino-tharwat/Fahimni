@@ -6,7 +6,7 @@ import {
   Search, Users, X, AlertCircle, ChevronLeft, UserCog,
   GraduationCap, BookOpen, FileText, Activity, Clock,
   Plus, Edit, Ban, CheckCircle, XCircle, Shield, UserCheck,
-  Calendar, Copy, Check,
+  Calendar, Copy, Check, KeyRound,
 } from 'lucide-react';
 import { Spinner, Badge, EmptyState } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/Button';
@@ -20,6 +20,7 @@ import {
   useUpdateUser,
   useChangeUserStatus,
   useChangeUserRole,
+  useResetUserPassword,
 } from '@/features/admin/hooks/useAdminUsers';
 import { AdminUserModals, type ModalMode } from '@/features/admin/components/users/AdminUserModals';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
@@ -36,6 +37,7 @@ import type {
   AdminUpdateUserPayload,
   AdminChangeStatusPayload,
   AdminChangeRolePayload,
+  AdminResetPasswordPayload,
 } from '@/features/admin/types/users';
 
 const PAGE_SIZE = 20;
@@ -97,6 +99,7 @@ export function AdminUsersPage() {
   const updateMutation = useUpdateUser();
   const statusMutation = useChangeUserStatus();
   const roleMutation = useChangeUserRole();
+  const resetPasswordMutation = useResetUserPassword();
 
   useEffect(() => {
     const id = setTimeout(() => { setQ(searchInput.trim()); setPage(1); }, 350);
@@ -151,6 +154,9 @@ export function AdminUsersPage() {
       } else if (modalMode === 'change-role' && selectedId) {
         await roleMutation.mutateAsync({ userId: selectedId, payload: data as unknown as AdminChangeRolePayload });
         dispatch(addToast({ type: 'success', message: t('adminUsers.roleChanged', 'Role changed successfully') }));
+      } else if (modalMode === 'reset-password' && selectedId) {
+        await resetPasswordMutation.mutateAsync({ userId: selectedId, payload: data as unknown as AdminResetPasswordPayload });
+        dispatch(addToast({ type: 'success', message: t('adminUsers.passwordResetSuccess', 'Password reset successfully') }));
       }
       closeModal();
     } catch (err) {
@@ -163,7 +169,7 @@ export function AdminUsersPage() {
     }
   }, [modalMode, selectedId, createMutation, updateMutation, statusMutation, roleMutation, closeModal, t, dispatch]);
 
-  const isSubmitting = createMutation.isPending || updateMutation.isPending || statusMutation.isPending || roleMutation.isPending;
+  const isSubmitting = createMutation.isPending || updateMutation.isPending || statusMutation.isPending || roleMutation.isPending || resetPasswordMutation.isPending;
 
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-5">
@@ -489,9 +495,15 @@ function DetailContent({
               {t('adminUsers.changeRole', 'Change Role')}
             </Button>
           )}
+          {!isSelf && (
+            <Button size="sm" variant="outline" onClick={() => onAction('reset-password', user)} className="flex items-center gap-1">
+              <KeyRound size={14} />
+              {t('adminUsers.resetPassword', 'Reset Password')}
+            </Button>
+          )}
 
           {/* Separator */}
-          {(canEdit || canChangeRole) && (canBan || canUnban || canActivate || canDeactivate) && (
+          {(canEdit || canChangeRole || !isSelf) && (canBan || canUnban || canActivate || canDeactivate) && (
             <div className="mx-1 h-6 w-px bg-border" aria-hidden="true" />
           )}
 

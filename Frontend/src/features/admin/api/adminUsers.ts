@@ -9,6 +9,7 @@ import type {
   AdminUpdateUserPayload,
   AdminChangeStatusPayload,
   AdminChangeRolePayload,
+  AdminResetPasswordPayload,
 } from '@/features/admin/types/users';
 
 export const adminUsersApi = {
@@ -51,6 +52,13 @@ export const adminUsersApi = {
   changeRole: async (userId: string, payload: AdminChangeRolePayload): Promise<AdminUserMutationResponse & { previousRole: string }> => {
     const { data } = await apiClient.patch<ApiResponse<AdminUserMutationResponse & { previousRole: string }>>(
       `/admin/users/${userId}/role`, payload,
+    );
+    return data.data;
+  },
+
+  resetPassword: async (userId: string, payload: AdminResetPasswordPayload): Promise<AdminUserMutationResponse> => {
+    const { data } = await apiClient.patch<ApiResponse<AdminUserMutationResponse>>(
+      `/admin/users/${userId}/password`, payload,
     );
     return data.data;
   },

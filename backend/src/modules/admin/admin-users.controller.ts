@@ -7,6 +7,7 @@ import type {
   AdminUpdateUserInput,
   AdminChangeStatusInput,
   AdminChangeRoleInput,
+  AdminResetPasswordInput,
 } from "./admin-users.validation.js";
 
 export class AdminUsersController {
@@ -103,6 +104,24 @@ export class AdminUsersController {
         actorId,
       );
       res.status(200).json(okResponse("User role changed successfully", data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public resetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const actorId = req.user!.id;
+      const data = await adminUsersService.resetPassword(
+        String(req.params.userId),
+        req.body as AdminResetPasswordInput,
+        actorId,
+      );
+      res.status(200).json(okResponse("Password reset successfully", data));
     } catch (error) {
       next(error);
     }

@@ -44,6 +44,7 @@ export type AuditLogAction =
   | "ADMIN_USER_ACTIVATED"
   | "ADMIN_USER_DEACTIVATED"
   | "ADMIN_USER_ROLE_CHANGED"
+  | "ADMIN_USER_PASSWORD_CHANGED"
   | "TEACHER_REQUEST_APPROVED"
   | "TEACHER_REQUEST_REJECTED"
   // Admin manual teacher-subscription request review.

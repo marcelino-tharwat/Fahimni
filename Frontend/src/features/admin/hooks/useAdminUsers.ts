@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { adminUsersApi } from '@/features/admin/api/adminUsers';
-import type { AdminUsersQuery, AdminCreateUserPayload, AdminUpdateUserPayload, AdminChangeStatusPayload, AdminChangeRolePayload } from '@/features/admin/types/users';
+import type { AdminUsersQuery, AdminCreateUserPayload, AdminUpdateUserPayload, AdminChangeStatusPayload, AdminChangeRolePayload, AdminResetPasswordPayload } from '@/features/admin/types/users';
 
 const KEY = ['admin', 'users'] as const;
 
@@ -51,6 +51,15 @@ export function useChangeUserRole() {
   return useMutation({
     mutationFn: ({ userId, payload }: { userId: string; payload: AdminChangeRolePayload }) =>
       adminUsersApi.changeRole(userId, payload),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: KEY }); },
+  });
+}
+
+export function useResetUserPassword() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, payload }: { userId: string; payload: AdminResetPasswordPayload }) =>
+      adminUsersApi.resetPassword(userId, payload),
     onSuccess: () => { qc.invalidateQueries({ queryKey: KEY }); },
   });
 }

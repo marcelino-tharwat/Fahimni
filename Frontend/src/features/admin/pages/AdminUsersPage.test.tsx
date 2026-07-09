@@ -29,6 +29,7 @@ vi.mock('@/features/admin/hooks/useAdminUsers', () => ({
   useUpdateUser: vi.fn(),
   useChangeUserStatus: vi.fn(),
   useChangeUserRole: vi.fn(),
+  useResetUserPassword: vi.fn(),
 }));
 
 // Mock Redux store
@@ -91,6 +92,7 @@ function primeList(data = list([userItem()])) {
   m.useUpdateUser.mockReturnValue(mutationMock());
   m.useChangeUserStatus.mockReturnValue(mutationMock());
   m.useChangeUserRole.mockReturnValue(mutationMock());
+  m.useResetUserPassword.mockReturnValue(mutationMock());
 }
 
 function renderAt(path = '/admin/users') {
@@ -267,5 +269,125 @@ describe('AdminUsersPage', () => {
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalled();
     });
+  });
+
+  // ── Password Reset tests ─────────────────────────────────────────────────────
+
+  it('20. reset password modal renders', async () => {
+    renderAt();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('Reset Password')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Reset Password'));
+    const dialogs = await screen.findAllByRole('dialog');
+    expect(dialogs.length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('New Password')).toBeInTheDocument();
+    expect(screen.getByText('Confirm Password')).toBeInTheDocument();
+    expect(screen.getByText('Reason')).toBeInTheDocument();
+  });
+
+  it('21. validation errors render', async () => {
+    renderAt();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('Reset Password')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Reset Password'));
+    const dialogs = await screen.findAllByRole('dialog');
+    expect(dialogs.length).toBeGreaterThanOrEqual(1);
+
+    const newPwInput = screen.getByPlaceholderText('New password');
+    fireEvent.change(newPwInput, { target: { value: 'weak' } });
+    expect(screen.getByText(/Min 8 chars/)).toBeInTheDocument();
+  });
+
+  it('22. submit works', async () => {
+    const mockMutateAsync = vi.fn().mockResolvedValue({ id: 'u1' });
+    m.useResetUserPassword.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
+    m.useAdminUserDetail.mockReturnValue(ok({
+      ...DETAIL,
+      user: { ...DETAIL.user, id: 'u1' },
+    }));
+
+    renderAt();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('Reset Password')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Reset Password'));
+    const dialogs = await screen.findAllByRole('dialog');
+    expect(dialogs.length).toBeGreaterThanOrEqual(1);
+
+    const newPwInput = screen.getByPlaceholderText('New password');
+    const confirmPwInput = screen.getByPlaceholderText('Confirm password');
+    const reasonTextarea = screen.getByPlaceholderText('Enter reason for password reset...');
+
+    fireEvent.change(newPwInput, { target: { value: 'N3wStr0ng!Pass' } });
+    fireEvent.change(confirmPwInput, { target: { value: 'N3wStr0ng!Pass' } });
+    fireEvent.change(reasonTextarea, { target: { value: 'Admin requested reset' } });
+
+    const submitButtons = screen.getAllByText('Reset Password');
+    fireEvent.click(submitButtons[submitButtons.length - 1]);
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalled();
+    });
+  });
+
+  it('23. success message renders', async () => {
+    const mockMutateAsync = vi.fn().mockResolvedValue({ id: 'u1' });
+    m.useResetUserPassword.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
+    m.useAdminUserDetail.mockReturnValue(ok({
+      ...DETAIL,
+      user: { ...DETAIL.user, id: 'u1' },
+    }));
+
+    renderAt();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('Reset Password')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Reset Password'));
+    const dialogs = await screen.findAllByRole('dialog');
+    expect(dialogs.length).toBeGreaterThanOrEqual(1);
+
+    const newPwInput = screen.getByPlaceholderText('New password');
+    const confirmPwInput = screen.getByPlaceholderText('Confirm password');
+    const reasonTextarea = screen.getByPlaceholderText('Enter reason for password reset...');
+
+    fireEvent.change(newPwInput, { target: { value: 'N3wStr0ng!Pass' } });
+    fireEvent.change(confirmPwInput, { target: { value: 'N3wStr0ng!Pass' } });
+    fireEvent.change(reasonTextarea, { target: { value: 'Admin requested reset' } });
+
+    const submitButtons = screen.getAllByText('Reset Password');
+    fireEvent.click(submitButtons[submitButtons.length - 1]);
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalled();
+    });
+  });
+
+  it('24. forceLogout checkbox renders', async () => {
+    renderAt();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('Reset Password')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Reset Password'));
+    const dialogs = await screen.findAllByRole('dialog');
+    expect(dialogs.length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Force logout/)).toBeInTheDocument();
+  });
+
+  it('25. no password/tokenVersion visible', async () => {
+    renderAt();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('Reset Password')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Reset Password'));
+    const dialogs = await screen.findAllByRole('dialog');
+    expect(dialogs.length).toBeGreaterThanOrEqual(1);
+    const html = document.body.innerHTML;
+    expect(html).not.toMatch(/tokenVersion|passwordHash/i);
+  });
+
+  it('26. non-self action rules render correctly', async () => {
+    renderAt();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('Reset Password')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Reset Password'));
+    const dialogs = await screen.findAllByRole('dialog');
+    expect(dialogs.length).toBeGreaterThanOrEqual(1);
+    // Should not show self-warning (user is not self)
+    expect(screen.queryByText(/cannot reset your own password/i)).not.toBeInTheDocument();
   });
 });
