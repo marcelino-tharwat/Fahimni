@@ -8,7 +8,7 @@ const mockPrisma = vi.hoisted(() => ({
   chapter: { findFirst: vi.fn(), findUnique: vi.fn() },
   lesson: { findFirst: vi.fn() },
   stage: { findFirst: vi.fn() },
-  user: { findUnique: vi.fn() },
+  user: { findUnique: vi.fn(), findFirst: vi.fn(), create: vi.fn(), delete: vi.fn() },
   quiz: { findUnique: vi.fn(), findMany: vi.fn() },
   lessonMaterial: { create: vi.fn() },
 }));
@@ -29,6 +29,7 @@ vi.mock("pdf-parse", () => ({
   default: vi.fn(() => ({ getText: vi.fn(() => ({ text: "", total: 0 })) })),
   PDFParse: vi.fn(() => ({ getText: vi.fn(() => ({ text: "", total: 0 })) })),
 }));
+vi.mock("bcryptjs", () => ({ default: { hash: vi.fn(async () => "hashed") } }));
 
 import { StudentController } from "./student.controller.js";
 import { QuizService } from "../quizzes/quizzes.service.js";
@@ -36,6 +37,7 @@ import { FilesController } from "../files/files.controller.js";
 import { assertStudentVisibleToTeacher } from "../teacher-access/teacher-access.service.js";
 import { assertChapterOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
 import { assertLessonOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
+import { assertStageOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
 import { AppError } from "../../shared/utils/AppError.js";
 
 // ─── Fixture IDs ─────────────────────────────────────────────────────────
@@ -72,6 +74,10 @@ function mockRes() {
   const send = vi.fn();
   return { status, json, send } as never;
 }
+
+// asyncHandler-wrapped controllers fire-and-forget (void fn(...).catch(next)), so
+// awaiting the call returns before the inner promise settles. Flush microtasks.
+const flush = () => new Promise<void>((r) => setImmediate(r));
 
 describe("Teacher ownership guards (unit)", () => {
   beforeEach(() => {
@@ -402,6 +408,84 @@ describe("Teacher ownership guards (unit)", () => {
       await expect(assertLessonOwnedByTeacher(LESSON_B, T_A)).rejects.toThrowError(
         new AppError("Lesson not found", 404),
       );
+    });
+
+    it("assertStageOwnedByTeacher throws 404 when stage not owned", async () => {
+      mockPrisma.stage.findFirst.mockResolvedValue(null);
+      await expect(assertStageOwnedByTeacher(STAGE_B, T_A)).rejects.toThrowError(
+        new AppError("Stage not found", 404),
+      );
+    });
+
+    it("assertStageOwnedByTeacher passes when stage is owned", async () => {
+      mockPrisma.stage.findFirst.mockResolvedValue({ id: STAGE_A });
+      await expect(assertStageOwnedByTeacher(STAGE_A, T_A)).resolves.toEqual({ id: STAGE_A });
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  GAP 5 — StudentController.delete ownership (OPERATION)
+  // ══════════════════════════════════════════════════════════════════════
+  describe("GAP 5 — StudentController.delete ownership", () => {
+    const controller = new StudentController();
+
+    it("Teacher A deleting a student NOT visible to them → 404, no user.delete", async () => {
+      mockPrisma.enrollment.findFirst.mockResolvedValue(null); // not visible
+      const req = mockReq({ userId: T_A, role: "OPERATION", params: { id: S_Y } });
+      const next = vi.fn();
+      controller.delete(req, mockRes(), next);
+      await flush();
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 404 }));
+      expect(mockPrisma.user.delete).not.toHaveBeenCalled();
+    });
+
+    it("Teacher A deleting a visible student → proceeds to user.delete", async () => {
+      mockPrisma.enrollment.findFirst.mockResolvedValue({ id: randomUUID() }); // visible
+      mockPrisma.studentProfile.findUnique.mockResolvedValue({ userId: S_Z, stageId: STAGE_A });
+      mockPrisma.user.delete.mockResolvedValue({ id: S_Z });
+      const req = mockReq({ userId: T_A, role: "OPERATION", params: { id: S_Z } });
+      const next = vi.fn();
+      controller.delete(req, mockRes(), next);
+      await flush();
+
+      expect(mockPrisma.user.delete).toHaveBeenCalledWith({ where: { id: S_Z } });
+      expect(next).not.toHaveBeenCalled();
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  GAP 6 — StudentController.create stage ownership (OPERATION)
+  // ══════════════════════════════════════════════════════════════════════
+  describe("GAP 6 — StudentController.create stage ownership", () => {
+    const controller = new StudentController();
+
+    it("Teacher A creating a student under Stage B (not owned) → 404, no user.create", async () => {
+      mockPrisma.stage.findFirst.mockResolvedValue(null); // stage not owned
+      const req = {
+        user: { id: T_A, role: "OPERATION" },
+        body: { fullName: "New", email: "n@x.io", password: "Passw0rd!", mobile: "01000000000", stageId: STAGE_B },
+      } as never;
+      const next = vi.fn();
+      await controller.create(req, mockRes(), next);
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 404 }));
+      expect(mockPrisma.user.create).not.toHaveBeenCalled();
+    });
+
+    it("Teacher A creating a student under own Stage A → proceeds to user.create", async () => {
+      mockPrisma.stage.findFirst.mockResolvedValue({ id: STAGE_A }); // owned
+      mockPrisma.user.findFirst.mockResolvedValue(null); // no duplicate
+      mockPrisma.user.create.mockResolvedValue({ id: S_X, studentProfile: { stageId: STAGE_A } });
+      const req = {
+        user: { id: T_A, role: "OPERATION" },
+        body: { fullName: "New", email: "n@x.io", password: "Passw0rd!", mobile: "01000000000", stageId: STAGE_A },
+      } as never;
+      const next = vi.fn();
+      await controller.create(req, mockRes(), next);
+
+      expect(mockPrisma.user.create).toHaveBeenCalled();
+      expect(next).not.toHaveBeenCalled();
     });
   });
 });

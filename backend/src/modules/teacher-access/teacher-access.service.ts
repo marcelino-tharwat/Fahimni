@@ -2,6 +2,26 @@ import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
 
 /**
+ * Verify a stage belongs to the given teacher (stage.teacherId === teacherId).
+ * Returns the stage id if found; throws a 404 (existence-hiding) otherwise.
+ */
+export async function assertStageOwnedByTeacher(
+  stageId: string,
+  teacherId: string,
+) {
+  const stage = await prisma.stage.findFirst({
+    where: { id: stageId, teacherId, deletedAt: null },
+    select: { id: true },
+  });
+
+  if (!stage) {
+    throw new AppError("Stage not found", 404);
+  }
+
+  return stage;
+}
+
+/**
  * Verify a student has at least one active enrollment in a chapter whose
  * stage belongs to the given teacher. Used to scope student visibility
  * for teacher-facing endpoints.

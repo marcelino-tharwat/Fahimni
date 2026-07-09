@@ -109,6 +109,10 @@ async function createUser(
       password: pwHash,
       role,
       status: "ACTIVE",
+      // Teachers must be APPROVED to clear the requireActiveTeacherSubscription
+      // gate (an APPROVED + ACTIVE teacher is entitled to the FREE plan and can
+      // reach feature routes). Students keep the default NONE approval state.
+      ...(role === "OPERATION" ? { teacherApprovalState: "APPROVED" as const } : {}),
     },
   });
   owned.userIds.push(id);
@@ -309,10 +313,17 @@ afterAll(async () => {
   await prisma.chapter.deleteMany({
     where: { id: { in: owned.chapterIds } },
   });
+  // student_profiles.stageId → stages is a RESTRICT FK, so profiles must be
+  // deleted BEFORE their stages.
+  await prisma.studentProfile.deleteMany({
+    where: { userId: { in: owned.userIds } },
+  });
   await prisma.stage.deleteMany({
     where: { id: { in: owned.stageIds } },
   });
-  await prisma.studentProfile.deleteMany({
+  // audit_logs.userId → User is a RESTRICT FK; clear any audit rows written for
+  // these fixture users before deleting the users themselves.
+  await prisma.auditLog.deleteMany({
     where: { userId: { in: owned.userIds } },
   });
   await prisma.user.deleteMany({
@@ -709,9 +720,17 @@ describe("Regression — PDF/material preview-download tracking", () => {
       `/api/lesson-materials/${materialId}/download`,
       { cookie: cookieSX },
     );
-    // Should NOT be blocked by teacher-ownership guards.
-    // If the material doesn't exist at the storage layer it may 500,
-    // but should NOT get a 403/404 from ownership scoping.
-    expect(r.status).not.toBe(404);
+    // The enrolled student must clear the ownership/enrollment/progression
+    // scoping. In the test environment the object was never uploaded to storage,
+    // so the request reaches the storage layer and returns 404 "Failed to
+    // retrieve file" — which proves access was GRANTED (it got past scoping).
+    // A scoping rejection would be a 403 or a 404 "Material not found" /
+    // "Lesson not found" instead.
+    expect(r.status).not.toBe(403);
+    if (r.status === 404) {
+      expect((r.json as { message?: string })?.message).toBe(
+        "Failed to retrieve file",
+      );
+    }
   });
 });
