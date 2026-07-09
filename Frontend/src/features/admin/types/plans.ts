@@ -18,7 +18,7 @@ export interface AdminPlanListItem {
   isActive: boolean;
   isRecommended: boolean;
   sortOrder: number;
-  features: string[];
+  features: Record<string, boolean>;
   limits: Record<string, unknown>;
   stats: AdminPlanStats;
   createdAt: string;
@@ -37,7 +37,7 @@ export interface AdminPlanDetail {
   isActive: boolean;
   isRecommended: boolean;
   sortOrder: number;
-  features: string[];
+  features: Record<string, boolean>;
   limits: Record<string, unknown>;
   stats: AdminPlanStats;
   activeSubscriptionsCount: number;
@@ -60,4 +60,66 @@ export interface AdminPlanQuery {
   billingInterval?: string;
   sortBy?: 'sortOrder' | 'monthlyPrice' | 'createdAt' | 'displayName';
   sort?: 'asc' | 'desc';
+}
+
+// ── Mutation types ──
+
+export interface CreatePlanInput {
+  code: string;
+  name: string;
+  displayName: string;
+  description?: string | null;
+  monthlyPrice: number;
+  yearlyPrice?: number | null;
+  currency?: string;
+  features?: Record<string, boolean>;
+  limits?: Record<string, unknown>;
+  isActive?: boolean;
+  isRecommended?: boolean;
+  sortOrder?: number;
+}
+
+export interface UpdatePlanInput {
+  name?: string;
+  displayName?: string;
+  description?: string | null;
+  monthlyPrice?: number;
+  yearlyPrice?: number | null;
+  features?: Record<string, boolean>;
+  limits?: Record<string, unknown>;
+  isActive?: boolean;
+  isRecommended?: boolean;
+  sortOrder?: number;
+}
+
+export interface StatusChangeInput {
+  isActive: boolean;
+  reason?: string;
+}
+
+export interface RecommendedChangeInput {
+  isRecommended: boolean;
+}
+
+export interface ReorderItem {
+  id: string;
+  sortOrder: number;
+}
+
+export interface ReorderInput {
+  items: ReorderItem[];
+}
+
+export interface PlanMutationResponse {
+  id: string;
+  code: string;
+  name: string;
+  displayName: string;
+  monthlyPrice: number;
+  currency: string;
+  isActive: boolean;
+  isRecommended: boolean;
+  sortOrder: number;
+  features: Record<string, boolean>;
+  limits: Record<string, unknown>;
 }

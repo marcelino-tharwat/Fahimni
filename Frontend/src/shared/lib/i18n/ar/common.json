@@ -436,6 +436,67 @@
       "activeSubscriptions": "الاشتراكات النشطة",
       "pendingPayments": "مدفوعات معلقة",
       "confirmedRevenue": "الإيرادات المؤكدة"
+    }
+  },
+
+  "adminPlansMutations": {
+    "addPlan": "إضافة باقة",
+    "editPlan": "تعديل الباقة",
+    "deactivatePlan": "تعطيل الباقة",
+    "activatePlan": "تفعيل الباقة",
+    "toggleRecommended": "تغيير التوصية",
+    "reorder": "إعادة ترتيب",
+    "reorderSave": "حفظ الترتيب",
+    "reorderCancel": "إلغاء",
+    "reorderTitle": "إعادة ترتيب الباقات",
+    "createModal": {
+      "title": "إضافة باقة جديدة",
+      "code": "الكود",
+      "name": "الاسم (en)",
+      "displayName": "الاسم المعروض",
+      "description": "الوصف",
+      "monthlyPrice": "السعر الشهري",
+      "yearlyPrice": "السعر السنوي",
+      "currency": "العملة",
+      "isActive": "نشط",
+      "isRecommended": "موصى به",
+      "sortOrder": "ترتيب الفرز",
+      "features": "الميزات",
+      "limits": "الحدود",
+      "submit": "إنشاء",
+      "submitLoading": "جارٍ الإنشاء...",
+      "success": "تم إنشاء الباقة بنجاح",
+      "error": "فشل إنشاء الباقة"
+    },
+    "editModal": {
+      "title": "تعديل الباقة",
+      "submit": "حفظ التغييرات",
+      "submitLoading": "جارٍ الحفظ...",
+      "success": "تم تحديث الباقة بنجاح",
+      "error": "فشل تحديث الباقة"
+    },
+    "statusConfirm": {
+      "deactivateTitle": "تعطيل الباقة؟",
+      "deactivateMessage": "سيتم إيقاف الباقة للمستخدمين الجدد. الاشتراكات النشطة الحالية ستبقى سارية.",
+      "activateTitle": "تفعيل الباقة؟",
+      "activateMessage": "سيتم إتاحة الباقة مرة أخرى للمستخدمين.",
+      "success": "تم تغيير حالة الباقة بنجاح",
+      "error": "فشل تغيير حالة الباقة"
+    },
+    "recommendedConfirm": {
+      "title": "تغيير الباقة الموصى بها؟",
+      "message": "سيتم إزالة التوصية عن الباقة الحالية وتفعيلها للباقة المحددة.",
+      "success": "تم تغيير الباقة الموصى بها بنجاح",
+      "error": "فشل تغيير الباقة الموصى بها"
+    },
+    "reorderConfirm": {
+      "title": "إعادة ترتيب الباقات؟",
+      "success": "تم إعادة ترتيب الباقات بنجاح",
+      "error": "فشل إعادة ترتيب الباقات"
+    },
+    "noChange": "لم يتم إجراء أي تغيير",
+    "freePlanProtected": "لا يمكن تعطيل الباقة المجانية"
+  },
   "adminUsers": {
     "title": "المستخدمون",
     "subtitle": "إدارة جميع مستخدمي المنصة",

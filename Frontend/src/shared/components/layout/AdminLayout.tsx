@@ -11,7 +11,7 @@ export function AdminLayout() {
   // are added by their own feature tasks (no route yet, so linking them would 404).
   const items: SidebarItem[] = [
     { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/admin/dashboard' },
-    { label: t('nav.users'), icon: User, path: '/admin/users' },
+    { label: t('nav.users'), icon: Users, path: '/admin/users' },
     { label: t('nav.teachers'), icon: GraduationCap, path: '/admin/teachers' },
     { label: t('nav.students'), icon: Users, path: '/admin/students' },
     { label: t('nav.teacherRequests'), icon: ClipboardCheck, path: '/admin/teacher-requests' },

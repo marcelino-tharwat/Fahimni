@@ -34390,7 +34390,7 @@ export namespace Prisma {
       isRecommended: boolean
       sortOrder: number
       /**
-       * JSON array of display-friendly feature strings.
+       * JSON object keyed by feature code (e.g. aiQuizGeneration).
        */
       features: Prisma.JsonValue
       /**

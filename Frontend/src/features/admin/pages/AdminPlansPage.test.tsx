@@ -4,7 +4,6 @@ import { render, screen, cleanup, within } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { AdminPlansPage } from './AdminPlansPage';
-import { useAdminPlans } from '@/features/admin/hooks/useAdminPlans';
 import type { AdminPlanListItem, AdminPlansListResponse } from '@/features/admin/types/plans';
 
 vi.mock('react-i18next', () => ({
@@ -20,11 +19,27 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-vi.mock('@/features/admin/hooks/useAdminPlans', () => ({
-  useAdminPlans: vi.fn(),
+vi.mock('@/shared/store/hooks', () => ({
+  useAppDispatch: () => vi.fn(),
 }));
 
-const mockUseAdminPlans = useAdminPlans as unknown as ReturnType<typeof vi.fn>;
+vi.mock('@/shared/store/slices/toastSlice', () => ({
+  addToast: vi.fn(),
+}));
+
+const { mockUseAdminPlans } = vi.hoisted(() => {
+  const fn = vi.fn();
+  return { mockUseAdminPlans: fn };
+});
+
+vi.mock('@/features/admin/hooks/useAdminPlans', () => ({
+  useAdminPlans: mockUseAdminPlans,
+  useCreatePlan: () => ({ mutateAsync: vi.fn(), isPending: false, isError: false, error: null }),
+  useUpdatePlan: () => ({ mutateAsync: vi.fn(), isPending: false, isError: false, error: null }),
+  useChangePlanStatus: () => ({ mutateAsync: vi.fn(), isPending: false, isError: false, error: null }),
+  useChangeRecommended: () => ({ mutateAsync: vi.fn(), isPending: false, isError: false, error: null }),
+  useReorderPlans: () => ({ mutateAsync: vi.fn(), isPending: false, isError: false, error: null }),
+}));
 
 function plan(overrides: Partial<AdminPlanListItem> = {}): AdminPlanListItem {
   return {
@@ -39,7 +54,7 @@ function plan(overrides: Partial<AdminPlanListItem> = {}): AdminPlanListItem {
     isActive: true,
     isRecommended: false,
     sortOrder: 0,
-    features: ['ميزة ١', 'ميزة ٢'],
+    features: {},
     limits: { aiQuizGenerationsPerMonth: 5 },
     stats: {
       freeEntitlementsCount: 10,
@@ -168,17 +183,7 @@ describe('AdminPlansPage', () => {
     expect(screen.getByText('adminPlans.emptyTitle')).toBeInTheDocument();
   });
 
-  it('9. view details link points to /admin/plans/:planId', () => {
-    loaded({
-      data: [plan({ id: 'plan-xyz' })],
-      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
-    });
-    renderPage();
-    const link = screen.getByRole('link', { name: /adminPlans\.viewDetails/ });
-    expect(link).toHaveAttribute('href', '/admin/plans/plan-xyz');
-  });
-
-  it('10. renders loading state', () => {
+  it('9. renders loading state', () => {
     mockUseAdminPlans.mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -190,7 +195,7 @@ describe('AdminPlansPage', () => {
     expect(screen.getByLabelText('common:status.loading')).toBeInTheDocument();
   });
 
-  it('11. renders error state with retry button', () => {
+  it('10. renders error state with retry button', () => {
     mockUseAdminPlans.mockReturnValue({
       data: undefined,
       isLoading: false,
@@ -203,7 +208,7 @@ describe('AdminPlansPage', () => {
     expect(screen.getByText('adminPlans.retry')).toBeInTheDocument();
   });
 
-  it('12. shows revenue as 0 for FREE plan', () => {
+  it('11. shows revenue as 0 for FREE plan', () => {
     loaded({
       data: [plan()],
       meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
@@ -211,5 +216,34 @@ describe('AdminPlansPage', () => {
     renderPage();
     const moneyString = `0 ${'adminPlans.currency'}`;
     expect(screen.getByText(moneyString)).toBeInTheDocument();
+  });
+
+  it('12. renders "Add Plan" button', () => {
+    loaded({
+      data: [plan()],
+      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
+    });
+    renderPage();
+    expect(screen.getByText('adminPlansMutations.addPlan')).toBeInTheDocument();
+  });
+
+  it('13. renders "Reorder" button', () => {
+    loaded({
+      data: [plan()],
+      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
+    });
+    renderPage();
+    expect(screen.getByText('adminPlansMutations.reorder')).toBeInTheDocument();
+  });
+
+  it('14. renders edit, status, recommended action buttons per row', () => {
+    loaded({
+      data: [plan()],
+      meta: { page: 1, limit: 20, total: 1, totalPages: 1 },
+    });
+    renderPage();
+    expect(screen.getByLabelText('adminPlansMutations.editPlan')).toBeInTheDocument();
+    expect(screen.getByLabelText('adminPlansMutations.deactivatePlan')).toBeInTheDocument();
+    expect(screen.getByLabelText('adminPlansMutations.toggleRecommended')).toBeInTheDocument();
   });
 });

@@ -27,4 +27,59 @@ export class AdminPlansController {
       next(error);
     }
   };
+
+  // ── Mutations ──
+
+  public create = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = (req.validated?.body ?? req.body) as Record<string, unknown>;
+      const result = await adminPlansService.createPlan(body as any, req.user!.id);
+      res.status(201).json(okResponse("Plan created successfully", result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const planId = req.params.planId as string;
+      const body = (req.validated?.body ?? req.body) as Record<string, unknown>;
+      const result = await adminPlansService.updatePlan(planId, body as any, req.user!.id);
+      res.status(200).json(okResponse("Plan updated successfully", result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public changeStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const planId = req.params.planId as string;
+      const body = (req.validated?.body ?? req.body) as Record<string, unknown>;
+      const result = await adminPlansService.changeStatus(planId, body as any, req.user!.id);
+      res.status(200).json(okResponse("Plan status changed successfully", result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public changeRecommended = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const planId = req.params.planId as string;
+      const body = (req.validated?.body ?? req.body) as Record<string, unknown>;
+      const result = await adminPlansService.changeRecommended(planId, body as any, req.user!.id);
+      res.status(200).json(okResponse("Plan recommended status changed successfully", result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public reorder = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = (req.validated?.body ?? req.body) as Record<string, unknown>;
+      await adminPlansService.reorder(body as any, req.user!.id);
+      res.status(200).json(okResponse("Plans reordered successfully"));
+    } catch (error) {
+      next(error);
+    }
+  };
 }
