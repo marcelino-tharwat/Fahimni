@@ -15,6 +15,7 @@ vi.mock('react-i18next', () => ({
     t: (key: string, second?: unknown, third?: unknown) => {
       const opts = (typeof second === 'object' ? second : third) as Record<string, unknown> | undefined;
       if (opts && typeof opts.count === 'number') return `${key}:${opts.count}`;
+      if (typeof second === 'string') return second;
       return key;
     },
     i18n: { language: 'en' },
@@ -24,12 +25,30 @@ vi.mock('react-i18next', () => ({
 vi.mock('@/features/admin/hooks/useAdminUsers', () => ({
   useAdminUsers: vi.fn(),
   useAdminUserDetail: vi.fn(),
+  useCreateUser: vi.fn(),
+  useUpdateUser: vi.fn(),
+  useChangeUserStatus: vi.fn(),
+  useChangeUserRole: vi.fn(),
+}));
+
+// Mock Redux store
+vi.mock('@/shared/store/hooks', () => ({
+  useAppSelector: vi.fn(() => ({ id: 'admin-self', role: 'ADMIN' })),
+  useAppDispatch: vi.fn(() => vi.fn()),
+}));
+
+vi.mock('@/shared/store/slices/toastSlice', () => ({
+  addToast: vi.fn(() => ({ type: 'toast/addToast' })),
 }));
 
 const m = hooks as unknown as Record<string, ReturnType<typeof vi.fn>>;
 
 function ok<T>(data: T) {
   return { data, isLoading: false, isError: false, isFetching: false, refetch: vi.fn() };
+}
+
+function mutationMock() {
+  return { mutateAsync: vi.fn(), isPending: false };
 }
 
 function userItem(overrides: Partial<AdminUserListItem> = {}): AdminUserListItem {
@@ -68,6 +87,10 @@ const DETAIL: AdminUserDetailResponse = {
 function primeList(data = list([userItem()])) {
   m.useAdminUsers.mockReturnValue(ok(data));
   m.useAdminUserDetail.mockReturnValue(ok(DETAIL));
+  m.useCreateUser.mockReturnValue(mutationMock());
+  m.useUpdateUser.mockReturnValue(mutationMock());
+  m.useChangeUserStatus.mockReturnValue(mutationMock());
+  m.useChangeUserRole.mockReturnValue(mutationMock());
 }
 
 function renderAt(path = '/admin/users') {
@@ -86,19 +109,19 @@ afterEach(() => cleanup());
 describe('AdminUsersPage', () => {
   it('1. renders the page title', () => {
     renderAt();
-    expect(screen.getByText('adminUsers.title')).toBeInTheDocument();
+    expect(screen.getByText('Users')).toBeInTheDocument();
   });
 
   it('2. search input renders and is accessible', () => {
     renderAt();
-    expect(screen.getByLabelText('adminUsers.searchPlaceholder')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Search by name, email, or mobile')).toBeInTheDocument();
   });
 
   it('3. all three filter selects render', () => {
     renderAt();
-    expect(screen.getByLabelText('adminUsers.filterRole')).toBeInTheDocument();
-    expect(screen.getByLabelText('adminUsers.filterStatus')).toBeInTheDocument();
-    expect(screen.getByLabelText('adminUsers.filterTeacherApproval')).toBeInTheDocument();
+    expect(screen.getByText('All Roles')).toBeInTheDocument();
+    expect(screen.getByText('All Statuses')).toBeInTheDocument();
+    expect(screen.getByText('All Teacher States')).toBeInTheDocument();
   });
 
   it('4. users table renders API data', () => {
@@ -109,7 +132,8 @@ describe('AdminUsersPage', () => {
 
   it('5. search input updates query (debounced)', async () => {
     renderAt();
-    fireEvent.change(screen.getByLabelText('adminUsers.searchPlaceholder'), { target: { value: 'Alpha' } });
+    const input = screen.getByPlaceholderText('Search by name, email, or mobile');
+    fireEvent.change(input, { target: { value: 'Alpha' } });
     await waitFor(() =>
       expect(m.useAdminUsers).toHaveBeenCalledWith(expect.objectContaining({ q: 'Alpha' })),
     );
@@ -117,41 +141,41 @@ describe('AdminUsersPage', () => {
 
   it('6. role filter changes query', async () => {
     renderAt();
-    fireEvent.change(screen.getByLabelText('adminUsers.filterRole'), { target: { value: 'ADMIN' } });
+    fireEvent.change(screen.getByLabelText('Role'), { target: { value: 'ADMIN' } });
     expect(m.useAdminUsers).toHaveBeenCalledWith(expect.objectContaining({ role: 'ADMIN' }));
   });
 
   it('7. status filter changes query', () => {
     renderAt();
-    fireEvent.change(screen.getByLabelText('adminUsers.filterStatus'), { target: { value: 'INACTIVE' } });
+    fireEvent.change(screen.getByLabelText('Status'), { target: { value: 'INACTIVE' } });
     expect(m.useAdminUsers).toHaveBeenCalledWith(expect.objectContaining({ status: 'INACTIVE' }));
   });
 
   it('8. teacher approval filter changes query', () => {
     renderAt();
-    fireEvent.change(screen.getByLabelText('adminUsers.filterTeacherApproval'), { target: { value: 'PENDING_REVIEW' } });
+    fireEvent.change(screen.getByLabelText('Teacher Approval'), { target: { value: 'PENDING_REVIEW' } });
     expect(m.useAdminUsers).toHaveBeenCalledWith(expect.objectContaining({ teacherApprovalState: 'PENDING_REVIEW' }));
   });
 
   it('9. empty state renders when list is empty', () => {
     m.useAdminUsers.mockReturnValue(ok(list([], 0)));
     renderAt();
-    expect(screen.getByText('adminUsers.emptyTitle')).toBeInTheDocument();
+    expect(screen.getByText('No users found')).toBeInTheDocument();
   });
 
   it('10. detail drawer opens when view details is clicked', async () => {
     renderAt();
-    fireEvent.click(screen.getByRole('button', { name: /adminUsers\.viewDetails/ }));
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
     const dialog = await screen.findByRole('dialog');
     expect(dialog).toBeInTheDocument();
-    expect(await screen.findByText('adminUsers.detail.title')).toBeInTheDocument();
+    expect(await screen.findByText('User Details')).toBeInTheDocument();
   });
 
   it('11. detail drawer shows user info', async () => {
     renderAt();
-    fireEvent.click(screen.getByRole('button', { name: /adminUsers\.viewDetails/ }));
-    expect(await screen.findByText('adminUsers.detail.title')).toBeInTheDocument();
-    expect(await screen.findByText('adminUsers.detail.counts')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('User Details')).toBeInTheDocument();
+    expect(await screen.findByText('Counts')).toBeInTheDocument();
   });
 
   it('12. uses no mock data (source has no shared/mocks import)', () => {
@@ -168,12 +192,80 @@ describe('AdminUsersPage', () => {
 
     m.useAdminUsers.mockReturnValue({ data: undefined, isLoading: false, isError: true, isFetching: false, refetch: vi.fn() });
     renderAt();
-    expect(screen.getByText('adminUsers.errorLoading')).toBeInTheDocument();
+    expect(screen.getByText('Failed to load users')).toBeInTheDocument();
   });
 
   it('14. no password or tokenVersion strings in rendered output', () => {
     renderAt();
     const html = document.body.innerHTML;
     expect(html).not.toMatch(/password|tokenVersion|passwordHash/i);
+  });
+
+  // ── Mutation tests ──────────────────────────────────────────────────────────
+
+  it('15. create user button renders', () => {
+    renderAt();
+    expect(screen.getByText('Create User')).toBeInTheDocument();
+  });
+
+  it('16. create modal shows form fields', async () => {
+    renderAt();
+    fireEvent.click(screen.getByText('Create User'));
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+    // The t mock returns the second string arg, so label "Full Name" is rendered
+    expect(screen.getByLabelText('Full Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+  });
+
+  it('17. detail drawer shows action buttons', async () => {
+    renderAt();
+    fireEvent.click(screen.getByRole('button', { name: /View details/i }));
+    expect(await screen.findByText('Edit')).toBeInTheDocument();
+    expect(await screen.findByText('Change Role')).toBeInTheDocument();
+  });
+
+  it('18. errors render in modals', async () => {
+    const mockMutateAsync = vi.fn().mockRejectedValue({ message: 'Test error', code: 'TEST_CODE' });
+    m.useCreateUser.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
+
+    renderAt();
+    fireEvent.click(screen.getByText('Create User'));
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+
+    const nameInput = screen.getByLabelText('Full Name');
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+
+    fireEvent.change(nameInput, { target: { value: 'Test User' } });
+    fireEvent.change(emailInput, { target: { value: 'test@test.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+
+    fireEvent.click(screen.getByText('Create'));
+
+    await waitFor(() => {
+      const errorElements = screen.getAllByText(/Test error/);
+      expect(errorElements.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('19. create mutation is called with correct data', async () => {
+    const mockMutateAsync = vi.fn().mockResolvedValue({ id: 'new-id' });
+    m.useCreateUser.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
+
+    renderAt();
+    fireEvent.click(screen.getByText('Create User'));
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Full Name'), { target: { value: 'Test' } });
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 't@t.com' } });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+
+    fireEvent.click(screen.getByText('Create'));
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalled();
+    });
   });
 });

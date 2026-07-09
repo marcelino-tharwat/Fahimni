@@ -33,6 +33,14 @@ const ADMIN = {
   role: "ADMIN" as const,
 };
 
+const ADMIN_2 = {
+  id: sid("admin-2"),
+  email: "admin2" + DEMO_EMAIL_DOMAIN,
+  fullName: "مدير مساعد — حساب تجريبي",
+  mobile: "01000000002",
+  role: "ADMIN" as const,
+};
+
 const TEACHERS = [
   {
     id: sid("teacher-math"),
@@ -114,6 +122,14 @@ const STUDENTS = [
     mobile: "01000000106",
     role: "STUDENT" as const,
     profileId: sid("profile-multi"),
+  },
+  {
+    id: sid("student-clean"),
+    email: "student.clean" + DEMO_EMAIL_DOMAIN,
+    fullName: "طالب نظيف — بدون بيانات",
+    mobile: "01000000107",
+    role: "STUDENT" as const,
+    profileId: sid("profile-clean"),
   },
 ];
 
@@ -241,6 +257,7 @@ CHAPTERS.forEach((ch, ci) => {
 
 const ALL_SEED_USER_IDS = [
   ADMIN.id,
+  ADMIN_2.id,
   ...TEACHERS.map((t) => t.id),
   ...STUDENTS.map((s) => s.id),
 ];
@@ -260,6 +277,7 @@ const LEGACY_CHEMISTRY_EMAILS = [
 
 const ALL_SEED_EMAILS = [
   ADMIN.email,
+  ADMIN_2.email,
   ...TEACHERS.map((t) => t.email),
   ...STUDENTS.map((s) => s.email),
   ...LEGACY_CHEMISTRY_EMAILS,
@@ -413,6 +431,21 @@ async function seedAll(): Promise<void> {
         },
       });
 
+      // 2b. Create Second Admin
+      await tx.user.upsert({
+        where: { email: ADMIN_2.email },
+        update: { status: "ACTIVE", fullName: ADMIN_2.fullName },
+        create: {
+          id: ADMIN_2.id,
+          email: ADMIN_2.email,
+          fullName: ADMIN_2.fullName,
+          mobile: ADMIN_2.mobile,
+          password: demoPasswordHash,
+          role: ADMIN_2.role,
+          status: "ACTIVE",
+        },
+      });
+
       // 3. Create Teachers
       for (let ti = 0; ti < TEACHERS.length; ti++) {
         const t = TEACHERS[ti]!;
@@ -510,6 +543,19 @@ async function seedAll(): Promise<void> {
           mobile: "01000000080",
           subject: "الفلسفة",
           bio: "معتمدة، فشلت عملية الدفع الأخيرة — تبقى على الباقة المجانية.",
+          state: "APPROVED" as const,
+          status: "ACTIVE" as const,
+        },
+        {
+          // Clean teacher — has NO content, no subscriptions, no payments.
+          // Useful for positive role-change tests (OPERATION → STUDENT).
+          id: sid("teacher-clean"),
+          profileId: sid("profile-clean-teacher"),
+          email: "teacher.clean" + DEMO_EMAIL_DOMAIN,
+          fullName: "أ. نظيف المدرّس — بدون محتوى",
+          mobile: "01000000090",
+          subject: "اللغة العربية",
+          bio: "معلم بدون أي محتوى أو اشتراكات — للاختبار.",
           state: "APPROVED" as const,
           status: "ACTIVE" as const,
         },
@@ -630,15 +676,27 @@ async function seedAll(): Promise<void> {
 
       // 8. Create Student Profiles
       for (const s of STUDENTS) {
-        await tx.studentProfile.upsert({
-          where: { userId: s.id },
-          update: { stageId: STAGES[0]!.id },
-          create: {
-            id: s.profileId,
-            userId: s.id,
-            stageId: STAGES[0]!.id,
-          },
-        });
+        if (s.id === sid("student-clean")) {
+          await tx.studentProfile.upsert({
+            where: { userId: s.id },
+            update: {},
+            create: {
+              id: s.profileId,
+              userId: s.id,
+              stageId: STAGES[0]!.id,
+            },
+          });
+        } else {
+          await tx.studentProfile.upsert({
+            where: { userId: s.id },
+            update: { stageId: STAGES[0]!.id },
+            create: {
+              id: s.profileId,
+              userId: s.id,
+              stageId: STAGES[0]!.id,
+            },
+          });
+        }
       }
 
       // 9. Create Quizzes & Questions

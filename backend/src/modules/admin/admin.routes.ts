@@ -34,7 +34,13 @@ import {
   updatePlanSchema,
 } from "./admin-plans.validation.js";
 import { AdminUsersController } from "./admin-users.controller.js";
-import { listUsersQuerySchema } from "./admin-users.validation.js";
+import {
+  listUsersQuerySchema,
+  adminCreateUserSchema,
+  adminUpdateUserSchema,
+  adminChangeStatusSchema,
+  adminChangeRoleSchema,
+} from "./admin-users.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -179,7 +185,7 @@ router.get("/me", (req, res) => {
   );
 });
 
-// ── Admin user management (global list + detail). ──
+// ── Admin user management (global list + detail + mutations). ──
 // Static list route before dynamic :userId. Safe fields only — never returns
 // password / tokenVersion / refresh tokens.
 router.get(
@@ -187,7 +193,37 @@ router.get(
   validateRequest(listUsersQuerySchema, "query"),
   asyncHandler(adminUsersController.list),
 );
+
+// ── Create user (admin-only) ──
+router.post(
+  "/users",
+  validateRequest(adminCreateUserSchema, "body"),
+  asyncHandler(adminUsersController.createUser),
+);
+
+// ── Dynamic user routes ──
 router.get("/users/:userId", asyncHandler(adminUsersController.getDetail));
+
+// Edit basic user data (no role, no status, no password)
+router.patch(
+  "/users/:userId",
+  validateRequest(adminUpdateUserSchema, "body"),
+  asyncHandler(adminUsersController.updateUser),
+);
+
+// Change status (ban / unban / activate / deactivate)
+router.patch(
+  "/users/:userId/status",
+  validateRequest(adminChangeStatusSchema, "body"),
+  asyncHandler(adminUsersController.changeStatus),
+);
+
+// Change role with dependency safety checks
+router.patch(
+  "/users/:userId/role",
+  validateRequest(adminChangeRoleSchema, "body"),
+  asyncHandler(adminUsersController.changeRole),
+);
 
 // User management under the admin namespace (`/api/admin/users`). userRoutes
 // also carries its own ADMIN guards, so this is intentional defense-in-depth.
