@@ -50,16 +50,32 @@ export class TeacherPlanController {
     try {
       const teacherId = req.user!.id;
       const locale = req.headers["accept-language"]?.startsWith("ar") ? "ar" : "en";
-      const { planId, billingInterval } = req.body;
+      const { planId, billingInterval, promoCode } = req.body;
       const result = await teacherSubscriptionPaymentService.createCheckout(
         teacherId,
-        { planId, billingInterval },
+        { planId, billingInterval, promoCode },
         locale,
       );
       res.status(201).json({
         ...result,
         message: getTeacherPlanMessage("CHECKOUT_CREATED", locale),
       });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async previewPromo(req: Request, res: Response, next: NextFunction) {
+    try {
+      const teacherId = req.user!.id;
+      const locale = req.headers["accept-language"]?.startsWith("ar") ? "ar" : "en";
+      const { planId, billingInterval, promoCode } = req.body;
+      const result = await teacherSubscriptionPaymentService.previewPromo(
+        teacherId,
+        { planId, billingInterval, promoCode },
+        locale,
+      );
+      res.status(200).json(result);
     } catch (err) {
       next(err);
     }

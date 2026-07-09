@@ -1,6 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
+import { prisma } from "../../config/database.js";
+import { AppError } from "../../shared/utils/AppError.js";
+import { platformPromoService } from "./platform-promo.service.js";
 import { PromoCodeService } from "./promo-code.service.js";
 import type {
   PromoCodeResponseDTO,
@@ -92,6 +95,46 @@ export class PromoCodeController {
       res
         .status(201)
         .json(okResponse<RedeemResult>(REDEEM_MESSAGES[locale].success, result));
+    },
+  );
+
+  /**
+   * COURSE_PURCHASE discount preview. Validates a platform promo for a chapter
+   * and returns the discounted pricing. Only COURSE_PURCHASE codes are accepted —
+   * a TEACHER_PLAN code is rejected (PROMO_SCOPE_MISMATCH) by the shared validator.
+   */
+  public validateCourseDiscount = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const studentId = req.user!.id;
+      const { code, chapterId } = req.body as { code: string; chapterId: string };
+
+      const chapter = await prisma.chapter.findFirst({
+        where: { id: chapterId, deletedAt: null },
+        select: { id: true, price: true },
+      });
+      if (!chapter) {
+        return next(new AppError("Chapter not found", 404, "CHAPTER_NOT_FOUND"));
+      }
+      const amount = Number(chapter.price ?? 0);
+
+      const { promo, pricing } = await platformPromoService.validateAndPrice(code, {
+        scope: "COURSE_PURCHASE",
+        amount,
+        userId: studentId,
+      });
+
+      res.status(200).json(
+        okResponse("Promo code valid", {
+          code: promo.code,
+          scope: promo.scope,
+          discountType: promo.discountType,
+          discountValue: promo.discountValue,
+          amountBefore: pricing.amountBefore,
+          discount: pricing.discount,
+          amountAfter: pricing.amountAfter,
+          currency: promo.currency,
+        }),
+      );
     },
   );
 

@@ -44,3 +44,12 @@ export const redeemPromoCodeSchema = z.preprocess(
 );
 
 export type RedeemPromoCodeInput = z.infer<typeof redeemPromoCodeSchema>;
+
+/** Preview a COURSE_PURCHASE platform discount code against a chapter. A
+ * TEACHER_PLAN code is rejected by the shared validator (scope separation). */
+export const courseDiscountSchema = z.object({
+  code: z.string().trim().min(1).max(40),
+  chapterId: z.string().uuid("Chapter ID must be a valid UUID"),
+});
+
+export type CourseDiscountInput = z.infer<typeof courseDiscountSchema>;

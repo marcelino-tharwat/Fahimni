@@ -8,17 +8,26 @@ import { auditLogService } from "../../shared/services/auditLog.service.js";
 import { PaymobService } from "../payment/paymob.service.js";
 import type { BillingData } from "../payment/paymob.service.js";
 import { getTeacherPlanMessage } from "./teacher-plan.i18n.js";
+import { platformPromoService } from "../promo-code/platform-promo.service.js";
 
 export interface CheckoutInput {
   planId: string;
   billingInterval: BillingInterval;
+  promoCode?: string;
 }
 
 export interface CheckoutResult {
   paymentId: string;
   orderId: string;
   checkoutUrl: string;
+  /** Final (discounted) amount charged — this is the Paymob amount. */
   amount: number;
+  /** List price before any promo discount. */
+  originalAmount: number;
+  /** Discount applied (0 when no valid promo). */
+  discount: number;
+  /** The applied promo code, if any. */
+  promoCode: string | null;
   currency: string;
   billingInterval: BillingInterval;
   status: "PENDING";
@@ -98,6 +107,31 @@ export class TeacherSubscriptionPaymentService {
       );
     }
 
+    // Optional promo code — validated + priced strictly server-side. A promo must
+    // be scope TEACHER_PLAN (a COURSE_PURCHASE code is rejected here), active,
+    // within its window, under its usage limits, and applicable to this plan +
+    // billing interval. The discounted amount is what Paymob charges.
+    const originalAmount = amount;
+    let finalAmount = amount;
+    let discount = 0;
+    let appliedPromoId: string | null = null;
+    let appliedPromoCode: string | null = null;
+    let appliedPricing: { amountBefore: number; discount: number; amountAfter: number } | null = null;
+    if (input.promoCode) {
+      const { promo, pricing } = await platformPromoService.validateAndPrice(input.promoCode, {
+        scope: "TEACHER_PLAN",
+        amount: originalAmount,
+        userId: teacherId,
+        planId: input.planId,
+        billingInterval: input.billingInterval,
+      });
+      finalAmount = pricing.amountAfter;
+      discount = pricing.discount;
+      appliedPromoId = promo.id;
+      appliedPromoCode = promo.code;
+      appliedPricing = pricing;
+    }
+
     // Already on this exact plan (active) — nothing to pay for.
     const activeSub = await prisma.teacherSubscription.findFirst({
       where: {
@@ -151,12 +185,12 @@ export class TeacherSubscriptionPaymentService {
     let checkoutUrl: string;
     try {
       const token = await this.paymob.getValidToken();
-      orderId = await this.paymob.createOrder(token, amount);
+      orderId = await this.paymob.createOrder(token, finalAmount);
       const redirectionUrl = `${env.FRONTEND_BASE_URL}/teacher/plans?orderId=${orderId}`;
       const paymentKey = await this.paymob.getPaymentKey(
         token,
         orderId,
-        amount,
+        finalAmount,
         billingData,
         undefined,
         redirectionUrl,
@@ -175,28 +209,80 @@ export class TeacherSubscriptionPaymentService {
       );
     }
 
-    const payment = await prisma.teacherSubscriptionPayment.create({
-      data: {
-        teacherId,
-        planId: input.planId,
-        provider: "PAYMOB",
-        providerOrderId: orderId,
-        amount,
-        currency: plan.currency,
-        billingInterval: input.billingInterval,
-        status: "PENDING",
-        checkoutUrl,
-      },
+    // Persist the PENDING payment at the FINAL (discounted) amount and, when a
+    // promo was applied, atomically record its redemption (increments usedCount,
+    // re-checked under the cap). "Valid use" here = a discounted checkout session
+    // was created; a failed/abandoned session still consumed one use.
+    const payment = await prisma.$transaction(async (tx) => {
+      const created = await tx.teacherSubscriptionPayment.create({
+        data: {
+          teacherId,
+          planId: input.planId,
+          provider: "PAYMOB",
+          providerOrderId: orderId,
+          amount: finalAmount,
+          currency: plan.currency,
+          billingInterval: input.billingInterval,
+          status: "PENDING",
+          checkoutUrl,
+        },
+      });
+      if (appliedPromoId && appliedPricing) {
+        const used = await platformPromoService.recordRedemption(tx, appliedPromoId, teacherId, appliedPricing);
+        if (!used) {
+          throw new AppError("تم استنفاد رمز الخصم", 400, "PROMO_LIMIT_REACHED");
+        }
+      }
+      return created;
     });
 
     return {
       paymentId: payment.id,
       orderId,
       checkoutUrl,
-      amount,
+      amount: finalAmount,
+      originalAmount,
+      discount,
+      promoCode: appliedPromoCode,
       currency: plan.currency,
       billingInterval: input.billingInterval,
       status: "PENDING",
+    };
+  }
+
+  /**
+   * Preview a TEACHER_PLAN promo against a plan + interval WITHOUT creating a
+   * Paymob order or consuming a redemption. Used by the plans page to show the
+   * original / discount / final amount before the teacher proceeds to checkout.
+   */
+  async previewPromo(
+    teacherId: string,
+    input: { planId: string; billingInterval: BillingInterval; promoCode: string },
+    locale: string = "ar",
+  ): Promise<{ originalAmount: number; discount: number; amountAfter: number; currency: string; promoCode: string }> {
+    const plan = await prisma.teacherPlan.findUnique({ where: { id: input.planId } });
+    if (!plan) throw new AppError(getTeacherPlanMessage("PLAN_NOT_FOUND", locale), 404);
+    if (!plan.isActive) throw new AppError(getTeacherPlanMessage("PLAN_INACTIVE", locale), 400);
+
+    const amount = input.billingInterval === "YEARLY" ? plan.yearlyPrice : plan.monthlyPrice;
+    if (amount === null || amount === undefined || amount <= 0) {
+      throw new AppError(getTeacherPlanMessage("PLAN_FREE_NO_PAYMENT", locale), 400);
+    }
+
+    const { promo, pricing } = await platformPromoService.validateAndPrice(input.promoCode, {
+      scope: "TEACHER_PLAN",
+      amount,
+      userId: teacherId,
+      planId: input.planId,
+      billingInterval: input.billingInterval,
+    });
+
+    return {
+      originalAmount: pricing.amountBefore,
+      discount: pricing.discount,
+      amountAfter: pricing.amountAfter,
+      currency: plan.currency,
+      promoCode: promo.code,
     };
   }
 

@@ -375,6 +375,36 @@ exports.Prisma.PromoCodeScalarFieldEnum = {
   expiresAt: 'expiresAt'
 };
 
+exports.Prisma.PlatformPromoCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  scope: 'scope',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  currency: 'currency',
+  startsAt: 'startsAt',
+  expiresAt: 'expiresAt',
+  isActive: 'isActive',
+  maxUses: 'maxUses',
+  usedCount: 'usedCount',
+  perUserLimit: 'perUserLimit',
+  applicablePlanIds: 'applicablePlanIds',
+  billingInterval: 'billingInterval',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlatformPromoRedemptionScalarFieldEnum = {
+  id: 'id',
+  promoCodeId: 'promoCodeId',
+  userId: 'userId',
+  amountBefore: 'amountBefore',
+  discount: 'discount',
+  amountAfter: 'amountAfter',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
   studentId: 'studentId',
@@ -613,6 +643,22 @@ exports.AttemptSubmissionReason = exports.$Enums.AttemptSubmissionReason = {
   TIME_EXPIRED: 'TIME_EXPIRED'
 };
 
+exports.PromoScope = exports.$Enums.PromoScope = {
+  COURSE_PURCHASE: 'COURSE_PURCHASE',
+  TEACHER_PLAN: 'TEACHER_PLAN'
+};
+
+exports.PromoDiscountType = exports.$Enums.PromoDiscountType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT'
+};
+
+exports.PromoBillingScope = exports.$Enums.PromoBillingScope = {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY',
+  ALL: 'ALL'
+};
+
 exports.NotificationType = exports.$Enums.NotificationType = {
   NEW_LESSON: 'NEW_LESSON',
   NEW_QUIZ: 'NEW_QUIZ'
@@ -685,6 +731,8 @@ exports.Prisma.ModelName = {
   Question: 'Question',
   QuizAttempt: 'QuizAttempt',
   PromoCode: 'PromoCode',
+  PlatformPromoCode: 'PlatformPromoCode',
+  PlatformPromoRedemption: 'PlatformPromoRedemption',
   Notification: 'Notification',
   TeacherRegistrationRequest: 'TeacherRegistrationRequest',
   AiConversation: 'AiConversation',

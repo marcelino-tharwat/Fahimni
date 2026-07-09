@@ -74,6 +74,7 @@ import { AdminTeacherRequestDetailPage } from '@/features/admin/pages/AdminTeach
 import { TenantsPage } from '@/features/admin/pages/TenantsPage';
 import { TenantDetailsPage } from '@/features/admin/pages/TenantDetailsPage';
 import { PromoCodesPage as AdminPromoCodesPage } from '@/features/admin/pages/PromoCodesPage';
+import { AdminPromoCodesManagementPage } from '@/features/admin/pages/AdminPromoCodesManagementPage';
 import { AdminPlansPage } from '@/features/admin/pages/AdminPlansPage';
 import { AdminSubscriptionsPage } from '@/features/admin/pages/AdminSubscriptionsPage';
 import { AdminRevenuePage } from '@/features/admin/pages/AdminRevenuePage';
@@ -215,7 +216,7 @@ const router = createBrowserRouter([
               { path: '/admin/teacher-requests/:requestId', element: <AdminTeacherRequestDetailPage /> },
               { path: '/admin/tenants', element: <TenantsPage /> },
               { path: '/admin/tenants/:tenantId', element: <TenantDetailsPage /> },
-              { path: '/admin/promo-codes', element: <AdminPromoCodesPage /> },
+              { path: '/admin/promo-codes', element: <AdminPromoCodesManagementPage /> },
               { path: '/admin/plans', element: <AdminPlansPage /> },
               { path: '/admin/subscriptions', element: <AdminSubscriptionsPage /> },
               { path: '/admin/revenue', element: <AdminRevenuePage /> },

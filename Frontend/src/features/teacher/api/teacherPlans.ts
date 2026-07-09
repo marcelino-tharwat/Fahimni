@@ -1,5 +1,5 @@
 import { apiClient } from '@/shared/lib/api/client';
-import type { TeacherPlan, SubscriptionMeResponse, CreateRequestInput, CreateRequestResponse, CheckoutInput, CheckoutResponse } from '@/features/teacher/types/teacherPlans';
+import type { TeacherPlan, SubscriptionMeResponse, CreateRequestInput, CreateRequestResponse, CheckoutInput, CheckoutResponse, PromoPreviewInput, PromoPreviewResponse } from '@/features/teacher/types/teacherPlans';
 
 export const teacherPlansApi = {
   getPlans: async (): Promise<TeacherPlan[]> => {
@@ -22,6 +22,15 @@ export const teacherPlansApi = {
   checkout: async (input: CheckoutInput): Promise<CheckoutResponse> => {
     const { data } = await apiClient.post<CheckoutResponse>(
       '/teacher/subscription/checkout',
+      input,
+    );
+    return data;
+  },
+
+  // Preview a TEACHER_PLAN promo (no order created). Returns original/discount/final.
+  previewPromo: async (input: PromoPreviewInput): Promise<PromoPreviewResponse> => {
+    const { data } = await apiClient.post<PromoPreviewResponse>(
+      '/teacher/subscription/promo/preview',
       input,
     );
     return data;

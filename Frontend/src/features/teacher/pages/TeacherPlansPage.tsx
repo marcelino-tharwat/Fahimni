@@ -4,6 +4,7 @@ import { Check, Loader2, AlertTriangle } from 'lucide-react';
 import { Card } from '@/shared/components/ui';
 import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
 import { TeacherPlansCurrentPlanCard } from './TeacherPlansCurrentPlanCard';
+import { TeacherPlanPromoBox } from '@/features/teacher/components/TeacherPlanPromoBox';
 import type { TeacherPlan, SubscriptionMeResponse } from '@/features/teacher/types/teacherPlans';
 
 const ENTRY_CODES = new Set(['FREE', 'BASIC']);
@@ -224,6 +225,8 @@ export function TeacherPlansPage() {
       )}
 
       <TeacherPlansCurrentPlanCard data={subscription} />
+
+      {plans.length > 0 && <TeacherPlanPromoBox plans={plans} />}
 
       <div className="flex items-center justify-center">
         <button
