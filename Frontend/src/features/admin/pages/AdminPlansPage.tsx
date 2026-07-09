@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Search, CreditCard, DollarSign, Users, AlertCircle, ChevronLeft,
+  Search, CreditCard, DollarSign, Users, AlertCircle,
   CheckCircle2, XCircle, Star, Plus, Pencil, Power, PowerOff,
   GripVertical, ArrowUp, ArrowDown, Save, X,
 } from 'lucide-react';

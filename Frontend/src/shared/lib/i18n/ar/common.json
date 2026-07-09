@@ -18,7 +18,10 @@
     "promoCodes": "أكواد الخصم",
     "studentLookup": "بحث الطلاب",
     "tenants": "الأكاديميات",
-    "plans": "الباقات والاشتراكات"
+    "plans": "الباقات والاشتراكات",
+    "subscriptions": "الاشتراكات",
+    "revenue": "الإيرادات",
+    "payments": "المدفوعات"
   },
   "roles": {
     "ADMIN": "مسؤول",

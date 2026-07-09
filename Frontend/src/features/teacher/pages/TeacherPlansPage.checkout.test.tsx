@@ -31,12 +31,12 @@ const PLANS: TeacherPlan[] = [
   {
     id: 'free-1', code: 'FREE', displayName: 'Free', description: null,
     monthlyPrice: 0, yearlyPrice: null, currency: 'EGP', isRecommended: false,
-    features: [], limits: {},
+    features: {}, limits: {},
   },
   {
     id: 'basic-1', code: 'BASIC', displayName: 'Basic', description: null,
     monthlyPrice: 199, yearlyPrice: 1990, currency: 'EGP', isRecommended: false,
-    features: [], limits: {},
+    features: {}, limits: {},
   },
 ];
 

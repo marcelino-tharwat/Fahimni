@@ -75,6 +75,9 @@ import { TenantsPage } from '@/features/admin/pages/TenantsPage';
 import { TenantDetailsPage } from '@/features/admin/pages/TenantDetailsPage';
 import { PromoCodesPage as AdminPromoCodesPage } from '@/features/admin/pages/PromoCodesPage';
 import { AdminPlansPage } from '@/features/admin/pages/AdminPlansPage';
+import { AdminSubscriptionsPage } from '@/features/admin/pages/AdminSubscriptionsPage';
+import { AdminRevenuePage } from '@/features/admin/pages/AdminRevenuePage';
+import { AdminPaymentsPage } from '@/features/admin/pages/AdminPaymentsPage';
 
 const router = createBrowserRouter([
   // Public routes
@@ -214,6 +217,9 @@ const router = createBrowserRouter([
               { path: '/admin/tenants/:tenantId', element: <TenantDetailsPage /> },
               { path: '/admin/promo-codes', element: <AdminPromoCodesPage /> },
               { path: '/admin/plans', element: <AdminPlansPage /> },
+              { path: '/admin/subscriptions', element: <AdminSubscriptionsPage /> },
+              { path: '/admin/revenue', element: <AdminRevenuePage /> },
+              { path: '/admin/payments', element: <AdminPaymentsPage /> },
             ],
           },
         ],

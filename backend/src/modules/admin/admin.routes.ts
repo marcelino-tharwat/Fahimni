@@ -41,6 +41,23 @@ import {
   adminChangeStatusSchema,
   adminChangeRoleSchema,
 } from "./admin-users.validation.js";
+import { listUsersQuerySchema } from "./admin-users.validation.js";
+import { AdminSubscriptionsController } from "./admin-subscriptions.controller.js";
+import {
+  approveSubscriptionRequestSchema,
+  listAiUsageQuerySchema,
+  listEntitlementsQuerySchema,
+  listPaymentsQuerySchema,
+  listSubscriptionRequestsQuerySchema,
+  listSubscriptionsQuerySchema,
+  rejectSubscriptionRequestSchema,
+} from "./admin-subscriptions.validation.js";
+import { AdminRevenueController } from "./admin-revenue.controller.js";
+import {
+  listCoursePaymentsQuerySchema,
+  listSubscriptionPaymentsQuerySchema,
+  revenueRankingQuerySchema,
+} from "./admin-revenue.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -65,6 +82,8 @@ const studentsController = new AdminStudentsController();
 const teacherRequestsController = new AdminTeacherRequestsController();
 const plansController = new AdminPlansController();
 const adminUsersController = new AdminUsersController();
+const subscriptionsController = new AdminSubscriptionsController();
+const revenueController = new AdminRevenueController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -84,7 +103,10 @@ router.get(
 // Registered after the static "/teachers" route above. Each handler resolves the
 // teacher (404 if missing / non-OPERATION) before returning safe, teacher-scoped
 // data — course revenue and subscription payments are kept as separate figures.
-router.get("/teachers/:teacherId", asyncHandler(teacherDetailController.getDetail));
+router.get(
+  "/teachers/:teacherId",
+  asyncHandler(teacherDetailController.getDetail),
+);
 router.get(
   "/teachers/:teacherId/students",
   validateRequest(teacherStudentsQuerySchema, "query"),
@@ -95,10 +117,22 @@ router.get(
   validateRequest(teacherEnrollmentsQuerySchema, "query"),
   asyncHandler(teacherDetailController.getEnrollments),
 );
-router.get("/teachers/:teacherId/content", asyncHandler(teacherDetailController.getContent));
-router.get("/teachers/:teacherId/revenue", asyncHandler(teacherDetailController.getRevenue));
-router.get("/teachers/:teacherId/subscription", asyncHandler(teacherDetailController.getSubscription));
-router.get("/teachers/:teacherId/ai-usage", asyncHandler(teacherDetailController.getAiUsage));
+router.get(
+  "/teachers/:teacherId/content",
+  asyncHandler(teacherDetailController.getContent),
+);
+router.get(
+  "/teachers/:teacherId/revenue",
+  asyncHandler(teacherDetailController.getRevenue),
+);
+router.get(
+  "/teachers/:teacherId/subscription",
+  asyncHandler(teacherDetailController.getSubscription),
+);
+router.get(
+  "/teachers/:teacherId/ai-usage",
+  asyncHandler(teacherDetailController.getAiUsage),
+);
 
 // ── Students management (global). Static list route before dynamic :studentId. ──
 // Each detail handler resolves the student (404 if missing / non-STUDENT) and
@@ -114,8 +148,14 @@ router.get(
   validateRequest(studentEnrollmentsQuerySchema, "query"),
   asyncHandler(studentsController.getEnrollments),
 );
-router.get("/students/:studentId/payments", asyncHandler(studentsController.getPayments));
-router.get("/students/:studentId/learning-summary", asyncHandler(studentsController.getLearningSummary));
+router.get(
+  "/students/:studentId/payments",
+  asyncHandler(studentsController.getPayments),
+);
+router.get(
+  "/students/:studentId/learning-summary",
+  asyncHandler(studentsController.getLearningSummary),
+);
 
 // ── Teacher registration requests review. Static list before dynamic :requestId. ──
 // Read is safe (no raw storage paths); approve/reject are PENDING-only, write an
@@ -125,7 +165,10 @@ router.get(
   validateRequest(listTeacherRequestsQuerySchema, "query"),
   asyncHandler(teacherRequestsController.list),
 );
-router.get("/teacher-requests/:requestId", asyncHandler(teacherRequestsController.getDetail));
+router.get(
+  "/teacher-requests/:requestId",
+  asyncHandler(teacherRequestsController.getDetail),
+);
 router.get(
   "/teacher-requests/:requestId/documents/:documentIndex/signed-url",
   asyncHandler(teacherRequestsController.getDocumentSignedUrl),
@@ -173,6 +216,87 @@ router.patch(
   "/plans/:planId/recommended",
   validateRequest(recommendedChangeSchema, "body"),
   asyncHandler(plansController.changeRecommended),
+);
+
+// ── Subscriptions review (entitlements / subscriptions / payments / manual
+// requests / AI usage). All inherit the router-level ADMIN-only guard. Static
+// list routes are declared before dynamic :id routes. Safe fields only — never
+// rawCallback / checkoutUrl / provider ids / Paymob secrets. ──
+router.get(
+  "/teacher-entitlements",
+  validateRequest(listEntitlementsQuerySchema, "query"),
+  asyncHandler(subscriptionsController.listEntitlements),
+);
+router.get(
+  "/teacher-subscriptions",
+  validateRequest(listSubscriptionsQuerySchema, "query"),
+  asyncHandler(subscriptionsController.listSubscriptions),
+);
+router.get(
+  "/teacher-subscriptions/:subscriptionId",
+  asyncHandler(subscriptionsController.getSubscriptionDetail),
+);
+router.get(
+  "/teacher-subscription-payments",
+  validateRequest(listPaymentsQuerySchema, "query"),
+  asyncHandler(subscriptionsController.listPayments),
+);
+router.get(
+  "/teacher-subscription-payments/:paymentId",
+  asyncHandler(subscriptionsController.getPaymentDetail),
+);
+router.get(
+  "/teacher-subscription-requests",
+  validateRequest(listSubscriptionRequestsQuerySchema, "query"),
+  asyncHandler(subscriptionsController.listRequests),
+);
+router.patch(
+  "/teacher-subscription-requests/:requestId/approve",
+  validateRequest(approveSubscriptionRequestSchema, "body"),
+  asyncHandler(subscriptionsController.approveRequest),
+);
+router.patch(
+  "/teacher-subscription-requests/:requestId/reject",
+  validateRequest(rejectSubscriptionRequestSchema, "body"),
+  asyncHandler(subscriptionsController.rejectRequest),
+);
+router.get(
+  "/ai-usage",
+  validateRequest(listAiUsageQuerySchema, "query"),
+  asyncHandler(subscriptionsController.getAiUsage),
+);
+
+// ── Revenue & Payments (confirmed revenue, rankings, sanitized payment lists /
+// detail). Inherits the router-level ADMIN-only guard. Static routes before
+// dynamic :paymentId. Never exposes rawCallback / provider ids / secrets. ──
+router.get("/revenue/summary", asyncHandler(revenueController.getSummary));
+router.get(
+  "/revenue/by-teacher",
+  validateRequest(revenueRankingQuerySchema, "query"),
+  asyncHandler(revenueController.getByTeacher),
+);
+router.get(
+  "/revenue/by-chapter",
+  validateRequest(revenueRankingQuerySchema, "query"),
+  asyncHandler(revenueController.getByChapter),
+);
+router.get(
+  "/payments/course",
+  validateRequest(listCoursePaymentsQuerySchema, "query"),
+  asyncHandler(revenueController.listCoursePayments),
+);
+router.get(
+  "/payments/course/:paymentId",
+  asyncHandler(revenueController.getCoursePayment),
+);
+router.get(
+  "/payments/subscriptions",
+  validateRequest(listSubscriptionPaymentsQuerySchema, "query"),
+  asyncHandler(revenueController.listSubscriptionPayments),
+);
+router.get(
+  "/payments/subscriptions/:paymentId",
+  asyncHandler(revenueController.getSubscriptionPayment),
 );
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */

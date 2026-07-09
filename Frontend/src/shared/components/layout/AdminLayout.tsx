@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { LayoutDashboard, Building2, Ticket, GraduationCap, Users, ClipboardCheck, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Building2, Ticket, GraduationCap, Users, ClipboardCheck, CreditCard, Wallet, TrendingUp, Receipt } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -7,8 +7,7 @@ import { Sidebar, type SidebarItem } from './Sidebar';
 export function AdminLayout() {
   const { t } = useTranslation();
 
-  // Only routes with an implemented page are linked here. Subscriptions / Revenue
-  // are added by their own feature tasks (no route yet, so linking them would 404).
+  // Only routes with an implemented page are linked here.
   const items: SidebarItem[] = [
     { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/admin/dashboard' },
     { label: t('nav.users'), icon: Users, path: '/admin/users' },
@@ -18,6 +17,9 @@ export function AdminLayout() {
     { label: t('nav.tenants'), icon: Building2, path: '/admin/tenants' },
     { label: t('nav.promoCodes'), icon: Ticket, path: '/admin/promo-codes' },
     { label: t('nav.plans'), icon: CreditCard, path: '/admin/plans' },
+    { label: t('nav.subscriptions'), icon: Wallet, path: '/admin/subscriptions' },
+    { label: t('nav.revenue'), icon: TrendingUp, path: '/admin/revenue' },
+    { label: t('nav.payments'), icon: Receipt, path: '/admin/payments' },
   ];
 
   return (
