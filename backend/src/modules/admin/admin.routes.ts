@@ -40,6 +40,7 @@ import {
   adminUpdateUserSchema,
   adminChangeStatusSchema,
   adminChangeRoleSchema,
+  adminResetPasswordSchema,
 } from "./admin-users.validation.js";
 
 import { AdminSubscriptionsController } from "./admin-subscriptions.controller.js";
@@ -348,6 +349,13 @@ router.patch(
   "/users/:userId/role",
   validateRequest(adminChangeRoleSchema, "body"),
   asyncHandler(adminUsersController.changeRole),
+);
+
+// Reset password (admin-only). Never returns password/tokenVersion.
+router.patch(
+  "/users/:userId/password",
+  validateRequest(adminResetPasswordSchema, "body"),
+  asyncHandler(adminUsersController.resetPassword),
 );
 
 // User management under the admin namespace (`/api/admin/users`). userRoutes

@@ -131,3 +131,10 @@ export interface AdminChangeRolePayload {
   role: UserRole;
   reason?: string;
 }
+
+export interface AdminResetPasswordPayload {
+  newPassword: string;
+  confirmPassword: string;
+  forceLogout: boolean;
+  reason: string;
+}

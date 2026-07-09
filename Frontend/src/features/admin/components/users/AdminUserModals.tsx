@@ -16,7 +16,8 @@ export type ModalMode =
   | 'unban'
   | 'activate'
   | 'deactivate'
-  | 'change-role';
+  | 'change-role'
+  | 'reset-password';
 
 interface AdminUserModalsProps {
   mode: ModalMode;
@@ -112,6 +113,19 @@ export function AdminUserModals({
   if (mode === 'change-role' && selectedUser) {
     return (
       <ChangeRoleModal
+        user={selectedUser}
+        isSelf={selectedUser.id === currentAdminId}
+        onClose={onClose}
+        onSubmit={onSubmit}
+        isSubmitting={isSubmitting}
+        error={error}
+      />
+    );
+  }
+
+  if (mode === 'reset-password' && selectedUser) {
+    return (
+      <ResetPasswordModal
         user={selectedUser}
         isSelf={selectedUser.id === currentAdminId}
         onClose={onClose}
@@ -356,6 +370,116 @@ function ConfirmActionModal({
           </Button>
           <Button variant={isDanger ? 'danger' : 'primary'} onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? <Spinner /> : t('common.confirm', 'Confirm')}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function ResetPasswordModal({
+  user, isSelf, onClose, onSubmit, isSubmitting, error,
+}: {
+  user: AdminUserIdentity;
+  isSelf: boolean;
+  onClose: () => void;
+  onSubmit: (data: Record<string, unknown>) => Promise<void>;
+  isSubmitting: boolean;
+  error: string | null;
+}) {
+  const { t } = useTranslation();
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [forceLogout, setForceLogout] = useState(true);
+  const [reason, setReason] = useState('');
+
+  const handleSubmit = async () => {
+    await onSubmit({ newPassword, confirmPassword, forceLogout, reason });
+  };
+
+  const passwordValid = newPassword.length >= 8 && /[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) && /[0-9]/.test(newPassword) && /[^A-Za-z0-9]/.test(newPassword);
+  const passwordsMatch = newPassword === confirmPassword;
+  const canSubmit = passwordValid && passwordsMatch && reason.trim().length > 0 && !isSelf;
+
+  return (
+    <Modal isOpen onClose={onClose} title={t('adminUsers.resetPasswordTitle', 'Reset Password')} size="md">
+      <div className="flex flex-col gap-4">
+        {isSelf && (
+          <div className="flex items-start gap-2.5 rounded-card bg-warning/10 p-3 font-cairo text-sm text-warning">
+            <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+            <span>{t('adminUsers.cannotResetOwnPassword', 'You cannot reset your own password through admin panel.')}</span>
+          </div>
+        )}
+
+        <div className="rounded-card border border-border bg-surface p-3">
+          <p className="font-cairo text-xs text-text-muted">{t('adminUsers.user', 'User')}</p>
+          <p className="mt-0.5 font-cairo text-sm font-semibold text-text-primary">{user.fullName}</p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <label className="font-cairo text-sm font-medium text-text-primary">{t('adminUsers.newPassword', 'New Password')}</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="h-10 w-full rounded-input border border-border bg-surface px-3 font-cairo text-sm text-text-primary outline-none transition-colors focus:border-accent"
+              placeholder={t('adminUsers.newPasswordPlaceholder', 'New password')}
+            />
+            {newPassword.length > 0 && !passwordValid && (
+              <p className="font-cairo text-xs text-danger">
+                {t('adminUsers.passwordStrengthHint', 'Min 8 chars, uppercase, lowercase, number, special char')}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="font-cairo text-sm font-medium text-text-primary">{t('adminUsers.confirmPassword', 'Confirm Password')}</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="h-10 w-full rounded-input border border-border bg-surface px-3 font-cairo text-sm text-text-primary outline-none transition-colors focus:border-accent"
+              placeholder={t('adminUsers.confirmPasswordPlaceholder', 'Confirm password')}
+            />
+            {confirmPassword.length > 0 && !passwordsMatch && (
+              <p className="font-cairo text-xs text-danger">{t('adminUsers.passwordsDoNotMatch', 'Passwords do not match')}</p>
+            )}
+          </div>
+        </div>
+
+        <label className="flex items-center gap-2.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={forceLogout}
+            onChange={(e) => setForceLogout(e.target.checked)}
+            className="size-4 rounded border-border accent-accent"
+          />
+          <span className="font-cairo text-sm text-text-primary">{t('adminUsers.forceLogout', 'Force logout (invalidate all existing sessions)')}</span>
+        </label>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="font-cairo text-sm font-medium text-text-primary">{t('adminUsers.resetPasswordReason', 'Reason')}</label>
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            className="h-20 resize-none rounded-input border border-border bg-surface p-3 font-cairo text-sm text-text-primary outline-none transition-colors focus:border-accent"
+            placeholder={t('adminUsers.resetPasswordReasonPlaceholder', 'Enter reason for password reset...')}
+          />
+        </div>
+
+        {error && (
+          <div className="flex items-start gap-2.5 rounded-card bg-danger/10 p-3 font-cairo text-sm text-danger">
+            <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-2 border-t border-border pt-4">
+          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
+            {t('common.cancel', 'Cancel')}
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting || !canSubmit}>
+            {isSubmitting ? <Spinner /> : t('adminUsers.resetPassword', 'Reset Password')}
           </Button>
         </div>
       </div>

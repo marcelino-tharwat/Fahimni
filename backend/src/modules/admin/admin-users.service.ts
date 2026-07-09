@@ -19,6 +19,7 @@ import type {
   AdminUpdateUserInput,
   AdminChangeStatusInput,
   AdminChangeRoleInput,
+  AdminResetPasswordInput,
 } from "./admin-users.validation.js";
 
 const UUID_RE =
@@ -649,6 +650,74 @@ export class AdminUsersService {
         ...this.toMutationResponse(updated),
         previousRole,
       };
+    });
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────────
+  // RESET PASSWORD (admin)
+  // ───────────────────────────────────────────────────────────────────────────────
+
+  async resetPassword(
+    userId: string,
+    input: AdminResetPasswordInput,
+    actorId: string,
+  ): Promise<AdminUserMutationResponse> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, role: true },
+    });
+    if (!user) {
+      throw new AppError("User not found", 404, "USER_NOT_FOUND");
+    }
+
+    if (userId === actorId) {
+      throw new AppError(
+        "Cannot reset your own password through admin panel",
+        403,
+        "SELF_PASSWORD_RESET",
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(input.newPassword, 12);
+
+    return prisma.$transaction(async (tx) => {
+      if (input.forceLogout) {
+        await tx.user.update({
+          where: { id: userId },
+          data: {
+            password: hashedPassword,
+            tokenVersion: { increment: 1 },
+          },
+        });
+        await tx.refreshToken.deleteMany({ where: { userId } });
+      } else {
+        await tx.user.update({
+          where: { id: userId },
+          data: { password: hashedPassword },
+        });
+      }
+
+      const updated = await tx.user.findUniqueOrThrow({
+        where: { id: userId },
+        select: mutationUserSelect,
+      });
+
+      await auditLogService.record(
+        {
+          action: "ADMIN_USER_PASSWORD_CHANGED",
+          resourceType: "User",
+          resourceId: userId,
+          actorId,
+          actorType: "ADMIN",
+          details: {
+            forceLogout: input.forceLogout,
+            reason: input.reason,
+          },
+        },
+        tx,
+      );
+
+      return this.toMutationResponse(updated);
     });
   }
 
