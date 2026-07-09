@@ -19,7 +19,9 @@
     "studentLookup": "بحث الطلاب",
     "tenants": "الأكاديميات",
     "plans": "الباقات والاشتراكات",
-    "subscriptions": "الاشتراكات"
+    "subscriptions": "الاشتراكات",
+    "revenue": "الإيرادات",
+    "payments": "المدفوعات"
   },
   "roles": {
     "ADMIN": "مسؤول",

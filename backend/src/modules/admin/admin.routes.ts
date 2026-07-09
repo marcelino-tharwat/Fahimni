@@ -45,6 +45,12 @@ import {
   listSubscriptionsQuerySchema,
   rejectSubscriptionRequestSchema,
 } from "./admin-subscriptions.validation.js";
+import { AdminRevenueController } from "./admin-revenue.controller.js";
+import {
+  listCoursePaymentsQuerySchema,
+  listSubscriptionPaymentsQuerySchema,
+  revenueRankingQuerySchema,
+} from "./admin-revenue.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -70,6 +76,7 @@ const teacherRequestsController = new AdminTeacherRequestsController();
 const plansController = new AdminPlansController();
 const adminUsersController = new AdminUsersController();
 const subscriptionsController = new AdminSubscriptionsController();
+const revenueController = new AdminRevenueController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -226,6 +233,36 @@ router.get(
   "/ai-usage",
   validateRequest(listAiUsageQuerySchema, "query"),
   asyncHandler(subscriptionsController.getAiUsage),
+);
+
+// ── Revenue & Payments (confirmed revenue, rankings, sanitized payment lists /
+// detail). Inherits the router-level ADMIN-only guard. Static routes before
+// dynamic :paymentId. Never exposes rawCallback / provider ids / secrets. ──
+router.get("/revenue/summary", asyncHandler(revenueController.getSummary));
+router.get(
+  "/revenue/by-teacher",
+  validateRequest(revenueRankingQuerySchema, "query"),
+  asyncHandler(revenueController.getByTeacher),
+);
+router.get(
+  "/revenue/by-chapter",
+  validateRequest(revenueRankingQuerySchema, "query"),
+  asyncHandler(revenueController.getByChapter),
+);
+router.get(
+  "/payments/course",
+  validateRequest(listCoursePaymentsQuerySchema, "query"),
+  asyncHandler(revenueController.listCoursePayments),
+);
+router.get("/payments/course/:paymentId", asyncHandler(revenueController.getCoursePayment));
+router.get(
+  "/payments/subscriptions",
+  validateRequest(listSubscriptionPaymentsQuerySchema, "query"),
+  asyncHandler(revenueController.listSubscriptionPayments),
+);
+router.get(
+  "/payments/subscriptions/:paymentId",
+  asyncHandler(revenueController.getSubscriptionPayment),
 );
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */

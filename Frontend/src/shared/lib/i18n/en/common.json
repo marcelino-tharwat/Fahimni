@@ -20,7 +20,9 @@
     "studentLookup": "Student Lookup",
     "tenants": "Academies",
     "plans": "Plans & Subscriptions",
-    "subscriptions": "Subscriptions"
+    "subscriptions": "Subscriptions",
+    "revenue": "Revenue",
+    "payments": "Payments"
   },
   "roles": {
     "ADMIN": "Admin",
