@@ -35,7 +35,15 @@ export type AuditLogAction =
   | "PAYMENT_FAILED"
   // Admin (platform-level) actions — not scoped to a single teacher.
   | "USER_CREATED"
+  | "USER_UPDATED"
   | "USER_STATUS_CHANGED"
+  | "ADMIN_USER_CREATED"
+  | "ADMIN_USER_UPDATED"
+  | "ADMIN_USER_BANNED"
+  | "ADMIN_USER_UNBANNED"
+  | "ADMIN_USER_ACTIVATED"
+  | "ADMIN_USER_DEACTIVATED"
+  | "ADMIN_USER_ROLE_CHANGED"
   | "TEACHER_REQUEST_APPROVED"
   | "TEACHER_REQUEST_REJECTED"
   // Admin manual teacher-subscription request review.

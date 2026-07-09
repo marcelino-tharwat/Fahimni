@@ -34,7 +34,14 @@ import {
   updatePlanSchema,
 } from "./admin-plans.validation.js";
 import { AdminUsersController } from "./admin-users.controller.js";
-import { listUsersQuerySchema } from "./admin-users.validation.js";
+import {
+  listUsersQuerySchema,
+  adminCreateUserSchema,
+  adminUpdateUserSchema,
+  adminChangeStatusSchema,
+  adminChangeRoleSchema,
+} from "./admin-users.validation.js";
+
 import { AdminSubscriptionsController } from "./admin-subscriptions.controller.js";
 import {
   approveSubscriptionRequestSchema,
@@ -45,6 +52,7 @@ import {
   listSubscriptionsQuerySchema,
   rejectSubscriptionRequestSchema,
 } from "./admin-subscriptions.validation.js";
+
 import { AdminRevenueController } from "./admin-revenue.controller.js";
 import {
   listCoursePaymentsQuerySchema,
@@ -96,7 +104,10 @@ router.get(
 // Registered after the static "/teachers" route above. Each handler resolves the
 // teacher (404 if missing / non-OPERATION) before returning safe, teacher-scoped
 // data — course revenue and subscription payments are kept as separate figures.
-router.get("/teachers/:teacherId", asyncHandler(teacherDetailController.getDetail));
+router.get(
+  "/teachers/:teacherId",
+  asyncHandler(teacherDetailController.getDetail),
+);
 router.get(
   "/teachers/:teacherId/students",
   validateRequest(teacherStudentsQuerySchema, "query"),
@@ -107,10 +118,22 @@ router.get(
   validateRequest(teacherEnrollmentsQuerySchema, "query"),
   asyncHandler(teacherDetailController.getEnrollments),
 );
-router.get("/teachers/:teacherId/content", asyncHandler(teacherDetailController.getContent));
-router.get("/teachers/:teacherId/revenue", asyncHandler(teacherDetailController.getRevenue));
-router.get("/teachers/:teacherId/subscription", asyncHandler(teacherDetailController.getSubscription));
-router.get("/teachers/:teacherId/ai-usage", asyncHandler(teacherDetailController.getAiUsage));
+router.get(
+  "/teachers/:teacherId/content",
+  asyncHandler(teacherDetailController.getContent),
+);
+router.get(
+  "/teachers/:teacherId/revenue",
+  asyncHandler(teacherDetailController.getRevenue),
+);
+router.get(
+  "/teachers/:teacherId/subscription",
+  asyncHandler(teacherDetailController.getSubscription),
+);
+router.get(
+  "/teachers/:teacherId/ai-usage",
+  asyncHandler(teacherDetailController.getAiUsage),
+);
 
 // ── Students management (global). Static list route before dynamic :studentId. ──
 // Each detail handler resolves the student (404 if missing / non-STUDENT) and
@@ -126,8 +149,14 @@ router.get(
   validateRequest(studentEnrollmentsQuerySchema, "query"),
   asyncHandler(studentsController.getEnrollments),
 );
-router.get("/students/:studentId/payments", asyncHandler(studentsController.getPayments));
-router.get("/students/:studentId/learning-summary", asyncHandler(studentsController.getLearningSummary));
+router.get(
+  "/students/:studentId/payments",
+  asyncHandler(studentsController.getPayments),
+);
+router.get(
+  "/students/:studentId/learning-summary",
+  asyncHandler(studentsController.getLearningSummary),
+);
 
 // ── Teacher registration requests review. Static list before dynamic :requestId. ──
 // Read is safe (no raw storage paths); approve/reject are PENDING-only, write an
@@ -137,7 +166,10 @@ router.get(
   validateRequest(listTeacherRequestsQuerySchema, "query"),
   asyncHandler(teacherRequestsController.list),
 );
-router.get("/teacher-requests/:requestId", asyncHandler(teacherRequestsController.getDetail));
+router.get(
+  "/teacher-requests/:requestId",
+  asyncHandler(teacherRequestsController.getDetail),
+);
 router.get(
   "/teacher-requests/:requestId/documents/:documentIndex/signed-url",
   asyncHandler(teacherRequestsController.getDocumentSignedUrl),
@@ -254,7 +286,10 @@ router.get(
   validateRequest(listCoursePaymentsQuerySchema, "query"),
   asyncHandler(revenueController.listCoursePayments),
 );
-router.get("/payments/course/:paymentId", asyncHandler(revenueController.getCoursePayment));
+router.get(
+  "/payments/course/:paymentId",
+  asyncHandler(revenueController.getCoursePayment),
+);
 router.get(
   "/payments/subscriptions",
   validateRequest(listSubscriptionPaymentsQuerySchema, "query"),
@@ -275,7 +310,7 @@ router.get("/me", (req, res) => {
   );
 });
 
-// ── Admin user management (global list + detail). ──
+// ── Admin user management (global list + detail + mutations). ──
 // Static list route before dynamic :userId. Safe fields only — never returns
 // password / tokenVersion / refresh tokens.
 router.get(
@@ -283,7 +318,37 @@ router.get(
   validateRequest(listUsersQuerySchema, "query"),
   asyncHandler(adminUsersController.list),
 );
+
+// ── Create user (admin-only) ──
+router.post(
+  "/users",
+  validateRequest(adminCreateUserSchema, "body"),
+  asyncHandler(adminUsersController.createUser),
+);
+
+// ── Dynamic user routes ──
 router.get("/users/:userId", asyncHandler(adminUsersController.getDetail));
+
+// Edit basic user data (no role, no status, no password)
+router.patch(
+  "/users/:userId",
+  validateRequest(adminUpdateUserSchema, "body"),
+  asyncHandler(adminUsersController.updateUser),
+);
+
+// Change status (ban / unban / activate / deactivate)
+router.patch(
+  "/users/:userId/status",
+  validateRequest(adminChangeStatusSchema, "body"),
+  asyncHandler(adminUsersController.changeStatus),
+);
+
+// Change role with dependency safety checks
+router.patch(
+  "/users/:userId/role",
+  validateRequest(adminChangeRoleSchema, "body"),
+  asyncHandler(adminUsersController.changeRole),
+);
 
 // User management under the admin namespace (`/api/admin/users`). userRoutes
 // also carries its own ADMIN guards, so this is intentional defense-in-depth.

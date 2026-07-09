@@ -79,3 +79,15 @@ export interface AdminUserDetailResponse {
   };
   recentAuditLogs: AuditLogRef[];
 }
+
+export interface AdminUserMutationResponse {
+  id: string;
+  fullName: string;
+  email: string | null;
+  mobile: string;
+  role: Role;
+  status: Status;
+  teacherApprovalState: TeacherApprovalState;
+  createdAt: string;
+  updatedAt: string;
+}

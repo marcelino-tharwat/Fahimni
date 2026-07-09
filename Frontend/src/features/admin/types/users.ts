@@ -89,3 +89,45 @@ export interface AdminUserDetailResponse {
   counts: AdminUserCounts;
   recentAuditLogs: AdminAuditLogRef[];
 }
+
+export interface AdminUserMutationResponse {
+  id: string;
+  fullName: string;
+  email: string | null;
+  mobile: string;
+  role: UserRole;
+  status: UserStatus;
+  teacherApprovalState: TeacherApprovalState;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminCreateUserPayload {
+  fullName: string;
+  email: string;
+  mobile: string;
+  password: string;
+  role: UserRole;
+  status?: UserStatus;
+  teacherApprovalState?: TeacherApprovalState;
+  studentProfile?: { stageId?: string };
+  teacherProfile?: { subject?: string; bio?: string };
+}
+
+export interface AdminUpdateUserPayload {
+  fullName?: string;
+  email?: string;
+  mobile?: string;
+  studentProfile?: { stageId?: string };
+  teacherProfile?: { subject?: string; bio?: string; photoUrl?: string | null; logoUrl?: string | null };
+}
+
+export interface AdminChangeStatusPayload {
+  status: UserStatus;
+  reason?: string;
+}
+
+export interface AdminChangeRolePayload {
+  role: UserRole;
+  reason?: string;
+}
