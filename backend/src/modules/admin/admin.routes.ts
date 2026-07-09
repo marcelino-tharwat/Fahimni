@@ -24,6 +24,8 @@ import {
   listTeacherRequestsQuerySchema,
   rejectRequestSchema,
 } from "./admin-teacher-requests.validation.js";
+import { AdminUsersController } from "./admin-users.controller.js";
+import { listUsersQuerySchema } from "./admin-users.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -46,6 +48,7 @@ const teachersController = new AdminTeachersController();
 const teacherDetailController = new AdminTeacherDetailController();
 const studentsController = new AdminStudentsController();
 const teacherRequestsController = new AdminTeacherRequestsController();
+const adminUsersController = new AdminUsersController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -131,6 +134,16 @@ router.get("/me", (req, res) => {
     }),
   );
 });
+
+// ── Admin user management (global list + detail). ──
+// Static list route before dynamic :userId. Safe fields only — never returns
+// password / tokenVersion / refresh tokens.
+router.get(
+  "/users",
+  validateRequest(listUsersQuerySchema, "query"),
+  asyncHandler(adminUsersController.list),
+);
+router.get("/users/:userId", asyncHandler(adminUsersController.getDetail));
 
 // User management under the admin namespace (`/api/admin/users`). userRoutes
 // also carries its own ADMIN guards, so this is intentional defense-in-depth.

@@ -65,6 +65,7 @@ import { StudentLookupPage } from '@/features/support/pages/StudentLookupPage';
 
 // Admin pages
 import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage';
+import { AdminUsersPage } from '@/features/admin/pages/AdminUsersPage';
 import { AdminTeachersPage } from '@/features/admin/pages/AdminTeachersPage';
 import { AdminTeacherDetailPage } from '@/features/admin/pages/AdminTeacherDetailPage';
 import { AdminStudentsPage } from '@/features/admin/pages/AdminStudentsPage';
@@ -202,6 +203,7 @@ const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { path: '/admin/dashboard', element: <AdminDashboardPage /> },
+              { path: '/admin/users', element: <AdminUsersPage /> },
               { path: '/admin/teachers', element: <AdminTeachersPage /> },
               { path: '/admin/teachers/:teacherId', element: <AdminTeacherDetailPage /> },
               { path: '/admin/students', element: <AdminStudentsPage /> },
