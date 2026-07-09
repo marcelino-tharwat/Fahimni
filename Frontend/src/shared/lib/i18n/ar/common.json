@@ -399,5 +399,38 @@
     "chapterPlaceholder": "اختر الفصل",
     "noChapters": "لا توجد فصول متاحة. أنشئ فصلاً من إدارة المحتوى أولاً."
   },
+  "adminPlans": {
+    "title": "الباقات",
+    "subtitle": "إدارة باقات المدرسين وإحصاءاتها",
+    "searchPlaceholder": "ابحث باسم الباقة أو الكود",
+    "filterLabel": "تصفية الحالة",
+    "currency": "ج.م",
+    "viewDetails": "عرض التفاصيل",
+    "errorLoading": "تعذّر تحميل قائمة الباقات",
+    "retry": "إعادة المحاولة",
+    "emptyTitle": "لا توجد باقات",
+    "emptyDescription": "لم يتم العثور على باقات مطابقة لبحثك",
+    "totalCount": "{{count}} باقة",
+    "filter": {
+      "ALL": "الكل",
+      "ACTIVE": "النشطة",
+      "INACTIVE": "غير النشطة"
+    },
+    "badges": {
+      "free": "مجاني",
+      "paid": "مدفوع",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "recommended": "موصى به"
+    },
+    "col": {
+      "plan": "الباقة",
+      "monthlyPrice": "السعر الشهري",
+      "yearlyPrice": "السعر السنوي",
+      "activeSubscriptions": "الاشتراكات النشطة",
+      "pendingPayments": "مدفوعات معلقة",
+      "confirmedRevenue": "الإيرادات المؤكدة"
+    }
+  },
   "language": { "ar": "العربية", "en": "English" }
 }

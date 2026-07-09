@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { LayoutDashboard, Building2, Ticket, GraduationCap, Users, ClipboardCheck } from 'lucide-react';
+import { LayoutDashboard, Building2, Ticket, GraduationCap, Users, ClipboardCheck, CreditCard } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -16,6 +16,7 @@ export function AdminLayout() {
     { label: t('nav.teacherRequests'), icon: ClipboardCheck, path: '/admin/teacher-requests' },
     { label: t('nav.tenants'), icon: Building2, path: '/admin/tenants' },
     { label: t('nav.promoCodes'), icon: Ticket, path: '/admin/promo-codes' },
+    { label: t('nav.plans'), icon: CreditCard, path: '/admin/plans' },
   ];
 
   return (

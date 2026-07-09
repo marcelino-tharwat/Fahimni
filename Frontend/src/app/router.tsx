@@ -72,6 +72,7 @@ import { AdminTeacherRequestDetailPage } from '@/features/admin/pages/AdminTeach
 import { TenantsPage } from '@/features/admin/pages/TenantsPage';
 import { TenantDetailsPage } from '@/features/admin/pages/TenantDetailsPage';
 import { PromoCodesPage as AdminPromoCodesPage } from '@/features/admin/pages/PromoCodesPage';
+import { AdminPlansPage } from '@/features/admin/pages/AdminPlansPage';
 
 const router = createBrowserRouter([
   // Public routes
@@ -208,6 +209,7 @@ const router = createBrowserRouter([
               { path: '/admin/tenants', element: <TenantsPage /> },
               { path: '/admin/tenants/:tenantId', element: <TenantDetailsPage /> },
               { path: '/admin/promo-codes', element: <AdminPromoCodesPage /> },
+              { path: '/admin/plans', element: <AdminPlansPage /> },
             ],
           },
         ],

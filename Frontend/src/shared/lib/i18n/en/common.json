@@ -400,5 +400,38 @@
     "chapterPlaceholder": "Select a chapter",
     "noChapters": "No chapters available. Create a chapter in Content Manager first."
   },
+  "adminPlans": {
+    "title": "Plans",
+    "subtitle": "Manage teacher plans and their statistics",
+    "searchPlaceholder": "Search by plan name or code",
+    "filterLabel": "Filter by status",
+    "currency": "EGP",
+    "viewDetails": "View details",
+    "errorLoading": "Failed to load the plans list",
+    "retry": "Retry",
+    "emptyTitle": "No plans found",
+    "emptyDescription": "No plans matched your search",
+    "totalCount": "{{count}} plans",
+    "filter": {
+      "ALL": "All",
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive"
+    },
+    "badges": {
+      "free": "Free",
+      "paid": "Paid",
+      "active": "Active",
+      "inactive": "Inactive",
+      "recommended": "Recommended"
+    },
+    "col": {
+      "plan": "Plan",
+      "monthlyPrice": "Monthly Price",
+      "yearlyPrice": "Yearly Price",
+      "activeSubscriptions": "Active Subscriptions",
+      "pendingPayments": "Pending Payments",
+      "confirmedRevenue": "Confirmed Revenue"
+    }
+  },
   "language": { "ar": "العربية", "en": "English" }
 }
