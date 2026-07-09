@@ -24,6 +24,8 @@ import {
   listTeacherRequestsQuerySchema,
   rejectRequestSchema,
 } from "./admin-teacher-requests.validation.js";
+import { AdminPlansController } from "./admin-plans.controller.js";
+import { listPlansQuerySchema } from "./admin-plans.validation.js";
 import { AdminUsersController } from "./admin-users.controller.js";
 import { listUsersQuerySchema } from "./admin-users.validation.js";
 
@@ -48,6 +50,7 @@ const teachersController = new AdminTeachersController();
 const teacherDetailController = new AdminTeacherDetailController();
 const studentsController = new AdminStudentsController();
 const teacherRequestsController = new AdminTeacherRequestsController();
+const plansController = new AdminPlansController();
 const adminUsersController = new AdminUsersController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
@@ -124,6 +127,14 @@ router.patch(
   validateRequest(rejectRequestSchema, "body"),
   asyncHandler(teacherRequestsController.reject),
 );
+
+// ── Plans catalog ──
+router.get(
+  "/plans",
+  validateRequest(listPlansQuerySchema, "query"),
+  asyncHandler(plansController.list),
+);
+router.get("/plans/:planId", asyncHandler(plansController.getDetail));
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */
 router.get("/me", (req, res) => {
