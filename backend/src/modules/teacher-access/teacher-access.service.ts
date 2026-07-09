@@ -98,3 +98,48 @@ export async function assertLessonOwnedByTeacher(
 
   return lesson;
 }
+
+/**
+ * Teacher visibility filter for student discovery/browse contexts.
+ *
+ * A teacher is discoverable only when:
+ * - user.status = ACTIVE
+ * - user.role = OPERATION
+ * - user.teacherApprovalState = APPROVED
+ *
+ * This filter is used by All Content / browse endpoints to hide content
+ * owned by banned, inactive, or unapproved teachers from student discovery.
+ * It MUST NOT be applied to My Courses / enrolled content endpoints.
+ *
+ * @param chapterId - The chapter to check ownership of
+ * @returns The stage's teacherId if the teacher is visible, null otherwise
+ */
+export async function isTeacherVisibleForDiscovery(
+  chapterId: string,
+): Promise<boolean> {
+  const chapter = await prisma.chapter.findUnique({
+    where: { id: chapterId },
+    select: {
+      stage: {
+        select: {
+          teacher: {
+            select: {
+              status: true,
+              role: true,
+              teacherApprovalState: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!chapter) return false;
+
+  const teacher = chapter.stage.teacher;
+  return (
+    teacher.role === "OPERATION" &&
+    teacher.status === "ACTIVE" &&
+    teacher.teacherApprovalState === "APPROVED"
+  );
+}

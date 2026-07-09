@@ -3,7 +3,14 @@ import crypto from "node:crypto";
 
 // ── Prisma mock ────────────────────────────────────────────────────────────
 const mockPrisma = vi.hoisted(() => ({
-  chapter: { findUnique: vi.fn() },
+  chapter: {
+    findUnique: vi.fn().mockResolvedValue({
+      id: "",
+      price: 100,
+      deletedAt: null,
+      stage: { teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" }, teacherId: "t1" },
+    }),
+  },
   enrollment: { findFirst: vi.fn(), upsert: vi.fn() },
   paymentTransaction: { create: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
   user: { findUnique: vi.fn() },
@@ -101,7 +108,7 @@ describe("PaymentService", () => {
         id: "ch1",
         price: null,
         deletedAt: null,
-        stage: { teacherId: "t1" },
+        stage: { teacherId: "t1", teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" } },
         name: "Free Chapter",
       });
 
@@ -116,7 +123,7 @@ describe("PaymentService", () => {
         id: "ch1",
         price: 100,
         deletedAt: null,
-        stage: { teacherId: "t1" },
+        stage: { teacherId: "t1", teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" } },
         name: "Paid Chapter",
       });
 

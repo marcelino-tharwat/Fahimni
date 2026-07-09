@@ -72,6 +72,36 @@ const TEACHERS = [
     subject: "الكيمياء",
     bio: "أستاذ كيمياء — خبرة في تدريس الكيمياء العضوية وغير العضوية.",
   },
+  {
+    id: sid("teacher-banned"),
+    email: "teacher.banned" + DEMO_EMAIL_DOMAIN,
+    fullName: "أ. محظور المدرّس",
+    mobile: "01000000100",
+    role: "OPERATION" as const,
+    profileId: sid("profile-banned"),
+    subject: "اللغة العربية",
+    bio: "معلم محظور — محتواه مخفي عن الطلاب.",
+  },
+  {
+    id: sid("teacher-inactive"),
+    email: "teacher.inactive" + DEMO_EMAIL_DOMAIN,
+    fullName: "أ. خامل المدرّس",
+    mobile: "01000000111",
+    role: "OPERATION" as const,
+    profileId: sid("profile-inactive"),
+    subject: "التربية الإسلامية",
+    bio: "معلم غير نشط — محتواه مخفي عن الطلاب.",
+  },
+  {
+    id: sid("teacher-approved-unpaid"),
+    email: "teacher.approved.unpaid" + DEMO_EMAIL_DOMAIN,
+    fullName: "أ. ليلى المدرّسة المعتمدة",
+    mobile: "01000000060",
+    role: "OPERATION" as const,
+    profileId: sid("profile-approved-unpaid"),
+    subject: "التاريخ",
+    bio: "معتمدة على الباقة المجانية ويمكنها الترقية في أي وقت.",
+  },
 ];
 
 const STUDENTS = [
@@ -131,6 +161,30 @@ const STUDENTS = [
     role: "STUDENT" as const,
     profileId: sid("profile-clean"),
   },
+  {
+    id: sid("student-banned-stage"),
+    email: "student.banned-stage" + DEMO_EMAIL_DOMAIN,
+    fullName: "طالب في مرحلة معلم محظور",
+    mobile: "01000000108",
+    role: "STUDENT" as const,
+    profileId: sid("profile-banned-stage"),
+  },
+  {
+    id: sid("student-inactive-stage"),
+    email: "student.inactive-stage" + DEMO_EMAIL_DOMAIN,
+    fullName: "طالب في مرحلة معلم غير نشط",
+    mobile: "01000000109",
+    role: "STUDENT" as const,
+    profileId: sid("profile-inactive-stage"),
+  },
+  {
+    id: sid("student-approved-free-stage"),
+    email: "student.approved-free-stage" + DEMO_EMAIL_DOMAIN,
+    fullName: "طالب في مرحلة معلم معتمد مجاني",
+    mobile: "01000000110",
+    role: "STUDENT" as const,
+    profileId: sid("profile-approved-free-stage"),
+  },
 ];
 
 type StageDef = {
@@ -182,6 +236,27 @@ const STAGES: StageDef[] = [
       "منهج الكيمياء للصف الثالث الثانوي — الكيمياء العامة والعضوية.",
     sortOrder: 1,
     teacherIdx: 2,
+  },
+  {
+    id: sid("stage-banned"),
+    name: "مرحلة المعلم المحظور",
+    description: "مرحلة تجريبية لمعلم محظور — يجب ألا تظهر للطلاب.",
+    sortOrder: 10,
+    teacherIdx: 3,
+  },
+  {
+    id: sid("stage-inactive"),
+    name: "مرحلة المعلم غير النشط",
+    description: "مرحلة تجريبية لمعلم غير نشط — يجب ألا تظهر للطلاب.",
+    sortOrder: 11,
+    teacherIdx: 4,
+  },
+  {
+    id: sid("stage-approved-free"),
+    name: "مرحلة المعلم المعتمد المجاني",
+    description: "مرحلة تجريبية لمعلم معتمد على الباقة المجانية — يجب أن تظهر للطلاب.",
+    sortOrder: 12,
+    teacherIdx: 5,
   },
 ];
 
@@ -240,6 +315,42 @@ const CHAPTERS: ChapterDef[] = [
     price: 150,
     teacherIdx: 2,
   },
+  {
+    id: sid("ch-banned-1"),
+    name: "محتوى المعلم المحظور — مجاني",
+    description: "هذا المحتوى يجب ألا يظهر في صفحة المحتوى الكامل للطلاب.",
+    sortOrder: 1,
+    stageId: STAGES[3]!.id,
+    price: null,
+    teacherIdx: 3,
+  },
+  {
+    id: sid("ch-banned-2"),
+    name: "محتوى المعلم المحظور — مدفوع",
+    description: "هذا المحتوى المدفوع يجب ألا يظهر ولا يمكن التسجيل به.",
+    sortOrder: 2,
+    stageId: STAGES[3]!.id,
+    price: 100,
+    teacherIdx: 3,
+  },
+  {
+    id: sid("ch-inactive-1"),
+    name: "محتوى المعلم غير النشط — مجاني",
+    description: "هذا المحتوى يجب ألا يظهر في صفحة المحتوى الكامل للطلاب.",
+    sortOrder: 1,
+    stageId: STAGES[4]!.id,
+    price: null,
+    teacherIdx: 4,
+  },
+  {
+    id: sid("ch-approved-free-1"),
+    name: "محتوى المعلم المعتمد المجاني",
+    description: "هذا المحتوى يجب أن يظهر للطلاب.",
+    sortOrder: 1,
+    stageId: STAGES[5]!.id,
+    price: null,
+    teacherIdx: 5,
+  },
 ];
 
 const LESSONS: LessonDef[] = [];
@@ -255,10 +366,26 @@ CHAPTERS.forEach((ch, ci) => {
   }
 });
 
+const LIFECYCLE_TEACHER_IDS = [
+  sid("teacher-pending"),
+  sid("teacher-rejected-user"),
+  sid("teacher-pending-payment"),
+  sid("teacher-failed-payment"),
+  sid("teacher-clean"),
+];
+const LIFECYCLE_TEACHER_EMAILS = [
+  "teacher.pending" + DEMO_EMAIL_DOMAIN,
+  "teacher.rejected.user" + DEMO_EMAIL_DOMAIN,
+  "teacher.pending.payment" + DEMO_EMAIL_DOMAIN,
+  "teacher.failed.payment" + DEMO_EMAIL_DOMAIN,
+  "teacher.clean" + DEMO_EMAIL_DOMAIN,
+];
+
 const ALL_SEED_USER_IDS = [
   ADMIN.id,
   ADMIN_2.id,
   ...TEACHERS.map((t) => t.id),
+  ...LIFECYCLE_TEACHER_IDS,
   ...STUDENTS.map((s) => s.id),
 ];
 
@@ -279,6 +406,7 @@ const ALL_SEED_EMAILS = [
   ADMIN.email,
   ADMIN_2.email,
   ...TEACHERS.map((t) => t.email),
+  ...LIFECYCLE_TEACHER_EMAILS,
   ...STUDENTS.map((s) => s.email),
   ...LEGACY_CHEMISTRY_EMAILS,
 ];
@@ -465,10 +593,20 @@ async function seedAll(): Promise<void> {
       // 3. Create Teachers
       for (let ti = 0; ti < TEACHERS.length; ti++) {
         const t = TEACHERS[ti]!;
+
+        // Determine teacher-specific status and approval state.
+        const teacherStatus =
+          t.id === sid("teacher-banned") ? "BANNED" as const :
+          t.id === sid("teacher-inactive") ? "INACTIVE" as const :
+          "ACTIVE" as const;
+        const teacherApproval =
+          t.id === sid("teacher-banned") ? "APPROVED" as const :
+          t.id === sid("teacher-inactive") ? "APPROVED" as const :
+          "APPROVED" as const;
+
         await tx.user.upsert({
           where: { email: t.email },
-          // Existing seeded teachers are established/active → APPROVED lifecycle state.
-          update: { status: "ACTIVE", fullName: t.fullName, teacherApprovalState: "APPROVED" },
+          update: { status: teacherStatus, fullName: t.fullName, teacherApprovalState: teacherApproval },
           create: {
             id: t.id,
             email: t.email,
@@ -476,8 +614,8 @@ async function seedAll(): Promise<void> {
             mobile: t.mobile,
             password: demoPasswordHash,
             role: t.role,
-            status: "ACTIVE",
-            teacherApprovalState: "APPROVED",
+            status: teacherStatus,
+            teacherApprovalState: teacherApproval,
           },
         });
         await tx.teacherProfile.upsert({
@@ -523,18 +661,6 @@ async function seedAll(): Promise<void> {
           bio: "طلب مرفوض من الإدارة.",
           state: "REJECTED" as const,
           status: "INACTIVE" as const,
-        },
-        {
-          // Approved with NO paid subscription → FREE plan. Full access, can upgrade.
-          id: sid("teacher-approved-unpaid"),
-          profileId: sid("profile-approved-unpaid"),
-          email: "teacher.approved.unpaid" + DEMO_EMAIL_DOMAIN,
-          fullName: "أ. ليلى المدرّسة المعتمدة",
-          mobile: "01000000060",
-          subject: "التاريخ",
-          bio: "معتمدة على الباقة المجانية ويمكنها الترقية في أي وقت.",
-          state: "APPROVED" as const,
-          status: "ACTIVE" as const,
         },
         {
           // Approved, has a PENDING (unconfirmed) payment but no active subscription
@@ -691,7 +817,13 @@ async function seedAll(): Promise<void> {
       }
 
       // 8. Create Student Profiles
+      const stageAssignment = new Map<string, number>();
+      stageAssignment.set(sid("student-banned-stage"), 3);
+      stageAssignment.set(sid("student-inactive-stage"), 4);
+      stageAssignment.set(sid("student-approved-free-stage"), 5);
+
       for (const s of STUDENTS) {
+        const stageIdx = stageAssignment.get(s.id) ?? 0;
         if (s.id === sid("student-clean")) {
           await tx.studentProfile.upsert({
             where: { userId: s.id },
@@ -699,17 +831,17 @@ async function seedAll(): Promise<void> {
             create: {
               id: s.profileId,
               userId: s.id,
-              stageId: STAGES[0]!.id,
+              stageId: STAGES[stageIdx]!.id,
             },
           });
         } else {
           await tx.studentProfile.upsert({
             where: { userId: s.id },
-            update: { stageId: STAGES[0]!.id },
+            update: { stageId: STAGES[stageIdx]!.id },
             create: {
               id: s.profileId,
               userId: s.id,
-              stageId: STAGES[0]!.id,
+              stageId: STAGES[stageIdx]!.id,
             },
           });
         }
@@ -938,6 +1070,16 @@ async function seedAll(): Promise<void> {
             price: 0,
             paymentMethod: "FREE",
             enrolledAt: daysAgo(60),
+          },
+          {
+            // Student-multi enrolled in banned teacher's chapter for My Courses test.
+            id: sid("enroll-multi-banned"),
+            studentId: STUDENTS[5]!.id,
+            chapterId: CHAPTERS[6]!.id,
+            status: "ACTIVE",
+            price: 0,
+            paymentMethod: "FREE",
+            enrolledAt: daysAgo(5),
           },
         ],
         skipDuplicates: true,

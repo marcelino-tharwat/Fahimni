@@ -10,6 +10,7 @@ import type {
   EnrollmentListItemDTO,
 } from "./enrollment.types.js";
 import type { CreateEnrollmentInput } from "./enrollment.validation.js";
+import { isTeacherVisibleForDiscovery } from "../teacher-access/teacher-access.service.js";
 
 export class EnrollmentService {
   public async createEnrollment(
@@ -28,6 +29,15 @@ export class EnrollmentService {
 
     if (!chapter || chapter.deletedAt) {
       throw new AppError("Chapter not found", 404);
+    }
+
+    const visible = await isTeacherVisibleForDiscovery(data.chapterId);
+    if (!visible) {
+      throw new AppError(
+        "هذا المحتوى غير متاح حاليًا",
+        403,
+        "COURSE_NOT_AVAILABLE",
+      );
     }
 
     const existing = await prisma.enrollment.findUnique({
@@ -103,6 +113,15 @@ export class EnrollmentService {
 
     if (!chapter || chapter.deletedAt) {
       throw new AppError("Chapter not found", 404, "CHAPTER_NOT_FOUND");
+    }
+
+    const visible = await isTeacherVisibleForDiscovery(chapterId);
+    if (!visible) {
+      throw new AppError(
+        "هذا المحتوى غير متاح حاليًا",
+        403,
+        "COURSE_NOT_AVAILABLE",
+      );
     }
 
     // Chapter.price is a nullable Decimal; the rest of the codebase normalizes

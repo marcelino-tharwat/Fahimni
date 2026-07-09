@@ -11,6 +11,7 @@ import { teacherSubscriptionPaymentService } from "../teacher-plans/teacher-subs
 import type { PaymentStatusDTO } from "./payment.types.js";
 import { paymentMessages } from "./payment.i18n.js";
 import type { Lang } from "./payment.i18n.js";
+import { isTeacherVisibleForDiscovery } from "../teacher-access/teacher-access.service.js";
 
 export class PaymentService {
   private paymobService = new PaymobService();
@@ -33,6 +34,15 @@ export class PaymentService {
 
     if (!chapter || chapter.deletedAt) {
       throw new AppError(paymentMessages.chapterNotFound[lang], 404, "CHAPTER_NOT_FOUND");
+    }
+
+    const visible = await isTeacherVisibleForDiscovery(chapterId);
+    if (!visible) {
+      throw new AppError(
+        "هذا المحتوى غير متاح حاليًا",
+        403,
+        "COURSE_NOT_AVAILABLE",
+      );
     }
 
     if (chapter.price === null || Number(chapter.price) === 0) {
