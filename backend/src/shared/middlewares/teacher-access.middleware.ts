@@ -1,21 +1,33 @@
 import type { Request, Response, NextFunction } from "express";
-import { prisma } from "../../config/database.js";
 import { AppError } from "../utils/AppError.js";
+import { teacherPlanEntitlementService } from "../../modules/teacher-plans/teacher-plan-entitlement.service.js";
+import type { TeacherEntitlement } from "../../modules/teacher-plans/teacher-plan-entitlement.service.js";
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      teacherEntitlement?: TeacherEntitlement;
+    }
+  }
+}
 
 /**
- * Teacher feature payment gate. Runs AFTER authenticateMiddleware +
+ * Teacher feature access gate. Runs AFTER authenticateMiddleware +
  * authorizeMiddleware("OPERATION"), so req.user.role is already OPERATION.
  *
- * Access policy (backend-enforced — never rely on the frontend guard alone):
- *  - teacherApprovalState PENDING_REVIEW → 403 TEACHER_PENDING_REVIEW
- *  - teacherApprovalState REJECTED       → 403 TEACHER_REJECTED
- *  - teacherApprovalState NONE / not APPROVED → 403 TEACHER_NOT_APPROVED
- *  - APPROVED but no ACTIVE subscription → 403 TEACHER_PAYMENT_REQUIRED
- *  - APPROVED + ACTIVE subscription      → allowed
+ * Corrected policy — an APPROVED teacher is NOT blocked for lacking a paid
+ * subscription; they fall back to the FREE plan:
+ *  - PENDING_REVIEW → 403 TEACHER_PENDING_REVIEW
+ *  - REJECTED       → 403 TEACHER_REJECTED
+ *  - not APPROVED / inactive → 403 TEACHER_NOT_APPROVED
+ *  - APPROVED + ACTIVE, no paid subscription → allowed (FREE_PLAN)
+ *  - APPROVED + ACTIVE, ACTIVE paid subscription → allowed (PAID_PLAN)
  *
- * Only a Paymob-verified subscription reaches status ACTIVE, so PENDING/FAILED
- * payments never unlock features. Teacher plans / checkout / subscription-status
- * routes do NOT use this gate (they must be reachable before payment).
+ * Only a Paymob-verified subscription reaches status ACTIVE; PENDING/FAILED
+ * payments neither upgrade nor remove FREE access. The resolved entitlement is
+ * attached to req.teacherEntitlement for downstream plan-limit checks. Teacher
+ * plans / checkout / subscription-status / tracking routes are NOT gated.
  */
 export async function requireActiveTeacherSubscription(
   req: Request,
@@ -28,47 +40,23 @@ export async function requireActiveTeacherSubscription(
       throw new AppError("You do not have permission to perform this action", 403, "FORBIDDEN");
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { status: true, teacherApprovalState: true },
-    });
-    if (!user) {
-      throw new AppError("You do not have permission to perform this action", 403, "FORBIDDEN");
-    }
+    const entitlement = await teacherPlanEntitlementService.resolve(userId);
 
-    switch (user.teacherApprovalState) {
+    switch (entitlement.accessState) {
       case "PENDING_REVIEW":
         throw new AppError("حسابك قيد المراجعة من الإدارة", 403, "TEACHER_PENDING_REVIEW");
       case "REJECTED":
         throw new AppError("تم رفض طلب انضمامك", 403, "TEACHER_REJECTED");
-      case "APPROVED":
-        break;
-      default:
+      case "NOT_APPROVED":
         throw new AppError("حسابك غير مُعتمد بعد", 403, "TEACHER_NOT_APPROVED");
+      // FREE_PLAN and PAID_PLAN both grant access.
+      case "FREE_PLAN":
+      case "PAID_PLAN":
+      default:
+        break;
     }
 
-    if (user.status !== "ACTIVE") {
-      throw new AppError("حسابك غير مُعتمد بعد", 403, "TEACHER_NOT_APPROVED");
-    }
-
-    // Active subscription = a Paymob-verified subscription in ACTIVE status whose
-    // period has not lapsed. PENDING/FAILED payments never produce an ACTIVE row.
-    const activeSub = await prisma.teacherSubscription.findFirst({
-      where: {
-        teacherId: userId,
-        status: "ACTIVE",
-        currentPeriodEnd: { gt: new Date() },
-      },
-      select: { id: true },
-    });
-    if (!activeSub) {
-      throw new AppError(
-        "تم قبول طلبك. اختر الباقة المناسبة وادفع لتفعيل حسابك.",
-        403,
-        "TEACHER_PAYMENT_REQUIRED",
-      );
-    }
-
+    req.teacherEntitlement = entitlement;
     next();
   } catch (error) {
     next(error);

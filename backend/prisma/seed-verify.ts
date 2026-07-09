@@ -213,7 +213,7 @@ async function main(): Promise<void> {
     if (activeSub) activePaid = true;
     else approvedUnpaid = true;
   }
-  check("Approved-unpaid teacher exists (ACTIVE, APPROVED, no active sub → payment-gated)", approvedUnpaid);
+  check("Approved-free teacher exists (ACTIVE, APPROVED, no active sub → FREE plan)", approvedUnpaid);
   check("Active-paid teacher exists (APPROVED + ACTIVE + active subscription)", activePaid);
 
   // 20d. A linked request carries fake proofDocuments.
@@ -222,6 +222,73 @@ async function main(): Promise<void> {
     select: { id: true },
   });
   check("Linked request with proofDocuments exists", !!reqWithDocs, reqWithDocs ? "found" : "missing");
+
+  // 20e. Approved FREE teachers with a PENDING / FAILED payment but NO active paid
+  //      subscription — proves an unconfirmed/failed payment does not upgrade and
+  //      does not remove FREE access. Both must resolve to no active subscription.
+  const pendingPaymentTeacher = await prisma.user.findUnique({
+    where: { email: "teacher.pending.payment" + DEMO_EMAIL_DOMAIN },
+    select: { id: true, teacherApprovalState: true, status: true },
+  });
+  if (pendingPaymentTeacher) {
+    const pendingPay = await prisma.teacherSubscriptionPayment.count({
+      where: { teacherId: pendingPaymentTeacher.id, status: "PENDING" },
+    });
+    const activeSub = await prisma.teacherSubscription.count({
+      where: { teacherId: pendingPaymentTeacher.id, status: "ACTIVE", currentPeriodEnd: { gt: now } },
+    });
+    check(
+      "Pending-payment teacher is APPROVED+ACTIVE, has PENDING payment, NO active sub (stays FREE)",
+      pendingPaymentTeacher.teacherApprovalState === "APPROVED" &&
+        pendingPaymentTeacher.status === "ACTIVE" &&
+        pendingPay >= 1 &&
+        activeSub === 0,
+      `pendingPay=${pendingPay} activeSub=${activeSub}`,
+    );
+  } else {
+    check("Pending-payment teacher exists", false, "missing");
+  }
+
+  const failedPaymentTeacher = await prisma.user.findUnique({
+    where: { email: "teacher.failed.payment" + DEMO_EMAIL_DOMAIN },
+    select: { id: true, teacherApprovalState: true, status: true },
+  });
+  if (failedPaymentTeacher) {
+    const failedPay = await prisma.teacherSubscriptionPayment.count({
+      where: { teacherId: failedPaymentTeacher.id, status: "FAILED" },
+    });
+    const activeSub = await prisma.teacherSubscription.count({
+      where: { teacherId: failedPaymentTeacher.id, status: "ACTIVE", currentPeriodEnd: { gt: now } },
+    });
+    check(
+      "Failed-payment teacher is APPROVED+ACTIVE, has FAILED payment, NO active sub (stays FREE)",
+      failedPaymentTeacher.teacherApprovalState === "APPROVED" &&
+        failedPaymentTeacher.status === "ACTIVE" &&
+        failedPay >= 1 &&
+        activeSub === 0,
+      `failedPay=${failedPay} activeSub=${activeSub}`,
+    );
+  } else {
+    check("Failed-payment teacher exists", false, "missing");
+  }
+
+  // 20f. A linked request carries a multi-document proof set with at least one PDF,
+  //      one image, and one document missing a storage path (renders UNAVAILABLE).
+  const multiDocReq = await prisma.teacherRegistrationRequest.findFirst({
+    where: { publicReference: DEMO_REF_PREFIX + "REQ_006" },
+    select: { proofDocuments: true },
+  });
+  const docs = Array.isArray(multiDocReq?.proofDocuments)
+    ? (multiDocReq!.proofDocuments as unknown as { mimeType?: string; path?: string }[])
+    : [];
+  const hasPdf = docs.some((d) => d?.mimeType === "application/pdf");
+  const hasImage = docs.some((d) => typeof d?.mimeType === "string" && d.mimeType.startsWith("image/"));
+  const hasUnavailable = docs.some((d) => !d?.path);
+  check(
+    "Multi-doc request has PDF + image + unavailable document",
+    docs.length >= 3 && hasPdf && hasImage && hasUnavailable,
+    `count=${docs.length} pdf=${hasPdf} image=${hasImage} unavailable=${hasUnavailable}`,
+  );
 
   // 21. AI usage events exist
   const aiEvents = await prisma.teacherAiUsageEvent.count({

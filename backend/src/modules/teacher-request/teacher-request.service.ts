@@ -3,7 +3,17 @@ import { prisma } from "../../config/database.js";
 import { supabase } from "../../config/supabase.js";
 import { logger } from "../../config/logger.js";
 import { AppError } from "../../shared/utils/AppError.js";
-import type { CreateTeacherRequestInput } from "./teacher-request.validation.js";
+import type {
+  CreateTeacherRequestInput,
+  TrackTeacherRequestInput,
+} from "./teacher-request.validation.js";
+
+export interface TrackTeacherRequestResult {
+  reference: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  submittedAt: string;
+  reviewedAt: string | null;
+}
 
 const SUPABASE_BUCKET = process.env.SUPABASE_BUCKET_NAME!;
 const MAX_REF_RETRIES = 5;
@@ -153,6 +163,46 @@ export class TeacherRequestService {
       publicReference: request.publicReference,
       status: "PENDING",
       createdAt: request.createdAt,
+    };
+  }
+
+  /**
+   * Public status lookup. Requires the public reference AND a matching contact
+   * (email or mobile) so a bare reference cannot reveal a request's status. A
+   * mismatch returns the same 404 as a non-existent reference (no enumeration).
+   * Only the safe status fields are returned — never adminNotes, reviewedById,
+   * proofDocuments, userId, or storage paths.
+   */
+  async track(input: TrackTeacherRequestInput): Promise<TrackTeacherRequestResult> {
+    const notFound = () =>
+      new AppError("لم يتم العثور على طلب مطابق", 404, "TEACHER_REQUEST_NOT_FOUND");
+
+    const request = await prisma.teacherRegistrationRequest.findUnique({
+      where: { publicReference: input.reference.trim() },
+      select: {
+        publicReference: true,
+        status: true,
+        email: true,
+        mobile: true,
+        createdAt: true,
+        reviewedAt: true,
+      },
+    });
+
+    if (!request) throw notFound();
+
+    // Constant-shape contact verification: the supplied email/mobile must match
+    // the stored record. Requiring reference + contact prevents status leakage.
+    const emailMatches =
+      input.email != null && request.email.toLowerCase() === input.email.toLowerCase();
+    const mobileMatches = input.mobile != null && request.mobile === input.mobile;
+    if (!emailMatches && !mobileMatches) throw notFound();
+
+    return {
+      reference: request.publicReference,
+      status: request.status,
+      submittedAt: request.createdAt.toISOString(),
+      reviewedAt: request.reviewedAt ? request.reviewedAt.toISOString() : null,
     };
   }
 }

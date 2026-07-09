@@ -15,6 +15,10 @@ const freeData: SubscriptionMeResponse = {
   currentPlan: { id: 'free-1', code: 'FREE', displayName: 'الباقة المجانية' },
   subscription: null,
   effectivePlanCode: 'FREE',
+  accessState: 'FREE_PLAN',
+  entitlementSource: 'DEFAULT_FREE_PLAN',
+  paymentRequired: false,
+  upgradeAvailable: true,
   pendingRequest: null,
   pendingPayment: null,
   usage: {
@@ -39,6 +43,10 @@ const proData: SubscriptionMeResponse = {
     trialEndsAt: null,
   },
   effectivePlanCode: 'PRO',
+  accessState: 'PAID_PLAN',
+  entitlementSource: 'ACTIVE_SUBSCRIPTION',
+  paymentRequired: false,
+  upgradeAvailable: false,
   pendingRequest: null,
   pendingPayment: null,
   usage: {

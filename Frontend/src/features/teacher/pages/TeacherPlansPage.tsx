@@ -162,12 +162,12 @@ export function TeacherPlansPage() {
         </p>
       </div>
 
-      {subscription?.subscription?.status !== 'ACTIVE' && (
+      {subscription?.accessState === 'FREE_PLAN' && (
         <div
-          className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
-          data-testid="payment-required-banner"
+          className="rounded-lg border border-cyan-200 bg-cyan-50 p-4 text-sm text-cyan-800"
+          data-testid="upgrade-banner"
         >
-          {t('auth:teacherPaymentRequired', 'تم قبول طلبك. اختر الباقة المناسبة وادفع لتفعيل حسابك.')}
+          {t('plans.freePlanUpgradeBanner', 'أنت تستخدم الباقة المجانية. يمكنك الترقية في أي وقت للحصول على مزايا أكثر.')}
         </div>
       )}
 

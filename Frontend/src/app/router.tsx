@@ -25,6 +25,7 @@ import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage';
 import { TeacherRequestPage } from '@/features/teacher-request/pages/TeacherRequestPage';
 import { TeacherPendingReviewPage } from '@/features/teacher/pages/TeacherPendingReviewPage';
 import { TeacherRejectedPage } from '@/features/teacher/pages/TeacherRejectedPage';
+import { TeacherRequestTrackPage } from '@/features/teacher-request/pages/TeacherRequestTrackPage';
 import { TeacherAccessGuard } from '@/shared/components/guards/TeacherAccessGuard';
 
 // Student pages
@@ -83,6 +84,7 @@ const router = createBrowserRouter([
       { path: '/become-teacher', element: <TeacherRequestPage /> },
       { path: '/teacher/pending-review', element: <TeacherPendingReviewPage /> },
       { path: '/teacher/rejected', element: <TeacherRejectedPage /> },
+      { path: '/teacher/track', element: <TeacherRequestTrackPage /> },
       { path: '/t/:tenantSlug', element: <LandingPage /> },
       {
         element: <GuestGuard />,

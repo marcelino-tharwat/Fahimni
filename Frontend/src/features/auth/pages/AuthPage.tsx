@@ -222,6 +222,8 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [teacherPending, setTeacherPending] = useState(false);
+  const [trackingReference, setTrackingReference] = useState<string | null>(null);
+  const [refCopied, setRefCopied] = useState(false);
   const [proofFiles, setProofFiles] = useState<{ id: string; file: File }[]>([]);
   const [stages, setStages] = useState<PublicStage[]>([]);
   const [stagesLoading, setStagesLoading] = useState(true);
@@ -271,7 +273,16 @@ function RegisterForm() {
         if (v.subject) fd.append('subject', v.subject);
         if (v.bio) fd.append('bio', v.bio);
         for (const pf of proofFiles) fd.append('proofDocuments', pf.file);
-        await apiClient.post('/v1/auth/register', fd);
+        // Must send as multipart so the proof files survive. The apiClient default
+        // Content-Type is application/json, and axios silently JSON-serializes a
+        // FormData body under that header (dropping the File parts) — overriding it
+        // lets the browser set multipart/form-data with the proper boundary.
+        const resp = await apiClient.post<{ data?: { trackingReference?: string } }>(
+          '/v1/auth/register',
+          fd,
+          { headers: { 'Content-Type': 'multipart/form-data' } },
+        );
+        setTrackingReference(resp.data?.data?.trackingReference ?? null);
         setTeacherPending(true);
         return;
       }
@@ -308,6 +319,49 @@ function RegisterForm() {
         <p className="rounded-md bg-emerald-50 px-4 py-3 text-body font-medium text-emerald-700">
           {t("auth:teacherPendingMessage", "تم إرسال طلبك للمراجعة من الإدارة")}
         </p>
+        {trackingReference && (
+          <div
+            className="flex flex-col gap-2 rounded-md border border-cyan-200 bg-cyan-50 px-4 py-3"
+            data-testid="tracking-reference"
+          >
+            <span className="text-small text-gray-600">
+              {t("auth:trackingReferenceLabel", "رقم متابعة الطلب")}
+            </span>
+            <div className="flex items-center justify-center gap-2">
+              <code className="rounded bg-white px-3 py-1 text-body font-bold tracking-wider text-cyan-700">
+                {trackingReference}
+              </code>
+              <button
+                type="button"
+                data-testid="copy-tracking-reference"
+                onClick={() => {
+                  navigator.clipboard?.writeText(trackingReference).then(
+                    () => {
+                      setRefCopied(true);
+                      window.setTimeout(() => setRefCopied(false), 2000);
+                    },
+                    () => setRefCopied(false),
+                  );
+                }}
+                className="rounded border border-cyan-300 px-2 py-1 text-small font-semibold text-cyan-600 hover:bg-cyan-100"
+              >
+                {refCopied
+                  ? t("auth:copied", "تم النسخ")
+                  : t("auth:copy", "نسخ")}
+              </button>
+            </div>
+            <span className="text-xs text-gray-500">
+              {t("auth:trackingReferenceHint", "احتفظ بهذا الرقم لمتابعة حالة طلبك لاحقاً")}
+            </span>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => navigate("/teacher/track")}
+          className="text-small font-semibold text-cyan-600 hover:underline"
+        >
+          {t("auth:teacherTrackCta", "متابعة حالة الطلب")}
+        </button>
         <button
           type="button"
           onClick={() => navigate("/teacher/pending-review")}

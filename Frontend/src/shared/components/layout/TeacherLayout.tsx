@@ -3,6 +3,7 @@ import { LayoutDashboard, FolderOpen, Brain, ClipboardList, Users, User, Ticket,
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
+import { TeacherPlanBadge } from '@/features/teacher/components/TeacherPlanBadge';
 
 export function TeacherLayout() {
   const { t } = useTranslation();
@@ -27,6 +28,9 @@ export function TeacherLayout() {
           <AppHeader />
         </header>
         <main className="flex-1 overflow-y-auto px-3 py-4 md:px-4 md:py-6 lg:px-6 lg:py-8">
+          <div className="mb-4">
+            <TeacherPlanBadge />
+          </div>
           <Outlet />
         </main>
       </div>

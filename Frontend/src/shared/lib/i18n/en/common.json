@@ -320,6 +320,11 @@
       "openDocument": "Open document",
       "opening": "Opening...",
       "documentUnavailable": "Document is not available to view right now",
+      "previewType": {
+        "PDF": "PDF file",
+        "IMAGE": "Image",
+        "OTHER": "File"
+      },
       "adminNotes": "Admin notes",
       "approve": "Approve",
       "reject": "Reject",
