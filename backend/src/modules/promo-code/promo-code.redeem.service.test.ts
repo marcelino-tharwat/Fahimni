@@ -8,7 +8,13 @@ const mockPrisma = vi.hoisted(() => {
   };
   return {
     _tx: tx,
-    chapter: { findUnique: vi.fn() },
+    chapter: {
+      findUnique: vi.fn().mockResolvedValue({
+        id: "",
+        deletedAt: null,
+        stage: { teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" } },
+      }),
+    },
     enrollment: { findUnique: vi.fn() },
     promoCode: { findUnique: vi.fn() },
     $transaction: vi.fn(async (cb: (t: typeof tx) => unknown) => cb(tx)),
@@ -25,6 +31,12 @@ const CHAPTER = "chapter-1";
 const CODE = "ABCDEFGH";
 const future = new Date(Date.now() + 86_400_000);
 const past = new Date(Date.now() - 86_400_000);
+
+const visibleChapter = {
+  id: CHAPTER,
+  deletedAt: null,
+  stage: { teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" } },
+};
 
 function enrollmentRow() {
   return {
@@ -43,7 +55,7 @@ function enrollmentRow() {
 }
 
 function primeHappyPath() {
-  mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
+  mockPrisma.chapter.findUnique.mockResolvedValue(visibleChapter);
   mockPrisma.enrollment.findUnique.mockResolvedValue(null);
   mockPrisma.promoCode.findUnique.mockResolvedValue({
     id: "pc-1",
@@ -96,7 +108,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
   });
 
   it("rejects an invalid (nonexistent) code with 400 and consumes nothing", async () => {
-    mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
+    mockPrisma.chapter.findUnique.mockResolvedValue(visibleChapter);
     mockPrisma.enrollment.findUnique.mockResolvedValue(null);
     mockPrisma.promoCode.findUnique.mockResolvedValue(null);
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
@@ -108,7 +120,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
   });
 
   it("rejects an expired code with 400 invalid and never claims it", async () => {
-    mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
+    mockPrisma.chapter.findUnique.mockResolvedValue(visibleChapter);
     mockPrisma.enrollment.findUnique.mockResolvedValue(null);
     mockPrisma.promoCode.findUnique.mockResolvedValue({
       id: "pc-1",
@@ -124,7 +136,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
   });
 
   it("rejects an already-used code with 400 already-used", async () => {
-    mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
+    mockPrisma.chapter.findUnique.mockResolvedValue(visibleChapter);
     mockPrisma.enrollment.findUnique.mockResolvedValue(null);
     mockPrisma.promoCode.findUnique.mockResolvedValue({
       id: "pc-1",
@@ -140,7 +152,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
   });
 
   it("rejects an already-enrolled student with 400 and never touches the code", async () => {
-    mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
+    mockPrisma.chapter.findUnique.mockResolvedValue(visibleChapter);
     mockPrisma.enrollment.findUnique.mockResolvedValue({ id: "enr-existing" });
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "en").catch((e) => e);
     expect(err.statusCode).toBe(400);
@@ -187,7 +199,7 @@ describe("PromoCodeService.redeem (STORY-53)", () => {
   });
 
   it("returns Arabic messages when locale is ar", async () => {
-    mockPrisma.chapter.findUnique.mockResolvedValue({ id: CHAPTER, deletedAt: null });
+    mockPrisma.chapter.findUnique.mockResolvedValue(visibleChapter);
     mockPrisma.enrollment.findUnique.mockResolvedValue(null);
     mockPrisma.promoCode.findUnique.mockResolvedValue(null);
     const err = await svc.redeem(CODE, STUDENT, CHAPTER, "ar").catch((e) => e);

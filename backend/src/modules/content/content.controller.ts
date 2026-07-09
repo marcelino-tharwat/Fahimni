@@ -141,7 +141,15 @@ export class ContentController {
       }
 
       const stages = await prisma.stage.findMany({
-        where: { id: studentProfile.stageId, deletedAt: null },
+        where: {
+          id: studentProfile.stageId,
+          deletedAt: null,
+          teacher: {
+            role: "OPERATION",
+            status: "ACTIVE",
+            teacherApprovalState: "APPROVED",
+          },
+        },
         orderBy: { sortOrder: "asc" },
         include: {
           chapters: {

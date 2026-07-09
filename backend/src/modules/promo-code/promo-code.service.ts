@@ -15,6 +15,7 @@ import { enrollmentPublicFields } from "../enrollment/enrollment.types.js";
 import type { EnrollmentResponseDTO } from "../enrollment/enrollment.types.js";
 import type { ListPromoCodesQuery } from "./promo-code.validation.js";
 import { REDEEM_MESSAGES, type Locale } from "./promo-code.i18n.js";
+import { isTeacherVisibleForDiscovery } from "../teacher-access/teacher-access.service.js";
 
 export interface RedeemResult {
   enrollment: EnrollmentResponseDTO;
@@ -174,6 +175,15 @@ export class PromoCodeService {
     });
     if (!chapter || chapter.deletedAt) {
       throw new AppError(m.chapterNotFound, 404, "CHAPTER_NOT_FOUND");
+    }
+
+    const visible = await isTeacherVisibleForDiscovery(chapterId);
+    if (!visible) {
+      throw new AppError(
+        "هذا المحتوى غير متاح حاليًا",
+        403,
+        "COURSE_NOT_AVAILABLE",
+      );
     }
 
     const existingEnrollment = await prisma.enrollment.findUnique({
