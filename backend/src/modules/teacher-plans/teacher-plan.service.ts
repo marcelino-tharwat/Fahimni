@@ -43,7 +43,7 @@ export class TeacherPlanService {
       currency: p.currency,
       isRecommended: p.isRecommended,
       sortOrder: p.sortOrder,
-      features: parseJsonField<string[]>(p.features) ?? [],
+      features: parseJsonField<Record<string, boolean>>(p.features) ?? {},
       limits: parseJsonField<Record<string, unknown>>(p.limits) ?? {},
     }));
   }
@@ -56,7 +56,7 @@ export class TeacherPlanService {
     yearlyPrice: number | null;
     isActive: boolean;
     limits: Record<string, unknown>;
-    features: string[];
+    features: Record<string, boolean>;
   } | null> {
     const plan = await prisma.teacherPlan.findUnique({ where: { id: planId } });
     if (!plan) return null;
@@ -68,7 +68,7 @@ export class TeacherPlanService {
       yearlyPrice: plan.yearlyPrice,
       isActive: plan.isActive,
       limits: parseJsonField<Record<string, unknown>>(plan.limits) ?? {},
-      features: parseJsonField<string[]>(plan.features) ?? [],
+      features: parseJsonField<Record<string, boolean>>(plan.features) ?? {},
     };
   }
 
@@ -80,7 +80,7 @@ export class TeacherPlanService {
     yearlyPrice: number | null;
     isActive: boolean;
     limits: Record<string, unknown>;
-    features: string[];
+    features: Record<string, boolean>;
   } | null> {
     const plan = await prisma.teacherPlan.findUnique({ where: { code } });
     if (!plan) return null;
@@ -92,7 +92,7 @@ export class TeacherPlanService {
       yearlyPrice: plan.yearlyPrice,
       isActive: plan.isActive,
       limits: parseJsonField<Record<string, unknown>>(plan.limits) ?? {},
-      features: parseJsonField<string[]>(plan.features) ?? [],
+      features: parseJsonField<Record<string, boolean>>(plan.features) ?? {},
     };
   }
 

@@ -15,7 +15,7 @@ export interface EntitlementPlan {
   code: string;
   displayName: string;
   limits: Record<string, unknown>;
-  features: string[];
+  features: Record<string, boolean>;
 }
 
 export interface ActiveSubscriptionRef {
@@ -94,7 +94,7 @@ export class TeacherPlanEntitlementService {
           code: activeSub.plan.code,
           displayName: activeSub.plan.displayName,
           limits: parseJson<Record<string, unknown>>(activeSub.plan.limits) ?? {},
-          features: parseJson<string[]>(activeSub.plan.features) ?? [],
+          features: parseJson<Record<string, boolean>>(activeSub.plan.features) ?? {},
         },
         activeSubscription: {
           id: activeSub.id,
@@ -115,7 +115,7 @@ export class TeacherPlanEntitlementService {
       entitlementSource: "DEFAULT_FREE_PLAN",
       currentPlan: free
         ? { id: free.id, code: free.code, displayName: free.displayName, limits: free.limits, features: free.features }
-        : { id: "free-default", code: "FREE", displayName: "الباقة المجانية", limits: {}, features: [] },
+        : { id: "free-default", code: "FREE", displayName: "الباقة المجانية", limits: {}, features: {} },
       activeSubscription: null,
       upgradeAvailable: true,
     };

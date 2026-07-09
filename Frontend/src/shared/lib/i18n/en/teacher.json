@@ -946,54 +946,52 @@
       "PREMIUM": "For large academies"
     },
     "planFeatures": {
-      "FREE": [
-        "AI Quiz Generation (Limited)",
-        "AI Essay Grading (Limited)",
-        "Unlimited Lessons",
-        "Copy-Protected Content",
-        "WhatsApp Support"
-      ],
-      "BASIC": [
-        "AI Quiz Generation",
-        "AI Essay Grading",
-        "AI Content Generation",
-        "Unlimited Lessons",
-        "5 GB Storage",
-        "Copy-Protected Content",
-        "Basic Analytics",
-        "WhatsApp Support"
-      ],
-      "PRO": [
-        "AI Quiz Generation (Virtually Unlimited)",
-        "AI Essay Grading",
-        "AI Content Generation",
-        "AI Lesson Summaries",
-        "Smart Question Explanations",
-        "Unlimited Lessons",
-        "10 GB Storage",
-        "Student Analytics",
-        "Student Engagement Analytics",
-        "PDF Download Tracking",
-        "Copy-Protected Content",
-        "Content Watermarking",
-        "Priority WhatsApp Support"
-      ],
-      "PREMIUM": [
-        "AI Quiz Generation (Unlimited)",
-        "AI Essay Grading (Unlimited)",
-        "AI Content Generation",
-        "AI Lesson Summaries",
-        "Smart Question Explanations",
-        "Unlimited Lessons",
-        "50 GB Storage",
-        "Unlimited Students",
-        "Advanced Student Analytics",
-        "Student Engagement Analytics",
-        "PDF Download Tracking",
-        "Copy-Protected Content",
-        "Content Watermarking",
-        "VIP WhatsApp Support"
-      ]
+      "FREE": {
+        "aiQuizGeneration": "AI Quiz Generation (Limited)",
+        "aiEssayGrading": "AI Essay Grading (Limited)",
+        "unlimitedLessons": "Unlimited Lessons",
+        "contentProtection": "Copy-Protected Content",
+        "whatsappSupport": "WhatsApp Support"
+      },
+      "BASIC": {
+        "aiQuizGeneration": "AI Quiz Generation",
+        "aiEssayGrading": "AI Essay Grading",
+        "aiContentGeneration": "AI Content Generation",
+        "unlimitedLessons": "Unlimited Lessons",
+        "contentProtection": "Copy-Protected Content",
+        "analyticsAccess": "Basic Analytics",
+        "whatsappSupport": "WhatsApp Support"
+      },
+      "PRO": {
+        "aiQuizGeneration": "AI Quiz Generation (Virtually Unlimited)",
+        "aiEssayGrading": "AI Essay Grading",
+        "aiContentGeneration": "AI Content Generation",
+        "aiLessonSummary": "AI Lesson Summaries",
+        "aiQuestionExplanation": "Smart Question Explanations",
+        "unlimitedLessons": "Unlimited Lessons",
+        "contentProtection": "Copy-Protected Content",
+        "analyticsAccess": "Student Analytics",
+        "studentEngagementAnalytics": "Student Engagement Analytics",
+        "pdfDownloadTracking": "PDF Download Tracking",
+        "prioritySupport": "Priority WhatsApp Support",
+        "watermark": "Content Watermarking",
+        "whatsappSupport": "WhatsApp Support"
+      },
+      "PREMIUM": {
+        "aiQuizGeneration": "AI Quiz Generation (Unlimited)",
+        "aiEssayGrading": "AI Essay Grading (Unlimited)",
+        "aiContentGeneration": "AI Content Generation",
+        "aiLessonSummary": "AI Lesson Summaries",
+        "aiQuestionExplanation": "Smart Question Explanations",
+        "unlimitedLessons": "Unlimited Lessons",
+        "contentProtection": "Copy-Protected Content",
+        "analyticsAccess": "Advanced Student Analytics",
+        "studentEngagementAnalytics": "Student Engagement Analytics",
+        "pdfDownloadTracking": "PDF Download Tracking",
+        "prioritySupport": "VIP WhatsApp Support",
+        "watermark": "Content Watermarking",
+        "whatsappSupport": "WhatsApp Support"
+      }
     }
   }
 }
