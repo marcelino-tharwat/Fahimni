@@ -7,11 +7,22 @@ import {
   codeParamSchema,
   redeemPromoCodeSchema,
   createPromoCodeSchema,
+  courseDiscountSchema,
 } from "./promo-code.validation.js";
 import { redeemDtoSchema } from "./dto/redeem.dto.js";
 
 const router = Router();
 const controller = new PromoCodeController();
+
+// COURSE_PURCHASE discount preview (student). Declared before the "/:code/*"
+// routes so "course" is never captured as a code param.
+router.post(
+  "/course/discount",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  validateRequest(courseDiscountSchema),
+  controller.validateCourseDiscount,
+);
 
 router.post(
   "/",

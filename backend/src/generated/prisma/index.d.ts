@@ -121,6 +121,16 @@ export type QuizAttempt = $Result.DefaultSelection<Prisma.$QuizAttemptPayload>
  */
 export type PromoCode = $Result.DefaultSelection<Prisma.$PromoCodePayload>
 /**
+ * Model PlatformPromoCode
+ * 
+ */
+export type PlatformPromoCode = $Result.DefaultSelection<Prisma.$PlatformPromoCodePayload>
+/**
+ * Model PlatformPromoRedemption
+ * One redemption of a PlatformPromoCode by a user (drives usedCount + perUserLimit).
+ */
+export type PlatformPromoRedemption = $Result.DefaultSelection<Prisma.$PlatformPromoRedemptionPayload>
+/**
  * Model Notification
  * 
  */
@@ -202,6 +212,31 @@ export const PendingEssayResultMode: {
 };
 
 export type PendingEssayResultMode = (typeof PendingEssayResultMode)[keyof typeof PendingEssayResultMode]
+
+
+export const PromoScope: {
+  COURSE_PURCHASE: 'COURSE_PURCHASE',
+  TEACHER_PLAN: 'TEACHER_PLAN'
+};
+
+export type PromoScope = (typeof PromoScope)[keyof typeof PromoScope]
+
+
+export const PromoDiscountType: {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT'
+};
+
+export type PromoDiscountType = (typeof PromoDiscountType)[keyof typeof PromoDiscountType]
+
+
+export const PromoBillingScope: {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY',
+  ALL: 'ALL'
+};
+
+export type PromoBillingScope = (typeof PromoBillingScope)[keyof typeof PromoBillingScope]
 
 
 export const Role: {
@@ -387,6 +422,18 @@ export const QuizSourceScope: typeof $Enums.QuizSourceScope
 export type PendingEssayResultMode = $Enums.PendingEssayResultMode
 
 export const PendingEssayResultMode: typeof $Enums.PendingEssayResultMode
+
+export type PromoScope = $Enums.PromoScope
+
+export const PromoScope: typeof $Enums.PromoScope
+
+export type PromoDiscountType = $Enums.PromoDiscountType
+
+export const PromoDiscountType: typeof $Enums.PromoDiscountType
+
+export type PromoBillingScope = $Enums.PromoBillingScope
+
+export const PromoBillingScope: typeof $Enums.PromoBillingScope
 
 export type Role = $Enums.Role
 
@@ -794,6 +841,26 @@ export class PrismaClient<
     * ```
     */
   get promoCode(): Prisma.PromoCodeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.platformPromoCode`: Exposes CRUD operations for the **PlatformPromoCode** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlatformPromoCodes
+    * const platformPromoCodes = await prisma.platformPromoCode.findMany()
+    * ```
+    */
+  get platformPromoCode(): Prisma.PlatformPromoCodeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.platformPromoRedemption`: Exposes CRUD operations for the **PlatformPromoRedemption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlatformPromoRedemptions
+    * const platformPromoRedemptions = await prisma.platformPromoRedemption.findMany()
+    * ```
+    */
+  get platformPromoRedemption(): Prisma.PlatformPromoRedemptionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
@@ -1339,6 +1406,8 @@ export namespace Prisma {
     Question: 'Question',
     QuizAttempt: 'QuizAttempt',
     PromoCode: 'PromoCode',
+    PlatformPromoCode: 'PlatformPromoCode',
+    PlatformPromoRedemption: 'PlatformPromoRedemption',
     Notification: 'Notification',
     TeacherRegistrationRequest: 'TeacherRegistrationRequest',
     AiConversation: 'AiConversation',
@@ -1363,7 +1432,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "notification" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "platformPromoCode" | "platformPromoRedemption" | "notification" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2921,6 +2990,154 @@ export namespace Prisma {
           }
         }
       }
+      PlatformPromoCode: {
+        payload: Prisma.$PlatformPromoCodePayload<ExtArgs>
+        fields: Prisma.PlatformPromoCodeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlatformPromoCodeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlatformPromoCodeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>
+          }
+          findFirst: {
+            args: Prisma.PlatformPromoCodeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlatformPromoCodeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>
+          }
+          findMany: {
+            args: Prisma.PlatformPromoCodeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>[]
+          }
+          create: {
+            args: Prisma.PlatformPromoCodeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>
+          }
+          createMany: {
+            args: Prisma.PlatformPromoCodeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlatformPromoCodeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>[]
+          }
+          delete: {
+            args: Prisma.PlatformPromoCodeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>
+          }
+          update: {
+            args: Prisma.PlatformPromoCodeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>
+          }
+          deleteMany: {
+            args: Prisma.PlatformPromoCodeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlatformPromoCodeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlatformPromoCodeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>[]
+          }
+          upsert: {
+            args: Prisma.PlatformPromoCodeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoCodePayload>
+          }
+          aggregate: {
+            args: Prisma.PlatformPromoCodeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlatformPromoCode>
+          }
+          groupBy: {
+            args: Prisma.PlatformPromoCodeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlatformPromoCodeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlatformPromoCodeCountArgs<ExtArgs>
+            result: $Utils.Optional<PlatformPromoCodeCountAggregateOutputType> | number
+          }
+        }
+      }
+      PlatformPromoRedemption: {
+        payload: Prisma.$PlatformPromoRedemptionPayload<ExtArgs>
+        fields: Prisma.PlatformPromoRedemptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlatformPromoRedemptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlatformPromoRedemptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>
+          }
+          findFirst: {
+            args: Prisma.PlatformPromoRedemptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlatformPromoRedemptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>
+          }
+          findMany: {
+            args: Prisma.PlatformPromoRedemptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>[]
+          }
+          create: {
+            args: Prisma.PlatformPromoRedemptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>
+          }
+          createMany: {
+            args: Prisma.PlatformPromoRedemptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlatformPromoRedemptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>[]
+          }
+          delete: {
+            args: Prisma.PlatformPromoRedemptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>
+          }
+          update: {
+            args: Prisma.PlatformPromoRedemptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlatformPromoRedemptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlatformPromoRedemptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlatformPromoRedemptionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlatformPromoRedemptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformPromoRedemptionPayload>
+          }
+          aggregate: {
+            args: Prisma.PlatformPromoRedemptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlatformPromoRedemption>
+          }
+          groupBy: {
+            args: Prisma.PlatformPromoRedemptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlatformPromoRedemptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlatformPromoRedemptionCountArgs<ExtArgs>
+            result: $Utils.Optional<PlatformPromoRedemptionCountAggregateOutputType> | number
+          }
+        }
+      }
       Notification: {
         payload: Prisma.$NotificationPayload<ExtArgs>
         fields: Prisma.NotificationFieldRefs
@@ -3716,6 +3933,8 @@ export namespace Prisma {
     question?: QuestionOmit
     quizAttempt?: QuizAttemptOmit
     promoCode?: PromoCodeOmit
+    platformPromoCode?: PlatformPromoCodeOmit
+    platformPromoRedemption?: PlatformPromoRedemptionOmit
     notification?: NotificationOmit
     teacherRegistrationRequest?: TeacherRegistrationRequestOmit
     aiConversation?: AiConversationOmit
@@ -3808,6 +4027,8 @@ export namespace Prisma {
     auditLogs: number
     createdPromoCodes: number
     usedPromoCodes: number
+    createdPlatformPromoCodes: number
+    platformPromoRedemptions: number
     enrollments: number
     lessonProgress: number
     otps: number
@@ -3830,6 +4051,8 @@ export namespace Prisma {
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
     createdPromoCodes?: boolean | UserCountOutputTypeCountCreatedPromoCodesArgs
     usedPromoCodes?: boolean | UserCountOutputTypeCountUsedPromoCodesArgs
+    createdPlatformPromoCodes?: boolean | UserCountOutputTypeCountCreatedPlatformPromoCodesArgs
+    platformPromoRedemptions?: boolean | UserCountOutputTypeCountPlatformPromoRedemptionsArgs
     enrollments?: boolean | UserCountOutputTypeCountEnrollmentsArgs
     lessonProgress?: boolean | UserCountOutputTypeCountLessonProgressArgs
     otps?: boolean | UserCountOutputTypeCountOtpsArgs
@@ -3878,6 +4101,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountUsedPromoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PromoCodeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreatedPlatformPromoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlatformPromoCodeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPlatformPromoRedemptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlatformPromoRedemptionWhereInput
   }
 
   /**
@@ -4244,6 +4481,37 @@ export namespace Prisma {
    */
   export type QuizCountOutputTypeCountProgressionGateLessonsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LessonWhereInput
+  }
+
+
+  /**
+   * Count Type PlatformPromoCodeCountOutputType
+   */
+
+  export type PlatformPromoCodeCountOutputType = {
+    redemptions: number
+  }
+
+  export type PlatformPromoCodeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    redemptions?: boolean | PlatformPromoCodeCountOutputTypeCountRedemptionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PlatformPromoCodeCountOutputType without action
+   */
+  export type PlatformPromoCodeCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCodeCountOutputType
+     */
+    select?: PlatformPromoCodeCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PlatformPromoCodeCountOutputType without action
+   */
+  export type PlatformPromoCodeCountOutputTypeCountRedemptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlatformPromoRedemptionWhereInput
   }
 
 
@@ -4630,6 +4898,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: boolean | User$teacherRegistrationRequestArgs<ExtArgs>
     createdPromoCodes?: boolean | User$createdPromoCodesArgs<ExtArgs>
     usedPromoCodes?: boolean | User$usedPromoCodesArgs<ExtArgs>
+    createdPlatformPromoCodes?: boolean | User$createdPlatformPromoCodesArgs<ExtArgs>
+    platformPromoRedemptions?: boolean | User$platformPromoRedemptionsArgs<ExtArgs>
     enrollments?: boolean | User$enrollmentsArgs<ExtArgs>
     lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
     otps?: boolean | User$otpsArgs<ExtArgs>
@@ -4699,6 +4969,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: boolean | User$teacherRegistrationRequestArgs<ExtArgs>
     createdPromoCodes?: boolean | User$createdPromoCodesArgs<ExtArgs>
     usedPromoCodes?: boolean | User$usedPromoCodesArgs<ExtArgs>
+    createdPlatformPromoCodes?: boolean | User$createdPlatformPromoCodesArgs<ExtArgs>
+    platformPromoRedemptions?: boolean | User$platformPromoRedemptionsArgs<ExtArgs>
     enrollments?: boolean | User$enrollmentsArgs<ExtArgs>
     lessonProgress?: boolean | User$lessonProgressArgs<ExtArgs>
     otps?: boolean | User$otpsArgs<ExtArgs>
@@ -4729,6 +5001,8 @@ export namespace Prisma {
       teacherRegistrationRequest: Prisma.$TeacherRegistrationRequestPayload<ExtArgs> | null
       createdPromoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
       usedPromoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
+      createdPlatformPromoCodes: Prisma.$PlatformPromoCodePayload<ExtArgs>[]
+      platformPromoRedemptions: Prisma.$PlatformPromoRedemptionPayload<ExtArgs>[]
       enrollments: Prisma.$EnrollmentPayload<ExtArgs>[]
       lessonProgress: Prisma.$LessonProgressPayload<ExtArgs>[]
       otps: Prisma.$OtpPayload<ExtArgs>[]
@@ -5158,6 +5432,8 @@ export namespace Prisma {
     teacherRegistrationRequest<T extends User$teacherRegistrationRequestArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherRegistrationRequestArgs<ExtArgs>>): Prisma__TeacherRegistrationRequestClient<$Result.GetResult<Prisma.$TeacherRegistrationRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     createdPromoCodes<T extends User$createdPromoCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdPromoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     usedPromoCodes<T extends User$usedPromoCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$usedPromoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdPlatformPromoCodes<T extends User$createdPlatformPromoCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdPlatformPromoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    platformPromoRedemptions<T extends User$platformPromoRedemptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$platformPromoRedemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     enrollments<T extends User$enrollmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     lessonProgress<T extends User$lessonProgressArgs<ExtArgs> = {}>(args?: Subset<T, User$lessonProgressArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     otps<T extends User$otpsArgs<ExtArgs> = {}>(args?: Subset<T, User$otpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OtpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5697,6 +5973,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PromoCodeScalarFieldEnum | PromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * User.createdPlatformPromoCodes
+   */
+  export type User$createdPlatformPromoCodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    where?: PlatformPromoCodeWhereInput
+    orderBy?: PlatformPromoCodeOrderByWithRelationInput | PlatformPromoCodeOrderByWithRelationInput[]
+    cursor?: PlatformPromoCodeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlatformPromoCodeScalarFieldEnum | PlatformPromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * User.platformPromoRedemptions
+   */
+  export type User$platformPromoRedemptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    where?: PlatformPromoRedemptionWhereInput
+    orderBy?: PlatformPromoRedemptionOrderByWithRelationInput | PlatformPromoRedemptionOrderByWithRelationInput[]
+    cursor?: PlatformPromoRedemptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlatformPromoRedemptionScalarFieldEnum | PlatformPromoRedemptionScalarFieldEnum[]
   }
 
   /**
@@ -29439,6 +29763,2439 @@ export namespace Prisma {
 
 
   /**
+   * Model PlatformPromoCode
+   */
+
+  export type AggregatePlatformPromoCode = {
+    _count: PlatformPromoCodeCountAggregateOutputType | null
+    _avg: PlatformPromoCodeAvgAggregateOutputType | null
+    _sum: PlatformPromoCodeSumAggregateOutputType | null
+    _min: PlatformPromoCodeMinAggregateOutputType | null
+    _max: PlatformPromoCodeMaxAggregateOutputType | null
+  }
+
+  export type PlatformPromoCodeAvgAggregateOutputType = {
+    discountValue: number | null
+    maxUses: number | null
+    usedCount: number | null
+    perUserLimit: number | null
+  }
+
+  export type PlatformPromoCodeSumAggregateOutputType = {
+    discountValue: number | null
+    maxUses: number | null
+    usedCount: number | null
+    perUserLimit: number | null
+  }
+
+  export type PlatformPromoCodeMinAggregateOutputType = {
+    id: string | null
+    code: string | null
+    scope: $Enums.PromoScope | null
+    discountType: $Enums.PromoDiscountType | null
+    discountValue: number | null
+    currency: string | null
+    startsAt: Date | null
+    expiresAt: Date | null
+    isActive: boolean | null
+    maxUses: number | null
+    usedCount: number | null
+    perUserLimit: number | null
+    billingInterval: $Enums.PromoBillingScope | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlatformPromoCodeMaxAggregateOutputType = {
+    id: string | null
+    code: string | null
+    scope: $Enums.PromoScope | null
+    discountType: $Enums.PromoDiscountType | null
+    discountValue: number | null
+    currency: string | null
+    startsAt: Date | null
+    expiresAt: Date | null
+    isActive: boolean | null
+    maxUses: number | null
+    usedCount: number | null
+    perUserLimit: number | null
+    billingInterval: $Enums.PromoBillingScope | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlatformPromoCodeCountAggregateOutputType = {
+    id: number
+    code: number
+    scope: number
+    discountType: number
+    discountValue: number
+    currency: number
+    startsAt: number
+    expiresAt: number
+    isActive: number
+    maxUses: number
+    usedCount: number
+    perUserLimit: number
+    applicablePlanIds: number
+    billingInterval: number
+    createdById: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PlatformPromoCodeAvgAggregateInputType = {
+    discountValue?: true
+    maxUses?: true
+    usedCount?: true
+    perUserLimit?: true
+  }
+
+  export type PlatformPromoCodeSumAggregateInputType = {
+    discountValue?: true
+    maxUses?: true
+    usedCount?: true
+    perUserLimit?: true
+  }
+
+  export type PlatformPromoCodeMinAggregateInputType = {
+    id?: true
+    code?: true
+    scope?: true
+    discountType?: true
+    discountValue?: true
+    currency?: true
+    startsAt?: true
+    expiresAt?: true
+    isActive?: true
+    maxUses?: true
+    usedCount?: true
+    perUserLimit?: true
+    billingInterval?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlatformPromoCodeMaxAggregateInputType = {
+    id?: true
+    code?: true
+    scope?: true
+    discountType?: true
+    discountValue?: true
+    currency?: true
+    startsAt?: true
+    expiresAt?: true
+    isActive?: true
+    maxUses?: true
+    usedCount?: true
+    perUserLimit?: true
+    billingInterval?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlatformPromoCodeCountAggregateInputType = {
+    id?: true
+    code?: true
+    scope?: true
+    discountType?: true
+    discountValue?: true
+    currency?: true
+    startsAt?: true
+    expiresAt?: true
+    isActive?: true
+    maxUses?: true
+    usedCount?: true
+    perUserLimit?: true
+    applicablePlanIds?: true
+    billingInterval?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PlatformPromoCodeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlatformPromoCode to aggregate.
+     */
+    where?: PlatformPromoCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformPromoCodes to fetch.
+     */
+    orderBy?: PlatformPromoCodeOrderByWithRelationInput | PlatformPromoCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlatformPromoCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformPromoCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformPromoCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlatformPromoCodes
+    **/
+    _count?: true | PlatformPromoCodeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PlatformPromoCodeAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PlatformPromoCodeSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlatformPromoCodeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlatformPromoCodeMaxAggregateInputType
+  }
+
+  export type GetPlatformPromoCodeAggregateType<T extends PlatformPromoCodeAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlatformPromoCode]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlatformPromoCode[P]>
+      : GetScalarType<T[P], AggregatePlatformPromoCode[P]>
+  }
+
+
+
+
+  export type PlatformPromoCodeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlatformPromoCodeWhereInput
+    orderBy?: PlatformPromoCodeOrderByWithAggregationInput | PlatformPromoCodeOrderByWithAggregationInput[]
+    by: PlatformPromoCodeScalarFieldEnum[] | PlatformPromoCodeScalarFieldEnum
+    having?: PlatformPromoCodeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlatformPromoCodeCountAggregateInputType | true
+    _avg?: PlatformPromoCodeAvgAggregateInputType
+    _sum?: PlatformPromoCodeSumAggregateInputType
+    _min?: PlatformPromoCodeMinAggregateInputType
+    _max?: PlatformPromoCodeMaxAggregateInputType
+  }
+
+  export type PlatformPromoCodeGroupByOutputType = {
+    id: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency: string
+    startsAt: Date | null
+    expiresAt: Date | null
+    isActive: boolean
+    maxUses: number | null
+    usedCount: number
+    perUserLimit: number | null
+    applicablePlanIds: string[]
+    billingInterval: $Enums.PromoBillingScope
+    createdById: string
+    createdAt: Date
+    updatedAt: Date
+    _count: PlatformPromoCodeCountAggregateOutputType | null
+    _avg: PlatformPromoCodeAvgAggregateOutputType | null
+    _sum: PlatformPromoCodeSumAggregateOutputType | null
+    _min: PlatformPromoCodeMinAggregateOutputType | null
+    _max: PlatformPromoCodeMaxAggregateOutputType | null
+  }
+
+  type GetPlatformPromoCodeGroupByPayload<T extends PlatformPromoCodeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlatformPromoCodeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlatformPromoCodeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlatformPromoCodeGroupByOutputType[P]>
+            : GetScalarType<T[P], PlatformPromoCodeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlatformPromoCodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    scope?: boolean
+    discountType?: boolean
+    discountValue?: boolean
+    currency?: boolean
+    startsAt?: boolean
+    expiresAt?: boolean
+    isActive?: boolean
+    maxUses?: boolean
+    usedCount?: boolean
+    perUserLimit?: boolean
+    applicablePlanIds?: boolean
+    billingInterval?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    redemptions?: boolean | PlatformPromoCode$redemptionsArgs<ExtArgs>
+    _count?: boolean | PlatformPromoCodeCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["platformPromoCode"]>
+
+  export type PlatformPromoCodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    scope?: boolean
+    discountType?: boolean
+    discountValue?: boolean
+    currency?: boolean
+    startsAt?: boolean
+    expiresAt?: boolean
+    isActive?: boolean
+    maxUses?: boolean
+    usedCount?: boolean
+    perUserLimit?: boolean
+    applicablePlanIds?: boolean
+    billingInterval?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["platformPromoCode"]>
+
+  export type PlatformPromoCodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    scope?: boolean
+    discountType?: boolean
+    discountValue?: boolean
+    currency?: boolean
+    startsAt?: boolean
+    expiresAt?: boolean
+    isActive?: boolean
+    maxUses?: boolean
+    usedCount?: boolean
+    perUserLimit?: boolean
+    applicablePlanIds?: boolean
+    billingInterval?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["platformPromoCode"]>
+
+  export type PlatformPromoCodeSelectScalar = {
+    id?: boolean
+    code?: boolean
+    scope?: boolean
+    discountType?: boolean
+    discountValue?: boolean
+    currency?: boolean
+    startsAt?: boolean
+    expiresAt?: boolean
+    isActive?: boolean
+    maxUses?: boolean
+    usedCount?: boolean
+    perUserLimit?: boolean
+    applicablePlanIds?: boolean
+    billingInterval?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PlatformPromoCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "scope" | "discountType" | "discountValue" | "currency" | "startsAt" | "expiresAt" | "isActive" | "maxUses" | "usedCount" | "perUserLimit" | "applicablePlanIds" | "billingInterval" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["platformPromoCode"]>
+  export type PlatformPromoCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    redemptions?: boolean | PlatformPromoCode$redemptionsArgs<ExtArgs>
+    _count?: boolean | PlatformPromoCodeCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PlatformPromoCodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PlatformPromoCodeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PlatformPromoCodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlatformPromoCode"
+    objects: {
+      createdBy: Prisma.$UserPayload<ExtArgs>
+      redemptions: Prisma.$PlatformPromoRedemptionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      code: string
+      scope: $Enums.PromoScope
+      discountType: $Enums.PromoDiscountType
+      discountValue: number
+      currency: string
+      startsAt: Date | null
+      expiresAt: Date | null
+      isActive: boolean
+      maxUses: number | null
+      usedCount: number
+      perUserLimit: number | null
+      /**
+       * TEACHER_PLAN only: restrict to these plan ids (empty = all plans).
+       */
+      applicablePlanIds: string[]
+      billingInterval: $Enums.PromoBillingScope
+      createdById: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["platformPromoCode"]>
+    composites: {}
+  }
+
+  type PlatformPromoCodeGetPayload<S extends boolean | null | undefined | PlatformPromoCodeDefaultArgs> = $Result.GetResult<Prisma.$PlatformPromoCodePayload, S>
+
+  type PlatformPromoCodeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlatformPromoCodeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlatformPromoCodeCountAggregateInputType | true
+    }
+
+  export interface PlatformPromoCodeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlatformPromoCode'], meta: { name: 'PlatformPromoCode' } }
+    /**
+     * Find zero or one PlatformPromoCode that matches the filter.
+     * @param {PlatformPromoCodeFindUniqueArgs} args - Arguments to find a PlatformPromoCode
+     * @example
+     * // Get one PlatformPromoCode
+     * const platformPromoCode = await prisma.platformPromoCode.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlatformPromoCodeFindUniqueArgs>(args: SelectSubset<T, PlatformPromoCodeFindUniqueArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlatformPromoCode that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlatformPromoCodeFindUniqueOrThrowArgs} args - Arguments to find a PlatformPromoCode
+     * @example
+     * // Get one PlatformPromoCode
+     * const platformPromoCode = await prisma.platformPromoCode.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlatformPromoCodeFindUniqueOrThrowArgs>(args: SelectSubset<T, PlatformPromoCodeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlatformPromoCode that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoCodeFindFirstArgs} args - Arguments to find a PlatformPromoCode
+     * @example
+     * // Get one PlatformPromoCode
+     * const platformPromoCode = await prisma.platformPromoCode.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlatformPromoCodeFindFirstArgs>(args?: SelectSubset<T, PlatformPromoCodeFindFirstArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlatformPromoCode that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoCodeFindFirstOrThrowArgs} args - Arguments to find a PlatformPromoCode
+     * @example
+     * // Get one PlatformPromoCode
+     * const platformPromoCode = await prisma.platformPromoCode.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlatformPromoCodeFindFirstOrThrowArgs>(args?: SelectSubset<T, PlatformPromoCodeFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlatformPromoCodes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoCodeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlatformPromoCodes
+     * const platformPromoCodes = await prisma.platformPromoCode.findMany()
+     * 
+     * // Get first 10 PlatformPromoCodes
+     * const platformPromoCodes = await prisma.platformPromoCode.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const platformPromoCodeWithIdOnly = await prisma.platformPromoCode.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlatformPromoCodeFindManyArgs>(args?: SelectSubset<T, PlatformPromoCodeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlatformPromoCode.
+     * @param {PlatformPromoCodeCreateArgs} args - Arguments to create a PlatformPromoCode.
+     * @example
+     * // Create one PlatformPromoCode
+     * const PlatformPromoCode = await prisma.platformPromoCode.create({
+     *   data: {
+     *     // ... data to create a PlatformPromoCode
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlatformPromoCodeCreateArgs>(args: SelectSubset<T, PlatformPromoCodeCreateArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlatformPromoCodes.
+     * @param {PlatformPromoCodeCreateManyArgs} args - Arguments to create many PlatformPromoCodes.
+     * @example
+     * // Create many PlatformPromoCodes
+     * const platformPromoCode = await prisma.platformPromoCode.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlatformPromoCodeCreateManyArgs>(args?: SelectSubset<T, PlatformPromoCodeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlatformPromoCodes and returns the data saved in the database.
+     * @param {PlatformPromoCodeCreateManyAndReturnArgs} args - Arguments to create many PlatformPromoCodes.
+     * @example
+     * // Create many PlatformPromoCodes
+     * const platformPromoCode = await prisma.platformPromoCode.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlatformPromoCodes and only return the `id`
+     * const platformPromoCodeWithIdOnly = await prisma.platformPromoCode.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlatformPromoCodeCreateManyAndReturnArgs>(args?: SelectSubset<T, PlatformPromoCodeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlatformPromoCode.
+     * @param {PlatformPromoCodeDeleteArgs} args - Arguments to delete one PlatformPromoCode.
+     * @example
+     * // Delete one PlatformPromoCode
+     * const PlatformPromoCode = await prisma.platformPromoCode.delete({
+     *   where: {
+     *     // ... filter to delete one PlatformPromoCode
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlatformPromoCodeDeleteArgs>(args: SelectSubset<T, PlatformPromoCodeDeleteArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlatformPromoCode.
+     * @param {PlatformPromoCodeUpdateArgs} args - Arguments to update one PlatformPromoCode.
+     * @example
+     * // Update one PlatformPromoCode
+     * const platformPromoCode = await prisma.platformPromoCode.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlatformPromoCodeUpdateArgs>(args: SelectSubset<T, PlatformPromoCodeUpdateArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlatformPromoCodes.
+     * @param {PlatformPromoCodeDeleteManyArgs} args - Arguments to filter PlatformPromoCodes to delete.
+     * @example
+     * // Delete a few PlatformPromoCodes
+     * const { count } = await prisma.platformPromoCode.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlatformPromoCodeDeleteManyArgs>(args?: SelectSubset<T, PlatformPromoCodeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlatformPromoCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoCodeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlatformPromoCodes
+     * const platformPromoCode = await prisma.platformPromoCode.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlatformPromoCodeUpdateManyArgs>(args: SelectSubset<T, PlatformPromoCodeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlatformPromoCodes and returns the data updated in the database.
+     * @param {PlatformPromoCodeUpdateManyAndReturnArgs} args - Arguments to update many PlatformPromoCodes.
+     * @example
+     * // Update many PlatformPromoCodes
+     * const platformPromoCode = await prisma.platformPromoCode.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlatformPromoCodes and only return the `id`
+     * const platformPromoCodeWithIdOnly = await prisma.platformPromoCode.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlatformPromoCodeUpdateManyAndReturnArgs>(args: SelectSubset<T, PlatformPromoCodeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlatformPromoCode.
+     * @param {PlatformPromoCodeUpsertArgs} args - Arguments to update or create a PlatformPromoCode.
+     * @example
+     * // Update or create a PlatformPromoCode
+     * const platformPromoCode = await prisma.platformPromoCode.upsert({
+     *   create: {
+     *     // ... data to create a PlatformPromoCode
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlatformPromoCode we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlatformPromoCodeUpsertArgs>(args: SelectSubset<T, PlatformPromoCodeUpsertArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlatformPromoCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoCodeCountArgs} args - Arguments to filter PlatformPromoCodes to count.
+     * @example
+     * // Count the number of PlatformPromoCodes
+     * const count = await prisma.platformPromoCode.count({
+     *   where: {
+     *     // ... the filter for the PlatformPromoCodes we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlatformPromoCodeCountArgs>(
+      args?: Subset<T, PlatformPromoCodeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlatformPromoCodeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlatformPromoCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoCodeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlatformPromoCodeAggregateArgs>(args: Subset<T, PlatformPromoCodeAggregateArgs>): Prisma.PrismaPromise<GetPlatformPromoCodeAggregateType<T>>
+
+    /**
+     * Group by PlatformPromoCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoCodeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlatformPromoCodeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlatformPromoCodeGroupByArgs['orderBy'] }
+        : { orderBy?: PlatformPromoCodeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlatformPromoCodeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlatformPromoCodeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlatformPromoCode model
+   */
+  readonly fields: PlatformPromoCodeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlatformPromoCode.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlatformPromoCodeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    redemptions<T extends PlatformPromoCode$redemptionsArgs<ExtArgs> = {}>(args?: Subset<T, PlatformPromoCode$redemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlatformPromoCode model
+   */
+  interface PlatformPromoCodeFieldRefs {
+    readonly id: FieldRef<"PlatformPromoCode", 'String'>
+    readonly code: FieldRef<"PlatformPromoCode", 'String'>
+    readonly scope: FieldRef<"PlatformPromoCode", 'PromoScope'>
+    readonly discountType: FieldRef<"PlatformPromoCode", 'PromoDiscountType'>
+    readonly discountValue: FieldRef<"PlatformPromoCode", 'Float'>
+    readonly currency: FieldRef<"PlatformPromoCode", 'String'>
+    readonly startsAt: FieldRef<"PlatformPromoCode", 'DateTime'>
+    readonly expiresAt: FieldRef<"PlatformPromoCode", 'DateTime'>
+    readonly isActive: FieldRef<"PlatformPromoCode", 'Boolean'>
+    readonly maxUses: FieldRef<"PlatformPromoCode", 'Int'>
+    readonly usedCount: FieldRef<"PlatformPromoCode", 'Int'>
+    readonly perUserLimit: FieldRef<"PlatformPromoCode", 'Int'>
+    readonly applicablePlanIds: FieldRef<"PlatformPromoCode", 'String[]'>
+    readonly billingInterval: FieldRef<"PlatformPromoCode", 'PromoBillingScope'>
+    readonly createdById: FieldRef<"PlatformPromoCode", 'String'>
+    readonly createdAt: FieldRef<"PlatformPromoCode", 'DateTime'>
+    readonly updatedAt: FieldRef<"PlatformPromoCode", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlatformPromoCode findUnique
+   */
+  export type PlatformPromoCodeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoCode to fetch.
+     */
+    where: PlatformPromoCodeWhereUniqueInput
+  }
+
+  /**
+   * PlatformPromoCode findUniqueOrThrow
+   */
+  export type PlatformPromoCodeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoCode to fetch.
+     */
+    where: PlatformPromoCodeWhereUniqueInput
+  }
+
+  /**
+   * PlatformPromoCode findFirst
+   */
+  export type PlatformPromoCodeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoCode to fetch.
+     */
+    where?: PlatformPromoCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformPromoCodes to fetch.
+     */
+    orderBy?: PlatformPromoCodeOrderByWithRelationInput | PlatformPromoCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlatformPromoCodes.
+     */
+    cursor?: PlatformPromoCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformPromoCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformPromoCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformPromoCodes.
+     */
+    distinct?: PlatformPromoCodeScalarFieldEnum | PlatformPromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformPromoCode findFirstOrThrow
+   */
+  export type PlatformPromoCodeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoCode to fetch.
+     */
+    where?: PlatformPromoCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformPromoCodes to fetch.
+     */
+    orderBy?: PlatformPromoCodeOrderByWithRelationInput | PlatformPromoCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlatformPromoCodes.
+     */
+    cursor?: PlatformPromoCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformPromoCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformPromoCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformPromoCodes.
+     */
+    distinct?: PlatformPromoCodeScalarFieldEnum | PlatformPromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformPromoCode findMany
+   */
+  export type PlatformPromoCodeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoCodes to fetch.
+     */
+    where?: PlatformPromoCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformPromoCodes to fetch.
+     */
+    orderBy?: PlatformPromoCodeOrderByWithRelationInput | PlatformPromoCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlatformPromoCodes.
+     */
+    cursor?: PlatformPromoCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformPromoCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformPromoCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformPromoCodes.
+     */
+    distinct?: PlatformPromoCodeScalarFieldEnum | PlatformPromoCodeScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformPromoCode create
+   */
+  export type PlatformPromoCodeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PlatformPromoCode.
+     */
+    data: XOR<PlatformPromoCodeCreateInput, PlatformPromoCodeUncheckedCreateInput>
+  }
+
+  /**
+   * PlatformPromoCode createMany
+   */
+  export type PlatformPromoCodeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlatformPromoCodes.
+     */
+    data: PlatformPromoCodeCreateManyInput | PlatformPromoCodeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlatformPromoCode createManyAndReturn
+   */
+  export type PlatformPromoCodeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlatformPromoCodes.
+     */
+    data: PlatformPromoCodeCreateManyInput | PlatformPromoCodeCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlatformPromoCode update
+   */
+  export type PlatformPromoCodeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PlatformPromoCode.
+     */
+    data: XOR<PlatformPromoCodeUpdateInput, PlatformPromoCodeUncheckedUpdateInput>
+    /**
+     * Choose, which PlatformPromoCode to update.
+     */
+    where: PlatformPromoCodeWhereUniqueInput
+  }
+
+  /**
+   * PlatformPromoCode updateMany
+   */
+  export type PlatformPromoCodeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlatformPromoCodes.
+     */
+    data: XOR<PlatformPromoCodeUpdateManyMutationInput, PlatformPromoCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which PlatformPromoCodes to update
+     */
+    where?: PlatformPromoCodeWhereInput
+    /**
+     * Limit how many PlatformPromoCodes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlatformPromoCode updateManyAndReturn
+   */
+  export type PlatformPromoCodeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * The data used to update PlatformPromoCodes.
+     */
+    data: XOR<PlatformPromoCodeUpdateManyMutationInput, PlatformPromoCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which PlatformPromoCodes to update
+     */
+    where?: PlatformPromoCodeWhereInput
+    /**
+     * Limit how many PlatformPromoCodes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlatformPromoCode upsert
+   */
+  export type PlatformPromoCodeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PlatformPromoCode to update in case it exists.
+     */
+    where: PlatformPromoCodeWhereUniqueInput
+    /**
+     * In case the PlatformPromoCode found by the `where` argument doesn't exist, create a new PlatformPromoCode with this data.
+     */
+    create: XOR<PlatformPromoCodeCreateInput, PlatformPromoCodeUncheckedCreateInput>
+    /**
+     * In case the PlatformPromoCode was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlatformPromoCodeUpdateInput, PlatformPromoCodeUncheckedUpdateInput>
+  }
+
+  /**
+   * PlatformPromoCode delete
+   */
+  export type PlatformPromoCodeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+    /**
+     * Filter which PlatformPromoCode to delete.
+     */
+    where: PlatformPromoCodeWhereUniqueInput
+  }
+
+  /**
+   * PlatformPromoCode deleteMany
+   */
+  export type PlatformPromoCodeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlatformPromoCodes to delete
+     */
+    where?: PlatformPromoCodeWhereInput
+    /**
+     * Limit how many PlatformPromoCodes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlatformPromoCode.redemptions
+   */
+  export type PlatformPromoCode$redemptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    where?: PlatformPromoRedemptionWhereInput
+    orderBy?: PlatformPromoRedemptionOrderByWithRelationInput | PlatformPromoRedemptionOrderByWithRelationInput[]
+    cursor?: PlatformPromoRedemptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlatformPromoRedemptionScalarFieldEnum | PlatformPromoRedemptionScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformPromoCode without action
+   */
+  export type PlatformPromoCodeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoCode
+     */
+    select?: PlatformPromoCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoCode
+     */
+    omit?: PlatformPromoCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoCodeInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PlatformPromoRedemption
+   */
+
+  export type AggregatePlatformPromoRedemption = {
+    _count: PlatformPromoRedemptionCountAggregateOutputType | null
+    _avg: PlatformPromoRedemptionAvgAggregateOutputType | null
+    _sum: PlatformPromoRedemptionSumAggregateOutputType | null
+    _min: PlatformPromoRedemptionMinAggregateOutputType | null
+    _max: PlatformPromoRedemptionMaxAggregateOutputType | null
+  }
+
+  export type PlatformPromoRedemptionAvgAggregateOutputType = {
+    amountBefore: number | null
+    discount: number | null
+    amountAfter: number | null
+  }
+
+  export type PlatformPromoRedemptionSumAggregateOutputType = {
+    amountBefore: number | null
+    discount: number | null
+    amountAfter: number | null
+  }
+
+  export type PlatformPromoRedemptionMinAggregateOutputType = {
+    id: string | null
+    promoCodeId: string | null
+    userId: string | null
+    amountBefore: number | null
+    discount: number | null
+    amountAfter: number | null
+    createdAt: Date | null
+  }
+
+  export type PlatformPromoRedemptionMaxAggregateOutputType = {
+    id: string | null
+    promoCodeId: string | null
+    userId: string | null
+    amountBefore: number | null
+    discount: number | null
+    amountAfter: number | null
+    createdAt: Date | null
+  }
+
+  export type PlatformPromoRedemptionCountAggregateOutputType = {
+    id: number
+    promoCodeId: number
+    userId: number
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PlatformPromoRedemptionAvgAggregateInputType = {
+    amountBefore?: true
+    discount?: true
+    amountAfter?: true
+  }
+
+  export type PlatformPromoRedemptionSumAggregateInputType = {
+    amountBefore?: true
+    discount?: true
+    amountAfter?: true
+  }
+
+  export type PlatformPromoRedemptionMinAggregateInputType = {
+    id?: true
+    promoCodeId?: true
+    userId?: true
+    amountBefore?: true
+    discount?: true
+    amountAfter?: true
+    createdAt?: true
+  }
+
+  export type PlatformPromoRedemptionMaxAggregateInputType = {
+    id?: true
+    promoCodeId?: true
+    userId?: true
+    amountBefore?: true
+    discount?: true
+    amountAfter?: true
+    createdAt?: true
+  }
+
+  export type PlatformPromoRedemptionCountAggregateInputType = {
+    id?: true
+    promoCodeId?: true
+    userId?: true
+    amountBefore?: true
+    discount?: true
+    amountAfter?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PlatformPromoRedemptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlatformPromoRedemption to aggregate.
+     */
+    where?: PlatformPromoRedemptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformPromoRedemptions to fetch.
+     */
+    orderBy?: PlatformPromoRedemptionOrderByWithRelationInput | PlatformPromoRedemptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlatformPromoRedemptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformPromoRedemptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformPromoRedemptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlatformPromoRedemptions
+    **/
+    _count?: true | PlatformPromoRedemptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PlatformPromoRedemptionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PlatformPromoRedemptionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlatformPromoRedemptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlatformPromoRedemptionMaxAggregateInputType
+  }
+
+  export type GetPlatformPromoRedemptionAggregateType<T extends PlatformPromoRedemptionAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlatformPromoRedemption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlatformPromoRedemption[P]>
+      : GetScalarType<T[P], AggregatePlatformPromoRedemption[P]>
+  }
+
+
+
+
+  export type PlatformPromoRedemptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlatformPromoRedemptionWhereInput
+    orderBy?: PlatformPromoRedemptionOrderByWithAggregationInput | PlatformPromoRedemptionOrderByWithAggregationInput[]
+    by: PlatformPromoRedemptionScalarFieldEnum[] | PlatformPromoRedemptionScalarFieldEnum
+    having?: PlatformPromoRedemptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlatformPromoRedemptionCountAggregateInputType | true
+    _avg?: PlatformPromoRedemptionAvgAggregateInputType
+    _sum?: PlatformPromoRedemptionSumAggregateInputType
+    _min?: PlatformPromoRedemptionMinAggregateInputType
+    _max?: PlatformPromoRedemptionMaxAggregateInputType
+  }
+
+  export type PlatformPromoRedemptionGroupByOutputType = {
+    id: string
+    promoCodeId: string
+    userId: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt: Date
+    _count: PlatformPromoRedemptionCountAggregateOutputType | null
+    _avg: PlatformPromoRedemptionAvgAggregateOutputType | null
+    _sum: PlatformPromoRedemptionSumAggregateOutputType | null
+    _min: PlatformPromoRedemptionMinAggregateOutputType | null
+    _max: PlatformPromoRedemptionMaxAggregateOutputType | null
+  }
+
+  type GetPlatformPromoRedemptionGroupByPayload<T extends PlatformPromoRedemptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlatformPromoRedemptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlatformPromoRedemptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlatformPromoRedemptionGroupByOutputType[P]>
+            : GetScalarType<T[P], PlatformPromoRedemptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlatformPromoRedemptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    promoCodeId?: boolean
+    userId?: boolean
+    amountBefore?: boolean
+    discount?: boolean
+    amountAfter?: boolean
+    createdAt?: boolean
+    promoCode?: boolean | PlatformPromoCodeDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["platformPromoRedemption"]>
+
+  export type PlatformPromoRedemptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    promoCodeId?: boolean
+    userId?: boolean
+    amountBefore?: boolean
+    discount?: boolean
+    amountAfter?: boolean
+    createdAt?: boolean
+    promoCode?: boolean | PlatformPromoCodeDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["platformPromoRedemption"]>
+
+  export type PlatformPromoRedemptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    promoCodeId?: boolean
+    userId?: boolean
+    amountBefore?: boolean
+    discount?: boolean
+    amountAfter?: boolean
+    createdAt?: boolean
+    promoCode?: boolean | PlatformPromoCodeDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["platformPromoRedemption"]>
+
+  export type PlatformPromoRedemptionSelectScalar = {
+    id?: boolean
+    promoCodeId?: boolean
+    userId?: boolean
+    amountBefore?: boolean
+    discount?: boolean
+    amountAfter?: boolean
+    createdAt?: boolean
+  }
+
+  export type PlatformPromoRedemptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "promoCodeId" | "userId" | "amountBefore" | "discount" | "amountAfter" | "createdAt", ExtArgs["result"]["platformPromoRedemption"]>
+  export type PlatformPromoRedemptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    promoCode?: boolean | PlatformPromoCodeDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PlatformPromoRedemptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    promoCode?: boolean | PlatformPromoCodeDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PlatformPromoRedemptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    promoCode?: boolean | PlatformPromoCodeDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PlatformPromoRedemptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlatformPromoRedemption"
+    objects: {
+      promoCode: Prisma.$PlatformPromoCodePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      promoCodeId: string
+      userId: string
+      amountBefore: number
+      discount: number
+      amountAfter: number
+      createdAt: Date
+    }, ExtArgs["result"]["platformPromoRedemption"]>
+    composites: {}
+  }
+
+  type PlatformPromoRedemptionGetPayload<S extends boolean | null | undefined | PlatformPromoRedemptionDefaultArgs> = $Result.GetResult<Prisma.$PlatformPromoRedemptionPayload, S>
+
+  type PlatformPromoRedemptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlatformPromoRedemptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlatformPromoRedemptionCountAggregateInputType | true
+    }
+
+  export interface PlatformPromoRedemptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlatformPromoRedemption'], meta: { name: 'PlatformPromoRedemption' } }
+    /**
+     * Find zero or one PlatformPromoRedemption that matches the filter.
+     * @param {PlatformPromoRedemptionFindUniqueArgs} args - Arguments to find a PlatformPromoRedemption
+     * @example
+     * // Get one PlatformPromoRedemption
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlatformPromoRedemptionFindUniqueArgs>(args: SelectSubset<T, PlatformPromoRedemptionFindUniqueArgs<ExtArgs>>): Prisma__PlatformPromoRedemptionClient<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlatformPromoRedemption that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlatformPromoRedemptionFindUniqueOrThrowArgs} args - Arguments to find a PlatformPromoRedemption
+     * @example
+     * // Get one PlatformPromoRedemption
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlatformPromoRedemptionFindUniqueOrThrowArgs>(args: SelectSubset<T, PlatformPromoRedemptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlatformPromoRedemptionClient<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlatformPromoRedemption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoRedemptionFindFirstArgs} args - Arguments to find a PlatformPromoRedemption
+     * @example
+     * // Get one PlatformPromoRedemption
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlatformPromoRedemptionFindFirstArgs>(args?: SelectSubset<T, PlatformPromoRedemptionFindFirstArgs<ExtArgs>>): Prisma__PlatformPromoRedemptionClient<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlatformPromoRedemption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoRedemptionFindFirstOrThrowArgs} args - Arguments to find a PlatformPromoRedemption
+     * @example
+     * // Get one PlatformPromoRedemption
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlatformPromoRedemptionFindFirstOrThrowArgs>(args?: SelectSubset<T, PlatformPromoRedemptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlatformPromoRedemptionClient<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlatformPromoRedemptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoRedemptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlatformPromoRedemptions
+     * const platformPromoRedemptions = await prisma.platformPromoRedemption.findMany()
+     * 
+     * // Get first 10 PlatformPromoRedemptions
+     * const platformPromoRedemptions = await prisma.platformPromoRedemption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const platformPromoRedemptionWithIdOnly = await prisma.platformPromoRedemption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlatformPromoRedemptionFindManyArgs>(args?: SelectSubset<T, PlatformPromoRedemptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlatformPromoRedemption.
+     * @param {PlatformPromoRedemptionCreateArgs} args - Arguments to create a PlatformPromoRedemption.
+     * @example
+     * // Create one PlatformPromoRedemption
+     * const PlatformPromoRedemption = await prisma.platformPromoRedemption.create({
+     *   data: {
+     *     // ... data to create a PlatformPromoRedemption
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlatformPromoRedemptionCreateArgs>(args: SelectSubset<T, PlatformPromoRedemptionCreateArgs<ExtArgs>>): Prisma__PlatformPromoRedemptionClient<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlatformPromoRedemptions.
+     * @param {PlatformPromoRedemptionCreateManyArgs} args - Arguments to create many PlatformPromoRedemptions.
+     * @example
+     * // Create many PlatformPromoRedemptions
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlatformPromoRedemptionCreateManyArgs>(args?: SelectSubset<T, PlatformPromoRedemptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlatformPromoRedemptions and returns the data saved in the database.
+     * @param {PlatformPromoRedemptionCreateManyAndReturnArgs} args - Arguments to create many PlatformPromoRedemptions.
+     * @example
+     * // Create many PlatformPromoRedemptions
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlatformPromoRedemptions and only return the `id`
+     * const platformPromoRedemptionWithIdOnly = await prisma.platformPromoRedemption.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlatformPromoRedemptionCreateManyAndReturnArgs>(args?: SelectSubset<T, PlatformPromoRedemptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlatformPromoRedemption.
+     * @param {PlatformPromoRedemptionDeleteArgs} args - Arguments to delete one PlatformPromoRedemption.
+     * @example
+     * // Delete one PlatformPromoRedemption
+     * const PlatformPromoRedemption = await prisma.platformPromoRedemption.delete({
+     *   where: {
+     *     // ... filter to delete one PlatformPromoRedemption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlatformPromoRedemptionDeleteArgs>(args: SelectSubset<T, PlatformPromoRedemptionDeleteArgs<ExtArgs>>): Prisma__PlatformPromoRedemptionClient<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlatformPromoRedemption.
+     * @param {PlatformPromoRedemptionUpdateArgs} args - Arguments to update one PlatformPromoRedemption.
+     * @example
+     * // Update one PlatformPromoRedemption
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlatformPromoRedemptionUpdateArgs>(args: SelectSubset<T, PlatformPromoRedemptionUpdateArgs<ExtArgs>>): Prisma__PlatformPromoRedemptionClient<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlatformPromoRedemptions.
+     * @param {PlatformPromoRedemptionDeleteManyArgs} args - Arguments to filter PlatformPromoRedemptions to delete.
+     * @example
+     * // Delete a few PlatformPromoRedemptions
+     * const { count } = await prisma.platformPromoRedemption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlatformPromoRedemptionDeleteManyArgs>(args?: SelectSubset<T, PlatformPromoRedemptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlatformPromoRedemptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoRedemptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlatformPromoRedemptions
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlatformPromoRedemptionUpdateManyArgs>(args: SelectSubset<T, PlatformPromoRedemptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlatformPromoRedemptions and returns the data updated in the database.
+     * @param {PlatformPromoRedemptionUpdateManyAndReturnArgs} args - Arguments to update many PlatformPromoRedemptions.
+     * @example
+     * // Update many PlatformPromoRedemptions
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlatformPromoRedemptions and only return the `id`
+     * const platformPromoRedemptionWithIdOnly = await prisma.platformPromoRedemption.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlatformPromoRedemptionUpdateManyAndReturnArgs>(args: SelectSubset<T, PlatformPromoRedemptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlatformPromoRedemption.
+     * @param {PlatformPromoRedemptionUpsertArgs} args - Arguments to update or create a PlatformPromoRedemption.
+     * @example
+     * // Update or create a PlatformPromoRedemption
+     * const platformPromoRedemption = await prisma.platformPromoRedemption.upsert({
+     *   create: {
+     *     // ... data to create a PlatformPromoRedemption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlatformPromoRedemption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlatformPromoRedemptionUpsertArgs>(args: SelectSubset<T, PlatformPromoRedemptionUpsertArgs<ExtArgs>>): Prisma__PlatformPromoRedemptionClient<$Result.GetResult<Prisma.$PlatformPromoRedemptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlatformPromoRedemptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoRedemptionCountArgs} args - Arguments to filter PlatformPromoRedemptions to count.
+     * @example
+     * // Count the number of PlatformPromoRedemptions
+     * const count = await prisma.platformPromoRedemption.count({
+     *   where: {
+     *     // ... the filter for the PlatformPromoRedemptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlatformPromoRedemptionCountArgs>(
+      args?: Subset<T, PlatformPromoRedemptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlatformPromoRedemptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlatformPromoRedemption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoRedemptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlatformPromoRedemptionAggregateArgs>(args: Subset<T, PlatformPromoRedemptionAggregateArgs>): Prisma.PrismaPromise<GetPlatformPromoRedemptionAggregateType<T>>
+
+    /**
+     * Group by PlatformPromoRedemption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformPromoRedemptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlatformPromoRedemptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlatformPromoRedemptionGroupByArgs['orderBy'] }
+        : { orderBy?: PlatformPromoRedemptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlatformPromoRedemptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlatformPromoRedemptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlatformPromoRedemption model
+   */
+  readonly fields: PlatformPromoRedemptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlatformPromoRedemption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlatformPromoRedemptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    promoCode<T extends PlatformPromoCodeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlatformPromoCodeDefaultArgs<ExtArgs>>): Prisma__PlatformPromoCodeClient<$Result.GetResult<Prisma.$PlatformPromoCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlatformPromoRedemption model
+   */
+  interface PlatformPromoRedemptionFieldRefs {
+    readonly id: FieldRef<"PlatformPromoRedemption", 'String'>
+    readonly promoCodeId: FieldRef<"PlatformPromoRedemption", 'String'>
+    readonly userId: FieldRef<"PlatformPromoRedemption", 'String'>
+    readonly amountBefore: FieldRef<"PlatformPromoRedemption", 'Float'>
+    readonly discount: FieldRef<"PlatformPromoRedemption", 'Float'>
+    readonly amountAfter: FieldRef<"PlatformPromoRedemption", 'Float'>
+    readonly createdAt: FieldRef<"PlatformPromoRedemption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlatformPromoRedemption findUnique
+   */
+  export type PlatformPromoRedemptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoRedemption to fetch.
+     */
+    where: PlatformPromoRedemptionWhereUniqueInput
+  }
+
+  /**
+   * PlatformPromoRedemption findUniqueOrThrow
+   */
+  export type PlatformPromoRedemptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoRedemption to fetch.
+     */
+    where: PlatformPromoRedemptionWhereUniqueInput
+  }
+
+  /**
+   * PlatformPromoRedemption findFirst
+   */
+  export type PlatformPromoRedemptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoRedemption to fetch.
+     */
+    where?: PlatformPromoRedemptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformPromoRedemptions to fetch.
+     */
+    orderBy?: PlatformPromoRedemptionOrderByWithRelationInput | PlatformPromoRedemptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlatformPromoRedemptions.
+     */
+    cursor?: PlatformPromoRedemptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformPromoRedemptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformPromoRedemptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformPromoRedemptions.
+     */
+    distinct?: PlatformPromoRedemptionScalarFieldEnum | PlatformPromoRedemptionScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformPromoRedemption findFirstOrThrow
+   */
+  export type PlatformPromoRedemptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoRedemption to fetch.
+     */
+    where?: PlatformPromoRedemptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformPromoRedemptions to fetch.
+     */
+    orderBy?: PlatformPromoRedemptionOrderByWithRelationInput | PlatformPromoRedemptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlatformPromoRedemptions.
+     */
+    cursor?: PlatformPromoRedemptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformPromoRedemptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformPromoRedemptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformPromoRedemptions.
+     */
+    distinct?: PlatformPromoRedemptionScalarFieldEnum | PlatformPromoRedemptionScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformPromoRedemption findMany
+   */
+  export type PlatformPromoRedemptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PlatformPromoRedemptions to fetch.
+     */
+    where?: PlatformPromoRedemptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformPromoRedemptions to fetch.
+     */
+    orderBy?: PlatformPromoRedemptionOrderByWithRelationInput | PlatformPromoRedemptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlatformPromoRedemptions.
+     */
+    cursor?: PlatformPromoRedemptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformPromoRedemptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformPromoRedemptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformPromoRedemptions.
+     */
+    distinct?: PlatformPromoRedemptionScalarFieldEnum | PlatformPromoRedemptionScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformPromoRedemption create
+   */
+  export type PlatformPromoRedemptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PlatformPromoRedemption.
+     */
+    data: XOR<PlatformPromoRedemptionCreateInput, PlatformPromoRedemptionUncheckedCreateInput>
+  }
+
+  /**
+   * PlatformPromoRedemption createMany
+   */
+  export type PlatformPromoRedemptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlatformPromoRedemptions.
+     */
+    data: PlatformPromoRedemptionCreateManyInput | PlatformPromoRedemptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlatformPromoRedemption createManyAndReturn
+   */
+  export type PlatformPromoRedemptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlatformPromoRedemptions.
+     */
+    data: PlatformPromoRedemptionCreateManyInput | PlatformPromoRedemptionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlatformPromoRedemption update
+   */
+  export type PlatformPromoRedemptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PlatformPromoRedemption.
+     */
+    data: XOR<PlatformPromoRedemptionUpdateInput, PlatformPromoRedemptionUncheckedUpdateInput>
+    /**
+     * Choose, which PlatformPromoRedemption to update.
+     */
+    where: PlatformPromoRedemptionWhereUniqueInput
+  }
+
+  /**
+   * PlatformPromoRedemption updateMany
+   */
+  export type PlatformPromoRedemptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlatformPromoRedemptions.
+     */
+    data: XOR<PlatformPromoRedemptionUpdateManyMutationInput, PlatformPromoRedemptionUncheckedUpdateManyInput>
+    /**
+     * Filter which PlatformPromoRedemptions to update
+     */
+    where?: PlatformPromoRedemptionWhereInput
+    /**
+     * Limit how many PlatformPromoRedemptions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlatformPromoRedemption updateManyAndReturn
+   */
+  export type PlatformPromoRedemptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * The data used to update PlatformPromoRedemptions.
+     */
+    data: XOR<PlatformPromoRedemptionUpdateManyMutationInput, PlatformPromoRedemptionUncheckedUpdateManyInput>
+    /**
+     * Filter which PlatformPromoRedemptions to update
+     */
+    where?: PlatformPromoRedemptionWhereInput
+    /**
+     * Limit how many PlatformPromoRedemptions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlatformPromoRedemption upsert
+   */
+  export type PlatformPromoRedemptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PlatformPromoRedemption to update in case it exists.
+     */
+    where: PlatformPromoRedemptionWhereUniqueInput
+    /**
+     * In case the PlatformPromoRedemption found by the `where` argument doesn't exist, create a new PlatformPromoRedemption with this data.
+     */
+    create: XOR<PlatformPromoRedemptionCreateInput, PlatformPromoRedemptionUncheckedCreateInput>
+    /**
+     * In case the PlatformPromoRedemption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlatformPromoRedemptionUpdateInput, PlatformPromoRedemptionUncheckedUpdateInput>
+  }
+
+  /**
+   * PlatformPromoRedemption delete
+   */
+  export type PlatformPromoRedemptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+    /**
+     * Filter which PlatformPromoRedemption to delete.
+     */
+    where: PlatformPromoRedemptionWhereUniqueInput
+  }
+
+  /**
+   * PlatformPromoRedemption deleteMany
+   */
+  export type PlatformPromoRedemptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlatformPromoRedemptions to delete
+     */
+    where?: PlatformPromoRedemptionWhereInput
+    /**
+     * Limit how many PlatformPromoRedemptions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlatformPromoRedemption without action
+   */
+  export type PlatformPromoRedemptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformPromoRedemption
+     */
+    select?: PlatformPromoRedemptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformPromoRedemption
+     */
+    omit?: PlatformPromoRedemptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlatformPromoRedemptionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Notification
    */
 
@@ -40477,6 +43234,42 @@ export namespace Prisma {
   export type PromoCodeScalarFieldEnum = (typeof PromoCodeScalarFieldEnum)[keyof typeof PromoCodeScalarFieldEnum]
 
 
+  export const PlatformPromoCodeScalarFieldEnum: {
+    id: 'id',
+    code: 'code',
+    scope: 'scope',
+    discountType: 'discountType',
+    discountValue: 'discountValue',
+    currency: 'currency',
+    startsAt: 'startsAt',
+    expiresAt: 'expiresAt',
+    isActive: 'isActive',
+    maxUses: 'maxUses',
+    usedCount: 'usedCount',
+    perUserLimit: 'perUserLimit',
+    applicablePlanIds: 'applicablePlanIds',
+    billingInterval: 'billingInterval',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PlatformPromoCodeScalarFieldEnum = (typeof PlatformPromoCodeScalarFieldEnum)[keyof typeof PlatformPromoCodeScalarFieldEnum]
+
+
+  export const PlatformPromoRedemptionScalarFieldEnum: {
+    id: 'id',
+    promoCodeId: 'promoCodeId',
+    userId: 'userId',
+    amountBefore: 'amountBefore',
+    discount: 'discount',
+    amountAfter: 'amountAfter',
+    createdAt: 'createdAt'
+  };
+
+  export type PlatformPromoRedemptionScalarFieldEnum = (typeof PlatformPromoRedemptionScalarFieldEnum)[keyof typeof PlatformPromoRedemptionScalarFieldEnum]
+
+
   export const NotificationScalarFieldEnum: {
     id: 'id',
     studentId: 'studentId',
@@ -40973,6 +43766,48 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'PromoScope'
+   */
+  export type EnumPromoScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoScope'>
+    
+
+
+  /**
+   * Reference to a field of type 'PromoScope[]'
+   */
+  export type ListEnumPromoScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoScope[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PromoDiscountType'
+   */
+  export type EnumPromoDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoDiscountType'>
+    
+
+
+  /**
+   * Reference to a field of type 'PromoDiscountType[]'
+   */
+  export type ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoDiscountType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PromoBillingScope'
+   */
+  export type EnumPromoBillingScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoBillingScope'>
+    
+
+
+  /**
+   * Reference to a field of type 'PromoBillingScope[]'
+   */
+  export type ListEnumPromoBillingScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoBillingScope[]'>
+    
+
+
+  /**
    * Reference to a field of type 'NotificationType'
    */
   export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType'>
@@ -41106,6 +43941,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: XOR<TeacherRegistrationRequestNullableScalarRelationFilter, TeacherRegistrationRequestWhereInput> | null
     createdPromoCodes?: PromoCodeListRelationFilter
     usedPromoCodes?: PromoCodeListRelationFilter
+    createdPlatformPromoCodes?: PlatformPromoCodeListRelationFilter
+    platformPromoRedemptions?: PlatformPromoRedemptionListRelationFilter
     enrollments?: EnrollmentListRelationFilter
     lessonProgress?: LessonProgressListRelationFilter
     otps?: OtpListRelationFilter
@@ -41142,6 +43979,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestOrderByWithRelationInput
     createdPromoCodes?: PromoCodeOrderByRelationAggregateInput
     usedPromoCodes?: PromoCodeOrderByRelationAggregateInput
+    createdPlatformPromoCodes?: PlatformPromoCodeOrderByRelationAggregateInput
+    platformPromoRedemptions?: PlatformPromoRedemptionOrderByRelationAggregateInput
     enrollments?: EnrollmentOrderByRelationAggregateInput
     lessonProgress?: LessonProgressOrderByRelationAggregateInput
     otps?: OtpOrderByRelationAggregateInput
@@ -41181,6 +44020,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: XOR<TeacherRegistrationRequestNullableScalarRelationFilter, TeacherRegistrationRequestWhereInput> | null
     createdPromoCodes?: PromoCodeListRelationFilter
     usedPromoCodes?: PromoCodeListRelationFilter
+    createdPlatformPromoCodes?: PlatformPromoCodeListRelationFilter
+    platformPromoRedemptions?: PlatformPromoRedemptionListRelationFilter
     enrollments?: EnrollmentListRelationFilter
     lessonProgress?: LessonProgressListRelationFilter
     otps?: OtpListRelationFilter
@@ -42852,6 +45693,196 @@ export namespace Prisma {
     expiresAt?: DateTimeNullableWithAggregatesFilter<"PromoCode"> | Date | string | null
   }
 
+  export type PlatformPromoCodeWhereInput = {
+    AND?: PlatformPromoCodeWhereInput | PlatformPromoCodeWhereInput[]
+    OR?: PlatformPromoCodeWhereInput[]
+    NOT?: PlatformPromoCodeWhereInput | PlatformPromoCodeWhereInput[]
+    id?: StringFilter<"PlatformPromoCode"> | string
+    code?: StringFilter<"PlatformPromoCode"> | string
+    scope?: EnumPromoScopeFilter<"PlatformPromoCode"> | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFilter<"PlatformPromoCode"> | $Enums.PromoDiscountType
+    discountValue?: FloatFilter<"PlatformPromoCode"> | number
+    currency?: StringFilter<"PlatformPromoCode"> | string
+    startsAt?: DateTimeNullableFilter<"PlatformPromoCode"> | Date | string | null
+    expiresAt?: DateTimeNullableFilter<"PlatformPromoCode"> | Date | string | null
+    isActive?: BoolFilter<"PlatformPromoCode"> | boolean
+    maxUses?: IntNullableFilter<"PlatformPromoCode"> | number | null
+    usedCount?: IntFilter<"PlatformPromoCode"> | number
+    perUserLimit?: IntNullableFilter<"PlatformPromoCode"> | number | null
+    applicablePlanIds?: StringNullableListFilter<"PlatformPromoCode">
+    billingInterval?: EnumPromoBillingScopeFilter<"PlatformPromoCode"> | $Enums.PromoBillingScope
+    createdById?: StringFilter<"PlatformPromoCode"> | string
+    createdAt?: DateTimeFilter<"PlatformPromoCode"> | Date | string
+    updatedAt?: DateTimeFilter<"PlatformPromoCode"> | Date | string
+    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    redemptions?: PlatformPromoRedemptionListRelationFilter
+  }
+
+  export type PlatformPromoCodeOrderByWithRelationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    scope?: SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    currency?: SortOrder
+    startsAt?: SortOrderInput | SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    maxUses?: SortOrderInput | SortOrder
+    usedCount?: SortOrder
+    perUserLimit?: SortOrderInput | SortOrder
+    applicablePlanIds?: SortOrder
+    billingInterval?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdBy?: UserOrderByWithRelationInput
+    redemptions?: PlatformPromoRedemptionOrderByRelationAggregateInput
+  }
+
+  export type PlatformPromoCodeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    code?: string
+    AND?: PlatformPromoCodeWhereInput | PlatformPromoCodeWhereInput[]
+    OR?: PlatformPromoCodeWhereInput[]
+    NOT?: PlatformPromoCodeWhereInput | PlatformPromoCodeWhereInput[]
+    scope?: EnumPromoScopeFilter<"PlatformPromoCode"> | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFilter<"PlatformPromoCode"> | $Enums.PromoDiscountType
+    discountValue?: FloatFilter<"PlatformPromoCode"> | number
+    currency?: StringFilter<"PlatformPromoCode"> | string
+    startsAt?: DateTimeNullableFilter<"PlatformPromoCode"> | Date | string | null
+    expiresAt?: DateTimeNullableFilter<"PlatformPromoCode"> | Date | string | null
+    isActive?: BoolFilter<"PlatformPromoCode"> | boolean
+    maxUses?: IntNullableFilter<"PlatformPromoCode"> | number | null
+    usedCount?: IntFilter<"PlatformPromoCode"> | number
+    perUserLimit?: IntNullableFilter<"PlatformPromoCode"> | number | null
+    applicablePlanIds?: StringNullableListFilter<"PlatformPromoCode">
+    billingInterval?: EnumPromoBillingScopeFilter<"PlatformPromoCode"> | $Enums.PromoBillingScope
+    createdById?: StringFilter<"PlatformPromoCode"> | string
+    createdAt?: DateTimeFilter<"PlatformPromoCode"> | Date | string
+    updatedAt?: DateTimeFilter<"PlatformPromoCode"> | Date | string
+    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    redemptions?: PlatformPromoRedemptionListRelationFilter
+  }, "id" | "code">
+
+  export type PlatformPromoCodeOrderByWithAggregationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    scope?: SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    currency?: SortOrder
+    startsAt?: SortOrderInput | SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    maxUses?: SortOrderInput | SortOrder
+    usedCount?: SortOrder
+    perUserLimit?: SortOrderInput | SortOrder
+    applicablePlanIds?: SortOrder
+    billingInterval?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PlatformPromoCodeCountOrderByAggregateInput
+    _avg?: PlatformPromoCodeAvgOrderByAggregateInput
+    _max?: PlatformPromoCodeMaxOrderByAggregateInput
+    _min?: PlatformPromoCodeMinOrderByAggregateInput
+    _sum?: PlatformPromoCodeSumOrderByAggregateInput
+  }
+
+  export type PlatformPromoCodeScalarWhereWithAggregatesInput = {
+    AND?: PlatformPromoCodeScalarWhereWithAggregatesInput | PlatformPromoCodeScalarWhereWithAggregatesInput[]
+    OR?: PlatformPromoCodeScalarWhereWithAggregatesInput[]
+    NOT?: PlatformPromoCodeScalarWhereWithAggregatesInput | PlatformPromoCodeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PlatformPromoCode"> | string
+    code?: StringWithAggregatesFilter<"PlatformPromoCode"> | string
+    scope?: EnumPromoScopeWithAggregatesFilter<"PlatformPromoCode"> | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeWithAggregatesFilter<"PlatformPromoCode"> | $Enums.PromoDiscountType
+    discountValue?: FloatWithAggregatesFilter<"PlatformPromoCode"> | number
+    currency?: StringWithAggregatesFilter<"PlatformPromoCode"> | string
+    startsAt?: DateTimeNullableWithAggregatesFilter<"PlatformPromoCode"> | Date | string | null
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"PlatformPromoCode"> | Date | string | null
+    isActive?: BoolWithAggregatesFilter<"PlatformPromoCode"> | boolean
+    maxUses?: IntNullableWithAggregatesFilter<"PlatformPromoCode"> | number | null
+    usedCount?: IntWithAggregatesFilter<"PlatformPromoCode"> | number
+    perUserLimit?: IntNullableWithAggregatesFilter<"PlatformPromoCode"> | number | null
+    applicablePlanIds?: StringNullableListFilter<"PlatformPromoCode">
+    billingInterval?: EnumPromoBillingScopeWithAggregatesFilter<"PlatformPromoCode"> | $Enums.PromoBillingScope
+    createdById?: StringWithAggregatesFilter<"PlatformPromoCode"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"PlatformPromoCode"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PlatformPromoCode"> | Date | string
+  }
+
+  export type PlatformPromoRedemptionWhereInput = {
+    AND?: PlatformPromoRedemptionWhereInput | PlatformPromoRedemptionWhereInput[]
+    OR?: PlatformPromoRedemptionWhereInput[]
+    NOT?: PlatformPromoRedemptionWhereInput | PlatformPromoRedemptionWhereInput[]
+    id?: StringFilter<"PlatformPromoRedemption"> | string
+    promoCodeId?: StringFilter<"PlatformPromoRedemption"> | string
+    userId?: StringFilter<"PlatformPromoRedemption"> | string
+    amountBefore?: FloatFilter<"PlatformPromoRedemption"> | number
+    discount?: FloatFilter<"PlatformPromoRedemption"> | number
+    amountAfter?: FloatFilter<"PlatformPromoRedemption"> | number
+    createdAt?: DateTimeFilter<"PlatformPromoRedemption"> | Date | string
+    promoCode?: XOR<PlatformPromoCodeScalarRelationFilter, PlatformPromoCodeWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type PlatformPromoRedemptionOrderByWithRelationInput = {
+    id?: SortOrder
+    promoCodeId?: SortOrder
+    userId?: SortOrder
+    amountBefore?: SortOrder
+    discount?: SortOrder
+    amountAfter?: SortOrder
+    createdAt?: SortOrder
+    promoCode?: PlatformPromoCodeOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type PlatformPromoRedemptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PlatformPromoRedemptionWhereInput | PlatformPromoRedemptionWhereInput[]
+    OR?: PlatformPromoRedemptionWhereInput[]
+    NOT?: PlatformPromoRedemptionWhereInput | PlatformPromoRedemptionWhereInput[]
+    promoCodeId?: StringFilter<"PlatformPromoRedemption"> | string
+    userId?: StringFilter<"PlatformPromoRedemption"> | string
+    amountBefore?: FloatFilter<"PlatformPromoRedemption"> | number
+    discount?: FloatFilter<"PlatformPromoRedemption"> | number
+    amountAfter?: FloatFilter<"PlatformPromoRedemption"> | number
+    createdAt?: DateTimeFilter<"PlatformPromoRedemption"> | Date | string
+    promoCode?: XOR<PlatformPromoCodeScalarRelationFilter, PlatformPromoCodeWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type PlatformPromoRedemptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    promoCodeId?: SortOrder
+    userId?: SortOrder
+    amountBefore?: SortOrder
+    discount?: SortOrder
+    amountAfter?: SortOrder
+    createdAt?: SortOrder
+    _count?: PlatformPromoRedemptionCountOrderByAggregateInput
+    _avg?: PlatformPromoRedemptionAvgOrderByAggregateInput
+    _max?: PlatformPromoRedemptionMaxOrderByAggregateInput
+    _min?: PlatformPromoRedemptionMinOrderByAggregateInput
+    _sum?: PlatformPromoRedemptionSumOrderByAggregateInput
+  }
+
+  export type PlatformPromoRedemptionScalarWhereWithAggregatesInput = {
+    AND?: PlatformPromoRedemptionScalarWhereWithAggregatesInput | PlatformPromoRedemptionScalarWhereWithAggregatesInput[]
+    OR?: PlatformPromoRedemptionScalarWhereWithAggregatesInput[]
+    NOT?: PlatformPromoRedemptionScalarWhereWithAggregatesInput | PlatformPromoRedemptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PlatformPromoRedemption"> | string
+    promoCodeId?: StringWithAggregatesFilter<"PlatformPromoRedemption"> | string
+    userId?: StringWithAggregatesFilter<"PlatformPromoRedemption"> | string
+    amountBefore?: FloatWithAggregatesFilter<"PlatformPromoRedemption"> | number
+    discount?: FloatWithAggregatesFilter<"PlatformPromoRedemption"> | number
+    amountAfter?: FloatWithAggregatesFilter<"PlatformPromoRedemption"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"PlatformPromoRedemption"> | Date | string
+  }
+
   export type NotificationWhereInput = {
     AND?: NotificationWhereInput | NotificationWhereInput[]
     OR?: NotificationWhereInput[]
@@ -43686,6 +46717,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -43722,6 +46755,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -43758,6 +46793,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -43794,6 +46831,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -45577,6 +48616,217 @@ export namespace Prisma {
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type PlatformPromoCodeCreateInput = {
+    id?: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency?: string
+    startsAt?: Date | string | null
+    expiresAt?: Date | string | null
+    isActive?: boolean
+    maxUses?: number | null
+    usedCount?: number
+    perUserLimit?: number | null
+    applicablePlanIds?: PlatformPromoCodeCreateapplicablePlanIdsInput | string[]
+    billingInterval?: $Enums.PromoBillingScope
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: UserCreateNestedOneWithoutCreatedPlatformPromoCodesInput
+    redemptions?: PlatformPromoRedemptionCreateNestedManyWithoutPromoCodeInput
+  }
+
+  export type PlatformPromoCodeUncheckedCreateInput = {
+    id?: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency?: string
+    startsAt?: Date | string | null
+    expiresAt?: Date | string | null
+    isActive?: boolean
+    maxUses?: number | null
+    usedCount?: number
+    perUserLimit?: number | null
+    applicablePlanIds?: PlatformPromoCodeCreateapplicablePlanIdsInput | string[]
+    billingInterval?: $Enums.PromoBillingScope
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    redemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutPromoCodeInput
+  }
+
+  export type PlatformPromoCodeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneRequiredWithoutCreatedPlatformPromoCodesNestedInput
+    redemptions?: PlatformPromoRedemptionUpdateManyWithoutPromoCodeNestedInput
+  }
+
+  export type PlatformPromoCodeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    redemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutPromoCodeNestedInput
+  }
+
+  export type PlatformPromoCodeCreateManyInput = {
+    id?: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency?: string
+    startsAt?: Date | string | null
+    expiresAt?: Date | string | null
+    isActive?: boolean
+    maxUses?: number | null
+    usedCount?: number
+    perUserLimit?: number | null
+    applicablePlanIds?: PlatformPromoCodeCreateapplicablePlanIdsInput | string[]
+    billingInterval?: $Enums.PromoBillingScope
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlatformPromoCodeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformPromoCodeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformPromoRedemptionCreateInput = {
+    id?: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
+    promoCode: PlatformPromoCodeCreateNestedOneWithoutRedemptionsInput
+    user: UserCreateNestedOneWithoutPlatformPromoRedemptionsInput
+  }
+
+  export type PlatformPromoRedemptionUncheckedCreateInput = {
+    id?: string
+    promoCodeId: string
+    userId: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
+  }
+
+  export type PlatformPromoRedemptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    promoCode?: PlatformPromoCodeUpdateOneRequiredWithoutRedemptionsNestedInput
+    user?: UserUpdateOneRequiredWithoutPlatformPromoRedemptionsNestedInput
+  }
+
+  export type PlatformPromoRedemptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    promoCodeId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformPromoRedemptionCreateManyInput = {
+    id?: string
+    promoCodeId: string
+    userId: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
+  }
+
+  export type PlatformPromoRedemptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformPromoRedemptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    promoCodeId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type NotificationCreateInput = {
     id?: string
     type: $Enums.NotificationType
@@ -46562,6 +49812,18 @@ export namespace Prisma {
     none?: PromoCodeWhereInput
   }
 
+  export type PlatformPromoCodeListRelationFilter = {
+    every?: PlatformPromoCodeWhereInput
+    some?: PlatformPromoCodeWhereInput
+    none?: PlatformPromoCodeWhereInput
+  }
+
+  export type PlatformPromoRedemptionListRelationFilter = {
+    every?: PlatformPromoRedemptionWhereInput
+    some?: PlatformPromoRedemptionWhereInput
+    none?: PlatformPromoRedemptionWhereInput
+  }
+
   export type EnrollmentListRelationFilter = {
     every?: EnrollmentWhereInput
     some?: EnrollmentWhereInput
@@ -46673,6 +49935,14 @@ export namespace Prisma {
   }
 
   export type PromoCodeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlatformPromoCodeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlatformPromoRedemptionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -48323,6 +51593,176 @@ export namespace Prisma {
     expiresAt?: SortOrder
   }
 
+  export type EnumPromoScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoScope | EnumPromoScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoScope[] | ListEnumPromoScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoScope[] | ListEnumPromoScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoScopeFilter<$PrismaModel> | $Enums.PromoScope
+  }
+
+  export type EnumPromoDiscountTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoDiscountType | EnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoDiscountType[] | ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoDiscountType[] | ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoDiscountTypeFilter<$PrismaModel> | $Enums.PromoDiscountType
+  }
+
+  export type EnumPromoBillingScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoBillingScope | EnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoBillingScope[] | ListEnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoBillingScope[] | ListEnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoBillingScopeFilter<$PrismaModel> | $Enums.PromoBillingScope
+  }
+
+  export type PlatformPromoCodeCountOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    scope?: SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    currency?: SortOrder
+    startsAt?: SortOrder
+    expiresAt?: SortOrder
+    isActive?: SortOrder
+    maxUses?: SortOrder
+    usedCount?: SortOrder
+    perUserLimit?: SortOrder
+    applicablePlanIds?: SortOrder
+    billingInterval?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlatformPromoCodeAvgOrderByAggregateInput = {
+    discountValue?: SortOrder
+    maxUses?: SortOrder
+    usedCount?: SortOrder
+    perUserLimit?: SortOrder
+  }
+
+  export type PlatformPromoCodeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    scope?: SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    currency?: SortOrder
+    startsAt?: SortOrder
+    expiresAt?: SortOrder
+    isActive?: SortOrder
+    maxUses?: SortOrder
+    usedCount?: SortOrder
+    perUserLimit?: SortOrder
+    billingInterval?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlatformPromoCodeMinOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    scope?: SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    currency?: SortOrder
+    startsAt?: SortOrder
+    expiresAt?: SortOrder
+    isActive?: SortOrder
+    maxUses?: SortOrder
+    usedCount?: SortOrder
+    perUserLimit?: SortOrder
+    billingInterval?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlatformPromoCodeSumOrderByAggregateInput = {
+    discountValue?: SortOrder
+    maxUses?: SortOrder
+    usedCount?: SortOrder
+    perUserLimit?: SortOrder
+  }
+
+  export type EnumPromoScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoScope | EnumPromoScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoScope[] | ListEnumPromoScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoScope[] | ListEnumPromoScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoScopeWithAggregatesFilter<$PrismaModel> | $Enums.PromoScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPromoScopeFilter<$PrismaModel>
+    _max?: NestedEnumPromoScopeFilter<$PrismaModel>
+  }
+
+  export type EnumPromoDiscountTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoDiscountType | EnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoDiscountType[] | ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoDiscountType[] | ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoDiscountTypeWithAggregatesFilter<$PrismaModel> | $Enums.PromoDiscountType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPromoDiscountTypeFilter<$PrismaModel>
+    _max?: NestedEnumPromoDiscountTypeFilter<$PrismaModel>
+  }
+
+  export type EnumPromoBillingScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoBillingScope | EnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoBillingScope[] | ListEnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoBillingScope[] | ListEnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoBillingScopeWithAggregatesFilter<$PrismaModel> | $Enums.PromoBillingScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPromoBillingScopeFilter<$PrismaModel>
+    _max?: NestedEnumPromoBillingScopeFilter<$PrismaModel>
+  }
+
+  export type PlatformPromoCodeScalarRelationFilter = {
+    is?: PlatformPromoCodeWhereInput
+    isNot?: PlatformPromoCodeWhereInput
+  }
+
+  export type PlatformPromoRedemptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    promoCodeId?: SortOrder
+    userId?: SortOrder
+    amountBefore?: SortOrder
+    discount?: SortOrder
+    amountAfter?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PlatformPromoRedemptionAvgOrderByAggregateInput = {
+    amountBefore?: SortOrder
+    discount?: SortOrder
+    amountAfter?: SortOrder
+  }
+
+  export type PlatformPromoRedemptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    promoCodeId?: SortOrder
+    userId?: SortOrder
+    amountBefore?: SortOrder
+    discount?: SortOrder
+    amountAfter?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PlatformPromoRedemptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    promoCodeId?: SortOrder
+    userId?: SortOrder
+    amountBefore?: SortOrder
+    discount?: SortOrder
+    amountAfter?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PlatformPromoRedemptionSumOrderByAggregateInput = {
+    amountBefore?: SortOrder
+    discount?: SortOrder
+    amountAfter?: SortOrder
+  }
+
   export type EnumNotificationTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
     in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
@@ -48921,6 +52361,20 @@ export namespace Prisma {
     connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
   }
 
+  export type PlatformPromoCodeCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<PlatformPromoCodeCreateWithoutCreatedByInput, PlatformPromoCodeUncheckedCreateWithoutCreatedByInput> | PlatformPromoCodeCreateWithoutCreatedByInput[] | PlatformPromoCodeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: PlatformPromoCodeCreateOrConnectWithoutCreatedByInput | PlatformPromoCodeCreateOrConnectWithoutCreatedByInput[]
+    createMany?: PlatformPromoCodeCreateManyCreatedByInputEnvelope
+    connect?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+  }
+
+  export type PlatformPromoRedemptionCreateNestedManyWithoutUserInput = {
+    create?: XOR<PlatformPromoRedemptionCreateWithoutUserInput, PlatformPromoRedemptionUncheckedCreateWithoutUserInput> | PlatformPromoRedemptionCreateWithoutUserInput[] | PlatformPromoRedemptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlatformPromoRedemptionCreateOrConnectWithoutUserInput | PlatformPromoRedemptionCreateOrConnectWithoutUserInput[]
+    createMany?: PlatformPromoRedemptionCreateManyUserInputEnvelope
+    connect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+  }
+
   export type EnrollmentCreateNestedManyWithoutStudentInput = {
     create?: XOR<EnrollmentCreateWithoutStudentInput, EnrollmentUncheckedCreateWithoutStudentInput> | EnrollmentCreateWithoutStudentInput[] | EnrollmentUncheckedCreateWithoutStudentInput[]
     connectOrCreate?: EnrollmentCreateOrConnectWithoutStudentInput | EnrollmentCreateOrConnectWithoutStudentInput[]
@@ -49070,6 +52524,20 @@ export namespace Prisma {
     connectOrCreate?: PromoCodeCreateOrConnectWithoutUsedByStudentInput | PromoCodeCreateOrConnectWithoutUsedByStudentInput[]
     createMany?: PromoCodeCreateManyUsedByStudentInputEnvelope
     connect?: PromoCodeWhereUniqueInput | PromoCodeWhereUniqueInput[]
+  }
+
+  export type PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<PlatformPromoCodeCreateWithoutCreatedByInput, PlatformPromoCodeUncheckedCreateWithoutCreatedByInput> | PlatformPromoCodeCreateWithoutCreatedByInput[] | PlatformPromoCodeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: PlatformPromoCodeCreateOrConnectWithoutCreatedByInput | PlatformPromoCodeCreateOrConnectWithoutCreatedByInput[]
+    createMany?: PlatformPromoCodeCreateManyCreatedByInputEnvelope
+    connect?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+  }
+
+  export type PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PlatformPromoRedemptionCreateWithoutUserInput, PlatformPromoRedemptionUncheckedCreateWithoutUserInput> | PlatformPromoRedemptionCreateWithoutUserInput[] | PlatformPromoRedemptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlatformPromoRedemptionCreateOrConnectWithoutUserInput | PlatformPromoRedemptionCreateOrConnectWithoutUserInput[]
+    createMany?: PlatformPromoRedemptionCreateManyUserInputEnvelope
+    connect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
   }
 
   export type EnrollmentUncheckedCreateNestedManyWithoutStudentInput = {
@@ -49274,6 +52742,34 @@ export namespace Prisma {
     update?: PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput | PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput[]
     updateMany?: PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput | PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput[]
     deleteMany?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
+  }
+
+  export type PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<PlatformPromoCodeCreateWithoutCreatedByInput, PlatformPromoCodeUncheckedCreateWithoutCreatedByInput> | PlatformPromoCodeCreateWithoutCreatedByInput[] | PlatformPromoCodeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: PlatformPromoCodeCreateOrConnectWithoutCreatedByInput | PlatformPromoCodeCreateOrConnectWithoutCreatedByInput[]
+    upsert?: PlatformPromoCodeUpsertWithWhereUniqueWithoutCreatedByInput | PlatformPromoCodeUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: PlatformPromoCodeCreateManyCreatedByInputEnvelope
+    set?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+    disconnect?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+    delete?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+    connect?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+    update?: PlatformPromoCodeUpdateWithWhereUniqueWithoutCreatedByInput | PlatformPromoCodeUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: PlatformPromoCodeUpdateManyWithWhereWithoutCreatedByInput | PlatformPromoCodeUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: PlatformPromoCodeScalarWhereInput | PlatformPromoCodeScalarWhereInput[]
+  }
+
+  export type PlatformPromoRedemptionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PlatformPromoRedemptionCreateWithoutUserInput, PlatformPromoRedemptionUncheckedCreateWithoutUserInput> | PlatformPromoRedemptionCreateWithoutUserInput[] | PlatformPromoRedemptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlatformPromoRedemptionCreateOrConnectWithoutUserInput | PlatformPromoRedemptionCreateOrConnectWithoutUserInput[]
+    upsert?: PlatformPromoRedemptionUpsertWithWhereUniqueWithoutUserInput | PlatformPromoRedemptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PlatformPromoRedemptionCreateManyUserInputEnvelope
+    set?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    disconnect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    delete?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    connect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    update?: PlatformPromoRedemptionUpdateWithWhereUniqueWithoutUserInput | PlatformPromoRedemptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PlatformPromoRedemptionUpdateManyWithWhereWithoutUserInput | PlatformPromoRedemptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PlatformPromoRedemptionScalarWhereInput | PlatformPromoRedemptionScalarWhereInput[]
   }
 
   export type EnrollmentUpdateManyWithoutStudentNestedInput = {
@@ -49570,6 +53066,34 @@ export namespace Prisma {
     update?: PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput | PromoCodeUpdateWithWhereUniqueWithoutUsedByStudentInput[]
     updateMany?: PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput | PromoCodeUpdateManyWithWhereWithoutUsedByStudentInput[]
     deleteMany?: PromoCodeScalarWhereInput | PromoCodeScalarWhereInput[]
+  }
+
+  export type PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<PlatformPromoCodeCreateWithoutCreatedByInput, PlatformPromoCodeUncheckedCreateWithoutCreatedByInput> | PlatformPromoCodeCreateWithoutCreatedByInput[] | PlatformPromoCodeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: PlatformPromoCodeCreateOrConnectWithoutCreatedByInput | PlatformPromoCodeCreateOrConnectWithoutCreatedByInput[]
+    upsert?: PlatformPromoCodeUpsertWithWhereUniqueWithoutCreatedByInput | PlatformPromoCodeUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: PlatformPromoCodeCreateManyCreatedByInputEnvelope
+    set?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+    disconnect?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+    delete?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+    connect?: PlatformPromoCodeWhereUniqueInput | PlatformPromoCodeWhereUniqueInput[]
+    update?: PlatformPromoCodeUpdateWithWhereUniqueWithoutCreatedByInput | PlatformPromoCodeUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: PlatformPromoCodeUpdateManyWithWhereWithoutCreatedByInput | PlatformPromoCodeUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: PlatformPromoCodeScalarWhereInput | PlatformPromoCodeScalarWhereInput[]
+  }
+
+  export type PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PlatformPromoRedemptionCreateWithoutUserInput, PlatformPromoRedemptionUncheckedCreateWithoutUserInput> | PlatformPromoRedemptionCreateWithoutUserInput[] | PlatformPromoRedemptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlatformPromoRedemptionCreateOrConnectWithoutUserInput | PlatformPromoRedemptionCreateOrConnectWithoutUserInput[]
+    upsert?: PlatformPromoRedemptionUpsertWithWhereUniqueWithoutUserInput | PlatformPromoRedemptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PlatformPromoRedemptionCreateManyUserInputEnvelope
+    set?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    disconnect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    delete?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    connect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    update?: PlatformPromoRedemptionUpdateWithWhereUniqueWithoutUserInput | PlatformPromoRedemptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PlatformPromoRedemptionUpdateManyWithWhereWithoutUserInput | PlatformPromoRedemptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PlatformPromoRedemptionScalarWhereInput | PlatformPromoRedemptionScalarWhereInput[]
   }
 
   export type EnrollmentUncheckedUpdateManyWithoutStudentNestedInput = {
@@ -51029,6 +54553,111 @@ export namespace Prisma {
     update?: XOR<XOR<ChapterUpdateToOneWithWhereWithoutPromoCodesInput, ChapterUpdateWithoutPromoCodesInput>, ChapterUncheckedUpdateWithoutPromoCodesInput>
   }
 
+  export type PlatformPromoCodeCreateapplicablePlanIdsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutCreatedPlatformPromoCodesInput = {
+    create?: XOR<UserCreateWithoutCreatedPlatformPromoCodesInput, UserUncheckedCreateWithoutCreatedPlatformPromoCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedPlatformPromoCodesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type PlatformPromoRedemptionCreateNestedManyWithoutPromoCodeInput = {
+    create?: XOR<PlatformPromoRedemptionCreateWithoutPromoCodeInput, PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput> | PlatformPromoRedemptionCreateWithoutPromoCodeInput[] | PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput[]
+    connectOrCreate?: PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput | PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput[]
+    createMany?: PlatformPromoRedemptionCreateManyPromoCodeInputEnvelope
+    connect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+  }
+
+  export type PlatformPromoRedemptionUncheckedCreateNestedManyWithoutPromoCodeInput = {
+    create?: XOR<PlatformPromoRedemptionCreateWithoutPromoCodeInput, PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput> | PlatformPromoRedemptionCreateWithoutPromoCodeInput[] | PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput[]
+    connectOrCreate?: PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput | PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput[]
+    createMany?: PlatformPromoRedemptionCreateManyPromoCodeInputEnvelope
+    connect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+  }
+
+  export type EnumPromoScopeFieldUpdateOperationsInput = {
+    set?: $Enums.PromoScope
+  }
+
+  export type EnumPromoDiscountTypeFieldUpdateOperationsInput = {
+    set?: $Enums.PromoDiscountType
+  }
+
+  export type PlatformPromoCodeUpdateapplicablePlanIdsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type EnumPromoBillingScopeFieldUpdateOperationsInput = {
+    set?: $Enums.PromoBillingScope
+  }
+
+  export type UserUpdateOneRequiredWithoutCreatedPlatformPromoCodesNestedInput = {
+    create?: XOR<UserCreateWithoutCreatedPlatformPromoCodesInput, UserUncheckedCreateWithoutCreatedPlatformPromoCodesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedPlatformPromoCodesInput
+    upsert?: UserUpsertWithoutCreatedPlatformPromoCodesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedPlatformPromoCodesInput, UserUpdateWithoutCreatedPlatformPromoCodesInput>, UserUncheckedUpdateWithoutCreatedPlatformPromoCodesInput>
+  }
+
+  export type PlatformPromoRedemptionUpdateManyWithoutPromoCodeNestedInput = {
+    create?: XOR<PlatformPromoRedemptionCreateWithoutPromoCodeInput, PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput> | PlatformPromoRedemptionCreateWithoutPromoCodeInput[] | PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput[]
+    connectOrCreate?: PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput | PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput[]
+    upsert?: PlatformPromoRedemptionUpsertWithWhereUniqueWithoutPromoCodeInput | PlatformPromoRedemptionUpsertWithWhereUniqueWithoutPromoCodeInput[]
+    createMany?: PlatformPromoRedemptionCreateManyPromoCodeInputEnvelope
+    set?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    disconnect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    delete?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    connect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    update?: PlatformPromoRedemptionUpdateWithWhereUniqueWithoutPromoCodeInput | PlatformPromoRedemptionUpdateWithWhereUniqueWithoutPromoCodeInput[]
+    updateMany?: PlatformPromoRedemptionUpdateManyWithWhereWithoutPromoCodeInput | PlatformPromoRedemptionUpdateManyWithWhereWithoutPromoCodeInput[]
+    deleteMany?: PlatformPromoRedemptionScalarWhereInput | PlatformPromoRedemptionScalarWhereInput[]
+  }
+
+  export type PlatformPromoRedemptionUncheckedUpdateManyWithoutPromoCodeNestedInput = {
+    create?: XOR<PlatformPromoRedemptionCreateWithoutPromoCodeInput, PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput> | PlatformPromoRedemptionCreateWithoutPromoCodeInput[] | PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput[]
+    connectOrCreate?: PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput | PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput[]
+    upsert?: PlatformPromoRedemptionUpsertWithWhereUniqueWithoutPromoCodeInput | PlatformPromoRedemptionUpsertWithWhereUniqueWithoutPromoCodeInput[]
+    createMany?: PlatformPromoRedemptionCreateManyPromoCodeInputEnvelope
+    set?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    disconnect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    delete?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    connect?: PlatformPromoRedemptionWhereUniqueInput | PlatformPromoRedemptionWhereUniqueInput[]
+    update?: PlatformPromoRedemptionUpdateWithWhereUniqueWithoutPromoCodeInput | PlatformPromoRedemptionUpdateWithWhereUniqueWithoutPromoCodeInput[]
+    updateMany?: PlatformPromoRedemptionUpdateManyWithWhereWithoutPromoCodeInput | PlatformPromoRedemptionUpdateManyWithWhereWithoutPromoCodeInput[]
+    deleteMany?: PlatformPromoRedemptionScalarWhereInput | PlatformPromoRedemptionScalarWhereInput[]
+  }
+
+  export type PlatformPromoCodeCreateNestedOneWithoutRedemptionsInput = {
+    create?: XOR<PlatformPromoCodeCreateWithoutRedemptionsInput, PlatformPromoCodeUncheckedCreateWithoutRedemptionsInput>
+    connectOrCreate?: PlatformPromoCodeCreateOrConnectWithoutRedemptionsInput
+    connect?: PlatformPromoCodeWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutPlatformPromoRedemptionsInput = {
+    create?: XOR<UserCreateWithoutPlatformPromoRedemptionsInput, UserUncheckedCreateWithoutPlatformPromoRedemptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlatformPromoRedemptionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type PlatformPromoCodeUpdateOneRequiredWithoutRedemptionsNestedInput = {
+    create?: XOR<PlatformPromoCodeCreateWithoutRedemptionsInput, PlatformPromoCodeUncheckedCreateWithoutRedemptionsInput>
+    connectOrCreate?: PlatformPromoCodeCreateOrConnectWithoutRedemptionsInput
+    upsert?: PlatformPromoCodeUpsertWithoutRedemptionsInput
+    connect?: PlatformPromoCodeWhereUniqueInput
+    update?: XOR<XOR<PlatformPromoCodeUpdateToOneWithWhereWithoutRedemptionsInput, PlatformPromoCodeUpdateWithoutRedemptionsInput>, PlatformPromoCodeUncheckedUpdateWithoutRedemptionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutPlatformPromoRedemptionsNestedInput = {
+    create?: XOR<UserCreateWithoutPlatformPromoRedemptionsInput, UserUncheckedCreateWithoutPlatformPromoRedemptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlatformPromoRedemptionsInput
+    upsert?: UserUpsertWithoutPlatformPromoRedemptionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPlatformPromoRedemptionsInput, UserUpdateWithoutPlatformPromoRedemptionsInput>, UserUncheckedUpdateWithoutPlatformPromoRedemptionsInput>
+  }
+
   export type UserCreateNestedOneWithoutNotificationsInput = {
     create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
@@ -52116,6 +55745,57 @@ export namespace Prisma {
     _max?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumPromoScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoScope | EnumPromoScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoScope[] | ListEnumPromoScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoScope[] | ListEnumPromoScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoScopeFilter<$PrismaModel> | $Enums.PromoScope
+  }
+
+  export type NestedEnumPromoDiscountTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoDiscountType | EnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoDiscountType[] | ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoDiscountType[] | ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoDiscountTypeFilter<$PrismaModel> | $Enums.PromoDiscountType
+  }
+
+  export type NestedEnumPromoBillingScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoBillingScope | EnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoBillingScope[] | ListEnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoBillingScope[] | ListEnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoBillingScopeFilter<$PrismaModel> | $Enums.PromoBillingScope
+  }
+
+  export type NestedEnumPromoScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoScope | EnumPromoScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoScope[] | ListEnumPromoScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoScope[] | ListEnumPromoScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoScopeWithAggregatesFilter<$PrismaModel> | $Enums.PromoScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPromoScopeFilter<$PrismaModel>
+    _max?: NestedEnumPromoScopeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPromoDiscountTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoDiscountType | EnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoDiscountType[] | ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoDiscountType[] | ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoDiscountTypeWithAggregatesFilter<$PrismaModel> | $Enums.PromoDiscountType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPromoDiscountTypeFilter<$PrismaModel>
+    _max?: NestedEnumPromoDiscountTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPromoBillingScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PromoBillingScope | EnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PromoBillingScope[] | ListEnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PromoBillingScope[] | ListEnumPromoBillingScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPromoBillingScopeWithAggregatesFilter<$PrismaModel> | $Enums.PromoBillingScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPromoBillingScopeFilter<$PrismaModel>
+    _max?: NestedEnumPromoBillingScopeFilter<$PrismaModel>
+  }
+
   export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
     in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
@@ -52386,6 +56066,84 @@ export namespace Prisma {
 
   export type PromoCodeCreateManyUsedByStudentInputEnvelope = {
     data: PromoCodeCreateManyUsedByStudentInput | PromoCodeCreateManyUsedByStudentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlatformPromoCodeCreateWithoutCreatedByInput = {
+    id?: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency?: string
+    startsAt?: Date | string | null
+    expiresAt?: Date | string | null
+    isActive?: boolean
+    maxUses?: number | null
+    usedCount?: number
+    perUserLimit?: number | null
+    applicablePlanIds?: PlatformPromoCodeCreateapplicablePlanIdsInput | string[]
+    billingInterval?: $Enums.PromoBillingScope
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    redemptions?: PlatformPromoRedemptionCreateNestedManyWithoutPromoCodeInput
+  }
+
+  export type PlatformPromoCodeUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency?: string
+    startsAt?: Date | string | null
+    expiresAt?: Date | string | null
+    isActive?: boolean
+    maxUses?: number | null
+    usedCount?: number
+    perUserLimit?: number | null
+    applicablePlanIds?: PlatformPromoCodeCreateapplicablePlanIdsInput | string[]
+    billingInterval?: $Enums.PromoBillingScope
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    redemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutPromoCodeInput
+  }
+
+  export type PlatformPromoCodeCreateOrConnectWithoutCreatedByInput = {
+    where: PlatformPromoCodeWhereUniqueInput
+    create: XOR<PlatformPromoCodeCreateWithoutCreatedByInput, PlatformPromoCodeUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type PlatformPromoCodeCreateManyCreatedByInputEnvelope = {
+    data: PlatformPromoCodeCreateManyCreatedByInput | PlatformPromoCodeCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlatformPromoRedemptionCreateWithoutUserInput = {
+    id?: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
+    promoCode: PlatformPromoCodeCreateNestedOneWithoutRedemptionsInput
+  }
+
+  export type PlatformPromoRedemptionUncheckedCreateWithoutUserInput = {
+    id?: string
+    promoCodeId: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
+  }
+
+  export type PlatformPromoRedemptionCreateOrConnectWithoutUserInput = {
+    where: PlatformPromoRedemptionWhereUniqueInput
+    create: XOR<PlatformPromoRedemptionCreateWithoutUserInput, PlatformPromoRedemptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type PlatformPromoRedemptionCreateManyUserInputEnvelope = {
+    data: PlatformPromoRedemptionCreateManyUserInput | PlatformPromoRedemptionCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -53119,6 +56877,74 @@ export namespace Prisma {
     data: XOR<PromoCodeUpdateManyMutationInput, PromoCodeUncheckedUpdateManyWithoutUsedByStudentInput>
   }
 
+  export type PlatformPromoCodeUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: PlatformPromoCodeWhereUniqueInput
+    update: XOR<PlatformPromoCodeUpdateWithoutCreatedByInput, PlatformPromoCodeUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<PlatformPromoCodeCreateWithoutCreatedByInput, PlatformPromoCodeUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type PlatformPromoCodeUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: PlatformPromoCodeWhereUniqueInput
+    data: XOR<PlatformPromoCodeUpdateWithoutCreatedByInput, PlatformPromoCodeUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type PlatformPromoCodeUpdateManyWithWhereWithoutCreatedByInput = {
+    where: PlatformPromoCodeScalarWhereInput
+    data: XOR<PlatformPromoCodeUpdateManyMutationInput, PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type PlatformPromoCodeScalarWhereInput = {
+    AND?: PlatformPromoCodeScalarWhereInput | PlatformPromoCodeScalarWhereInput[]
+    OR?: PlatformPromoCodeScalarWhereInput[]
+    NOT?: PlatformPromoCodeScalarWhereInput | PlatformPromoCodeScalarWhereInput[]
+    id?: StringFilter<"PlatformPromoCode"> | string
+    code?: StringFilter<"PlatformPromoCode"> | string
+    scope?: EnumPromoScopeFilter<"PlatformPromoCode"> | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFilter<"PlatformPromoCode"> | $Enums.PromoDiscountType
+    discountValue?: FloatFilter<"PlatformPromoCode"> | number
+    currency?: StringFilter<"PlatformPromoCode"> | string
+    startsAt?: DateTimeNullableFilter<"PlatformPromoCode"> | Date | string | null
+    expiresAt?: DateTimeNullableFilter<"PlatformPromoCode"> | Date | string | null
+    isActive?: BoolFilter<"PlatformPromoCode"> | boolean
+    maxUses?: IntNullableFilter<"PlatformPromoCode"> | number | null
+    usedCount?: IntFilter<"PlatformPromoCode"> | number
+    perUserLimit?: IntNullableFilter<"PlatformPromoCode"> | number | null
+    applicablePlanIds?: StringNullableListFilter<"PlatformPromoCode">
+    billingInterval?: EnumPromoBillingScopeFilter<"PlatformPromoCode"> | $Enums.PromoBillingScope
+    createdById?: StringFilter<"PlatformPromoCode"> | string
+    createdAt?: DateTimeFilter<"PlatformPromoCode"> | Date | string
+    updatedAt?: DateTimeFilter<"PlatformPromoCode"> | Date | string
+  }
+
+  export type PlatformPromoRedemptionUpsertWithWhereUniqueWithoutUserInput = {
+    where: PlatformPromoRedemptionWhereUniqueInput
+    update: XOR<PlatformPromoRedemptionUpdateWithoutUserInput, PlatformPromoRedemptionUncheckedUpdateWithoutUserInput>
+    create: XOR<PlatformPromoRedemptionCreateWithoutUserInput, PlatformPromoRedemptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type PlatformPromoRedemptionUpdateWithWhereUniqueWithoutUserInput = {
+    where: PlatformPromoRedemptionWhereUniqueInput
+    data: XOR<PlatformPromoRedemptionUpdateWithoutUserInput, PlatformPromoRedemptionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PlatformPromoRedemptionUpdateManyWithWhereWithoutUserInput = {
+    where: PlatformPromoRedemptionScalarWhereInput
+    data: XOR<PlatformPromoRedemptionUpdateManyMutationInput, PlatformPromoRedemptionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PlatformPromoRedemptionScalarWhereInput = {
+    AND?: PlatformPromoRedemptionScalarWhereInput | PlatformPromoRedemptionScalarWhereInput[]
+    OR?: PlatformPromoRedemptionScalarWhereInput[]
+    NOT?: PlatformPromoRedemptionScalarWhereInput | PlatformPromoRedemptionScalarWhereInput[]
+    id?: StringFilter<"PlatformPromoRedemption"> | string
+    promoCodeId?: StringFilter<"PlatformPromoRedemption"> | string
+    userId?: StringFilter<"PlatformPromoRedemption"> | string
+    amountBefore?: FloatFilter<"PlatformPromoRedemption"> | number
+    discount?: FloatFilter<"PlatformPromoRedemption"> | number
+    amountAfter?: FloatFilter<"PlatformPromoRedemption"> | number
+    createdAt?: DateTimeFilter<"PlatformPromoRedemption"> | Date | string
+  }
+
   export type EnrollmentUpsertWithWhereUniqueWithoutStudentInput = {
     where: EnrollmentWhereUniqueInput
     update: XOR<EnrollmentUpdateWithoutStudentInput, EnrollmentUncheckedUpdateWithoutStudentInput>
@@ -53704,6 +57530,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -53739,6 +57567,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -53819,6 +57649,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -53854,6 +57686,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -53924,6 +57758,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -53959,6 +57795,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -54010,6 +57848,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -54045,6 +57885,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -54146,6 +57988,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -54181,6 +58025,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -54290,6 +58136,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -54325,6 +58173,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -55161,6 +59011,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
@@ -55196,6 +59048,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
@@ -55247,6 +59101,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
@@ -55282,6 +59138,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
@@ -55354,6 +59212,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
@@ -55389,6 +59249,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
@@ -55483,6 +59345,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
@@ -55518,6 +59382,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
@@ -55553,6 +59419,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -55588,6 +59456,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -55676,6 +59546,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -55711,6 +59583,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -55832,6 +59706,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
@@ -55867,6 +59743,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
@@ -55967,6 +59845,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
@@ -56002,6 +59882,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
@@ -56169,6 +60051,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -56204,6 +60088,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -56282,6 +60168,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -56317,6 +60205,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -56477,6 +60367,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -56512,6 +60404,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -56563,6 +60457,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -56598,6 +60494,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -56632,6 +60530,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -56667,6 +60567,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -56718,6 +60620,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -56753,6 +60657,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -56789,6 +60695,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -56824,6 +60732,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -56875,6 +60785,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -56910,6 +60822,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -57128,6 +61042,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -57163,6 +61079,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -57338,6 +61256,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -57373,6 +61293,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -57837,6 +61759,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -57872,6 +61796,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -57994,6 +61920,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -58029,6 +61957,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -58063,6 +61993,8 @@ export namespace Prisma {
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -58098,6 +62030,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -58138,6 +62072,8 @@ export namespace Prisma {
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -58173,6 +62109,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -58261,6 +62199,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -58296,6 +62236,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -58342,6 +62284,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -58377,6 +62321,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -58440,6 +62386,474 @@ export namespace Prisma {
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
   }
 
+  export type UserCreateWithoutCreatedPlatformPromoCodesInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserUncheckedCreateWithoutCreatedPlatformPromoCodesInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserCreateOrConnectWithoutCreatedPlatformPromoCodesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreatedPlatformPromoCodesInput, UserUncheckedCreateWithoutCreatedPlatformPromoCodesInput>
+  }
+
+  export type PlatformPromoRedemptionCreateWithoutPromoCodeInput = {
+    id?: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPlatformPromoRedemptionsInput
+  }
+
+  export type PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput = {
+    id?: string
+    userId: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
+  }
+
+  export type PlatformPromoRedemptionCreateOrConnectWithoutPromoCodeInput = {
+    where: PlatformPromoRedemptionWhereUniqueInput
+    create: XOR<PlatformPromoRedemptionCreateWithoutPromoCodeInput, PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput>
+  }
+
+  export type PlatformPromoRedemptionCreateManyPromoCodeInputEnvelope = {
+    data: PlatformPromoRedemptionCreateManyPromoCodeInput | PlatformPromoRedemptionCreateManyPromoCodeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutCreatedPlatformPromoCodesInput = {
+    update: XOR<UserUpdateWithoutCreatedPlatformPromoCodesInput, UserUncheckedUpdateWithoutCreatedPlatformPromoCodesInput>
+    create: XOR<UserCreateWithoutCreatedPlatformPromoCodesInput, UserUncheckedCreateWithoutCreatedPlatformPromoCodesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreatedPlatformPromoCodesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreatedPlatformPromoCodesInput, UserUncheckedUpdateWithoutCreatedPlatformPromoCodesInput>
+  }
+
+  export type UserUpdateWithoutCreatedPlatformPromoCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreatedPlatformPromoCodesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type PlatformPromoRedemptionUpsertWithWhereUniqueWithoutPromoCodeInput = {
+    where: PlatformPromoRedemptionWhereUniqueInput
+    update: XOR<PlatformPromoRedemptionUpdateWithoutPromoCodeInput, PlatformPromoRedemptionUncheckedUpdateWithoutPromoCodeInput>
+    create: XOR<PlatformPromoRedemptionCreateWithoutPromoCodeInput, PlatformPromoRedemptionUncheckedCreateWithoutPromoCodeInput>
+  }
+
+  export type PlatformPromoRedemptionUpdateWithWhereUniqueWithoutPromoCodeInput = {
+    where: PlatformPromoRedemptionWhereUniqueInput
+    data: XOR<PlatformPromoRedemptionUpdateWithoutPromoCodeInput, PlatformPromoRedemptionUncheckedUpdateWithoutPromoCodeInput>
+  }
+
+  export type PlatformPromoRedemptionUpdateManyWithWhereWithoutPromoCodeInput = {
+    where: PlatformPromoRedemptionScalarWhereInput
+    data: XOR<PlatformPromoRedemptionUpdateManyMutationInput, PlatformPromoRedemptionUncheckedUpdateManyWithoutPromoCodeInput>
+  }
+
+  export type PlatformPromoCodeCreateWithoutRedemptionsInput = {
+    id?: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency?: string
+    startsAt?: Date | string | null
+    expiresAt?: Date | string | null
+    isActive?: boolean
+    maxUses?: number | null
+    usedCount?: number
+    perUserLimit?: number | null
+    applicablePlanIds?: PlatformPromoCodeCreateapplicablePlanIdsInput | string[]
+    billingInterval?: $Enums.PromoBillingScope
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: UserCreateNestedOneWithoutCreatedPlatformPromoCodesInput
+  }
+
+  export type PlatformPromoCodeUncheckedCreateWithoutRedemptionsInput = {
+    id?: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency?: string
+    startsAt?: Date | string | null
+    expiresAt?: Date | string | null
+    isActive?: boolean
+    maxUses?: number | null
+    usedCount?: number
+    perUserLimit?: number | null
+    applicablePlanIds?: PlatformPromoCodeCreateapplicablePlanIdsInput | string[]
+    billingInterval?: $Enums.PromoBillingScope
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlatformPromoCodeCreateOrConnectWithoutRedemptionsInput = {
+    where: PlatformPromoCodeWhereUniqueInput
+    create: XOR<PlatformPromoCodeCreateWithoutRedemptionsInput, PlatformPromoCodeUncheckedCreateWithoutRedemptionsInput>
+  }
+
+  export type UserCreateWithoutPlatformPromoRedemptionsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserUncheckedCreateWithoutPlatformPromoRedemptionsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserCreateOrConnectWithoutPlatformPromoRedemptionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPlatformPromoRedemptionsInput, UserUncheckedCreateWithoutPlatformPromoRedemptionsInput>
+  }
+
+  export type PlatformPromoCodeUpsertWithoutRedemptionsInput = {
+    update: XOR<PlatformPromoCodeUpdateWithoutRedemptionsInput, PlatformPromoCodeUncheckedUpdateWithoutRedemptionsInput>
+    create: XOR<PlatformPromoCodeCreateWithoutRedemptionsInput, PlatformPromoCodeUncheckedCreateWithoutRedemptionsInput>
+    where?: PlatformPromoCodeWhereInput
+  }
+
+  export type PlatformPromoCodeUpdateToOneWithWhereWithoutRedemptionsInput = {
+    where?: PlatformPromoCodeWhereInput
+    data: XOR<PlatformPromoCodeUpdateWithoutRedemptionsInput, PlatformPromoCodeUncheckedUpdateWithoutRedemptionsInput>
+  }
+
+  export type PlatformPromoCodeUpdateWithoutRedemptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneRequiredWithoutCreatedPlatformPromoCodesNestedInput
+  }
+
+  export type PlatformPromoCodeUncheckedUpdateWithoutRedemptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpsertWithoutPlatformPromoRedemptionsInput = {
+    update: XOR<UserUpdateWithoutPlatformPromoRedemptionsInput, UserUncheckedUpdateWithoutPlatformPromoRedemptionsInput>
+    create: XOR<UserCreateWithoutPlatformPromoRedemptionsInput, UserUncheckedCreateWithoutPlatformPromoRedemptionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPlatformPromoRedemptionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPlatformPromoRedemptionsInput, UserUncheckedUpdateWithoutPlatformPromoRedemptionsInput>
+  }
+
+  export type UserUpdateWithoutPlatformPromoRedemptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPlatformPromoRedemptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
   export type UserCreateWithoutNotificationsInput = {
     id?: string
     fullName: string
@@ -58456,6 +62870,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -58491,6 +62907,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -58542,6 +62960,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -58577,6 +62997,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -58611,6 +63033,8 @@ export namespace Prisma {
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -58646,6 +63070,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -58697,6 +63123,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -58732,6 +63160,8 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -58768,6 +63198,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -58803,6 +63235,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -58888,6 +63322,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -58923,6 +63359,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -59258,6 +63696,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -59293,6 +63733,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -59469,6 +63911,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -59504,6 +63948,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -59626,6 +64072,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -59661,6 +64109,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -59761,6 +64211,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -59796,6 +64248,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -59886,6 +64340,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -59921,6 +64377,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -60058,6 +64516,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -60093,6 +64553,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -60226,6 +64688,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -60261,6 +64725,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
     createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
     usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
     enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
     lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -60398,6 +64864,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -60433,6 +64901,8 @@ export namespace Prisma {
     teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
     createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
     usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
     lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -60582,6 +65052,34 @@ export namespace Prisma {
     chapterId: string
     createdAt?: Date | string
     expiresAt?: Date | string | null
+  }
+
+  export type PlatformPromoCodeCreateManyCreatedByInput = {
+    id?: string
+    code: string
+    scope: $Enums.PromoScope
+    discountType: $Enums.PromoDiscountType
+    discountValue: number
+    currency?: string
+    startsAt?: Date | string | null
+    expiresAt?: Date | string | null
+    isActive?: boolean
+    maxUses?: number | null
+    usedCount?: number
+    perUserLimit?: number | null
+    applicablePlanIds?: PlatformPromoCodeCreateapplicablePlanIdsInput | string[]
+    billingInterval?: $Enums.PromoBillingScope
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlatformPromoRedemptionCreateManyUserInput = {
+    id?: string
+    promoCodeId: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
   }
 
   export type EnrollmentCreateManyStudentInput = {
@@ -60875,6 +65373,92 @@ export namespace Prisma {
     chapterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PlatformPromoCodeUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    redemptions?: PlatformPromoRedemptionUpdateManyWithoutPromoCodeNestedInput
+  }
+
+  export type PlatformPromoCodeUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    redemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutPromoCodeNestedInput
+  }
+
+  export type PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPromoScopeFieldUpdateOperationsInput | $Enums.PromoScope
+    discountType?: EnumPromoDiscountTypeFieldUpdateOperationsInput | $Enums.PromoDiscountType
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    maxUses?: NullableIntFieldUpdateOperationsInput | number | null
+    usedCount?: IntFieldUpdateOperationsInput | number
+    perUserLimit?: NullableIntFieldUpdateOperationsInput | number | null
+    applicablePlanIds?: PlatformPromoCodeUpdateapplicablePlanIdsInput | string[]
+    billingInterval?: EnumPromoBillingScopeFieldUpdateOperationsInput | $Enums.PromoBillingScope
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformPromoRedemptionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    promoCode?: PlatformPromoCodeUpdateOneRequiredWithoutRedemptionsNestedInput
+  }
+
+  export type PlatformPromoRedemptionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    promoCodeId?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformPromoRedemptionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    promoCodeId?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EnrollmentUpdateWithoutStudentInput = {
@@ -62230,6 +66814,42 @@ export namespace Prisma {
     chapterId?: StringFieldUpdateOperationsInput | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     viewCount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PlatformPromoRedemptionCreateManyPromoCodeInput = {
+    id?: string
+    userId: string
+    amountBefore: number
+    discount: number
+    amountAfter: number
+    createdAt?: Date | string
+  }
+
+  export type PlatformPromoRedemptionUpdateWithoutPromoCodeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPlatformPromoRedemptionsNestedInput
+  }
+
+  export type PlatformPromoRedemptionUncheckedUpdateWithoutPromoCodeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformPromoRedemptionUncheckedUpdateManyWithoutPromoCodeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    amountBefore?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    amountAfter?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AiMessageCreateManyConversationInput = {

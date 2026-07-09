@@ -327,6 +327,22 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
       },
     });
 
+    // Platform promo codes reference createdById (RESTRICT) — clear their
+    // redemptions then the codes before the referenced users are deleted.
+    await tx.platformPromoRedemption.deleteMany({
+      where: {
+        OR: [
+          { userId: { in: ids } },
+          { promoCode: { OR: [{ createdById: { in: ids } }, { code: { startsWith: "DEMO" } }] } },
+        ],
+      },
+    });
+    await tx.platformPromoCode.deleteMany({
+      where: {
+        OR: [{ createdById: { in: ids } }, { code: { startsWith: "DEMO" } }],
+      },
+    });
+
     const stageIds = STAGES.map((s) => s.id);
     await tx.paymentTransaction.deleteMany({
       where: { chapter: { stageId: { in: stageIds } } },
@@ -1431,6 +1447,61 @@ async function seedAll(): Promise<void> {
           chapterId: CHAPTERS[0]!.id,
           usedByStudentId: STUDENTS[0]!.id,
           usedAt: daysAgo(15),
+        },
+      });
+
+      // 17b. Platform (scope-separated) discount promo codes. COURSE_PURCHASE codes
+      // apply only to student course checkout; TEACHER_PLAN codes only to teacher
+      // subscription checkout (optionally restricted to plans/interval). Idempotent.
+      await tx.platformPromoCode.upsert({
+        where: { code: "DEMOCOURSE20" },
+        update: { isActive: true, expiresAt: daysFromNow(365) },
+        create: {
+          id: sid("pp-course-20"),
+          code: "DEMOCOURSE20",
+          scope: "COURSE_PURCHASE",
+          discountType: "PERCENTAGE",
+          discountValue: 20,
+          currency: "EGP",
+          isActive: true,
+          maxUses: 100,
+          perUserLimit: 1,
+          expiresAt: daysFromNow(365),
+          createdById: ADMIN.id,
+        },
+      });
+      await tx.platformPromoCode.upsert({
+        where: { code: "DEMOPLANPRO50" },
+        update: { isActive: true, applicablePlanIds: [planProId], billingInterval: "MONTHLY" },
+        create: {
+          id: sid("pp-plan-pro-50"),
+          code: "DEMOPLANPRO50",
+          scope: "TEACHER_PLAN",
+          discountType: "FIXED_AMOUNT",
+          discountValue: 50,
+          currency: "EGP",
+          isActive: true,
+          maxUses: 50,
+          perUserLimit: 1,
+          applicablePlanIds: [planProId],
+          billingInterval: "MONTHLY",
+          expiresAt: daysFromNow(180),
+          createdById: ADMIN.id,
+        },
+      });
+      await tx.platformPromoCode.upsert({
+        where: { code: "DEMOPLANALL10" },
+        update: { isActive: true },
+        create: {
+          id: sid("pp-plan-all-10"),
+          code: "DEMOPLANALL10",
+          scope: "TEACHER_PLAN",
+          discountType: "PERCENTAGE",
+          discountValue: 10,
+          currency: "EGP",
+          isActive: true,
+          billingInterval: "ALL",
+          createdById: ADMIN.id,
         },
       });
 

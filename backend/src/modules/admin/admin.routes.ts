@@ -51,6 +51,13 @@ import {
   listSubscriptionPaymentsQuerySchema,
   revenueRankingQuerySchema,
 } from "./admin-revenue.validation.js";
+import { AdminPromoCodesController } from "./admin-promo-codes.controller.js";
+import {
+  createPromoCodeSchema,
+  listPromoCodesQuerySchema,
+  statusChangeSchema as promoStatusChangeSchema,
+  updatePromoCodeSchema,
+} from "./admin-promo-codes.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -77,6 +84,7 @@ const plansController = new AdminPlansController();
 const adminUsersController = new AdminUsersController();
 const subscriptionsController = new AdminSubscriptionsController();
 const revenueController = new AdminRevenueController();
+const promoCodesController = new AdminPromoCodesController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -263,6 +271,30 @@ router.get(
 router.get(
   "/payments/subscriptions/:paymentId",
   asyncHandler(revenueController.getSubscriptionPayment),
+);
+
+// ── Promo codes management (scope-separated: COURSE_PURCHASE / TEACHER_PLAN).
+// Inherits the router-level ADMIN-only guard. Static routes before dynamic. ──
+router.get(
+  "/promo-codes",
+  validateRequest(listPromoCodesQuerySchema, "query"),
+  asyncHandler(promoCodesController.list),
+);
+router.post(
+  "/promo-codes",
+  validateRequest(createPromoCodeSchema, "body"),
+  asyncHandler(promoCodesController.create),
+);
+router.get("/promo-codes/:promoId", asyncHandler(promoCodesController.getById));
+router.patch(
+  "/promo-codes/:promoId/status",
+  validateRequest(promoStatusChangeSchema, "body"),
+  asyncHandler(promoCodesController.changeStatus),
+);
+router.patch(
+  "/promo-codes/:promoId",
+  validateRequest(updatePromoCodeSchema, "body"),
+  asyncHandler(promoCodesController.update),
 );
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */

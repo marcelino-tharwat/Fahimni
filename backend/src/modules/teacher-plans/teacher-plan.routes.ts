@@ -3,7 +3,7 @@ import { TeacherPlanController } from "./teacher-plan.controller.js";
 import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
-import { createSubscriptionRequestSchema, checkoutSchema } from "./teacher-plan.validation.js";
+import { createSubscriptionRequestSchema, checkoutSchema, promoPreviewSchema } from "./teacher-plan.validation.js";
 
 const router = Router();
 const controller = new TeacherPlanController();
@@ -30,6 +30,15 @@ router.post(
   authorizeMiddleware("OPERATION"),
   validateRequest(checkoutSchema),
   controller.checkout,
+);
+
+// Preview a TEACHER_PLAN promo (no order created, no redemption consumed).
+router.post(
+  "/subscription/promo/preview",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(promoPreviewSchema),
+  controller.previewPromo,
 );
 
 // Fallback/manual flow: request admin review (kept as a secondary path).

@@ -26,6 +26,8 @@ model User {
   teacherRegistrationRequest  TeacherRegistrationRequest?
   createdPromoCodes           PromoCode[]                  @relation("PromoCodeCreatedBy")
   usedPromoCodes              PromoCode[]                  @relation("PromoCodeUsedBy")
+  createdPlatformPromoCodes   PlatformPromoCode[]          @relation("PlatformPromoCreatedBy")
+  platformPromoRedemptions    PlatformPromoRedemption[]    @relation("PlatformPromoRedeemedBy")
   enrollments                 Enrollment[]
   lessonProgress              LessonProgress[]
   otps                        Otp[]
@@ -441,6 +443,72 @@ model PromoCode {
   @@index([createdById])
   @@index([chapterId])
   @@map("promo_codes")
+}
+
+/// Admin-managed, scope-separated discount promo codes. Distinct from the
+/// single-use, chapter-bound `PromoCode` above (teacher-generated free-enrollment
+/// codes, left untouched). COURSE_PURCHASE codes apply only to student course
+/// checkout; TEACHER_PLAN codes apply only to teacher subscription checkout —
+/// never cross-used. All discount math is computed server-side.
+enum PromoScope {
+  COURSE_PURCHASE
+  TEACHER_PLAN
+}
+
+enum PromoDiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+/// Billing intervals a TEACHER_PLAN promo may apply to (ALL = both).
+enum PromoBillingScope {
+  MONTHLY
+  YEARLY
+  ALL
+}
+
+model PlatformPromoCode {
+  id                String                    @id @default(uuid())
+  code              String                    @unique
+  scope             PromoScope
+  discountType      PromoDiscountType
+  discountValue     Float
+  currency          String                    @default("EGP")
+  startsAt          DateTime?
+  expiresAt         DateTime?
+  isActive          Boolean                   @default(true)
+  maxUses           Int?
+  usedCount         Int                       @default(0)
+  perUserLimit      Int?
+  /// TEACHER_PLAN only: restrict to these plan ids (empty = all plans).
+  applicablePlanIds String[]                  @default([])
+  billingInterval   PromoBillingScope         @default(ALL)
+  createdById       String
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  createdBy         User                      @relation("PlatformPromoCreatedBy", fields: [createdById], references: [id])
+  redemptions       PlatformPromoRedemption[]
+
+  @@index([scope, isActive])
+  @@map("platform_promo_codes")
+}
+
+/// One redemption of a PlatformPromoCode by a user (drives usedCount + perUserLimit).
+model PlatformPromoRedemption {
+  id           String            @id @default(uuid())
+  promoCodeId  String
+  userId       String
+  amountBefore Float
+  discount     Float
+  amountAfter  Float
+  createdAt    DateTime          @default(now())
+  promoCode    PlatformPromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  user         User              @relation("PlatformPromoRedeemedBy", fields: [userId], references: [id])
+
+  @@index([promoCodeId])
+  @@index([userId])
+  @@index([promoCodeId, userId])
+  @@map("platform_promo_redemptions")
 }
 
 enum Role {

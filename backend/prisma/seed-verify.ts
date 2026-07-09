@@ -326,9 +326,19 @@ async function main(): Promise<void> {
   });
   check("AI usage events exist", aiEvents >= 5, `${aiEvents} events`);
 
-  // 22. Promo codes exist
+  // 22. Promo codes exist (legacy single-use teacher/course codes)
   const promos = await prisma.promoCode.count({ where: { code: { startsWith: "DEMO" } } });
   check("Promo codes exist", promos >= 3, `${promos} found`);
+
+  // 22a. Scope-separated platform promo codes exist (COURSE_PURCHASE + TEACHER_PLAN)
+  const coursePromos = await prisma.platformPromoCode.count({
+    where: { code: { startsWith: "DEMO" }, scope: "COURSE_PURCHASE" },
+  });
+  const planPromos = await prisma.platformPromoCode.count({
+    where: { code: { startsWith: "DEMO" }, scope: "TEACHER_PLAN" },
+  });
+  check("COURSE_PURCHASE platform promo exists", coursePromos >= 1, `${coursePromos} found`);
+  check("TEACHER_PLAN platform promo exists", planPromos >= 1, `${planPromos} found`);
 
   // 23. Teacher subscriptions exist
   const subs = await prisma.teacherSubscription.count({

@@ -86,6 +86,7 @@ export interface SubscriptionMeResponse {
 export interface CheckoutInput {
   planId: string;
   billingInterval: 'MONTHLY' | 'YEARLY';
+  promoCode?: string;
 }
 
 export interface CheckoutResponse {
@@ -93,10 +94,27 @@ export interface CheckoutResponse {
   orderId: string;
   checkoutUrl: string;
   amount: number;
+  originalAmount?: number;
+  discount?: number;
+  promoCode?: string | null;
   currency: string;
   billingInterval: 'MONTHLY' | 'YEARLY';
   status: string;
   message: string;
+}
+
+export interface PromoPreviewInput {
+  planId: string;
+  billingInterval: 'MONTHLY' | 'YEARLY';
+  promoCode: string;
+}
+
+export interface PromoPreviewResponse {
+  originalAmount: number;
+  discount: number;
+  amountAfter: number;
+  currency: string;
+  promoCode: string;
 }
 
 export interface CreateRequestInput {
