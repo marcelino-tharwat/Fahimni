@@ -41,7 +41,7 @@ import {
   adminChangeStatusSchema,
   adminChangeRoleSchema,
 } from "./admin-users.validation.js";
-import { listUsersQuerySchema } from "./admin-users.validation.js";
+
 import { AdminSubscriptionsController } from "./admin-subscriptions.controller.js";
 import {
   approveSubscriptionRequestSchema,
@@ -52,6 +52,7 @@ import {
   listSubscriptionsQuerySchema,
   rejectSubscriptionRequestSchema,
 } from "./admin-subscriptions.validation.js";
+
 import { AdminRevenueController } from "./admin-revenue.controller.js";
 import {
   listCoursePaymentsQuerySchema,
