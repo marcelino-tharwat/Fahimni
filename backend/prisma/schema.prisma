@@ -657,8 +657,8 @@ model TeacherPlan {
   isActive        Boolean         @default(true)
   isRecommended   Boolean         @default(false)
   sortOrder       Int             @default(0)
-  /// JSON array of display-friendly feature strings.
-  features        Json            @default("[]")
+  /// JSON object keyed by feature code (e.g. aiQuizGeneration).
+  features        Json            @default("{}")
   /// JSON object keyed by limit name (e.g. aiQuizGenerationsPerMonth).
   limits          Json            @default("{}")
   createdAt       DateTime        @default(now())

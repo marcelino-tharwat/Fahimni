@@ -437,6 +437,66 @@
       "activeSubscriptions": "Active Subscriptions",
       "pendingPayments": "Pending Payments",
       "confirmedRevenue": "Confirmed Revenue"
+    }
+  },
+  "adminPlansMutations": {
+    "addPlan": "Add Plan",
+    "editPlan": "Edit Plan",
+    "deactivatePlan": "Deactivate",
+    "activatePlan": "Activate",
+    "toggleRecommended": "Toggle Recommended",
+    "reorder": "Reorder",
+    "reorderSave": "Save Order",
+    "reorderCancel": "Cancel",
+    "reorderTitle": "Reorder Plans",
+    "createModal": {
+      "title": "Create New Plan",
+      "code": "Code",
+      "name": "Name",
+      "displayName": "Display Name",
+      "description": "Description",
+      "monthlyPrice": "Monthly Price",
+      "yearlyPrice": "Yearly Price",
+      "currency": "Currency",
+      "isActive": "Active",
+      "isRecommended": "Recommended",
+      "sortOrder": "Sort Order",
+      "features": "Features",
+      "limits": "Limits",
+      "submit": "Create",
+      "submitLoading": "Creating...",
+      "success": "Plan created successfully",
+      "error": "Failed to create plan"
+    },
+    "editModal": {
+      "title": "Edit Plan",
+      "submit": "Save Changes",
+      "submitLoading": "Saving...",
+      "success": "Plan updated successfully",
+      "error": "Failed to update plan"
+    },
+    "statusConfirm": {
+      "deactivateTitle": "Deactivate Plan?",
+      "deactivateMessage": "The plan will be unavailable for new users. Existing active subscriptions will remain valid.",
+      "activateTitle": "Activate Plan?",
+      "activateMessage": "The plan will be available to users again.",
+      "success": "Plan status changed successfully",
+      "error": "Failed to change plan status"
+    },
+    "recommendedConfirm": {
+      "title": "Change Recommended Plan?",
+      "message": "The recommended badge will be removed from the current plan and assigned to the selected plan.",
+      "success": "Recommended plan changed successfully",
+      "error": "Failed to change recommended plan"
+    },
+    "reorderConfirm": {
+      "title": "Reorder Plans?",
+      "success": "Plans reordered successfully",
+      "error": "Failed to reorder plans"
+    },
+    "noChange": "No change made",
+    "freePlanProtected": "Cannot deactivate the FREE plan"
+  },
   "adminUsers": {
     "title": "Users",
     "subtitle": "Manage all platform users",

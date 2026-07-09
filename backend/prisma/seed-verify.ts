@@ -106,6 +106,27 @@ async function main(): Promise<void> {
   const planCount = await prisma.teacherPlan.count({ where: { isActive: true } });
   check("Teacher plans exist", planCount >= 3, `${planCount} active plans`);
 
+  // 12a. FREE plan exists and is always active
+  const freePlan = await prisma.teacherPlan.findUnique({ where: { code: "FREE" } });
+  check("FREE plan exists", !!freePlan, freePlan?.code ?? "missing");
+  check("FREE plan is always active", freePlan?.isActive === true);
+
+  // 12b. Recommended plan exists (exactly one)
+  const recommendedPlans = await prisma.teacherPlan.findMany({ where: { isRecommended: true } });
+  check("Exactly one recommended plan", recommendedPlans.length === 1, `${recommendedPlans.length} found`);
+
+  // 12c. Plans have non-empty features (Record<string, boolean>)
+  const allPlans = await prisma.teacherPlan.findMany({ select: { code: true, features: true } });
+  const plansWithFeatures = allPlans.filter((p) => typeof p.features === "object" && p.features !== null && Object.keys(p.features as Record<string, unknown>).length > 0);
+  check("All plans have non-empty features", plansWithFeatures.length === allPlans.length, `${plansWithFeatures.length}/${allPlans.length}`);
+
+  // 12d. Subscription exists for a non-FREE plan
+  const nonFreeSub = await prisma.teacherSubscription.findFirst({
+    where: { plan: { code: { not: "FREE" } }, status: "ACTIVE" },
+    select: { id: true, planId: true },
+  });
+  check("Active subscription on non-FREE plan exists", !!nonFreeSub, nonFreeSub ? "found" : "missing");
+
   // 13. TeacherSubscriptionPayment exists (SUCCESS/PENDING/FAILED)
   const tspSuccess = await prisma.teacherSubscriptionPayment.count({
     where: { status: "SUCCESS", providerOrderId: { startsWith: DEMO_ORDER_PREFIX } },

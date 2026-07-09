@@ -25,7 +25,14 @@ import {
   rejectRequestSchema,
 } from "./admin-teacher-requests.validation.js";
 import { AdminPlansController } from "./admin-plans.controller.js";
-import { listPlansQuerySchema } from "./admin-plans.validation.js";
+import {
+  createPlanSchema,
+  listPlansQuerySchema,
+  recommendedChangeSchema,
+  reorderSchema,
+  statusChangeSchema,
+  updatePlanSchema,
+} from "./admin-plans.validation.js";
 import { AdminUsersController } from "./admin-users.controller.js";
 import { listUsersQuerySchema } from "./admin-users.validation.js";
 
@@ -128,13 +135,39 @@ router.patch(
   asyncHandler(teacherRequestsController.reject),
 );
 
-// ── Plans catalog ──
+// ── Plans catalog & mutations ──
 router.get(
   "/plans",
   validateRequest(listPlansQuerySchema, "query"),
   asyncHandler(plansController.list),
 );
+router.post(
+  "/plans",
+  validateRequest(createPlanSchema, "body"),
+  asyncHandler(plansController.create),
+);
+// Static route before dynamic :planId
+router.patch(
+  "/plans/reorder",
+  validateRequest(reorderSchema, "body"),
+  asyncHandler(plansController.reorder),
+);
 router.get("/plans/:planId", asyncHandler(plansController.getDetail));
+router.patch(
+  "/plans/:planId",
+  validateRequest(updatePlanSchema, "body"),
+  asyncHandler(plansController.update),
+);
+router.patch(
+  "/plans/:planId/status",
+  validateRequest(statusChangeSchema, "body"),
+  asyncHandler(plansController.changeStatus),
+);
+router.patch(
+  "/plans/:planId/recommended",
+  validateRequest(recommendedChangeSchema, "body"),
+  asyncHandler(plansController.changeRecommended),
+);
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */
 router.get("/me", (req, res) => {

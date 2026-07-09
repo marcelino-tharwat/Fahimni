@@ -38,6 +38,13 @@ export type AuditLogAction =
   | "USER_STATUS_CHANGED"
   | "TEACHER_REQUEST_APPROVED"
   | "TEACHER_REQUEST_REJECTED"
+  // Admin teacher-plan management actions.
+  | "ADMIN_PLAN_CREATED"
+  | "ADMIN_PLAN_UPDATED"
+  | "ADMIN_PLAN_ACTIVATED"
+  | "ADMIN_PLAN_DEACTIVATED"
+  | "ADMIN_PLAN_RECOMMENDED_CHANGED"
+  | "ADMIN_PLANS_REORDERED"
   // Legacy values retained so historical rows remain readable.
   | "DELETE_STAGE"
   | "DELETE_CHAPTER"
