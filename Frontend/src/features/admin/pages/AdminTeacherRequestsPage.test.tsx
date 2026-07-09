@@ -69,7 +69,7 @@ const DETAIL: AdminTeacherRequestDetail = {
     specialization: 'Math', experience: null, bio: 'A short bio', adminNotes: null,
     createdAt: '2026-01-01T00:00:00.000Z', reviewedAt: null,
   },
-  documents: [{ index: 0, fileName: 'certificate.pdf', mimeType: 'application/pdf', status: 'AVAILABLE' }],
+  documents: [{ index: 0, fileName: 'certificate.pdf', mimeType: 'application/pdf', size: 12345, previewType: 'PDF', status: 'AVAILABLE' }],
   reviewedBy: null,
 };
 

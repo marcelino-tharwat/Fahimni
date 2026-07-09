@@ -72,6 +72,12 @@ export interface SubscriptionMeResponse {
   /** Latest pending online payment (paid checkout awaiting confirmation). */
   pendingPayment: PendingPaymentInfoDTO | null;
   effectivePlanCode: string;
+  // Entitlement (single source of truth). FREE_PLAN = approved teacher with no
+  // active paid subscription → full access under FREE limits, NOT blocked.
+  accessState: "PENDING_REVIEW" | "REJECTED" | "NOT_APPROVED" | "FREE_PLAN" | "PAID_PLAN";
+  entitlementSource: "DEFAULT_FREE_PLAN" | "ACTIVE_SUBSCRIPTION" | null;
+  paymentRequired: boolean;
+  upgradeAvailable: boolean;
 }
 
 export interface CreateRequestInput {

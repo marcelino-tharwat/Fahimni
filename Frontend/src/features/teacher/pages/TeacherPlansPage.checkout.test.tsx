@@ -45,6 +45,10 @@ function freeSubscription(overrides: Partial<SubscriptionMeResponse> = {}): Subs
     currentPlan: { id: 'free-1', code: 'FREE', displayName: 'Free' },
     subscription: null,
     effectivePlanCode: 'FREE',
+    accessState: 'FREE_PLAN',
+    entitlementSource: 'DEFAULT_FREE_PLAN',
+    paymentRequired: false,
+    upgradeAvailable: true,
     pendingRequest: null,
     pendingPayment: null,
     usage: {
@@ -135,5 +139,29 @@ describe('TeacherPlansPage — checkout behavior', () => {
     await screen.findByText('plans.payNow');
     // Secondary manual-review link exists but is not the primary button.
     expect(screen.getByText('plans.requestManualReview')).toBeInTheDocument();
+  });
+
+  it('shows the FREE-plan upgrade banner (not a payment-required block) for a FREE teacher', async () => {
+    render(<TeacherPlansPage />); // default mock is a FREE_PLAN subscription
+    expect(await screen.findByTestId('upgrade-banner')).toBeInTheDocument();
+    // The old payment-required block must NOT appear for a FREE (allowed) teacher.
+    expect(screen.queryByTestId('payment-required-banner')).not.toBeInTheDocument();
+  });
+
+  it('does NOT show the upgrade banner for a PAID teacher', async () => {
+    api.getMySubscription.mockResolvedValue(
+      freeSubscription({
+        accessState: 'PAID_PLAN',
+        entitlementSource: 'ACTIVE_SUBSCRIPTION',
+        upgradeAvailable: false,
+        subscription: {
+          id: 's1', status: 'ACTIVE', billingInterval: 'MONTHLY',
+          currentPeriodStart: '2026-07-01T00:00:00.000Z', currentPeriodEnd: '2026-08-01T00:00:00.000Z', trialEndsAt: null,
+        },
+      }),
+    );
+    render(<TeacherPlansPage />);
+    await screen.findByText('plans.payNow');
+    expect(screen.queryByTestId('upgrade-banner')).not.toBeInTheDocument();
   });
 });

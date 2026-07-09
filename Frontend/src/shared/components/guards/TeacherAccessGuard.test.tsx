@@ -64,19 +64,36 @@ describe('TeacherAccessGuard', () => {
     expect(await screen.findByText('REJECTED PAGE')).toBeInTheDocument();
   });
 
-  it('6/7. APPROVED unpaid teacher (no active sub) is redirected to plans', async () => {
+  it('6/7. APPROVED FREE-plan teacher (no paid sub) CAN access the dashboard', async () => {
     setUser(teacher('APPROVED'));
-    mApi.getMySubscription.mockResolvedValue({ subscription: null } as never);
+    mApi.getMySubscription.mockResolvedValue({
+      subscription: null,
+      accessState: 'FREE_PLAN',
+    } as never);
+    renderGuardAt('/teacher/dashboard');
+    await waitFor(() => expect(screen.getByText('TEACHER DASHBOARD')).toBeInTheDocument());
+    expect(screen.queryByText('PLANS PAGE')).not.toBeInTheDocument();
+  });
+
+  it('9. APPROVED teacher with PAID plan can access the dashboard', async () => {
+    setUser(teacher('APPROVED'));
+    mApi.getMySubscription.mockResolvedValue({
+      subscription: { status: 'ACTIVE' },
+      accessState: 'PAID_PLAN',
+    } as never);
+    renderGuardAt('/teacher/dashboard');
+    await waitFor(() => expect(screen.getByText('TEACHER DASHBOARD')).toBeInTheDocument());
+  });
+
+  it('NOT_APPROVED entitlement is redirected to plans', async () => {
+    setUser(teacher('APPROVED'));
+    mApi.getMySubscription.mockResolvedValue({
+      subscription: null,
+      accessState: 'NOT_APPROVED',
+    } as never);
     renderGuardAt('/teacher/dashboard');
     expect(await screen.findByText('PLANS PAGE')).toBeInTheDocument();
     expect(screen.queryByText('TEACHER DASHBOARD')).not.toBeInTheDocument();
-  });
-
-  it('9. APPROVED teacher with ACTIVE subscription can access the dashboard', async () => {
-    setUser(teacher('APPROVED'));
-    mApi.getMySubscription.mockResolvedValue({ subscription: { status: 'ACTIVE' } } as never);
-    renderGuardAt('/teacher/dashboard');
-    await waitFor(() => expect(screen.getByText('TEACHER DASHBOARD')).toBeInTheDocument());
   });
 });
 

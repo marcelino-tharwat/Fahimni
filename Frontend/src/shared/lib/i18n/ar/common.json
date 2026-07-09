@@ -320,6 +320,11 @@
       "openDocument": "فتح المستند",
       "opening": "جارٍ الفتح...",
       "documentUnavailable": "المستند غير متاح للعرض حاليًا",
+      "previewType": {
+        "PDF": "ملف PDF",
+        "IMAGE": "صورة",
+        "OTHER": "ملف"
+      },
       "adminNotes": "ملاحظات المشرف",
       "approve": "قبول الطلب",
       "reject": "رفض الطلب",

@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  ArrowRight, AlertTriangle, FileText, CheckCircle, XCircle, ExternalLink, Info,
+  ArrowRight, AlertTriangle, FileText, FileImage, File, CheckCircle, XCircle, ExternalLink, Info,
 } from 'lucide-react';
+import type { DocumentPreviewType } from '@/features/admin/types/teacherRequests';
 import { Card, Badge, Spinner, Modal } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
@@ -153,11 +154,18 @@ export function AdminTeacherRequestDetailPage() {
                 {data.documents.map((doc) => {
                   const st = docState[doc.index];
                   const unavailable = doc.status === 'UNAVAILABLE' || st === 'unavailable';
+                  const DocIcon = docIcon[doc.previewType];
                   return (
-                    <div key={doc.index} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-border bg-surface p-3">
+                    <div key={doc.index} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-border bg-surface p-3" data-testid={`document-${doc.index}`}>
                       <div className="flex items-center gap-2">
-                        <FileText size={16} className="text-text-muted" />
-                        <span className="font-cairo text-sm text-text-primary">{doc.fileName}</span>
+                        <DocIcon size={16} className="text-text-muted" data-testid={`document-icon-${doc.previewType}`} />
+                        <div className="flex flex-col">
+                          <span className="font-cairo text-sm text-text-primary">{doc.fileName}</span>
+                          <span className="font-cairo text-xs text-text-muted">
+                            {t(`adminTeacherRequests.detail.previewType.${doc.previewType}`, doc.previewType)}
+                            {doc.size != null ? ` · ${formatBytes(doc.size)}` : ''}
+                          </span>
+                        </div>
                       </div>
                       {unavailable ? (
                         <span className="font-cairo text-xs text-text-muted">{t('adminTeacherRequests.detail.documentUnavailable', 'المستند غير متاح للعرض حاليًا')}</span>
@@ -270,6 +278,19 @@ export function AdminTeacherRequestDetailPage() {
       </Modal>
     </div>
   );
+}
+
+const docIcon: Record<DocumentPreviewType, typeof FileText> = {
+  PDF: FileText,
+  IMAGE: FileImage,
+  OTHER: File,
+};
+
+/** Human-readable file size (no locale-specific separators to keep tests stable). */
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function Field({ label, value }: { label: string; value: string | null }) {

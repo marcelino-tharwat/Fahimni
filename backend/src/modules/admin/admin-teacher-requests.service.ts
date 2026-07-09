@@ -39,6 +39,14 @@ function parseProofDocuments(value: Prisma.JsonValue | null): ProofDocument[] {
   ) as ProofDocument[];
 }
 
+/** Map a mime type to a coarse preview hint for the admin UI (no path exposure). */
+function previewTypeFor(mimeType: string | null | undefined): "PDF" | "IMAGE" | "OTHER" {
+  if (!mimeType) return "OTHER";
+  if (mimeType === "application/pdf") return "PDF";
+  if (mimeType.startsWith("image/")) return "IMAGE";
+  return "OTHER";
+}
+
 type RequestRow = {
   id: string;
   publicReference: string;
@@ -164,10 +172,15 @@ export class AdminTeacherRequestsService {
   async getDetail(requestId: string): Promise<AdminTeacherRequestDetail> {
     const row = await this.loadRequest(requestId);
     const docs = parseProofDocuments(row.proofDocuments);
+    // Surface EVERY uploaded document (even ones missing a storable path, which
+    // render as UNAVAILABLE) so the admin can see the full set. Size + previewType
+    // help the UI distinguish PDFs from images; the raw path is never included.
     const documents: SafeDocumentRef[] = docs.map((d, index) => ({
       index,
       fileName: d.originalName ?? `document-${index + 1}`,
       mimeType: d.mimeType ?? null,
+      size: typeof d.size === "number" && Number.isFinite(d.size) ? d.size : null,
+      previewType: previewTypeFor(d.mimeType),
       status: d.path ? "AVAILABLE" : "UNAVAILABLE",
     }));
 

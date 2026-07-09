@@ -35,10 +35,14 @@ export interface Paginated<T> {
   meta: PaginationMeta;
 }
 
+export type DocumentPreviewType = 'PDF' | 'IMAGE' | 'OTHER';
+
 export interface SafeDocumentRef {
   index: number;
   fileName: string;
   mimeType: string | null;
+  size: number | null;
+  previewType: DocumentPreviewType;
   status: 'AVAILABLE' | 'UNAVAILABLE';
 }
 

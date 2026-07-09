@@ -191,11 +191,12 @@ describe("Admin approval + login", () => {
     expect(log).not.toBeNull();
   });
 
-  it("11-12. approved unpaid teacher can login and gets TEACHER_PAYMENT_REQUIRED state", async () => {
+  it("11-12. approved teacher without a paid subscription logs in on the FREE plan", async () => {
     const r = await login(approvedUnpaid.email);
     expect(r.status).toBe(200);
     expect(cookieOf(r)).toBeTruthy();
-    expect(dataOf(r).accessState).toBe("TEACHER_PAYMENT_REQUIRED");
+    // Corrected policy: no paid subscription → FREE plan, NOT payment-blocked.
+    expect(dataOf(r).accessState).toBe("FREE_TEACHER");
   });
 
   it("13. pending teacher login blocked with TEACHER_PENDING_REVIEW", async () => {
@@ -221,13 +222,14 @@ describe("Admin approval + login", () => {
 });
 
 describe("Payment gate", () => {
-  it("15-16 & 20. approved-unpaid: gated feature 403 PAYMENT_REQUIRED; plans endpoint OK; PENDING payment does not unlock", async () => {
+  it("15-16 & 20. approved FREE teacher reaches gated features; PENDING payment does not remove FREE access", async () => {
     const cookie = cookieOf(await login(approvedUnpaid.email))!;
+    // Corrected policy: an APPROVED teacher on the FREE plan is allowed through the
+    // gate. A PENDING (unconfirmed) payment neither upgrades nor blocks them.
     const gated = await http("GET", GATED, { cookie });
-    expect(gated.status).toBe(403);
-    expect((gated.json as { code?: string }).code).toBe("TEACHER_PAYMENT_REQUIRED");
+    expect(gated.status).toBe(200);
     const plans = await http("GET", UNGATED, { cookie });
-    expect(plans.status).toBe(200); // ungated — reachable before payment
+    expect(plans.status).toBe(200); // ungated — always reachable
   });
 
   it("19 & 22. active-paid teacher (verified ACTIVE subscription) can access the gated feature", async () => {

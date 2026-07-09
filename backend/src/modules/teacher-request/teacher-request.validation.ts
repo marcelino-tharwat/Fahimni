@@ -49,4 +49,35 @@ export const createTeacherRequestSchema = z.object({
 
 export type CreateTeacherRequestInput = z.infer<typeof createTeacherRequestSchema>;
 
+// Public status tracking. Requires the public reference PLUS at least one contact
+// identifier (email or mobile) so status cannot be enumerated by reference alone.
+export const trackTeacherRequestSchema = z
+  .object({
+    reference: z
+      .string()
+      .trim()
+      .min(1, "Reference is required")
+      .max(40, "Reference is too long"),
+    email: z
+      .string()
+      .trim()
+      .email("Invalid email address")
+      .toLowerCase()
+      .optional(),
+    mobile: z
+      .string()
+      .trim()
+      .regex(
+        /^(\+20|0)(10|11|12|15)[0-9]{8}$/,
+        "Mobile must be a valid Egyptian number",
+      )
+      .optional(),
+  })
+  .refine((data) => Boolean(data.email) || Boolean(data.mobile), {
+    message: "Email or mobile is required",
+    path: ["email"],
+  });
+
+export type TrackTeacherRequestInput = z.infer<typeof trackTeacherRequestSchema>;
+
 export { ALLOWED_PROOF_MIME_TYPES, PROOF_MAX_SIZE, PROOF_MAX_COUNT };

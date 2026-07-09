@@ -123,14 +123,18 @@ export class TeacherPlanService {
   async getSubscriptionSummary(teacherId: string, locale: string = "ar"): Promise<SubscriptionMeResponse> {
     const activeSub = await this.getTeacherSubscription(teacherId);
     const pendingReq = await this.getTeacherPendingRequest(teacherId);
-    const effectivePlanCode = activeSub?.plan?.code ?? "FREE";
+    // "Paid" entitlement requires an ACTIVE, non-lapsed subscription — TRIALING /
+    // PAST_DUE / expired do NOT grant a paid plan (they fall back to FREE).
+    const isPaidActive =
+      !!activeSub && activeSub.status === "ACTIVE" && activeSub.currentPeriodEnd > new Date();
+    const effectivePlanCode = isPaidActive ? activeSub!.plan.code : "FREE";
 
     const effectivePlan = await this.getPlanByCode(effectivePlanCode);
 
     const usage = await this.computeUsageSummary(teacherId, effectivePlan?.limits ?? {});
     const pendingPayment = await teacherSubscriptionPaymentService.getPendingPayment(teacherId);
 
-    if (activeSub) {
+    if (isPaidActive && activeSub) {
       return {
         currentPlan: {
           id: activeSub.plan.id,
@@ -156,6 +160,10 @@ export class TeacherPlanService {
           : null,
         pendingPayment,
         effectivePlanCode,
+        accessState: "PAID_PLAN",
+        entitlementSource: "ACTIVE_SUBSCRIPTION",
+        paymentRequired: false,
+        upgradeAvailable: false,
       };
     }
 
@@ -177,6 +185,13 @@ export class TeacherPlanService {
         : null,
       pendingPayment,
       effectivePlanCode: "FREE",
+      // Approved teacher without an active paid subscription → FREE plan, full
+      // access, no payment required, upgrade offered. (This endpoint is only
+      // reachable by an authenticated APPROVED+ACTIVE teacher.)
+      accessState: "FREE_PLAN",
+      entitlementSource: "DEFAULT_FREE_PLAN",
+      paymentRequired: false,
+      upgradeAvailable: true,
     };
   }
 

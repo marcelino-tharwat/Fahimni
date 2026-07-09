@@ -11,9 +11,11 @@ import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
  *
  *  - PENDING_REVIEW → /teacher/pending-review
  *  - REJECTED       → /teacher/rejected
- *  - APPROVED + ACTIVE subscription → allow feature routes
- *  - APPROVED + no active subscription → /teacher/plans (payment required)
+ *  - not approved (legacy NONE) → /teacher/plans
+ *  - APPROVED (FREE_PLAN or PAID_PLAN) → allow feature routes
  *
+ * An APPROVED teacher WITHOUT a paid subscription is entitled to the FREE plan
+ * and is NOT redirected to /teacher/plans — they can still upgrade from there.
  * The backend enforces the same policy, so this is UX-only convenience.
  */
 export function TeacherAccessGuard() {
@@ -52,8 +54,15 @@ export function TeacherAccessGuard() {
     );
   }
 
-  const hasActiveSubscription = data?.subscription?.status === 'ACTIVE';
-  if (isError || !hasActiveSubscription) {
+  // An APPROVED teacher is entitled to at least the FREE plan. Both FREE_PLAN and
+  // PAID_PLAN grant feature access; only PENDING/REJECTED/NOT_APPROVED block. On a
+  // failed lookup we still allow the approved teacher through (FREE entitlement) —
+  // the backend gate remains the authoritative check.
+  const blocked =
+    data?.accessState === 'PENDING_REVIEW' ||
+    data?.accessState === 'REJECTED' ||
+    data?.accessState === 'NOT_APPROVED';
+  if (!isError && blocked) {
     return <Navigate to="/teacher/plans" replace />;
   }
 

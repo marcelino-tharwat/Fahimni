@@ -29,15 +29,20 @@ export interface Paginated<T> {
   meta: PaginationMeta;
 }
 
+/** How the admin UI should preview a document, derived from its mime type. */
+export type DocumentPreviewType = "PDF" | "IMAGE" | "OTHER";
+
 /**
- * Safe document descriptor — original file name + mime type + availability only.
- * The raw Supabase storage `path`/key is NEVER surfaced; access is exclusively
- * via the short-lived signed-url endpoint.
+ * Safe document descriptor — original file name, mime type, size, preview hint,
+ * and availability only. The raw Supabase storage `path`/key is NEVER surfaced;
+ * access is exclusively via the short-lived signed-url endpoint.
  */
 export interface SafeDocumentRef {
   index: number;
   fileName: string;
   mimeType: string | null;
+  size: number | null;
+  previewType: DocumentPreviewType;
   status: "AVAILABLE" | "UNAVAILABLE";
 }
 
