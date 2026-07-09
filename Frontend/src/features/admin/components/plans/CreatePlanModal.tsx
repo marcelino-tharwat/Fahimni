@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Button, Spinner } from '@/shared/components/ui';
+import { Modal, Button } from '@/shared/components/ui';
 import { useCreatePlan } from '@/features/admin/hooks/useAdminPlans';
 import type { CreatePlanInput } from '@/features/admin/types/plans';
 

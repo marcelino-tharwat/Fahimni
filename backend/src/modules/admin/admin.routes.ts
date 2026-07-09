@@ -35,6 +35,16 @@ import {
 } from "./admin-plans.validation.js";
 import { AdminUsersController } from "./admin-users.controller.js";
 import { listUsersQuerySchema } from "./admin-users.validation.js";
+import { AdminSubscriptionsController } from "./admin-subscriptions.controller.js";
+import {
+  approveSubscriptionRequestSchema,
+  listAiUsageQuerySchema,
+  listEntitlementsQuerySchema,
+  listPaymentsQuerySchema,
+  listSubscriptionRequestsQuerySchema,
+  listSubscriptionsQuerySchema,
+  rejectSubscriptionRequestSchema,
+} from "./admin-subscriptions.validation.js";
 
 /**
  * Admin router — the canonical home for the Admin Module (`/api/admin/*`).
@@ -59,6 +69,7 @@ const studentsController = new AdminStudentsController();
 const teacherRequestsController = new AdminTeacherRequestsController();
 const plansController = new AdminPlansController();
 const adminUsersController = new AdminUsersController();
+const subscriptionsController = new AdminSubscriptionsController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -167,6 +178,54 @@ router.patch(
   "/plans/:planId/recommended",
   validateRequest(recommendedChangeSchema, "body"),
   asyncHandler(plansController.changeRecommended),
+);
+
+// ── Subscriptions review (entitlements / subscriptions / payments / manual
+// requests / AI usage). All inherit the router-level ADMIN-only guard. Static
+// list routes are declared before dynamic :id routes. Safe fields only — never
+// rawCallback / checkoutUrl / provider ids / Paymob secrets. ──
+router.get(
+  "/teacher-entitlements",
+  validateRequest(listEntitlementsQuerySchema, "query"),
+  asyncHandler(subscriptionsController.listEntitlements),
+);
+router.get(
+  "/teacher-subscriptions",
+  validateRequest(listSubscriptionsQuerySchema, "query"),
+  asyncHandler(subscriptionsController.listSubscriptions),
+);
+router.get(
+  "/teacher-subscriptions/:subscriptionId",
+  asyncHandler(subscriptionsController.getSubscriptionDetail),
+);
+router.get(
+  "/teacher-subscription-payments",
+  validateRequest(listPaymentsQuerySchema, "query"),
+  asyncHandler(subscriptionsController.listPayments),
+);
+router.get(
+  "/teacher-subscription-payments/:paymentId",
+  asyncHandler(subscriptionsController.getPaymentDetail),
+);
+router.get(
+  "/teacher-subscription-requests",
+  validateRequest(listSubscriptionRequestsQuerySchema, "query"),
+  asyncHandler(subscriptionsController.listRequests),
+);
+router.patch(
+  "/teacher-subscription-requests/:requestId/approve",
+  validateRequest(approveSubscriptionRequestSchema, "body"),
+  asyncHandler(subscriptionsController.approveRequest),
+);
+router.patch(
+  "/teacher-subscription-requests/:requestId/reject",
+  validateRequest(rejectSubscriptionRequestSchema, "body"),
+  asyncHandler(subscriptionsController.rejectRequest),
+);
+router.get(
+  "/ai-usage",
+  validateRequest(listAiUsageQuerySchema, "query"),
+  asyncHandler(subscriptionsController.getAiUsage),
 );
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */

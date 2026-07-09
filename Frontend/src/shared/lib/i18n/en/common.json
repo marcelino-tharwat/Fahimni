@@ -19,7 +19,8 @@
     "promoCodes": "Promo Codes",
     "studentLookup": "Student Lookup",
     "tenants": "Academies",
-    "plans": "Plans & Subscriptions"
+    "plans": "Plans & Subscriptions",
+    "subscriptions": "Subscriptions"
   },
   "roles": {
     "ADMIN": "Admin",

@@ -38,6 +38,9 @@ export type AuditLogAction =
   | "USER_STATUS_CHANGED"
   | "TEACHER_REQUEST_APPROVED"
   | "TEACHER_REQUEST_REJECTED"
+  // Admin manual teacher-subscription request review.
+  | "TEACHER_SUBSCRIPTION_REQUEST_APPROVED"
+  | "TEACHER_SUBSCRIPTION_REQUEST_REJECTED"
   // Admin teacher-plan management actions.
   | "ADMIN_PLAN_CREATED"
   | "ADMIN_PLAN_UPDATED"
