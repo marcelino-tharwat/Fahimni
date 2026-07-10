@@ -21,9 +21,10 @@ function buildWhere(studentId: string, isRead?: boolean): Prisma.NotificationWhe
 }
 
 export class NotificationsRepository {
-  async createMany(data: CreateManyInput[]): Promise<void> {
-    if (data.length === 0) return;
-    await prisma.notification.createMany({ data });
+  async createMany(data: CreateManyInput[]): Promise<number> {
+    if (data.length === 0) return 0;
+    const result = await prisma.notification.createMany({ data });
+    return result.count;
   }
 
   async findByStudent(

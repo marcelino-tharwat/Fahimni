@@ -1,8 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { Bell } from 'lucide-react';
 import { useUnreadCount, useNotifications, useMarkAsRead } from '../api/notificationsApi';
 import { NotificationList } from './NotificationList';
+
+function getDropdownPosition(button: HTMLButtonElement | null): CSSProperties {
+  if (!button) return { insetInlineEnd: 16, top: 64 };
+  const rect = button.getBoundingClientRect();
+  const isRtl = document.dir === 'rtl';
+  return {
+    top: rect.bottom + 8,
+    [isRtl ? 'left' : 'right']: isRtl ? rect.left : window.innerWidth - rect.right,
+  };
+}
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,14 +71,7 @@ export function NotificationBell() {
         <div
           ref={dropdownRef}
           className="fixed z-[100] w-80 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
-          style={{
-            insetInlineEnd: buttonRef.current
-              ? window.innerWidth - buttonRef.current.getBoundingClientRect().right
-              : 16,
-            top: buttonRef.current
-              ? buttonRef.current.getBoundingClientRect().bottom + 8
-              : 64,
-          }}
+          style={getDropdownPosition(buttonRef.current)}
         >
           <div className="border-b border-gray-100 px-4 py-3">
             <h3 className="font-cairo text-sm font-bold text-navy-900">
