@@ -185,7 +185,12 @@ describe("Admin Teacher Requests — list / detail / documents", () => {
 });
 
 describe("Admin Teacher Requests — approve", () => {
-  it("11 & 12. approve a pending request creates the teacher and sets reviewer fields", async () => {
+  it("11 & 12. approve a legacy (unlinked) request → APPROVED + reviewer fields, no user invented", async () => {
+    // makeRequest creates a LEGACY request (no linked pending user). The current
+    // approval policy never invents a user with a random password — an unlinked
+    // request with no matching OPERATION account resolves to
+    // LEGACY_MANUAL_PROVISIONING_REQUIRED and creates NO user. (The linked-user
+    // happy path is covered by teacher-register-docs-approval-payment-gate.e2e.)
     const req = await makeRequest();
     const r = await http("PATCH", `/api/admin/teacher-requests/${req.id}/approve`, {
       cookie: adminCookie,
@@ -194,21 +199,17 @@ describe("Admin Teacher Requests — approve", () => {
     expect(r.status).toBe(200);
     const d = dataOf(r) as { accountProvisioning: string; createdTeacherId: string | null; request: { status: string } };
     expect(d.request.status).toBe("APPROVED");
-    expect(d.accountProvisioning).toBe("CREATED_PENDING_PASSWORD_RESET");
-    expect(d.createdTeacherId).toBeTruthy();
-    if (d.createdTeacherId) owned.userIds.push(d.createdTeacherId);
+    expect(d.accountProvisioning).toBe("LEGACY_MANUAL_PROVISIONING_REQUIRED");
+    expect(d.createdTeacherId).toBeNull();
+    // No user was invented for this email.
+    expect(await prisma.user.count({ where: { email: req.email } })).toBe(0);
 
     const row = await prisma.teacherRegistrationRequest.findUniqueOrThrow({ where: { id: req.id } });
     expect(row.status).toBe("APPROVED");
     expect(row.reviewedById).toBeTruthy();
     expect(row.reviewedAt).not.toBeNull();
 
-    // The created user is an OPERATION teacher with a profile — and no password leaked.
-    const created = await prisma.user.findUniqueOrThrow({ where: { id: d.createdTeacherId! }, select: { role: true, email: true } });
-    expect(created.role).toBe("OPERATION");
-    expect(created.email).toBe(req.email);
-    // No password field/hash or tokenVersion is returned. (The provisioning label
-    // "CREATED_PENDING_PASSWORD_RESET" is a status, not a secret — matched narrowly.)
+    // No password field/hash or tokenVersion is ever returned.
     expect(JSON.stringify(r.json)).not.toMatch(/"password"|passwordHash|tokenVersion|\$2[aby]\$/i);
   });
 
@@ -237,11 +238,13 @@ describe("Admin Teacher Requests — approve", () => {
     expect(row.status).toBe("APPROVED");
   });
 
-  it("approve with createAccount=false approves without creating a user", async () => {
+  it("approve a legacy request approves without creating a user", async () => {
+    // createAccount is no longer honored for legacy requests — provisioning is
+    // resolved from the request's linkage. An unlinked request creates no user.
     const req = await makeRequest();
     const r = await http("PATCH", `/api/admin/teacher-requests/${req.id}/approve`, { cookie: adminCookie, body: { createAccount: false } });
     const d = dataOf(r) as { accountProvisioning: string; createdTeacherId: string | null };
-    expect(d.accountProvisioning).toBe("SKIPPED");
+    expect(d.accountProvisioning).toBe("LEGACY_MANUAL_PROVISIONING_REQUIRED");
     expect(d.createdTeacherId).toBeNull();
     expect(await prisma.user.count({ where: { email: req.email } })).toBe(0);
   });
