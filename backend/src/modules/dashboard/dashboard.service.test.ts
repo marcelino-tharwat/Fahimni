@@ -46,15 +46,15 @@ describe("DashboardService.getTeacherStats", () => {
 
     // Every count is filtered by the authenticated teacher and soft-deletes.
     expect(mockPrisma.stage.count).toHaveBeenCalledWith({
-      where: { teacherId: TEACHER_A, deletedAt: null },
+      where: { deletedAt: null, chapters: { some: { teacherId: TEACHER_A, deletedAt: null } } },
     });
     expect(mockPrisma.chapter.count).toHaveBeenCalledWith({
-      where: { deletedAt: null, stage: { teacherId: TEACHER_A, deletedAt: null } },
+      where: { teacherId: TEACHER_A, deletedAt: null },
     });
     expect(mockPrisma.lesson.count).toHaveBeenCalledWith({
       where: {
         deletedAt: null,
-        chapter: { deletedAt: null, stage: { teacherId: TEACHER_A, deletedAt: null } },
+        chapter: { teacherId: TEACHER_A, deletedAt: null },
       },
     });
   });

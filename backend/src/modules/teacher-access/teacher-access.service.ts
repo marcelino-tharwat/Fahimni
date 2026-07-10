@@ -2,20 +2,20 @@ import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
 
 /**
- * Verify a stage belongs to the given teacher (stage.teacherId === teacherId).
- * Returns the stage id if found; throws a 404 (existence-hiding) otherwise.
+ * Verify a stage exists, is not deleted, and is active.
+ * Stages are admin-managed — no teacher ownership check.
+ * Returns the stage id if found; throws 404 otherwise.
  */
-export async function assertStageOwnedByTeacher(
+export async function assertStageExistsAndActive(
   stageId: string,
-  teacherId: string,
 ) {
   const stage = await prisma.stage.findFirst({
-    where: { id: stageId, teacherId, deletedAt: null },
+    where: { id: stageId, deletedAt: null, isActive: true },
     select: { id: true },
   });
 
   if (!stage) {
-    throw new AppError("Stage not found", 404);
+    throw new AppError("Stage not found or inactive", 404);
   }
 
   return stage;
@@ -23,7 +23,7 @@ export async function assertStageOwnedByTeacher(
 
 /**
  * Verify a student has at least one active enrollment in a chapter whose
- * stage belongs to the given teacher. Used to scope student visibility
+ * teacher matches the given teacherId. Used to scope student visibility
  * for teacher-facing endpoints.
  */
 export async function assertStudentVisibleToTeacher(
@@ -36,7 +36,7 @@ export async function assertStudentVisibleToTeacher(
       status: "ACTIVE",
       chapter: {
         deletedAt: null,
-        stage: { teacherId, deletedAt: null },
+        teacherId,
       },
     },
     select: { id: true },
@@ -48,7 +48,7 @@ export async function assertStudentVisibleToTeacher(
 }
 
 /**
- * Verify a chapter belongs to a stage owned by the given teacher.
+ * Verify a chapter belongs to the given teacher (chapter.teacherId === teacherId).
  * Returns the chapter record if found.
  */
 export async function assertChapterOwnedByTeacher(
@@ -58,8 +58,8 @@ export async function assertChapterOwnedByTeacher(
   const chapter = await prisma.chapter.findFirst({
     where: {
       id: chapterId,
+      teacherId,
       deletedAt: null,
-      stage: { teacherId, deletedAt: null },
     },
     select: { id: true, stageId: true },
   });
@@ -72,9 +72,8 @@ export async function assertChapterOwnedByTeacher(
 }
 
 /**
- * Verify a lesson belongs to a chapter whose stage is owned by the given
- * teacher (lesson → chapter → stage → teacherId). Returns the lesson
- * record if found.
+ * Verify a lesson belongs to a chapter owned by the given teacher
+ * (lesson → chapter → teacherId). Returns the lesson record if found.
  */
 export async function assertLessonOwnedByTeacher(
   lessonId: string,
@@ -86,7 +85,7 @@ export async function assertLessonOwnedByTeacher(
       deletedAt: null,
       chapter: {
         deletedAt: null,
-        stage: { teacherId, deletedAt: null },
+        teacherId,
       },
     },
     select: { id: true, chapterId: true },
@@ -112,7 +111,7 @@ export async function assertLessonOwnedByTeacher(
  * It MUST NOT be applied to My Courses / enrolled content endpoints.
  *
  * @param chapterId - The chapter to check ownership of
- * @returns The stage's teacherId if the teacher is visible, null otherwise
+ * @returns Whether the chapter's teacher is visible for discovery
  */
 export async function isTeacherVisibleForDiscovery(
   chapterId: string,
@@ -120,15 +119,11 @@ export async function isTeacherVisibleForDiscovery(
   const chapter = await prisma.chapter.findUnique({
     where: { id: chapterId },
     select: {
-      stage: {
+      teacher: {
         select: {
-          teacher: {
-            select: {
-              status: true,
-              role: true,
-              teacherApprovalState: true,
-            },
-          },
+          status: true,
+          role: true,
+          teacherApprovalState: true,
         },
       },
     },
@@ -136,7 +131,7 @@ export async function isTeacherVisibleForDiscovery(
 
   if (!chapter) return false;
 
-  const teacher = chapter.stage.teacher;
+  const teacher = chapter.teacher;
   return (
     teacher.role === "OPERATION" &&
     teacher.status === "ACTIVE" &&

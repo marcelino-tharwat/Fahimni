@@ -48,7 +48,7 @@ export interface EnrollmentResponseDTO {
 /**
  * Select used by the enrollment list endpoints. Reuses the shared public fields
  * but replaces the chapter projection with one that also includes the parent
- * stage, so list cards can show "Stage › Chapter" without an extra round-trip.
+ * stage (display only), so list cards can show "Stage › Chapter".
  */
 export const enrollmentListFields = {
   ...enrollmentPublicFields,

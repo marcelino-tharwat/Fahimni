@@ -118,8 +118,9 @@ export async function seedQuizVisibilityE2EFixture(): Promise<QuizVisibilityE2EF
       sortOrder: 1,
       stageId: stage.id,
       price: 0,
+      teacherId: teacher1.id,
     },
-    update: { deletedAt: null, stageId: stage.id, price: 0 },
+    update: { deletedAt: null, stageId: stage.id, price: 0, teacherId: teacher1.id },
   });
 
   const lessonA1 = await prisma.lesson.upsert({

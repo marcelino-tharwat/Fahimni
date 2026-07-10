@@ -257,12 +257,11 @@ export class AdminStatsService {
     const rows = await prisma.$queryRaw<
       { teacherId: string; revenue: number | null }[]
     >`
-      SELECT s."teacherId" AS "teacherId", SUM(pt.amount) AS revenue
+      SELECT c."teacherId" AS "teacherId", SUM(pt.amount) AS revenue
       FROM payment_transactions pt
       JOIN chapters c ON c.id = pt."chapterId"
-      JOIN stages s ON s.id = c."stageId"
       WHERE pt.status = 'SUCCESS'
-      GROUP BY s."teacherId"
+      GROUP BY c."teacherId"
       ORDER BY revenue DESC
       LIMIT ${TOP_TEACHERS_LIMIT}
     `;
@@ -276,12 +275,11 @@ export class AdminStatsService {
     const rows = await prisma.$queryRaw<
       { teacherId: string; students: bigint | number | null }[]
     >`
-      SELECT s."teacherId" AS "teacherId", COUNT(DISTINCT e."studentId") AS students
+      SELECT c."teacherId" AS "teacherId", COUNT(DISTINCT e."studentId") AS students
       FROM enrollments e
       JOIN chapters c ON c.id = e."chapterId"
-      JOIN stages s ON s.id = c."stageId"
       WHERE e.status = 'ACTIVE'
-      GROUP BY s."teacherId"
+      GROUP BY c."teacherId"
       ORDER BY students DESC
       LIMIT ${TOP_TEACHERS_LIMIT}
     `;

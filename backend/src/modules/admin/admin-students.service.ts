@@ -24,10 +24,10 @@ const UUID_RE =
  * Admin Students Management read model. ADMIN-only, read-only.
  *
  * A student may belong to multiple teachers; teachers are always resolved as the
- * DISTINCT set of Stage.teacherId reached through the student's enrollments
- * (Enrollment → Chapter → Stage.teacher). Every enrollment is teacher-connected
- * (a chapter always belongs to a stage with a teacherId), so "ACTIVE enrollment
- * connected to a teacher" is equivalent to "ACTIVE enrollment".
+ * DISTINCT set of teachers reached through the student's enrollments
+ * (Enrollment → Chapter → teacher). Every enrollment is teacher-connected
+ * (a chapter always has a teacherId), so "ACTIVE enrollment connected to a
+ * teacher" is equivalent to "ACTIVE enrollment".
  *
  * SAFE FIELDS ONLY — never selects password / tokenVersion / rawCallback /
  * paymob* ids / provider ids / storage paths.
@@ -105,7 +105,7 @@ export class AdminStudentsService {
     }
 
     // One enrollments read for the whole page (no N+1). Resolve teacher through
-    // chapter → stage → teacher, plus counts and latestEnrollmentAt per student.
+    // chapter.teacher, plus counts and latestEnrollmentAt per student.
     const [enrollments, pendingPayments] = await Promise.all([
       prisma.enrollment.findMany({
         where: { studentId: { in: ids } },
@@ -115,15 +115,11 @@ export class AdminStudentsService {
           enrolledAt: true,
           chapter: {
             select: {
-              stage: {
+              teacher: {
                 select: {
-                  teacher: {
-                    select: {
-                      id: true,
-                      fullName: true,
-                      teacherProfile: { select: { subject: true } },
-                    },
-                  },
+                  id: true,
+                  fullName: true,
+                  teacherProfile: { select: { subject: true } },
                 },
               },
             },
@@ -160,7 +156,7 @@ export class AdminStudentsService {
       agg.enrollmentsCount += 1;
       if (e.status === "ACTIVE") agg.activeEnrollmentsCount += 1;
       if (e.status === "PAYMENT_PENDING") agg.pendingEnrollmentsCount += 1;
-      const teacher = e.chapter.stage.teacher;
+      const teacher = e.chapter.teacher;
       if (teacher && !agg.teachers.has(teacher.id)) {
         agg.teachers.set(teacher.id, {
           id: teacher.id,
@@ -225,12 +221,8 @@ export class AdminStudentsService {
       select: {
         chapter: {
           select: {
-            stage: {
-              select: {
-                teacher: {
-                  select: { id: true, fullName: true, teacherProfile: { select: { subject: true } } },
-                },
-              },
+            teacher: {
+              select: { id: true, fullName: true, teacherProfile: { select: { subject: true } } },
             },
           },
         },
@@ -238,7 +230,7 @@ export class AdminStudentsService {
     });
     const map = new Map<string, StudentTeacherRef>();
     for (const e of enrollments) {
-      const t = e.chapter.stage.teacher;
+      const t = e.chapter.teacher;
       if (t && !map.has(t.id)) {
         map.set(t.id, { id: t.id, fullName: t.fullName, subject: t.teacherProfile?.subject ?? null });
       }
@@ -323,13 +315,8 @@ export class AdminStudentsService {
             select: {
               id: true,
               name: true,
-              stage: {
-                select: {
-                  id: true,
-                  name: true,
-                  teacher: { select: { id: true, fullName: true, teacherProfile: { select: { subject: true } } } },
-                },
-              },
+              stage: { select: { id: true, name: true } },
+              teacher: { select: { id: true, fullName: true, teacherProfile: { select: { subject: true } } } },
             },
           },
         },
@@ -349,9 +336,9 @@ export class AdminStudentsService {
       chapter: { id: e.chapter.id, name: e.chapter.name },
       stage: { id: e.chapter.stage.id, name: e.chapter.stage.name },
       teacher: {
-        id: e.chapter.stage.teacher.id,
-        fullName: e.chapter.stage.teacher.fullName,
-        subject: e.chapter.stage.teacher.teacherProfile?.subject ?? null,
+        id: e.chapter.teacher.id,
+        fullName: e.chapter.teacher.fullName,
+        subject: e.chapter.teacher.teacherProfile?.subject ?? null,
       },
     }));
 
@@ -374,7 +361,7 @@ export class AdminStudentsService {
             select: {
               id: true,
               name: true,
-              stage: { select: { teacher: { select: { id: true, fullName: true } } } },
+              teacher: { select: { id: true, fullName: true } },
             },
           },
         },
@@ -395,7 +382,7 @@ export class AdminStudentsService {
         status: p.status,
         createdAt: p.createdAt.toISOString(),
         chapter: { id: p.chapter.id, name: p.chapter.name },
-        teacher: { id: p.chapter.stage.teacher.id, fullName: p.chapter.stage.teacher.fullName },
+        teacher: { id: p.chapter.teacher.id, fullName: p.chapter.teacher.fullName },
       })),
       summary: {
         confirmed,

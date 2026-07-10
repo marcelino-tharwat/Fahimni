@@ -36,7 +36,7 @@ type SubStatus = "PENDING" | "SUCCESS" | "FAILED";
  *
  * SCOPING: every student/enrollment/course-revenue figure is scoped to the
  * SELECTED teacher through the ownership chain
- *   Enrollment / PaymentTransaction → Chapter → Stage.teacherId = teacherId.
+ *   Enrollment / PaymentTransaction → Chapter → teacherId.
  * A student shared across teachers only ever surfaces THIS teacher's enrollments.
  *
  * REVENUE SEPARATION: course revenue (students buying this teacher's content) and
@@ -116,7 +116,7 @@ export class AdminTeacherDetailService {
   }
 
   private async computeStats(teacherId: string): Promise<TeacherDetailStats> {
-    const chapterWhere = { stage: { teacherId } };
+    const chapterTeacherWhere = { teacherId };
     const [
       stagesCount,
       chaptersCount,
@@ -128,15 +128,15 @@ export class AdminTeacherDetailService {
       distinctStudents,
       aiUsage,
     ] = await Promise.all([
-      prisma.stage.count({ where: { teacherId, deletedAt: null } }),
-      prisma.chapter.count({ where: { deletedAt: null, ...chapterWhere } }),
-      prisma.lesson.count({ where: { deletedAt: null, chapter: { deletedAt: null, ...chapterWhere } } }),
-      prisma.quiz.count({ where: { chapter: { deletedAt: null, ...chapterWhere } } }),
-      prisma.enrollment.count({ where: { chapter: chapterWhere } }),
-      prisma.enrollment.count({ where: { status: "ACTIVE", chapter: chapterWhere } }),
-      prisma.enrollment.count({ where: { status: "PAYMENT_PENDING", chapter: chapterWhere } }),
+      prisma.stage.count({ where: { deletedAt: null, chapters: { some: { teacherId, deletedAt: null } } } }),
+      prisma.chapter.count({ where: { deletedAt: null, ...chapterTeacherWhere } }),
+      prisma.lesson.count({ where: { deletedAt: null, chapter: { deletedAt: null, ...chapterTeacherWhere } } }),
+      prisma.quiz.count({ where: { chapter: { deletedAt: null, ...chapterTeacherWhere } } }),
+      prisma.enrollment.count({ where: { chapter: chapterTeacherWhere } }),
+      prisma.enrollment.count({ where: { status: "ACTIVE", chapter: chapterTeacherWhere } }),
+      prisma.enrollment.count({ where: { status: "PAYMENT_PENDING", chapter: chapterTeacherWhere } }),
       prisma.enrollment.findMany({
-        where: { chapter: chapterWhere },
+        where: { chapter: chapterTeacherWhere },
         select: { studentId: true },
         distinct: ["studentId"],
       }),
@@ -231,7 +231,7 @@ export class AdminTeacherDetailService {
     teacherId: string,
   ): Promise<AdminTeacherDetailResponse["revenue"]> {
     const monthStart = startOfCurrentMonthUtc();
-    const courseWhere = { status: "SUCCESS" as const, chapter: { stage: { teacherId } } };
+    const courseWhere = { status: "SUCCESS" as const, chapter: { teacherId } };
     const [course, monthly, sub] = await Promise.all([
       prisma.paymentTransaction.aggregate({ where: courseWhere, _sum: { amount: true } }),
       prisma.paymentTransaction.aggregate({
@@ -264,7 +264,7 @@ export class AdminTeacherDetailService {
     // other teachers' content.
     const studentWhere = {
       role: "STUDENT" as const,
-      enrollments: { some: { chapter: { stage: { teacherId } } } },
+      enrollments: { some: { chapter: { teacherId } } },
       ...(q
         ? {
             OR: [
@@ -288,7 +288,7 @@ export class AdminTeacherDetailService {
           status: true,
           // CRITICAL: only enrollments through THIS teacher's chapters.
           enrollments: {
-            where: { chapter: { stage: { teacherId } } },
+            where: { chapter: { teacherId } },
             select: {
               id: true,
               status: true,
@@ -351,7 +351,7 @@ export class AdminTeacherDetailService {
     const { page, limit, status } = query;
 
     const where = {
-      chapter: { stage: { teacherId } },
+      chapter: { teacherId },
       ...(status ? { status } : {}),
     };
 
@@ -401,7 +401,7 @@ export class AdminTeacherDetailService {
   // ── Content tab ──
   async getContent(teacherId: string): Promise<TeacherContentResponse> {
     await this.assertTeacher(teacherId);
-    const chapterWhere = { stage: { teacherId } };
+    const chapterTeacherWhere = { teacherId };
 
     const [
       stagesCount,
@@ -412,19 +412,19 @@ export class AdminTeacherDetailService {
       draftQuizzesCount,
       stages,
     ] = await Promise.all([
-      prisma.stage.count({ where: { teacherId, deletedAt: null } }),
-      prisma.chapter.count({ where: { deletedAt: null, ...chapterWhere } }),
-      prisma.lesson.count({ where: { deletedAt: null, chapter: { deletedAt: null, ...chapterWhere } } }),
-      prisma.quiz.count({ where: { chapter: { deletedAt: null, ...chapterWhere } } }),
-      prisma.quiz.count({ where: { status: "PUBLISHED", chapter: { deletedAt: null, ...chapterWhere } } }),
-      prisma.quiz.count({ where: { status: "DRAFT", chapter: { deletedAt: null, ...chapterWhere } } }),
+      prisma.stage.count({ where: { deletedAt: null, chapters: { some: { teacherId, deletedAt: null } } } }),
+      prisma.chapter.count({ where: { deletedAt: null, ...chapterTeacherWhere } }),
+      prisma.lesson.count({ where: { deletedAt: null, chapter: { deletedAt: null, ...chapterTeacherWhere } } }),
+      prisma.quiz.count({ where: { chapter: { deletedAt: null, ...chapterTeacherWhere } } }),
+      prisma.quiz.count({ where: { status: "PUBLISHED", chapter: { deletedAt: null, ...chapterTeacherWhere } } }),
+      prisma.quiz.count({ where: { status: "DRAFT", chapter: { deletedAt: null, ...chapterTeacherWhere } } }),
       prisma.stage.findMany({
-        where: { teacherId, deletedAt: null },
+        where: { deletedAt: null, chapters: { some: { teacherId, deletedAt: null } } },
         select: {
           id: true,
           name: true,
           chapters: {
-            where: { deletedAt: null },
+            where: { teacherId, deletedAt: null },
             select: {
               id: true,
               name: true,
@@ -469,7 +469,7 @@ export class AdminTeacherDetailService {
   async getRevenue(teacherId: string): Promise<TeacherRevenueResponse> {
     await this.assertTeacher(teacherId);
     const monthStart = startOfCurrentMonthUtc();
-    const scoped = { chapter: { stage: { teacherId } } };
+    const scoped = { chapter: { teacherId } };
 
     const [
       confirmedAgg,

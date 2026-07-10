@@ -83,7 +83,7 @@ describe("PromoCodeService ownership scoping", () => {
         expect.objectContaining({
           where: expect.objectContaining({
             id: CHAPTER_B,
-            stage: { teacherId: TEACHER_A, deletedAt: null },
+            teacherId: TEACHER_A, deletedAt: null,
           }),
         }),
       );
@@ -114,7 +114,7 @@ describe("PromoCodeService ownership scoping", () => {
       const call = mockPrisma.chapter.findFirst.mock.calls[0]![0] as {
         where: Record<string, unknown>;
       };
-      expect(call.where).not.toHaveProperty("stage");
+      expect(call.where).not.toHaveProperty("teacherId");
     });
   });
 });

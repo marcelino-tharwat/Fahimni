@@ -23,7 +23,7 @@ export class EnrollmentService {
         id: true,
         name: true,
         deletedAt: true,
-        stage: { select: { teacherId: true } },
+        teacherId: true,
       },
     });
 
@@ -74,7 +74,7 @@ export class EnrollmentService {
       actorId: studentId,
       actorType: "STUDENT",
       actorName: student?.fullName ?? null,
-      scopeTeacherId: chapter.stage.teacherId,
+      scopeTeacherId: chapter.teacherId,
       details: {
         chapterId: chapter.id,
         chapterName: chapter.name,
@@ -107,7 +107,7 @@ export class EnrollmentService {
         name: true,
         price: true,
         deletedAt: true,
-        stage: { select: { teacherId: true } },
+        teacherId: true,
       },
     });
 
@@ -185,7 +185,7 @@ export class EnrollmentService {
       actorId: studentId,
       actorType: "STUDENT",
       actorName: student?.fullName ?? null,
-      scopeTeacherId: chapter.stage.teacherId,
+      scopeTeacherId: chapter.teacherId,
       details: {
         chapterId: chapter.id,
         chapterName: chapter.name,
@@ -207,7 +207,7 @@ export class EnrollmentService {
       select: {
         id: true,
         status: true,
-        chapter: { select: { stage: { select: { teacherId: true } } } },
+        chapter: { select: { teacherId: true } },
       },
     });
 
@@ -231,7 +231,7 @@ export class EnrollmentService {
       resourceId: enrollmentId,
       actorId,
       actorType: "ADMIN",
-      scopeTeacherId: existing.chapter.stage.teacherId,
+      scopeTeacherId: existing.chapter.teacherId,
       details: {
         field: "status",
         oldValue: "ACTIVE",
@@ -272,7 +272,7 @@ export class EnrollmentService {
   /**
    * SCRUM-505: enrollments for a given student, newest first (operations/admin view).
    * ADMIN sees every enrollment; OPERATION (teacher) is scoped to enrollments for
-   * chapters in their own stages via a `where` clause (filtered in the query, not
+   * chapters in their own chapters via a `where` clause (filtered in the query, not
    * post-fetch).
    */
   public async getStudentEnrollments(
@@ -282,7 +282,7 @@ export class EnrollmentService {
   ): Promise<EnrollmentListItemDTO[]> {
     const where =
       actorRole === "OPERATION"
-        ? { studentId, chapter: { stage: { teacherId: actorId } } }
+        ? { studentId, chapter: { teacherId: actorId } }
         : { studentId };
 
     const enrollments = await prisma.enrollment.findMany({

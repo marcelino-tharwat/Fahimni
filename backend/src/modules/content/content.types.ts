@@ -10,6 +10,7 @@ export interface ChapterNode {
   name: string;
   sortOrder: number;
   lessonCount: number;
+  imageUrl: string | null;
 }
 
 export interface LessonNode {
@@ -55,6 +56,7 @@ export interface StudentChapterNode {
   description: string | null;
   sortOrder: number;
   price: number | null;
+  imageUrl: string | null;
   lessonCount: number;
   enrollmentStatus: EnrollmentStatus;
 }
@@ -73,6 +75,7 @@ export interface MyCourseResponse {
   description: string | null;
   sortOrder: number;
   price: number | null;
+  imageUrl: string | null;
   stageId: string;
   stageName: string;
   lessonCount: number;

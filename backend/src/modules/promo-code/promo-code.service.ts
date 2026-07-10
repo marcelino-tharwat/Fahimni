@@ -82,7 +82,7 @@ export class PromoCodeService {
         deletedAt: null,
         // Scope to the teacher's own content when the caller is a teacher.
         ...(ownerTeacherId
-          ? { stage: { teacherId: ownerTeacherId, deletedAt: null } }
+          ? { teacherId: ownerTeacherId }
           : {}),
       },
       select: { id: true },
