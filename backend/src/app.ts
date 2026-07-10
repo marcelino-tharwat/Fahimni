@@ -28,6 +28,7 @@ import materialsRoutes from "./modules/materials/materials.routes.js";
 import contentProtectionRoutes from "./modules/content-protection/contentProtection.routes.js";
 import { teacherRequestRoutes } from "./modules/teacher-request/index.js";
 import teacherPlanRoutes from "./modules/teacher-plans/teacher-plan.routes.js";
+import teacherWalletRoutes from "./modules/teacher-wallet/teacher-wallet.routes.js";
 import adminRoutes from "./modules/admin/admin.routes.js";
 import notificationRoutes from "./modules/notifications/notifications.routes.js";
 
@@ -92,6 +93,7 @@ export function createApp(): Application {
   app.use("/api/teacher-registration-requests", teacherRequestRoutes);
 
   app.use("/api/teacher", teacherPlanRoutes);
+  app.use("/api/teacher", teacherWalletRoutes);
 
   app.use("/api/notifications", notificationRoutes);
 

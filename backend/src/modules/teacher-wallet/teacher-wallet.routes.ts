@@ -1,0 +1,34 @@
+import { Router } from "express";
+import { TeacherWalletController } from "./teacher-wallet.controller.js";
+import { authenticateMiddleware } from "../../shared/middlewares/authenticate.middleware.js";
+import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
+import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
+import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
+import { updatePayoutProfileSchema } from "./teacher-wallet.validation.js";
+
+const router = Router();
+const controller = new TeacherWalletController();
+
+router.get(
+  "/wallet",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
+  controller.getWallet,
+);
+
+router.get(
+  "/payout-profile",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
+  controller.getPayoutProfile,
+);
+
+router.patch(
+  "/payout-profile",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
+  validateRequest(updatePayoutProfileSchema),
+  controller.updatePayoutProfile,
+);
+
+export default router;

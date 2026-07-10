@@ -187,3 +187,44 @@ export function createStageUpdateSchema(t: TFunction) {
 export type UpdateStageFormInput = z.infer<
   ReturnType<typeof createStageUpdateSchema>
 >;
+
+/**
+ * Client-side mirror of the backend `updatePayoutProfileSchema`
+ * (backend/src/modules/teacher-wallet/teacher-wallet.validation.ts). Only
+ * fields present in the parsed input are ever sent to the backend — see
+ * EditPayoutProfileModal, which omits a field entirely when its raw value is
+ * the empty string (untouched) and includes it (for validation) the moment
+ * the user has typed anything, including whitespace-only, so that case still
+ * surfaces as an error rather than silently being dropped.
+ */
+export function createPayoutProfileSchema(t: TFunction) {
+  return z
+    .object({
+      instaPayHandle: z
+        .string()
+        .trim()
+        .min(3, t("wallet.validation.instaPayMin"))
+        .max(50, t("wallet.validation.instaPayMax"))
+        .regex(/^[A-Za-z0-9@._-]+$/, t("wallet.validation.instaPayInvalid"))
+        .optional(),
+      vodafoneCashNumber: z
+        .string()
+        .trim()
+        .regex(
+          /^(\+20|0)(10|11|12|15)[0-9]{8}$/,
+          t("wallet.validation.vodafoneInvalid"),
+        )
+        .optional(),
+    })
+    .refine((data) => Object.keys(data).length > 0, {
+      // Explicit path so `flattenZodErrors` (which only keeps issues with a
+      // string path[0]) surfaces this under `errors.root` instead of silently
+      // dropping it — a root-level `.refine()` has an empty path by default.
+      message: t("wallet.validation.atLeastOneRequired"),
+      path: ["root"],
+    });
+}
+
+export type PayoutProfileFormInput = z.infer<
+  ReturnType<typeof createPayoutProfileSchema>
+>;

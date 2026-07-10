@@ -59,6 +59,7 @@ import { EssaySubmissionsPage } from '@/features/teacher/pages/EssaySubmissionsP
 import { EssayGradingDetailPage } from '@/features/teacher/pages/EssayGradingDetailPage';
 import { QuizResultsOverviewPage } from '@/features/teacher/pages/QuizResultsOverviewPage';
 import { StudentQuestionBreakdownPage } from '@/features/teacher/pages/StudentQuestionBreakdownPage';
+import { TeacherWalletPage } from '@/features/teacher/pages/TeacherWalletPage';
 
 // Support pages
 import { StudentLookupPage } from '@/features/support/pages/StudentLookupPage';
@@ -167,6 +168,7 @@ const router = createBrowserRouter([
               { path: '/teacher/students/:studentId', element: <StudentDetailPage /> },
               { path: '/teacher/branding', element: <TeacherBrandingPage /> },
               { path: '/teacher/promo-codes', element: <AdminPromoCodesPage /> },
+              { path: '/teacher/wallet', element: <TeacherWalletPage /> },
               { path: '/teacher/profile', element: <ProfilePage /> },
             ],
           },

@@ -46,6 +46,8 @@ model User {
   teacherAiUsageEvents      TeacherAiUsageEvent[]
   teacherSubscriptionPayments TeacherSubscriptionPayment[]
   notifications             Notification[]
+  teacherWithdrawalRequests   TeacherWithdrawalRequest[] @relation("TeacherWithdrawalRequests")
+  reviewedWithdrawalRequests  TeacherWithdrawalRequest[] @relation("TeacherWithdrawalReviewedBy")
 }
 
 model StudentProfile {
@@ -71,6 +73,12 @@ model TeacherProfile {
   // STORY-65: teacher-configured daily AI-tutor question cap for this teacher's
   // students. Default 20 (matches AI_TUTOR_DAILY_QUERY_LIMIT platform default).
   aiTutorDailyQueryLimit Int      @default(20)
+  // Payout profile — teacher-facing wallet withdrawal destination. Never
+  // exposed to students; only the teacher (and admin, in a future admin-only
+  // surface) can read/write these.
+  instaPayHandle         String?
+  vodafoneCashNumber     String?
+  payoutMethodUpdatedAt  DateTime?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
   user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -842,4 +850,44 @@ model TeacherSubscriptionPayment {
   @@index([planId])
   @@index([subscriptionId])
   @@map("teacher_subscription_payments")
+}
+
+enum TeacherWithdrawalStatus {
+  PENDING
+  PROCESSING
+  TRANSFERRED
+  REJECTED
+  CANCELLED
+}
+
+/// A teacher's request to withdraw money from their earned wallet balance.
+/// Created/processed by admin (out of scope for this feature); the teacher can
+/// only read their own requests. Balance math (available/held/transferred) is
+/// always DERIVED from these rows + SUCCESS PaymentTransaction rows — never
+/// manually edited.
+model TeacherWithdrawalRequest {
+  id                   String                  @id @default(uuid())
+  teacherId            String
+  amount               Float
+  currency             String                  @default("EGP")
+  status               TeacherWithdrawalStatus @default(PENDING)
+  /// Payout destination at the time of the request (safe fields only — no
+  /// provider secrets). Snapshot so a later payout-profile edit doesn't alter
+  /// the historical record of where this payout was sent.
+  payoutMethodSnapshot Json?
+  teacherNote          String?
+  adminNote            String?
+  requestedAt          DateTime                @default(now())
+  processedAt          DateTime?
+  transferredAt        DateTime?
+  cancelledAt          DateTime?
+  reviewedById         String?
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+  teacher              User                    @relation("TeacherWithdrawalRequests", fields: [teacherId], references: [id], onDelete: Cascade)
+  reviewedBy           User?                   @relation("TeacherWithdrawalReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([teacherId])
+  @@index([teacherId, status])
+  @@map("teacher_withdrawal_requests")
 }

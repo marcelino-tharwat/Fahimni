@@ -33,6 +33,7 @@ export type AuditLogAction =
   | "STUDENT_UNENROLLED"
   | "PAYMENT_COMPLETED"
   | "PAYMENT_FAILED"
+  | "TEACHER_PAYOUT_METHOD_UPDATED"
   // Admin (platform-level) actions — not scoped to a single teacher.
   | "USER_CREATED"
   | "USER_UPDATED"

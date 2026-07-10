@@ -52,6 +52,10 @@ const TEACHERS = [
     profileId: sid("profile-math"),
     subject: "الرياضيات",
     bio: "أستاذ رياضيات للمرحلة الثانوية — خبرة ١٠ سنوات في تدريس الرياضيات.",
+    // Wallet demo: this teacher has confirmed student payments (see
+    // PaymentTransactions below) + a configured payout profile.
+    instaPayHandle: "ahmed.math@instapay",
+    vodafoneCashNumber: "01001234567",
   },
   {
     id: sid("teacher-physics"),
@@ -467,6 +471,9 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
     await tx.teacherSubscription.deleteMany({
       where: { teacherId: { in: ids } },
     });
+    await tx.teacherWithdrawalRequest.deleteMany({
+      where: { teacherId: { in: ids } },
+    });
 
     await tx.promoCode.deleteMany({
       where: {
@@ -619,15 +626,23 @@ async function seedAll(): Promise<void> {
             teacherApprovalState: teacherApproval,
           },
         });
+        const payoutFields = {
+          instaPayHandle: ("instaPayHandle" in t ? t.instaPayHandle : null) ?? null,
+          vodafoneCashNumber:
+            ("vodafoneCashNumber" in t ? t.vodafoneCashNumber : null) ?? null,
+          payoutMethodUpdatedAt:
+            ("instaPayHandle" in t || "vodafoneCashNumber" in t) ? daysAgo(1) : null,
+        };
         await tx.teacherProfile.upsert({
           where: { userId: t.id },
-          update: { subject: t.subject, bio: t.bio },
+          update: { subject: t.subject, bio: t.bio, ...payoutFields },
           create: {
             id: t.profileId,
             userId: t.id,
             subject: t.subject,
             bio: t.bio,
             aiTutorDailyQueryLimit: 30,
+            ...payoutFields,
           },
         });
       }
@@ -1481,6 +1496,57 @@ async function seedAll(): Promise<void> {
             status: "FAILED",
             errorMessage: "فشلت عملية الدفع",
             createdAt: daysAgo(3),
+          },
+        ],
+        skipDuplicates: true,
+      });
+
+      // 14b. Teacher Withdrawal Requests (wallet demo — teacher-math).
+      // teacher-math's confirmed earnings = pt-success-1 (150) + pt-success-2
+      // (150) = 300. With TRANSFERRED=150 and held PENDING(50)+PROCESSING(30),
+      // availableBalance = 300 - 150 - 80 = 70 (never manually edited/stored).
+      await tx.teacherWithdrawalRequest.createMany({
+        data: [
+          {
+            id: sid("twr-math-transferred"),
+            teacherId: sid("teacher-math"),
+            amount: 150,
+            currency: "EGP",
+            status: "TRANSFERRED",
+            payoutMethodSnapshot: {
+              instaPayHandle: "ahmed.math@instapay",
+              vodafoneCashNumber: "01001234567",
+            },
+            requestedAt: daysAgo(15),
+            processedAt: daysAgo(12),
+            transferredAt: daysAgo(10),
+          },
+          {
+            id: sid("twr-math-pending"),
+            teacherId: sid("teacher-math"),
+            amount: 50,
+            currency: "EGP",
+            status: "PENDING",
+            requestedAt: daysAgo(2),
+          },
+          {
+            id: sid("twr-math-processing"),
+            teacherId: sid("teacher-math"),
+            amount: 30,
+            currency: "EGP",
+            status: "PROCESSING",
+            requestedAt: daysAgo(4),
+            processedAt: daysAgo(1),
+          },
+          {
+            id: sid("twr-math-rejected"),
+            teacherId: sid("teacher-math"),
+            amount: 20,
+            currency: "EGP",
+            status: "REJECTED",
+            adminNote: "بيانات الحساب غير مكتملة",
+            requestedAt: daysAgo(20),
+            cancelledAt: daysAgo(19),
           },
         ],
         skipDuplicates: true,
