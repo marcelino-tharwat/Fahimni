@@ -183,6 +183,15 @@ export type TeacherAiUsageEvent = $Result.DefaultSelection<Prisma.$TeacherAiUsag
  * optimistically on checkout. Reuses PaymentStatus (PENDING/SUCCESS/FAILED).
  */
 export type TeacherSubscriptionPayment = $Result.DefaultSelection<Prisma.$TeacherSubscriptionPaymentPayload>
+/**
+ * Model TeacherWithdrawalRequest
+ * A teacher's request to withdraw money from their earned wallet balance.
+ * Created/processed by admin (out of scope for this feature); the teacher can
+ * only read their own requests. Balance math (available/held/transferred) is
+ * always DERIVED from these rows + SUCCESS PaymentTransaction rows — never
+ * manually edited.
+ */
+export type TeacherWithdrawalRequest = $Result.DefaultSelection<Prisma.$TeacherWithdrawalRequestPayload>
 
 /**
  * Enums
@@ -409,6 +418,17 @@ export const AiUsageType: {
 
 export type AiUsageType = (typeof AiUsageType)[keyof typeof AiUsageType]
 
+
+export const TeacherWithdrawalStatus: {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  TRANSFERRED: 'TRANSFERRED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type TeacherWithdrawalStatus = (typeof TeacherWithdrawalStatus)[keyof typeof TeacherWithdrawalStatus]
+
 }
 
 export type QuizContentScope = $Enums.QuizContentScope
@@ -510,6 +530,10 @@ export const BillingInterval: typeof $Enums.BillingInterval
 export type AiUsageType = $Enums.AiUsageType
 
 export const AiUsageType: typeof $Enums.AiUsageType
+
+export type TeacherWithdrawalStatus = $Enums.TeacherWithdrawalStatus
+
+export const TeacherWithdrawalStatus: typeof $Enums.TeacherWithdrawalStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -951,6 +975,16 @@ export class PrismaClient<
     * ```
     */
   get teacherSubscriptionPayment(): Prisma.TeacherSubscriptionPaymentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.teacherWithdrawalRequest`: Exposes CRUD operations for the **TeacherWithdrawalRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TeacherWithdrawalRequests
+    * const teacherWithdrawalRequests = await prisma.teacherWithdrawalRequest.findMany()
+    * ```
+    */
+  get teacherWithdrawalRequest(): Prisma.TeacherWithdrawalRequestDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1416,7 +1450,8 @@ export namespace Prisma {
     TeacherSubscription: 'TeacherSubscription',
     TeacherSubscriptionRequest: 'TeacherSubscriptionRequest',
     TeacherAiUsageEvent: 'TeacherAiUsageEvent',
-    TeacherSubscriptionPayment: 'TeacherSubscriptionPayment'
+    TeacherSubscriptionPayment: 'TeacherSubscriptionPayment',
+    TeacherWithdrawalRequest: 'TeacherWithdrawalRequest'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1432,7 +1467,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "platformPromoCode" | "platformPromoRedemption" | "notification" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "platformPromoCode" | "platformPromoRedemption" | "notification" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment" | "teacherWithdrawalRequest"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3804,6 +3839,80 @@ export namespace Prisma {
           }
         }
       }
+      TeacherWithdrawalRequest: {
+        payload: Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>
+        fields: Prisma.TeacherWithdrawalRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TeacherWithdrawalRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TeacherWithdrawalRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.TeacherWithdrawalRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TeacherWithdrawalRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>
+          }
+          findMany: {
+            args: Prisma.TeacherWithdrawalRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>[]
+          }
+          create: {
+            args: Prisma.TeacherWithdrawalRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>
+          }
+          createMany: {
+            args: Prisma.TeacherWithdrawalRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TeacherWithdrawalRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.TeacherWithdrawalRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>
+          }
+          update: {
+            args: Prisma.TeacherWithdrawalRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.TeacherWithdrawalRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TeacherWithdrawalRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TeacherWithdrawalRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.TeacherWithdrawalRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TeacherWithdrawalRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.TeacherWithdrawalRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTeacherWithdrawalRequest>
+          }
+          groupBy: {
+            args: Prisma.TeacherWithdrawalRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TeacherWithdrawalRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TeacherWithdrawalRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<TeacherWithdrawalRequestCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3944,6 +4053,7 @@ export namespace Prisma {
     teacherSubscriptionRequest?: TeacherSubscriptionRequestOmit
     teacherAiUsageEvent?: TeacherAiUsageEventOmit
     teacherSubscriptionPayment?: TeacherSubscriptionPaymentOmit
+    teacherWithdrawalRequest?: TeacherWithdrawalRequestOmit
   }
 
   /* Types for Logging */
@@ -4046,6 +4156,8 @@ export namespace Prisma {
     teacherAiUsageEvents: number
     teacherSubscriptionPayments: number
     notifications: number
+    teacherWithdrawalRequests: number
+    reviewedWithdrawalRequests: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4071,6 +4183,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: boolean | UserCountOutputTypeCountTeacherAiUsageEventsArgs
     teacherSubscriptionPayments?: boolean | UserCountOutputTypeCountTeacherSubscriptionPaymentsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    teacherWithdrawalRequests?: boolean | UserCountOutputTypeCountTeacherWithdrawalRequestsArgs
+    reviewedWithdrawalRequests?: boolean | UserCountOutputTypeCountReviewedWithdrawalRequestsArgs
   }
 
   // Custom InputTypes
@@ -4236,6 +4350,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: NotificationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTeacherWithdrawalRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeacherWithdrawalRequestWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReviewedWithdrawalRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeacherWithdrawalRequestWhereInput
   }
 
 
@@ -4928,6 +5056,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: boolean | User$teacherAiUsageEventsArgs<ExtArgs>
     teacherSubscriptionPayments?: boolean | User$teacherSubscriptionPaymentsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    teacherWithdrawalRequests?: boolean | User$teacherWithdrawalRequestsArgs<ExtArgs>
+    reviewedWithdrawalRequests?: boolean | User$reviewedWithdrawalRequestsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5000,6 +5130,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: boolean | User$teacherAiUsageEventsArgs<ExtArgs>
     teacherSubscriptionPayments?: boolean | User$teacherSubscriptionPaymentsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    teacherWithdrawalRequests?: boolean | User$teacherWithdrawalRequestsArgs<ExtArgs>
+    reviewedWithdrawalRequests?: boolean | User$reviewedWithdrawalRequestsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5033,6 +5165,8 @@ export namespace Prisma {
       teacherAiUsageEvents: Prisma.$TeacherAiUsageEventPayload<ExtArgs>[]
       teacherSubscriptionPayments: Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      teacherWithdrawalRequests: Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>[]
+      reviewedWithdrawalRequests: Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5465,6 +5599,8 @@ export namespace Prisma {
     teacherAiUsageEvents<T extends User$teacherAiUsageEventsArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherAiUsageEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherAiUsageEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     teacherSubscriptionPayments<T extends User$teacherSubscriptionPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherSubscriptionPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherSubscriptionPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    teacherWithdrawalRequests<T extends User$teacherWithdrawalRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherWithdrawalRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reviewedWithdrawalRequests<T extends User$reviewedWithdrawalRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewedWithdrawalRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6480,6 +6616,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * User.teacherWithdrawalRequests
+   */
+  export type User$teacherWithdrawalRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    where?: TeacherWithdrawalRequestWhereInput
+    orderBy?: TeacherWithdrawalRequestOrderByWithRelationInput | TeacherWithdrawalRequestOrderByWithRelationInput[]
+    cursor?: TeacherWithdrawalRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TeacherWithdrawalRequestScalarFieldEnum | TeacherWithdrawalRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.reviewedWithdrawalRequests
+   */
+  export type User$reviewedWithdrawalRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    where?: TeacherWithdrawalRequestWhereInput
+    orderBy?: TeacherWithdrawalRequestOrderByWithRelationInput | TeacherWithdrawalRequestOrderByWithRelationInput[]
+    cursor?: TeacherWithdrawalRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TeacherWithdrawalRequestScalarFieldEnum | TeacherWithdrawalRequestScalarFieldEnum[]
   }
 
   /**
@@ -7600,6 +7784,9 @@ export namespace Prisma {
     photoUrl: string | null
     logoUrl: string | null
     aiTutorDailyQueryLimit: number | null
+    instaPayHandle: string | null
+    vodafoneCashNumber: string | null
+    payoutMethodUpdatedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7612,6 +7799,9 @@ export namespace Prisma {
     photoUrl: string | null
     logoUrl: string | null
     aiTutorDailyQueryLimit: number | null
+    instaPayHandle: string | null
+    vodafoneCashNumber: string | null
+    payoutMethodUpdatedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7624,6 +7814,9 @@ export namespace Prisma {
     photoUrl: number
     logoUrl: number
     aiTutorDailyQueryLimit: number
+    instaPayHandle: number
+    vodafoneCashNumber: number
+    payoutMethodUpdatedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -7646,6 +7839,9 @@ export namespace Prisma {
     photoUrl?: true
     logoUrl?: true
     aiTutorDailyQueryLimit?: true
+    instaPayHandle?: true
+    vodafoneCashNumber?: true
+    payoutMethodUpdatedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -7658,6 +7854,9 @@ export namespace Prisma {
     photoUrl?: true
     logoUrl?: true
     aiTutorDailyQueryLimit?: true
+    instaPayHandle?: true
+    vodafoneCashNumber?: true
+    payoutMethodUpdatedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -7670,6 +7869,9 @@ export namespace Prisma {
     photoUrl?: true
     logoUrl?: true
     aiTutorDailyQueryLimit?: true
+    instaPayHandle?: true
+    vodafoneCashNumber?: true
+    payoutMethodUpdatedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -7769,6 +7971,9 @@ export namespace Prisma {
     photoUrl: string | null
     logoUrl: string | null
     aiTutorDailyQueryLimit: number
+    instaPayHandle: string | null
+    vodafoneCashNumber: string | null
+    payoutMethodUpdatedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: TeacherProfileCountAggregateOutputType | null
@@ -7800,6 +8005,9 @@ export namespace Prisma {
     photoUrl?: boolean
     logoUrl?: boolean
     aiTutorDailyQueryLimit?: boolean
+    instaPayHandle?: boolean
+    vodafoneCashNumber?: boolean
+    payoutMethodUpdatedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -7813,6 +8021,9 @@ export namespace Prisma {
     photoUrl?: boolean
     logoUrl?: boolean
     aiTutorDailyQueryLimit?: boolean
+    instaPayHandle?: boolean
+    vodafoneCashNumber?: boolean
+    payoutMethodUpdatedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -7826,6 +8037,9 @@ export namespace Prisma {
     photoUrl?: boolean
     logoUrl?: boolean
     aiTutorDailyQueryLimit?: boolean
+    instaPayHandle?: boolean
+    vodafoneCashNumber?: boolean
+    payoutMethodUpdatedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -7839,11 +8053,14 @@ export namespace Prisma {
     photoUrl?: boolean
     logoUrl?: boolean
     aiTutorDailyQueryLimit?: boolean
+    instaPayHandle?: boolean
+    vodafoneCashNumber?: boolean
+    payoutMethodUpdatedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TeacherProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "subject" | "bio" | "photoUrl" | "logoUrl" | "aiTutorDailyQueryLimit" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherProfile"]>
+  export type TeacherProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "subject" | "bio" | "photoUrl" | "logoUrl" | "aiTutorDailyQueryLimit" | "instaPayHandle" | "vodafoneCashNumber" | "payoutMethodUpdatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherProfile"]>
   export type TeacherProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -7867,6 +8084,9 @@ export namespace Prisma {
       photoUrl: string | null
       logoUrl: string | null
       aiTutorDailyQueryLimit: number
+      instaPayHandle: string | null
+      vodafoneCashNumber: string | null
+      payoutMethodUpdatedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["teacherProfile"]>
@@ -8300,6 +8520,9 @@ export namespace Prisma {
     readonly photoUrl: FieldRef<"TeacherProfile", 'String'>
     readonly logoUrl: FieldRef<"TeacherProfile", 'String'>
     readonly aiTutorDailyQueryLimit: FieldRef<"TeacherProfile", 'Int'>
+    readonly instaPayHandle: FieldRef<"TeacherProfile", 'String'>
+    readonly vodafoneCashNumber: FieldRef<"TeacherProfile", 'String'>
+    readonly payoutMethodUpdatedAt: FieldRef<"TeacherProfile", 'DateTime'>
     readonly createdAt: FieldRef<"TeacherProfile", 'DateTime'>
     readonly updatedAt: FieldRef<"TeacherProfile", 'DateTime'>
   }
@@ -43006,6 +43229,1261 @@ export namespace Prisma {
 
 
   /**
+   * Model TeacherWithdrawalRequest
+   */
+
+  export type AggregateTeacherWithdrawalRequest = {
+    _count: TeacherWithdrawalRequestCountAggregateOutputType | null
+    _avg: TeacherWithdrawalRequestAvgAggregateOutputType | null
+    _sum: TeacherWithdrawalRequestSumAggregateOutputType | null
+    _min: TeacherWithdrawalRequestMinAggregateOutputType | null
+    _max: TeacherWithdrawalRequestMaxAggregateOutputType | null
+  }
+
+  export type TeacherWithdrawalRequestAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type TeacherWithdrawalRequestSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type TeacherWithdrawalRequestMinAggregateOutputType = {
+    id: string | null
+    teacherId: string | null
+    amount: number | null
+    currency: string | null
+    status: $Enums.TeacherWithdrawalStatus | null
+    teacherNote: string | null
+    adminNote: string | null
+    requestedAt: Date | null
+    processedAt: Date | null
+    transferredAt: Date | null
+    cancelledAt: Date | null
+    reviewedById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TeacherWithdrawalRequestMaxAggregateOutputType = {
+    id: string | null
+    teacherId: string | null
+    amount: number | null
+    currency: string | null
+    status: $Enums.TeacherWithdrawalStatus | null
+    teacherNote: string | null
+    adminNote: string | null
+    requestedAt: Date | null
+    processedAt: Date | null
+    transferredAt: Date | null
+    cancelledAt: Date | null
+    reviewedById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TeacherWithdrawalRequestCountAggregateOutputType = {
+    id: number
+    teacherId: number
+    amount: number
+    currency: number
+    status: number
+    payoutMethodSnapshot: number
+    teacherNote: number
+    adminNote: number
+    requestedAt: number
+    processedAt: number
+    transferredAt: number
+    cancelledAt: number
+    reviewedById: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TeacherWithdrawalRequestAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type TeacherWithdrawalRequestSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type TeacherWithdrawalRequestMinAggregateInputType = {
+    id?: true
+    teacherId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    teacherNote?: true
+    adminNote?: true
+    requestedAt?: true
+    processedAt?: true
+    transferredAt?: true
+    cancelledAt?: true
+    reviewedById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TeacherWithdrawalRequestMaxAggregateInputType = {
+    id?: true
+    teacherId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    teacherNote?: true
+    adminNote?: true
+    requestedAt?: true
+    processedAt?: true
+    transferredAt?: true
+    cancelledAt?: true
+    reviewedById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TeacherWithdrawalRequestCountAggregateInputType = {
+    id?: true
+    teacherId?: true
+    amount?: true
+    currency?: true
+    status?: true
+    payoutMethodSnapshot?: true
+    teacherNote?: true
+    adminNote?: true
+    requestedAt?: true
+    processedAt?: true
+    transferredAt?: true
+    cancelledAt?: true
+    reviewedById?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TeacherWithdrawalRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TeacherWithdrawalRequest to aggregate.
+     */
+    where?: TeacherWithdrawalRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherWithdrawalRequests to fetch.
+     */
+    orderBy?: TeacherWithdrawalRequestOrderByWithRelationInput | TeacherWithdrawalRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TeacherWithdrawalRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherWithdrawalRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherWithdrawalRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TeacherWithdrawalRequests
+    **/
+    _count?: true | TeacherWithdrawalRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TeacherWithdrawalRequestAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TeacherWithdrawalRequestSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TeacherWithdrawalRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TeacherWithdrawalRequestMaxAggregateInputType
+  }
+
+  export type GetTeacherWithdrawalRequestAggregateType<T extends TeacherWithdrawalRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateTeacherWithdrawalRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTeacherWithdrawalRequest[P]>
+      : GetScalarType<T[P], AggregateTeacherWithdrawalRequest[P]>
+  }
+
+
+
+
+  export type TeacherWithdrawalRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeacherWithdrawalRequestWhereInput
+    orderBy?: TeacherWithdrawalRequestOrderByWithAggregationInput | TeacherWithdrawalRequestOrderByWithAggregationInput[]
+    by: TeacherWithdrawalRequestScalarFieldEnum[] | TeacherWithdrawalRequestScalarFieldEnum
+    having?: TeacherWithdrawalRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TeacherWithdrawalRequestCountAggregateInputType | true
+    _avg?: TeacherWithdrawalRequestAvgAggregateInputType
+    _sum?: TeacherWithdrawalRequestSumAggregateInputType
+    _min?: TeacherWithdrawalRequestMinAggregateInputType
+    _max?: TeacherWithdrawalRequestMaxAggregateInputType
+  }
+
+  export type TeacherWithdrawalRequestGroupByOutputType = {
+    id: string
+    teacherId: string
+    amount: number
+    currency: string
+    status: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot: JsonValue | null
+    teacherNote: string | null
+    adminNote: string | null
+    requestedAt: Date
+    processedAt: Date | null
+    transferredAt: Date | null
+    cancelledAt: Date | null
+    reviewedById: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TeacherWithdrawalRequestCountAggregateOutputType | null
+    _avg: TeacherWithdrawalRequestAvgAggregateOutputType | null
+    _sum: TeacherWithdrawalRequestSumAggregateOutputType | null
+    _min: TeacherWithdrawalRequestMinAggregateOutputType | null
+    _max: TeacherWithdrawalRequestMaxAggregateOutputType | null
+  }
+
+  type GetTeacherWithdrawalRequestGroupByPayload<T extends TeacherWithdrawalRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TeacherWithdrawalRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TeacherWithdrawalRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TeacherWithdrawalRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], TeacherWithdrawalRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TeacherWithdrawalRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    teacherId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    payoutMethodSnapshot?: boolean
+    teacherNote?: boolean
+    adminNote?: boolean
+    requestedAt?: boolean
+    processedAt?: boolean
+    transferredAt?: boolean
+    cancelledAt?: boolean
+    reviewedById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    reviewedBy?: boolean | TeacherWithdrawalRequest$reviewedByArgs<ExtArgs>
+  }, ExtArgs["result"]["teacherWithdrawalRequest"]>
+
+  export type TeacherWithdrawalRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    teacherId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    payoutMethodSnapshot?: boolean
+    teacherNote?: boolean
+    adminNote?: boolean
+    requestedAt?: boolean
+    processedAt?: boolean
+    transferredAt?: boolean
+    cancelledAt?: boolean
+    reviewedById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    reviewedBy?: boolean | TeacherWithdrawalRequest$reviewedByArgs<ExtArgs>
+  }, ExtArgs["result"]["teacherWithdrawalRequest"]>
+
+  export type TeacherWithdrawalRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    teacherId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    payoutMethodSnapshot?: boolean
+    teacherNote?: boolean
+    adminNote?: boolean
+    requestedAt?: boolean
+    processedAt?: boolean
+    transferredAt?: boolean
+    cancelledAt?: boolean
+    reviewedById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    reviewedBy?: boolean | TeacherWithdrawalRequest$reviewedByArgs<ExtArgs>
+  }, ExtArgs["result"]["teacherWithdrawalRequest"]>
+
+  export type TeacherWithdrawalRequestSelectScalar = {
+    id?: boolean
+    teacherId?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    payoutMethodSnapshot?: boolean
+    teacherNote?: boolean
+    adminNote?: boolean
+    requestedAt?: boolean
+    processedAt?: boolean
+    transferredAt?: boolean
+    cancelledAt?: boolean
+    reviewedById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TeacherWithdrawalRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "teacherId" | "amount" | "currency" | "status" | "payoutMethodSnapshot" | "teacherNote" | "adminNote" | "requestedAt" | "processedAt" | "transferredAt" | "cancelledAt" | "reviewedById" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherWithdrawalRequest"]>
+  export type TeacherWithdrawalRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    reviewedBy?: boolean | TeacherWithdrawalRequest$reviewedByArgs<ExtArgs>
+  }
+  export type TeacherWithdrawalRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    reviewedBy?: boolean | TeacherWithdrawalRequest$reviewedByArgs<ExtArgs>
+  }
+  export type TeacherWithdrawalRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    reviewedBy?: boolean | TeacherWithdrawalRequest$reviewedByArgs<ExtArgs>
+  }
+
+  export type $TeacherWithdrawalRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TeacherWithdrawalRequest"
+    objects: {
+      teacher: Prisma.$UserPayload<ExtArgs>
+      reviewedBy: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      teacherId: string
+      amount: number
+      currency: string
+      status: $Enums.TeacherWithdrawalStatus
+      /**
+       * Payout destination at the time of the request (safe fields only — no
+       * provider secrets). Snapshot so a later payout-profile edit doesn't alter
+       * the historical record of where this payout was sent.
+       */
+      payoutMethodSnapshot: Prisma.JsonValue | null
+      teacherNote: string | null
+      adminNote: string | null
+      requestedAt: Date
+      processedAt: Date | null
+      transferredAt: Date | null
+      cancelledAt: Date | null
+      reviewedById: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["teacherWithdrawalRequest"]>
+    composites: {}
+  }
+
+  type TeacherWithdrawalRequestGetPayload<S extends boolean | null | undefined | TeacherWithdrawalRequestDefaultArgs> = $Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload, S>
+
+  type TeacherWithdrawalRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TeacherWithdrawalRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TeacherWithdrawalRequestCountAggregateInputType | true
+    }
+
+  export interface TeacherWithdrawalRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TeacherWithdrawalRequest'], meta: { name: 'TeacherWithdrawalRequest' } }
+    /**
+     * Find zero or one TeacherWithdrawalRequest that matches the filter.
+     * @param {TeacherWithdrawalRequestFindUniqueArgs} args - Arguments to find a TeacherWithdrawalRequest
+     * @example
+     * // Get one TeacherWithdrawalRequest
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TeacherWithdrawalRequestFindUniqueArgs>(args: SelectSubset<T, TeacherWithdrawalRequestFindUniqueArgs<ExtArgs>>): Prisma__TeacherWithdrawalRequestClient<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TeacherWithdrawalRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TeacherWithdrawalRequestFindUniqueOrThrowArgs} args - Arguments to find a TeacherWithdrawalRequest
+     * @example
+     * // Get one TeacherWithdrawalRequest
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TeacherWithdrawalRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, TeacherWithdrawalRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TeacherWithdrawalRequestClient<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TeacherWithdrawalRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherWithdrawalRequestFindFirstArgs} args - Arguments to find a TeacherWithdrawalRequest
+     * @example
+     * // Get one TeacherWithdrawalRequest
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TeacherWithdrawalRequestFindFirstArgs>(args?: SelectSubset<T, TeacherWithdrawalRequestFindFirstArgs<ExtArgs>>): Prisma__TeacherWithdrawalRequestClient<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TeacherWithdrawalRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherWithdrawalRequestFindFirstOrThrowArgs} args - Arguments to find a TeacherWithdrawalRequest
+     * @example
+     * // Get one TeacherWithdrawalRequest
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TeacherWithdrawalRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, TeacherWithdrawalRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__TeacherWithdrawalRequestClient<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TeacherWithdrawalRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherWithdrawalRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TeacherWithdrawalRequests
+     * const teacherWithdrawalRequests = await prisma.teacherWithdrawalRequest.findMany()
+     * 
+     * // Get first 10 TeacherWithdrawalRequests
+     * const teacherWithdrawalRequests = await prisma.teacherWithdrawalRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const teacherWithdrawalRequestWithIdOnly = await prisma.teacherWithdrawalRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TeacherWithdrawalRequestFindManyArgs>(args?: SelectSubset<T, TeacherWithdrawalRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TeacherWithdrawalRequest.
+     * @param {TeacherWithdrawalRequestCreateArgs} args - Arguments to create a TeacherWithdrawalRequest.
+     * @example
+     * // Create one TeacherWithdrawalRequest
+     * const TeacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.create({
+     *   data: {
+     *     // ... data to create a TeacherWithdrawalRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends TeacherWithdrawalRequestCreateArgs>(args: SelectSubset<T, TeacherWithdrawalRequestCreateArgs<ExtArgs>>): Prisma__TeacherWithdrawalRequestClient<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TeacherWithdrawalRequests.
+     * @param {TeacherWithdrawalRequestCreateManyArgs} args - Arguments to create many TeacherWithdrawalRequests.
+     * @example
+     * // Create many TeacherWithdrawalRequests
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TeacherWithdrawalRequestCreateManyArgs>(args?: SelectSubset<T, TeacherWithdrawalRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TeacherWithdrawalRequests and returns the data saved in the database.
+     * @param {TeacherWithdrawalRequestCreateManyAndReturnArgs} args - Arguments to create many TeacherWithdrawalRequests.
+     * @example
+     * // Create many TeacherWithdrawalRequests
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TeacherWithdrawalRequests and only return the `id`
+     * const teacherWithdrawalRequestWithIdOnly = await prisma.teacherWithdrawalRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TeacherWithdrawalRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, TeacherWithdrawalRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TeacherWithdrawalRequest.
+     * @param {TeacherWithdrawalRequestDeleteArgs} args - Arguments to delete one TeacherWithdrawalRequest.
+     * @example
+     * // Delete one TeacherWithdrawalRequest
+     * const TeacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.delete({
+     *   where: {
+     *     // ... filter to delete one TeacherWithdrawalRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TeacherWithdrawalRequestDeleteArgs>(args: SelectSubset<T, TeacherWithdrawalRequestDeleteArgs<ExtArgs>>): Prisma__TeacherWithdrawalRequestClient<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TeacherWithdrawalRequest.
+     * @param {TeacherWithdrawalRequestUpdateArgs} args - Arguments to update one TeacherWithdrawalRequest.
+     * @example
+     * // Update one TeacherWithdrawalRequest
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TeacherWithdrawalRequestUpdateArgs>(args: SelectSubset<T, TeacherWithdrawalRequestUpdateArgs<ExtArgs>>): Prisma__TeacherWithdrawalRequestClient<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TeacherWithdrawalRequests.
+     * @param {TeacherWithdrawalRequestDeleteManyArgs} args - Arguments to filter TeacherWithdrawalRequests to delete.
+     * @example
+     * // Delete a few TeacherWithdrawalRequests
+     * const { count } = await prisma.teacherWithdrawalRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TeacherWithdrawalRequestDeleteManyArgs>(args?: SelectSubset<T, TeacherWithdrawalRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TeacherWithdrawalRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherWithdrawalRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TeacherWithdrawalRequests
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TeacherWithdrawalRequestUpdateManyArgs>(args: SelectSubset<T, TeacherWithdrawalRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TeacherWithdrawalRequests and returns the data updated in the database.
+     * @param {TeacherWithdrawalRequestUpdateManyAndReturnArgs} args - Arguments to update many TeacherWithdrawalRequests.
+     * @example
+     * // Update many TeacherWithdrawalRequests
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TeacherWithdrawalRequests and only return the `id`
+     * const teacherWithdrawalRequestWithIdOnly = await prisma.teacherWithdrawalRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TeacherWithdrawalRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, TeacherWithdrawalRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TeacherWithdrawalRequest.
+     * @param {TeacherWithdrawalRequestUpsertArgs} args - Arguments to update or create a TeacherWithdrawalRequest.
+     * @example
+     * // Update or create a TeacherWithdrawalRequest
+     * const teacherWithdrawalRequest = await prisma.teacherWithdrawalRequest.upsert({
+     *   create: {
+     *     // ... data to create a TeacherWithdrawalRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TeacherWithdrawalRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TeacherWithdrawalRequestUpsertArgs>(args: SelectSubset<T, TeacherWithdrawalRequestUpsertArgs<ExtArgs>>): Prisma__TeacherWithdrawalRequestClient<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TeacherWithdrawalRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherWithdrawalRequestCountArgs} args - Arguments to filter TeacherWithdrawalRequests to count.
+     * @example
+     * // Count the number of TeacherWithdrawalRequests
+     * const count = await prisma.teacherWithdrawalRequest.count({
+     *   where: {
+     *     // ... the filter for the TeacherWithdrawalRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends TeacherWithdrawalRequestCountArgs>(
+      args?: Subset<T, TeacherWithdrawalRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TeacherWithdrawalRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TeacherWithdrawalRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherWithdrawalRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TeacherWithdrawalRequestAggregateArgs>(args: Subset<T, TeacherWithdrawalRequestAggregateArgs>): Prisma.PrismaPromise<GetTeacherWithdrawalRequestAggregateType<T>>
+
+    /**
+     * Group by TeacherWithdrawalRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeacherWithdrawalRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TeacherWithdrawalRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TeacherWithdrawalRequestGroupByArgs['orderBy'] }
+        : { orderBy?: TeacherWithdrawalRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TeacherWithdrawalRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTeacherWithdrawalRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TeacherWithdrawalRequest model
+   */
+  readonly fields: TeacherWithdrawalRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TeacherWithdrawalRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TeacherWithdrawalRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    teacher<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    reviewedBy<T extends TeacherWithdrawalRequest$reviewedByArgs<ExtArgs> = {}>(args?: Subset<T, TeacherWithdrawalRequest$reviewedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TeacherWithdrawalRequest model
+   */
+  interface TeacherWithdrawalRequestFieldRefs {
+    readonly id: FieldRef<"TeacherWithdrawalRequest", 'String'>
+    readonly teacherId: FieldRef<"TeacherWithdrawalRequest", 'String'>
+    readonly amount: FieldRef<"TeacherWithdrawalRequest", 'Float'>
+    readonly currency: FieldRef<"TeacherWithdrawalRequest", 'String'>
+    readonly status: FieldRef<"TeacherWithdrawalRequest", 'TeacherWithdrawalStatus'>
+    readonly payoutMethodSnapshot: FieldRef<"TeacherWithdrawalRequest", 'Json'>
+    readonly teacherNote: FieldRef<"TeacherWithdrawalRequest", 'String'>
+    readonly adminNote: FieldRef<"TeacherWithdrawalRequest", 'String'>
+    readonly requestedAt: FieldRef<"TeacherWithdrawalRequest", 'DateTime'>
+    readonly processedAt: FieldRef<"TeacherWithdrawalRequest", 'DateTime'>
+    readonly transferredAt: FieldRef<"TeacherWithdrawalRequest", 'DateTime'>
+    readonly cancelledAt: FieldRef<"TeacherWithdrawalRequest", 'DateTime'>
+    readonly reviewedById: FieldRef<"TeacherWithdrawalRequest", 'String'>
+    readonly createdAt: FieldRef<"TeacherWithdrawalRequest", 'DateTime'>
+    readonly updatedAt: FieldRef<"TeacherWithdrawalRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TeacherWithdrawalRequest findUnique
+   */
+  export type TeacherWithdrawalRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherWithdrawalRequest to fetch.
+     */
+    where: TeacherWithdrawalRequestWhereUniqueInput
+  }
+
+  /**
+   * TeacherWithdrawalRequest findUniqueOrThrow
+   */
+  export type TeacherWithdrawalRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherWithdrawalRequest to fetch.
+     */
+    where: TeacherWithdrawalRequestWhereUniqueInput
+  }
+
+  /**
+   * TeacherWithdrawalRequest findFirst
+   */
+  export type TeacherWithdrawalRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherWithdrawalRequest to fetch.
+     */
+    where?: TeacherWithdrawalRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherWithdrawalRequests to fetch.
+     */
+    orderBy?: TeacherWithdrawalRequestOrderByWithRelationInput | TeacherWithdrawalRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TeacherWithdrawalRequests.
+     */
+    cursor?: TeacherWithdrawalRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherWithdrawalRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherWithdrawalRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherWithdrawalRequests.
+     */
+    distinct?: TeacherWithdrawalRequestScalarFieldEnum | TeacherWithdrawalRequestScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherWithdrawalRequest findFirstOrThrow
+   */
+  export type TeacherWithdrawalRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherWithdrawalRequest to fetch.
+     */
+    where?: TeacherWithdrawalRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherWithdrawalRequests to fetch.
+     */
+    orderBy?: TeacherWithdrawalRequestOrderByWithRelationInput | TeacherWithdrawalRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TeacherWithdrawalRequests.
+     */
+    cursor?: TeacherWithdrawalRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherWithdrawalRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherWithdrawalRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherWithdrawalRequests.
+     */
+    distinct?: TeacherWithdrawalRequestScalarFieldEnum | TeacherWithdrawalRequestScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherWithdrawalRequest findMany
+   */
+  export type TeacherWithdrawalRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which TeacherWithdrawalRequests to fetch.
+     */
+    where?: TeacherWithdrawalRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TeacherWithdrawalRequests to fetch.
+     */
+    orderBy?: TeacherWithdrawalRequestOrderByWithRelationInput | TeacherWithdrawalRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TeacherWithdrawalRequests.
+     */
+    cursor?: TeacherWithdrawalRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TeacherWithdrawalRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TeacherWithdrawalRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TeacherWithdrawalRequests.
+     */
+    distinct?: TeacherWithdrawalRequestScalarFieldEnum | TeacherWithdrawalRequestScalarFieldEnum[]
+  }
+
+  /**
+   * TeacherWithdrawalRequest create
+   */
+  export type TeacherWithdrawalRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TeacherWithdrawalRequest.
+     */
+    data: XOR<TeacherWithdrawalRequestCreateInput, TeacherWithdrawalRequestUncheckedCreateInput>
+  }
+
+  /**
+   * TeacherWithdrawalRequest createMany
+   */
+  export type TeacherWithdrawalRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TeacherWithdrawalRequests.
+     */
+    data: TeacherWithdrawalRequestCreateManyInput | TeacherWithdrawalRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TeacherWithdrawalRequest createManyAndReturn
+   */
+  export type TeacherWithdrawalRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many TeacherWithdrawalRequests.
+     */
+    data: TeacherWithdrawalRequestCreateManyInput | TeacherWithdrawalRequestCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TeacherWithdrawalRequest update
+   */
+  export type TeacherWithdrawalRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TeacherWithdrawalRequest.
+     */
+    data: XOR<TeacherWithdrawalRequestUpdateInput, TeacherWithdrawalRequestUncheckedUpdateInput>
+    /**
+     * Choose, which TeacherWithdrawalRequest to update.
+     */
+    where: TeacherWithdrawalRequestWhereUniqueInput
+  }
+
+  /**
+   * TeacherWithdrawalRequest updateMany
+   */
+  export type TeacherWithdrawalRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TeacherWithdrawalRequests.
+     */
+    data: XOR<TeacherWithdrawalRequestUpdateManyMutationInput, TeacherWithdrawalRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which TeacherWithdrawalRequests to update
+     */
+    where?: TeacherWithdrawalRequestWhereInput
+    /**
+     * Limit how many TeacherWithdrawalRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TeacherWithdrawalRequest updateManyAndReturn
+   */
+  export type TeacherWithdrawalRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update TeacherWithdrawalRequests.
+     */
+    data: XOR<TeacherWithdrawalRequestUpdateManyMutationInput, TeacherWithdrawalRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which TeacherWithdrawalRequests to update
+     */
+    where?: TeacherWithdrawalRequestWhereInput
+    /**
+     * Limit how many TeacherWithdrawalRequests to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TeacherWithdrawalRequest upsert
+   */
+  export type TeacherWithdrawalRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TeacherWithdrawalRequest to update in case it exists.
+     */
+    where: TeacherWithdrawalRequestWhereUniqueInput
+    /**
+     * In case the TeacherWithdrawalRequest found by the `where` argument doesn't exist, create a new TeacherWithdrawalRequest with this data.
+     */
+    create: XOR<TeacherWithdrawalRequestCreateInput, TeacherWithdrawalRequestUncheckedCreateInput>
+    /**
+     * In case the TeacherWithdrawalRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TeacherWithdrawalRequestUpdateInput, TeacherWithdrawalRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * TeacherWithdrawalRequest delete
+   */
+  export type TeacherWithdrawalRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+    /**
+     * Filter which TeacherWithdrawalRequest to delete.
+     */
+    where: TeacherWithdrawalRequestWhereUniqueInput
+  }
+
+  /**
+   * TeacherWithdrawalRequest deleteMany
+   */
+  export type TeacherWithdrawalRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TeacherWithdrawalRequests to delete
+     */
+    where?: TeacherWithdrawalRequestWhereInput
+    /**
+     * Limit how many TeacherWithdrawalRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TeacherWithdrawalRequest.reviewedBy
+   */
+  export type TeacherWithdrawalRequest$reviewedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * TeacherWithdrawalRequest without action
+   */
+  export type TeacherWithdrawalRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeacherWithdrawalRequest
+     */
+    select?: TeacherWithdrawalRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TeacherWithdrawalRequest
+     */
+    omit?: TeacherWithdrawalRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeacherWithdrawalRequestInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -43055,6 +44533,9 @@ export namespace Prisma {
     photoUrl: 'photoUrl',
     logoUrl: 'logoUrl',
     aiTutorDailyQueryLimit: 'aiTutorDailyQueryLimit',
+    instaPayHandle: 'instaPayHandle',
+    vodafoneCashNumber: 'vodafoneCashNumber',
+    payoutMethodUpdatedAt: 'payoutMethodUpdatedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -43529,6 +45010,27 @@ export namespace Prisma {
   };
 
   export type TeacherSubscriptionPaymentScalarFieldEnum = (typeof TeacherSubscriptionPaymentScalarFieldEnum)[keyof typeof TeacherSubscriptionPaymentScalarFieldEnum]
+
+
+  export const TeacherWithdrawalRequestScalarFieldEnum: {
+    id: 'id',
+    teacherId: 'teacherId',
+    amount: 'amount',
+    currency: 'currency',
+    status: 'status',
+    payoutMethodSnapshot: 'payoutMethodSnapshot',
+    teacherNote: 'teacherNote',
+    adminNote: 'adminNote',
+    requestedAt: 'requestedAt',
+    processedAt: 'processedAt',
+    transferredAt: 'transferredAt',
+    cancelledAt: 'cancelledAt',
+    reviewedById: 'reviewedById',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TeacherWithdrawalRequestScalarFieldEnum = (typeof TeacherWithdrawalRequestScalarFieldEnum)[keyof typeof TeacherWithdrawalRequestScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -44023,6 +45525,20 @@ export namespace Prisma {
    */
   export type ListEnumAiUsageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiUsageType[]'>
     
+
+
+  /**
+   * Reference to a field of type 'TeacherWithdrawalStatus'
+   */
+  export type EnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeacherWithdrawalStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'TeacherWithdrawalStatus[]'
+   */
+  export type ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeacherWithdrawalStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -44068,6 +45584,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventListRelationFilter
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentListRelationFilter
     notifications?: NotificationListRelationFilter
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestListRelationFilter
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -44107,6 +45625,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventOrderByRelationAggregateInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestOrderByRelationAggregateInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -44149,6 +45669,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventListRelationFilter
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentListRelationFilter
     notifications?: NotificationListRelationFilter
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestListRelationFilter
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestListRelationFilter
   }, "id" | "email" | "mobile">
 
   export type UserOrderByWithAggregationInput = {
@@ -44256,6 +45778,9 @@ export namespace Prisma {
     photoUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     logoUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     aiTutorDailyQueryLimit?: IntFilter<"TeacherProfile"> | number
+    instaPayHandle?: StringNullableFilter<"TeacherProfile"> | string | null
+    vodafoneCashNumber?: StringNullableFilter<"TeacherProfile"> | string | null
+    payoutMethodUpdatedAt?: DateTimeNullableFilter<"TeacherProfile"> | Date | string | null
     createdAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -44269,6 +45794,9 @@ export namespace Prisma {
     photoUrl?: SortOrderInput | SortOrder
     logoUrl?: SortOrderInput | SortOrder
     aiTutorDailyQueryLimit?: SortOrder
+    instaPayHandle?: SortOrderInput | SortOrder
+    vodafoneCashNumber?: SortOrderInput | SortOrder
+    payoutMethodUpdatedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -44285,6 +45813,9 @@ export namespace Prisma {
     photoUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     logoUrl?: StringNullableFilter<"TeacherProfile"> | string | null
     aiTutorDailyQueryLimit?: IntFilter<"TeacherProfile"> | number
+    instaPayHandle?: StringNullableFilter<"TeacherProfile"> | string | null
+    vodafoneCashNumber?: StringNullableFilter<"TeacherProfile"> | string | null
+    payoutMethodUpdatedAt?: DateTimeNullableFilter<"TeacherProfile"> | Date | string | null
     createdAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeFilter<"TeacherProfile"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -44298,6 +45829,9 @@ export namespace Prisma {
     photoUrl?: SortOrderInput | SortOrder
     logoUrl?: SortOrderInput | SortOrder
     aiTutorDailyQueryLimit?: SortOrder
+    instaPayHandle?: SortOrderInput | SortOrder
+    vodafoneCashNumber?: SortOrderInput | SortOrder
+    payoutMethodUpdatedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TeacherProfileCountOrderByAggregateInput
@@ -44318,6 +45852,9 @@ export namespace Prisma {
     photoUrl?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
     logoUrl?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
     aiTutorDailyQueryLimit?: IntWithAggregatesFilter<"TeacherProfile"> | number
+    instaPayHandle?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
+    vodafoneCashNumber?: StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
+    payoutMethodUpdatedAt?: DateTimeNullableWithAggregatesFilter<"TeacherProfile"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"TeacherProfile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TeacherProfile"> | Date | string
   }
@@ -46828,6 +48365,116 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"TeacherSubscriptionPayment"> | Date | string
   }
 
+  export type TeacherWithdrawalRequestWhereInput = {
+    AND?: TeacherWithdrawalRequestWhereInput | TeacherWithdrawalRequestWhereInput[]
+    OR?: TeacherWithdrawalRequestWhereInput[]
+    NOT?: TeacherWithdrawalRequestWhereInput | TeacherWithdrawalRequestWhereInput[]
+    id?: StringFilter<"TeacherWithdrawalRequest"> | string
+    teacherId?: StringFilter<"TeacherWithdrawalRequest"> | string
+    amount?: FloatFilter<"TeacherWithdrawalRequest"> | number
+    currency?: StringFilter<"TeacherWithdrawalRequest"> | string
+    status?: EnumTeacherWithdrawalStatusFilter<"TeacherWithdrawalRequest"> | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: JsonNullableFilter<"TeacherWithdrawalRequest">
+    teacherNote?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    adminNote?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    requestedAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+    processedAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    transferredAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    cancelledAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    reviewedById?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    createdAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reviewedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type TeacherWithdrawalRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    payoutMethodSnapshot?: SortOrderInput | SortOrder
+    teacherNote?: SortOrderInput | SortOrder
+    adminNote?: SortOrderInput | SortOrder
+    requestedAt?: SortOrder
+    processedAt?: SortOrderInput | SortOrder
+    transferredAt?: SortOrderInput | SortOrder
+    cancelledAt?: SortOrderInput | SortOrder
+    reviewedById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    teacher?: UserOrderByWithRelationInput
+    reviewedBy?: UserOrderByWithRelationInput
+  }
+
+  export type TeacherWithdrawalRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TeacherWithdrawalRequestWhereInput | TeacherWithdrawalRequestWhereInput[]
+    OR?: TeacherWithdrawalRequestWhereInput[]
+    NOT?: TeacherWithdrawalRequestWhereInput | TeacherWithdrawalRequestWhereInput[]
+    teacherId?: StringFilter<"TeacherWithdrawalRequest"> | string
+    amount?: FloatFilter<"TeacherWithdrawalRequest"> | number
+    currency?: StringFilter<"TeacherWithdrawalRequest"> | string
+    status?: EnumTeacherWithdrawalStatusFilter<"TeacherWithdrawalRequest"> | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: JsonNullableFilter<"TeacherWithdrawalRequest">
+    teacherNote?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    adminNote?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    requestedAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+    processedAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    transferredAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    cancelledAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    reviewedById?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    createdAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reviewedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type TeacherWithdrawalRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    payoutMethodSnapshot?: SortOrderInput | SortOrder
+    teacherNote?: SortOrderInput | SortOrder
+    adminNote?: SortOrderInput | SortOrder
+    requestedAt?: SortOrder
+    processedAt?: SortOrderInput | SortOrder
+    transferredAt?: SortOrderInput | SortOrder
+    cancelledAt?: SortOrderInput | SortOrder
+    reviewedById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TeacherWithdrawalRequestCountOrderByAggregateInput
+    _avg?: TeacherWithdrawalRequestAvgOrderByAggregateInput
+    _max?: TeacherWithdrawalRequestMaxOrderByAggregateInput
+    _min?: TeacherWithdrawalRequestMinOrderByAggregateInput
+    _sum?: TeacherWithdrawalRequestSumOrderByAggregateInput
+  }
+
+  export type TeacherWithdrawalRequestScalarWhereWithAggregatesInput = {
+    AND?: TeacherWithdrawalRequestScalarWhereWithAggregatesInput | TeacherWithdrawalRequestScalarWhereWithAggregatesInput[]
+    OR?: TeacherWithdrawalRequestScalarWhereWithAggregatesInput[]
+    NOT?: TeacherWithdrawalRequestScalarWhereWithAggregatesInput | TeacherWithdrawalRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TeacherWithdrawalRequest"> | string
+    teacherId?: StringWithAggregatesFilter<"TeacherWithdrawalRequest"> | string
+    amount?: FloatWithAggregatesFilter<"TeacherWithdrawalRequest"> | number
+    currency?: StringWithAggregatesFilter<"TeacherWithdrawalRequest"> | string
+    status?: EnumTeacherWithdrawalStatusWithAggregatesFilter<"TeacherWithdrawalRequest"> | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: JsonNullableWithAggregatesFilter<"TeacherWithdrawalRequest">
+    teacherNote?: StringNullableWithAggregatesFilter<"TeacherWithdrawalRequest"> | string | null
+    adminNote?: StringNullableWithAggregatesFilter<"TeacherWithdrawalRequest"> | string | null
+    requestedAt?: DateTimeWithAggregatesFilter<"TeacherWithdrawalRequest"> | Date | string
+    processedAt?: DateTimeNullableWithAggregatesFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    transferredAt?: DateTimeNullableWithAggregatesFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    cancelledAt?: DateTimeNullableWithAggregatesFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    reviewedById?: StringNullableWithAggregatesFilter<"TeacherWithdrawalRequest"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TeacherWithdrawalRequest"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TeacherWithdrawalRequest"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     fullName: string
@@ -46865,6 +48512,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -46904,6 +48553,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUpdateInput = {
@@ -46943,6 +48594,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -46982,6 +48635,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -47087,6 +48742,9 @@ export namespace Prisma {
     photoUrl?: string | null
     logoUrl?: string | null
     aiTutorDailyQueryLimit?: number
+    instaPayHandle?: string | null
+    vodafoneCashNumber?: string | null
+    payoutMethodUpdatedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutTeacherProfileInput
@@ -47100,6 +48758,9 @@ export namespace Prisma {
     photoUrl?: string | null
     logoUrl?: string | null
     aiTutorDailyQueryLimit?: number
+    instaPayHandle?: string | null
+    vodafoneCashNumber?: string | null
+    payoutMethodUpdatedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -47111,6 +48772,9 @@ export namespace Prisma {
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
+    instaPayHandle?: NullableStringFieldUpdateOperationsInput | string | null
+    vodafoneCashNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutMethodUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTeacherProfileNestedInput
@@ -47124,6 +48788,9 @@ export namespace Prisma {
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
+    instaPayHandle?: NullableStringFieldUpdateOperationsInput | string | null
+    vodafoneCashNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutMethodUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -47136,6 +48803,9 @@ export namespace Prisma {
     photoUrl?: string | null
     logoUrl?: string | null
     aiTutorDailyQueryLimit?: number
+    instaPayHandle?: string | null
+    vodafoneCashNumber?: string | null
+    payoutMethodUpdatedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -47147,6 +48817,9 @@ export namespace Prisma {
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
+    instaPayHandle?: NullableStringFieldUpdateOperationsInput | string | null
+    vodafoneCashNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutMethodUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -47159,6 +48832,9 @@ export namespace Prisma {
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
+    instaPayHandle?: NullableStringFieldUpdateOperationsInput | string | null
+    vodafoneCashNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutMethodUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -49888,6 +51564,130 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TeacherWithdrawalRequestCreateInput = {
+    id?: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    teacher: UserCreateNestedOneWithoutTeacherWithdrawalRequestsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedWithdrawalRequestsInput
+  }
+
+  export type TeacherWithdrawalRequestUncheckedCreateInput = {
+    id?: string
+    teacherId: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    reviewedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherWithdrawalRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teacher?: UserUpdateOneRequiredWithoutTeacherWithdrawalRequestsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedWithdrawalRequestsNestedInput
+  }
+
+  export type TeacherWithdrawalRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherWithdrawalRequestCreateManyInput = {
+    id?: string
+    teacherId: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    reviewedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherWithdrawalRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherWithdrawalRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -50087,6 +51887,12 @@ export namespace Prisma {
     none?: NotificationWhereInput
   }
 
+  export type TeacherWithdrawalRequestListRelationFilter = {
+    every?: TeacherWithdrawalRequestWhereInput
+    some?: TeacherWithdrawalRequestWhereInput
+    none?: TeacherWithdrawalRequestWhereInput
+  }
+
   export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -50168,6 +51974,10 @@ export namespace Prisma {
   }
 
   export type NotificationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TeacherWithdrawalRequestOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -50348,6 +52158,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -50361,6 +52182,9 @@ export namespace Prisma {
     photoUrl?: SortOrder
     logoUrl?: SortOrder
     aiTutorDailyQueryLimit?: SortOrder
+    instaPayHandle?: SortOrder
+    vodafoneCashNumber?: SortOrder
+    payoutMethodUpdatedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -50377,6 +52201,9 @@ export namespace Prisma {
     photoUrl?: SortOrder
     logoUrl?: SortOrder
     aiTutorDailyQueryLimit?: SortOrder
+    instaPayHandle?: SortOrder
+    vodafoneCashNumber?: SortOrder
+    payoutMethodUpdatedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -50389,6 +52216,9 @@ export namespace Prisma {
     photoUrl?: SortOrder
     logoUrl?: SortOrder
     aiTutorDailyQueryLimit?: SortOrder
+    instaPayHandle?: SortOrder
+    vodafoneCashNumber?: SortOrder
+    payoutMethodUpdatedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -50415,12 +52245,7 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
     notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -50428,7 +52253,15 @@ export namespace Prisma {
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type StudentProfileListRelationFilter = {
@@ -50496,20 +52329,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type DecimalNullableFilter<$PrismaModel = never> = {
@@ -52494,6 +54313,83 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
+  export type EnumTeacherWithdrawalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherWithdrawalStatus | EnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherWithdrawalStatus[] | ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherWithdrawalStatus[] | ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherWithdrawalStatusFilter<$PrismaModel> | $Enums.TeacherWithdrawalStatus
+  }
+
+  export type TeacherWithdrawalRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    payoutMethodSnapshot?: SortOrder
+    teacherNote?: SortOrder
+    adminNote?: SortOrder
+    requestedAt?: SortOrder
+    processedAt?: SortOrder
+    transferredAt?: SortOrder
+    cancelledAt?: SortOrder
+    reviewedById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherWithdrawalRequestAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type TeacherWithdrawalRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    teacherNote?: SortOrder
+    adminNote?: SortOrder
+    requestedAt?: SortOrder
+    processedAt?: SortOrder
+    transferredAt?: SortOrder
+    cancelledAt?: SortOrder
+    reviewedById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherWithdrawalRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    teacherId?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    teacherNote?: SortOrder
+    adminNote?: SortOrder
+    requestedAt?: SortOrder
+    processedAt?: SortOrder
+    transferredAt?: SortOrder
+    cancelledAt?: SortOrder
+    reviewedById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TeacherWithdrawalRequestSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type EnumTeacherWithdrawalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherWithdrawalStatus | EnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherWithdrawalStatus[] | ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherWithdrawalStatus[] | ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherWithdrawalStatusWithAggregatesFilter<$PrismaModel> | $Enums.TeacherWithdrawalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTeacherWithdrawalStatusFilter<$PrismaModel>
+    _max?: NestedEnumTeacherWithdrawalStatusFilter<$PrismaModel>
+  }
+
   export type AuditLogCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -52666,6 +54562,20 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
+  export type TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput = {
+    create?: XOR<TeacherWithdrawalRequestCreateWithoutTeacherInput, TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput> | TeacherWithdrawalRequestCreateWithoutTeacherInput[] | TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput | TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput[]
+    createMany?: TeacherWithdrawalRequestCreateManyTeacherInputEnvelope
+    connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+  }
+
+  export type TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput = {
+    create?: XOR<TeacherWithdrawalRequestCreateWithoutReviewedByInput, TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput> | TeacherWithdrawalRequestCreateWithoutReviewedByInput[] | TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput | TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput[]
+    createMany?: TeacherWithdrawalRequestCreateManyReviewedByInputEnvelope
+    connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+  }
+
   export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -52836,6 +54746,20 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutStudentInput | NotificationCreateOrConnectWithoutStudentInput[]
     createMany?: NotificationCreateManyStudentInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput = {
+    create?: XOR<TeacherWithdrawalRequestCreateWithoutTeacherInput, TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput> | TeacherWithdrawalRequestCreateWithoutTeacherInput[] | TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput | TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput[]
+    createMany?: TeacherWithdrawalRequestCreateManyTeacherInputEnvelope
+    connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+  }
+
+  export type TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput = {
+    create?: XOR<TeacherWithdrawalRequestCreateWithoutReviewedByInput, TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput> | TeacherWithdrawalRequestCreateWithoutReviewedByInput[] | TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput | TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput[]
+    createMany?: TeacherWithdrawalRequestCreateManyReviewedByInputEnvelope
+    connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -53204,6 +55128,34 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput = {
+    create?: XOR<TeacherWithdrawalRequestCreateWithoutTeacherInput, TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput> | TeacherWithdrawalRequestCreateWithoutTeacherInput[] | TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput | TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput[]
+    upsert?: TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutTeacherInput | TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutTeacherInput[]
+    createMany?: TeacherWithdrawalRequestCreateManyTeacherInputEnvelope
+    set?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    disconnect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    delete?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    update?: TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutTeacherInput | TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutTeacherInput[]
+    updateMany?: TeacherWithdrawalRequestUpdateManyWithWhereWithoutTeacherInput | TeacherWithdrawalRequestUpdateManyWithWhereWithoutTeacherInput[]
+    deleteMany?: TeacherWithdrawalRequestScalarWhereInput | TeacherWithdrawalRequestScalarWhereInput[]
+  }
+
+  export type TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput = {
+    create?: XOR<TeacherWithdrawalRequestCreateWithoutReviewedByInput, TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput> | TeacherWithdrawalRequestCreateWithoutReviewedByInput[] | TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput | TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput[]
+    upsert?: TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutReviewedByInput | TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutReviewedByInput[]
+    createMany?: TeacherWithdrawalRequestCreateManyReviewedByInputEnvelope
+    set?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    disconnect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    delete?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    update?: TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutReviewedByInput | TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutReviewedByInput[]
+    updateMany?: TeacherWithdrawalRequestUpdateManyWithWhereWithoutReviewedByInput | TeacherWithdrawalRequestUpdateManyWithWhereWithoutReviewedByInput[]
+    deleteMany?: TeacherWithdrawalRequestScalarWhereInput | TeacherWithdrawalRequestScalarWhereInput[]
+  }
+
   export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -53542,6 +55494,34 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput = {
+    create?: XOR<TeacherWithdrawalRequestCreateWithoutTeacherInput, TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput> | TeacherWithdrawalRequestCreateWithoutTeacherInput[] | TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput | TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput[]
+    upsert?: TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutTeacherInput | TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutTeacherInput[]
+    createMany?: TeacherWithdrawalRequestCreateManyTeacherInputEnvelope
+    set?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    disconnect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    delete?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    update?: TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutTeacherInput | TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutTeacherInput[]
+    updateMany?: TeacherWithdrawalRequestUpdateManyWithWhereWithoutTeacherInput | TeacherWithdrawalRequestUpdateManyWithWhereWithoutTeacherInput[]
+    deleteMany?: TeacherWithdrawalRequestScalarWhereInput | TeacherWithdrawalRequestScalarWhereInput[]
+  }
+
+  export type TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput = {
+    create?: XOR<TeacherWithdrawalRequestCreateWithoutReviewedByInput, TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput> | TeacherWithdrawalRequestCreateWithoutReviewedByInput[] | TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput | TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput[]
+    upsert?: TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutReviewedByInput | TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutReviewedByInput[]
+    createMany?: TeacherWithdrawalRequestCreateManyReviewedByInputEnvelope
+    set?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    disconnect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    delete?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+    update?: TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutReviewedByInput | TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutReviewedByInput[]
+    updateMany?: TeacherWithdrawalRequestUpdateManyWithWhereWithoutReviewedByInput | TeacherWithdrawalRequestUpdateManyWithWhereWithoutReviewedByInput[]
+    deleteMany?: TeacherWithdrawalRequestScalarWhereInput | TeacherWithdrawalRequestScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutStudentProfileInput = {
     create?: XOR<UserCreateWithoutStudentProfileInput, UserUncheckedCreateWithoutStudentProfileInput>
     connectOrCreate?: UserCreateOrConnectWithoutStudentProfileInput
@@ -53578,6 +55558,10 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type UserUpdateOneRequiredWithoutTeacherProfileNestedInput = {
@@ -53624,10 +55608,6 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type ChapterUpdateManyWithoutStageNestedInput = {
@@ -55406,6 +57386,40 @@ export namespace Prisma {
     update?: XOR<XOR<TeacherSubscriptionUpdateToOneWithWhereWithoutPaymentsInput, TeacherSubscriptionUpdateWithoutPaymentsInput>, TeacherSubscriptionUncheckedUpdateWithoutPaymentsInput>
   }
 
+  export type UserCreateNestedOneWithoutTeacherWithdrawalRequestsInput = {
+    create?: XOR<UserCreateWithoutTeacherWithdrawalRequestsInput, UserUncheckedCreateWithoutTeacherWithdrawalRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTeacherWithdrawalRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReviewedWithdrawalRequestsInput = {
+    create?: XOR<UserCreateWithoutReviewedWithdrawalRequestsInput, UserUncheckedCreateWithoutReviewedWithdrawalRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewedWithdrawalRequestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumTeacherWithdrawalStatusFieldUpdateOperationsInput = {
+    set?: $Enums.TeacherWithdrawalStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutTeacherWithdrawalRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutTeacherWithdrawalRequestsInput, UserUncheckedCreateWithoutTeacherWithdrawalRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTeacherWithdrawalRequestsInput
+    upsert?: UserUpsertWithoutTeacherWithdrawalRequestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTeacherWithdrawalRequestsInput, UserUpdateWithoutTeacherWithdrawalRequestsInput>, UserUncheckedUpdateWithoutTeacherWithdrawalRequestsInput>
+  }
+
+  export type UserUpdateOneWithoutReviewedWithdrawalRequestsNestedInput = {
+    create?: XOR<UserCreateWithoutReviewedWithdrawalRequestsInput, UserUncheckedCreateWithoutReviewedWithdrawalRequestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewedWithdrawalRequestsInput
+    upsert?: UserUpsertWithoutReviewedWithdrawalRequestsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewedWithdrawalRequestsInput, UserUpdateWithoutReviewedWithdrawalRequestsInput>, UserUncheckedUpdateWithoutReviewedWithdrawalRequestsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -55565,6 +57579,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -55593,30 +57618,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -55629,6 +57630,19 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedDecimalNullableFilter<$PrismaModel = never> = {
@@ -56148,6 +58162,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAiUsageTypeFilter<$PrismaModel>
     _max?: NestedEnumAiUsageTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTeacherWithdrawalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherWithdrawalStatus | EnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherWithdrawalStatus[] | ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherWithdrawalStatus[] | ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherWithdrawalStatusFilter<$PrismaModel> | $Enums.TeacherWithdrawalStatus
+  }
+
+  export type NestedEnumTeacherWithdrawalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TeacherWithdrawalStatus | EnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TeacherWithdrawalStatus[] | ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TeacherWithdrawalStatus[] | ListEnumTeacherWithdrawalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTeacherWithdrawalStatusWithAggregatesFilter<$PrismaModel> | $Enums.TeacherWithdrawalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTeacherWithdrawalStatusFilter<$PrismaModel>
+    _max?: NestedEnumTeacherWithdrawalStatusFilter<$PrismaModel>
   }
 
   export type AuditLogCreateWithoutUserInput = {
@@ -56701,6 +58732,9 @@ export namespace Prisma {
     photoUrl?: string | null
     logoUrl?: string | null
     aiTutorDailyQueryLimit?: number
+    instaPayHandle?: string | null
+    vodafoneCashNumber?: string | null
+    payoutMethodUpdatedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -56712,6 +58746,9 @@ export namespace Prisma {
     photoUrl?: string | null
     logoUrl?: string | null
     aiTutorDailyQueryLimit?: number
+    instaPayHandle?: string | null
+    vodafoneCashNumber?: string | null
+    payoutMethodUpdatedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -57016,6 +59053,94 @@ export namespace Prisma {
 
   export type NotificationCreateManyStudentInputEnvelope = {
     data: NotificationCreateManyStudentInput | NotificationCreateManyStudentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TeacherWithdrawalRequestCreateWithoutTeacherInput = {
+    id?: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reviewedBy?: UserCreateNestedOneWithoutReviewedWithdrawalRequestsInput
+  }
+
+  export type TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput = {
+    id?: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    reviewedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherWithdrawalRequestCreateOrConnectWithoutTeacherInput = {
+    where: TeacherWithdrawalRequestWhereUniqueInput
+    create: XOR<TeacherWithdrawalRequestCreateWithoutTeacherInput, TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput>
+  }
+
+  export type TeacherWithdrawalRequestCreateManyTeacherInputEnvelope = {
+    data: TeacherWithdrawalRequestCreateManyTeacherInput | TeacherWithdrawalRequestCreateManyTeacherInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TeacherWithdrawalRequestCreateWithoutReviewedByInput = {
+    id?: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    teacher: UserCreateNestedOneWithoutTeacherWithdrawalRequestsInput
+  }
+
+  export type TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput = {
+    id?: string
+    teacherId: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput = {
+    where: TeacherWithdrawalRequestWhereUniqueInput
+    create: XOR<TeacherWithdrawalRequestCreateWithoutReviewedByInput, TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput>
+  }
+
+  export type TeacherWithdrawalRequestCreateManyReviewedByInputEnvelope = {
+    data: TeacherWithdrawalRequestCreateManyReviewedByInput | TeacherWithdrawalRequestCreateManyReviewedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -57518,6 +59643,9 @@ export namespace Prisma {
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
+    instaPayHandle?: NullableStringFieldUpdateOperationsInput | string | null
+    vodafoneCashNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutMethodUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -57529,6 +59657,9 @@ export namespace Prisma {
     photoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     aiTutorDailyQueryLimit?: IntFieldUpdateOperationsInput | number
+    instaPayHandle?: NullableStringFieldUpdateOperationsInput | string | null
+    vodafoneCashNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    payoutMethodUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -57814,6 +59945,59 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
+  export type TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutTeacherInput = {
+    where: TeacherWithdrawalRequestWhereUniqueInput
+    update: XOR<TeacherWithdrawalRequestUpdateWithoutTeacherInput, TeacherWithdrawalRequestUncheckedUpdateWithoutTeacherInput>
+    create: XOR<TeacherWithdrawalRequestCreateWithoutTeacherInput, TeacherWithdrawalRequestUncheckedCreateWithoutTeacherInput>
+  }
+
+  export type TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutTeacherInput = {
+    where: TeacherWithdrawalRequestWhereUniqueInput
+    data: XOR<TeacherWithdrawalRequestUpdateWithoutTeacherInput, TeacherWithdrawalRequestUncheckedUpdateWithoutTeacherInput>
+  }
+
+  export type TeacherWithdrawalRequestUpdateManyWithWhereWithoutTeacherInput = {
+    where: TeacherWithdrawalRequestScalarWhereInput
+    data: XOR<TeacherWithdrawalRequestUpdateManyMutationInput, TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherInput>
+  }
+
+  export type TeacherWithdrawalRequestScalarWhereInput = {
+    AND?: TeacherWithdrawalRequestScalarWhereInput | TeacherWithdrawalRequestScalarWhereInput[]
+    OR?: TeacherWithdrawalRequestScalarWhereInput[]
+    NOT?: TeacherWithdrawalRequestScalarWhereInput | TeacherWithdrawalRequestScalarWhereInput[]
+    id?: StringFilter<"TeacherWithdrawalRequest"> | string
+    teacherId?: StringFilter<"TeacherWithdrawalRequest"> | string
+    amount?: FloatFilter<"TeacherWithdrawalRequest"> | number
+    currency?: StringFilter<"TeacherWithdrawalRequest"> | string
+    status?: EnumTeacherWithdrawalStatusFilter<"TeacherWithdrawalRequest"> | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: JsonNullableFilter<"TeacherWithdrawalRequest">
+    teacherNote?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    adminNote?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    requestedAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+    processedAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    transferredAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    cancelledAt?: DateTimeNullableFilter<"TeacherWithdrawalRequest"> | Date | string | null
+    reviewedById?: StringNullableFilter<"TeacherWithdrawalRequest"> | string | null
+    createdAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+    updatedAt?: DateTimeFilter<"TeacherWithdrawalRequest"> | Date | string
+  }
+
+  export type TeacherWithdrawalRequestUpsertWithWhereUniqueWithoutReviewedByInput = {
+    where: TeacherWithdrawalRequestWhereUniqueInput
+    update: XOR<TeacherWithdrawalRequestUpdateWithoutReviewedByInput, TeacherWithdrawalRequestUncheckedUpdateWithoutReviewedByInput>
+    create: XOR<TeacherWithdrawalRequestCreateWithoutReviewedByInput, TeacherWithdrawalRequestUncheckedCreateWithoutReviewedByInput>
+  }
+
+  export type TeacherWithdrawalRequestUpdateWithWhereUniqueWithoutReviewedByInput = {
+    where: TeacherWithdrawalRequestWhereUniqueInput
+    data: XOR<TeacherWithdrawalRequestUpdateWithoutReviewedByInput, TeacherWithdrawalRequestUncheckedUpdateWithoutReviewedByInput>
+  }
+
+  export type TeacherWithdrawalRequestUpdateManyWithWhereWithoutReviewedByInput = {
+    where: TeacherWithdrawalRequestScalarWhereInput
+    data: XOR<TeacherWithdrawalRequestUpdateManyMutationInput, TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByInput>
+  }
+
   export type UserCreateWithoutStudentProfileInput = {
     id?: string
     fullName: string
@@ -57850,6 +60034,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -57888,6 +60074,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -57973,6 +60161,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -58011,6 +60201,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type StageUpsertWithoutStudentProfilesInput = {
@@ -58086,6 +60278,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutTeacherProfileInput = {
@@ -58124,6 +60318,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutTeacherProfileInput = {
@@ -58178,6 +60374,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherProfileInput = {
@@ -58216,6 +60414,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type ChapterCreateWithoutStageInput = {
@@ -58324,6 +60524,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutStagesInput = {
@@ -58362,6 +60564,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutStagesInput = {
@@ -58459,6 +60663,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStagesInput = {
@@ -58497,6 +60703,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type StageCreateWithoutChaptersInput = {
@@ -58566,6 +60774,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutChaptersOwnedInput = {
@@ -58604,6 +60814,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutChaptersOwnedInput = {
@@ -58917,6 +61129,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChaptersOwnedInput = {
@@ -58955,6 +61169,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type EnrollmentUpsertWithWhereUniqueWithoutChapterInput = {
@@ -59516,6 +61732,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutOtpsInput = {
@@ -59554,6 +61772,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutOtpsInput = {
@@ -59608,6 +61828,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOtpsInput = {
@@ -59646,6 +61868,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type ChapterCreateWithoutEnrollmentsInput = {
@@ -59725,6 +61949,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -59763,6 +61989,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -59864,6 +62092,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -59902,6 +62132,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutPaymentTransactionsInput = {
@@ -59940,6 +62172,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
@@ -59978,6 +62212,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutPaymentTransactionsInput = {
@@ -60073,6 +62309,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
@@ -60111,6 +62349,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type ChapterUpsertWithoutPaymentTransactionsInput = {
@@ -60239,6 +62479,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -60277,6 +62519,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -60380,6 +62624,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -60418,6 +62664,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type LessonCreateWithoutLessonMaterialsInput = {
@@ -60588,6 +62836,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutMaterialDownloadsInput = {
@@ -60626,6 +62876,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutMaterialDownloadsInput = {
@@ -60707,6 +62959,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaterialDownloadsInput = {
@@ -60745,6 +62999,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type LessonMaterialUpsertWithoutDownloadsInput = {
@@ -60908,6 +63164,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutAiTutorUsageInput = {
@@ -60946,6 +63204,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutAiTutorUsageInput = {
@@ -61000,6 +63260,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiTutorUsageInput = {
@@ -61038,6 +63300,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -61076,6 +63340,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -61114,6 +63380,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -61168,6 +63436,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -61206,6 +63476,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutRefreshTokensInput = {
@@ -61244,6 +63516,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -61282,6 +63556,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -61336,6 +63612,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -61374,6 +63652,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type QuestionCreateWithoutQuizInput = {
@@ -61599,6 +63879,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutQuizzesInput = {
@@ -61637,6 +63919,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutQuizzesInput = {
@@ -61819,6 +64103,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizzesInput = {
@@ -61857,6 +64143,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type QuizCreateWithoutQuizLessonsInput = {
@@ -62324,6 +64612,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -62362,6 +64652,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -62487,6 +64779,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -62525,6 +64819,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutUsedPromoCodesInput = {
@@ -62563,6 +64859,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutUsedPromoCodesInput = {
@@ -62601,6 +64899,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutUsedPromoCodesInput = {
@@ -62644,6 +64944,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedPromoCodesInput = {
@@ -62682,6 +64984,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedPromoCodesInput = {
@@ -62777,6 +65081,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsedPromoCodesInput = {
@@ -62815,6 +65121,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUpsertWithoutCreatedPromoCodesInput = {
@@ -62864,6 +65172,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedPromoCodesInput = {
@@ -62902,6 +65212,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type ChapterUpsertWithoutPromoCodesInput = {
@@ -62987,6 +65299,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedPlatformPromoCodesInput = {
@@ -63025,6 +65339,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedPlatformPromoCodesInput = {
@@ -63107,6 +65423,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedPlatformPromoCodesInput = {
@@ -63145,6 +65463,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type PlatformPromoRedemptionUpsertWithWhereUniqueWithoutPromoCodeInput = {
@@ -63244,6 +65564,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutPlatformPromoRedemptionsInput = {
@@ -63282,6 +65604,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutPlatformPromoRedemptionsInput = {
@@ -63387,6 +65711,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPlatformPromoRedemptionsInput = {
@@ -63425,6 +65751,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -63463,6 +65791,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -63501,6 +65831,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -63555,6 +65887,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -63593,6 +65927,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutTeacherRegistrationRequestInput = {
@@ -63631,6 +65967,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutTeacherRegistrationRequestInput = {
@@ -63669,6 +66007,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutTeacherRegistrationRequestInput = {
@@ -63723,6 +66063,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherRegistrationRequestInput = {
@@ -63761,6 +66103,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutAiConversationsInput = {
@@ -63799,6 +66143,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutAiConversationsInput = {
@@ -63837,6 +66183,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutAiConversationsInput = {
@@ -63925,6 +66273,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiConversationsInput = {
@@ -63963,6 +66313,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type AiMessageUpsertWithWhereUniqueWithoutConversationInput = {
@@ -64301,6 +66653,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutTeacherSubscriptionsInput = {
@@ -64339,6 +66693,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutTeacherSubscriptionsInput = {
@@ -64518,6 +66874,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherSubscriptionsInput = {
@@ -64556,6 +66914,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type TeacherPlanUpsertWithoutSubscriptionsInput = {
@@ -64681,6 +67041,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutTeacherSubscriptionRequestsInput = {
@@ -64719,6 +67081,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutTeacherSubscriptionRequestsInput = {
@@ -64822,6 +67186,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherSubscriptionRequestsInput = {
@@ -64860,6 +67226,8 @@ export namespace Prisma {
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type TeacherPlanUpsertWithoutRequestsInput = {
@@ -64953,6 +67321,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutTeacherAiUsageEventsInput = {
@@ -64991,6 +67361,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutTeacherAiUsageEventsInput = {
@@ -65131,6 +67503,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherAiUsageEventsInput = {
@@ -65169,6 +67543,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type TeacherSubscriptionUpsertWithoutUsageEventsInput = {
@@ -65305,6 +67681,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutTeacherSubscriptionPaymentsInput = {
@@ -65343,6 +67721,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutTeacherSubscriptionPaymentsInput = {
@@ -65483,6 +67863,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherSubscriptionPaymentsInput = {
@@ -65521,6 +67903,8 @@ export namespace Prisma {
     teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
     teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type TeacherPlanUpsertWithoutPaymentsInput = {
@@ -65619,6 +68003,358 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutSubscriptionNestedInput
+  }
+
+  export type UserCreateWithoutTeacherWithdrawalRequestsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationCreateNestedManyWithoutStudentInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+  }
+
+  export type UserUncheckedCreateWithoutTeacherWithdrawalRequestsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  }
+
+  export type UserCreateOrConnectWithoutTeacherWithdrawalRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTeacherWithdrawalRequestsInput, UserUncheckedCreateWithoutTeacherWithdrawalRequestsInput>
+  }
+
+  export type UserCreateWithoutReviewedWithdrawalRequestsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+  }
+
+  export type UserUncheckedCreateWithoutReviewedWithdrawalRequestsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+  }
+
+  export type UserCreateOrConnectWithoutReviewedWithdrawalRequestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReviewedWithdrawalRequestsInput, UserUncheckedCreateWithoutReviewedWithdrawalRequestsInput>
+  }
+
+  export type UserUpsertWithoutTeacherWithdrawalRequestsInput = {
+    update: XOR<UserUpdateWithoutTeacherWithdrawalRequestsInput, UserUncheckedUpdateWithoutTeacherWithdrawalRequestsInput>
+    create: XOR<UserCreateWithoutTeacherWithdrawalRequestsInput, UserUncheckedCreateWithoutTeacherWithdrawalRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTeacherWithdrawalRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTeacherWithdrawalRequestsInput, UserUncheckedUpdateWithoutTeacherWithdrawalRequestsInput>
+  }
+
+  export type UserUpdateWithoutTeacherWithdrawalRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTeacherWithdrawalRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  }
+
+  export type UserUpsertWithoutReviewedWithdrawalRequestsInput = {
+    update: XOR<UserUpdateWithoutReviewedWithdrawalRequestsInput, UserUncheckedUpdateWithoutReviewedWithdrawalRequestsInput>
+    create: XOR<UserCreateWithoutReviewedWithdrawalRequestsInput, UserUncheckedCreateWithoutReviewedWithdrawalRequestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReviewedWithdrawalRequestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReviewedWithdrawalRequestsInput, UserUncheckedUpdateWithoutReviewedWithdrawalRequestsInput>
+  }
+
+  export type UserUpdateWithoutReviewedWithdrawalRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReviewedWithdrawalRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
   }
 
   export type AuditLogCreateManyUserInput = {
@@ -65886,6 +68622,40 @@ export namespace Prisma {
     courseContextId?: string | null
     isRead?: boolean
     createdAt?: Date | string
+  }
+
+  export type TeacherWithdrawalRequestCreateManyTeacherInput = {
+    id?: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    reviewedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TeacherWithdrawalRequestCreateManyReviewedByInput = {
+    id?: string
+    teacherId: string
+    amount: number
+    currency?: string
+    status?: $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: string | null
+    adminNote?: string | null
+    requestedAt?: Date | string
+    processedAt?: Date | string | null
+    transferredAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AuditLogUpdateWithoutUserInput = {
@@ -66717,6 +69487,108 @@ export namespace Prisma {
     courseContextId?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherWithdrawalRequestUpdateWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reviewedBy?: UserUpdateOneWithoutReviewedWithdrawalRequestsNestedInput
+  }
+
+  export type TeacherWithdrawalRequestUncheckedUpdateWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherWithdrawalRequestUpdateWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teacher?: UserUpdateOneRequiredWithoutTeacherWithdrawalRequestsNestedInput
+  }
+
+  export type TeacherWithdrawalRequestUncheckedUpdateWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    teacherId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumTeacherWithdrawalStatusFieldUpdateOperationsInput | $Enums.TeacherWithdrawalStatus
+    payoutMethodSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    teacherNote?: NullableStringFieldUpdateOperationsInput | string | null
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    requestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ChapterCreateManyStageInput = {

@@ -150,6 +150,9 @@ exports.Prisma.TeacherProfileScalarFieldEnum = {
   photoUrl: 'photoUrl',
   logoUrl: 'logoUrl',
   aiTutorDailyQueryLimit: 'aiTutorDailyQueryLimit',
+  instaPayHandle: 'instaPayHandle',
+  vodafoneCashNumber: 'vodafoneCashNumber',
+  payoutMethodUpdatedAt: 'payoutMethodUpdatedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -536,6 +539,24 @@ exports.Prisma.TeacherSubscriptionPaymentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.TeacherWithdrawalRequestScalarFieldEnum = {
+  id: 'id',
+  teacherId: 'teacherId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  payoutMethodSnapshot: 'payoutMethodSnapshot',
+  teacherNote: 'teacherNote',
+  adminNote: 'adminNote',
+  requestedAt: 'requestedAt',
+  processedAt: 'processedAt',
+  transferredAt: 'transferredAt',
+  cancelledAt: 'cancelledAt',
+  reviewedById: 'reviewedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -712,6 +733,14 @@ exports.AiUsageType = exports.$Enums.AiUsageType = {
   AI_QUESTION_EXPLANATION: 'AI_QUESTION_EXPLANATION'
 };
 
+exports.TeacherWithdrawalStatus = exports.$Enums.TeacherWithdrawalStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  TRANSFERRED: 'TRANSFERRED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   StudentProfile: 'StudentProfile',
@@ -744,7 +773,8 @@ exports.Prisma.ModelName = {
   TeacherSubscription: 'TeacherSubscription',
   TeacherSubscriptionRequest: 'TeacherSubscriptionRequest',
   TeacherAiUsageEvent: 'TeacherAiUsageEvent',
-  TeacherSubscriptionPayment: 'TeacherSubscriptionPayment'
+  TeacherSubscriptionPayment: 'TeacherSubscriptionPayment',
+  TeacherWithdrawalRequest: 'TeacherWithdrawalRequest'
 };
 
 /**

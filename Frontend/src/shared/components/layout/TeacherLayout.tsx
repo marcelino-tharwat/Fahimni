@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, Brain, ClipboardList, Users, User, Ticket, PenSquare, CreditCard } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, Brain, ClipboardList, Users, User, Ticket, PenSquare, CreditCard, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -17,6 +17,7 @@ export function TeacherLayout() {
     { label: t('nav.students'), icon: Users, path: '/teacher/students' },
     { label: t('nav.promoCodes'), icon: Ticket, path: '/teacher/promo-codes' },
     { label: t('nav.plans'), icon: CreditCard, path: '/teacher/plans' },
+    { label: t('nav.wallet'), icon: Wallet, path: '/teacher/wallet' },
     { label: t('nav.profile'), icon: User, path: '/teacher/profile' },
   ];
 

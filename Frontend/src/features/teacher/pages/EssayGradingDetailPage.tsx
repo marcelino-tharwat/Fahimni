@@ -293,17 +293,6 @@ export function EssayGradingDetailPage() {
     }).length;
   }, [data, activeFields, readOnly]);
 
-  const totalPts = useMemo(() => {
-    if (!data) return 0;
-    if (readOnly) {
-      return data.essayAnswers.reduce((s, e) => s + (e.awardedPoints ?? 0), 0);
-    }
-    return data.essayAnswers.reduce((s, e) => {
-      const g = parseGrade(activeFields[e.questionId]?.awardedPoints ?? '');
-      return s + (g !== null && !Number.isNaN(g) ? g : 0);
-    }, 0);
-  }, [data, activeFields, readOnly]);
-
   const maxPts = data?.essayAnswers.reduce((s, e) => s + e.maximumPoints, 0) ?? 0;
 
   async function handleSubmit() {

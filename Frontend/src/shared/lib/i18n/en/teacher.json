@@ -993,5 +993,56 @@
         "whatsappSupport": "WhatsApp Support"
       }
     }
+  },
+  "wallet": {
+    "pageTitle": "Balance",
+    "pageSubtitle": "Your earnings from student subscriptions and payments on your content, and your payout details",
+    "loading": "Loading wallet data...",
+    "errorTitle": "Could not load wallet data",
+    "retry": "Retry",
+    "currency": "EGP",
+    "cards": {
+      "totalEarnings": "Total Earnings",
+      "availableBalance": "Available Balance",
+      "heldWithdrawals": "Held Amount",
+      "completedWithdrawals": "Transferred"
+    },
+    "withdrawals": {
+      "title": "Withdrawal Requests",
+      "empty": "No withdrawal requests yet",
+      "amount": "Amount",
+      "status": "Status",
+      "requestedAt": "Requested At",
+      "note": "Note",
+      "statusLabels": {
+        "PENDING": "Pending",
+        "PROCESSING": "Processing",
+        "TRANSFERRED": "Transferred",
+        "REJECTED": "Rejected",
+        "CANCELLED": "Cancelled"
+      }
+    },
+    "payoutProfile": {
+      "title": "Payout Details",
+      "instaPayHandle": "InstaPay handle/account",
+      "vodafoneCashNumber": "Vodafone Cash wallet number",
+      "notSet": "Not set yet",
+      "editButton": "Edit payout details",
+      "modalTitle": "Edit payout details",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "saved": "Payout details updated successfully",
+      "saveError": "Could not update payout details",
+      "instaPayPlaceholder": "ahmed@instapay",
+      "vodafoneCashPlaceholder": "01012345678"
+    },
+    "validation": {
+      "instaPayMin": "InstaPay handle must be at least 3 characters",
+      "instaPayMax": "InstaPay handle must not exceed 50 characters",
+      "instaPayInvalid": "InstaPay handle may only contain letters, numbers, and @ . _ -",
+      "vodafoneInvalid": "Vodafone Cash number must be a valid Egyptian mobile number (e.g. 01012345678)",
+      "atLeastOneRequired": "At least one payout field must be provided"
+    }
   }
 }
