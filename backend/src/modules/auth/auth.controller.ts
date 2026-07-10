@@ -43,8 +43,9 @@ export class AuthController {
         message: "Login successful",
         data: {
           user: result.user,
-          // Present only for approved teachers: ACTIVE_TEACHER (active paid sub) |
-          // FREE_TEACHER (no paid sub → FREE plan). Both grant feature access.
+          // Present for all teacher logins:
+          //  - TEACHER_PENDING_REVIEW / TEACHER_REJECTED (restricted mode)
+          //  - ACTIVE_TEACHER / FREE_TEACHER (approved — normal access)
           ...(result.accessState ? { accessState: result.accessState } : {}),
         },
       });

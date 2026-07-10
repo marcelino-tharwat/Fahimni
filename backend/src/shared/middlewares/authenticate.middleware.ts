@@ -62,9 +62,28 @@ export const authenticateMiddleware = asyncHandler(
     }
 
     if (user.status !== "ACTIVE") {
-      return next(
-        new AppError("Your account is inactive. Please contact support.", 401),
-      );
+      // BANNED and non-teacher INACTIVE users are always blocked. INACTIVE
+      // teachers with PENDING_REVIEW or REJECTED approval state are allowed
+      // through in restricted mode (they can view their review-status page).
+      if (user.status === "BANNED") {
+        return next(
+          new AppError("Your account is inactive. Please contact support.", 401),
+        );
+      }
+      // For INACTIVE users, check if this is a restricted teacher.
+      const fullUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true, teacherApprovalState: true },
+      });
+      const isRestrictedTeacher =
+        fullUser?.role === "OPERATION" &&
+        (fullUser?.teacherApprovalState === "PENDING_REVIEW" ||
+          fullUser?.teacherApprovalState === "REJECTED");
+      if (!isRestrictedTeacher) {
+        return next(
+          new AppError("Your account is inactive. Please contact support.", 401),
+        );
+      }
     }
 
     // If the token carries a version, verify it matches the current DB version.

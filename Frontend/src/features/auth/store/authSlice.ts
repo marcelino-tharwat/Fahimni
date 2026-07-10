@@ -22,11 +22,18 @@ import type { User, UserRole } from '@/shared/types/user';
 // definitions live only in `@/shared/types/user` (the single source of truth).
 export type { User, UserRole } from '@/shared/types/user';
 
+type LoginAccessState =
+  | 'ACTIVE_TEACHER'
+  | 'FREE_TEACHER'
+  | 'TEACHER_PENDING_REVIEW'
+  | 'TEACHER_REJECTED';
+
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  accessState: LoginAccessState | null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -52,18 +59,18 @@ export const dashboardPathByRole: Record<UserRole, string> = {
 /* ------------------------------------------------------------------ */
 
 export const login = createAsyncThunk<
-  { user: User },
+  { user: User; accessState?: LoginAccessState },
   { email: string; password: string; remember?: boolean },
   { rejectValue: string }
 >('auth/login', async (credentials, { rejectWithValue }) => {
   try {
     const { data } = await apiClient.post<{
       message: string;
-      data: { user: User };
+      data: { user: User; accessState?: LoginAccessState };
     }>('/v1/auth/login', credentials);
     // Tokens live only in HttpOnly cookies; we cache the user object for UX.
     saveUser(data.data.user);
-    return { user: data.data.user };
+    return { user: data.data.user, accessState: data.data.accessState };
   } catch (err) {
     const apiErr = err as ApiError;
     return rejectWithValue(apiErr.message ?? 'حصل خطأ أثناء تسجيل الدخول.');
@@ -176,6 +183,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   status: 'idle',
   error: null,
+  accessState: null,
 };
 
 const authSlice = createSlice({
@@ -200,6 +208,7 @@ const authSlice = createSlice({
       // bootstrap.
       state.status = 'failed';
       state.error = null;
+      state.accessState = null;
       clearUser();
       removeRefreshToken();
       // Prevent stale payment state from persisting across auth sessions.
@@ -225,6 +234,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
+        state.accessState = action.payload.accessState ?? null;
       })
       .addCase(login.rejected, (state, action) => {
         state.error = action.payload ?? 'حصل خطأ غير متوقع.';

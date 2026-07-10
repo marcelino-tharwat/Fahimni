@@ -14,7 +14,29 @@ import type { User } from '@/shared/types';
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'ar' } }),
 }));
-vi.mock('@/shared/store/hooks', () => ({ useAppSelector: vi.fn() }));
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return { ...actual, useNavigate: () => vi.fn() };
+});
+vi.mock('@/shared/store/hooks', () => ({ useAppSelector: vi.fn(), useAppDispatch: () => vi.fn() }));
+vi.mock('@/features/auth/store/authSlice', () => ({
+  logoutUser: vi.fn(() => ({ type: 'logout' })),
+}));
+vi.mock('@/shared/lib/api/client', () => ({
+  apiClient: {
+    get: vi.fn().mockResolvedValue({
+      data: {
+        data: {
+          teacherApprovalState: 'PENDING_REVIEW',
+          accessState: 'TEACHER_PENDING_REVIEW',
+          canAccessTeacherFeatures: false,
+          request: { publicReference: 'TR-2026-123456', status: 'PENDING', submittedAt: '2026-01-01T00:00:00.000Z', reviewedAt: null },
+          message: 'مرحبًا بك، تم استلام طلبك وهو الآن قيد المراجعة من الإدارة.',
+        },
+      },
+    }),
+  },
+}));
 vi.mock('@/features/teacher/api/teacherPlans', () => ({
   teacherPlansApi: { getMySubscription: vi.fn() },
 }));
@@ -98,13 +120,18 @@ describe('TeacherAccessGuard', () => {
 });
 
 describe('teacher lifecycle pages', () => {
-  it('4. pending-review page renders', () => {
-    render(<MemoryRouter><TeacherPendingReviewPage /></MemoryRouter>);
-    expect(screen.getByText('auth:teacherPendingTitle')).toBeInTheDocument();
+  function withQueryClient(children: React.ReactNode) {
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+  }
+
+  it('4. pending-review page renders', async () => {
+    render(withQueryClient(<MemoryRouter><TeacherPendingReviewPage /></MemoryRouter>));
+    expect(await screen.findByText('auth:teacherPendingTitle')).toBeInTheDocument();
   });
 
-  it('5. rejected page renders', () => {
-    render(<MemoryRouter><TeacherRejectedPage /></MemoryRouter>);
-    expect(screen.getByText('auth:teacherRejectedTitle')).toBeInTheDocument();
+  it('5. rejected page renders', async () => {
+    render(withQueryClient(<MemoryRouter><TeacherRejectedPage /></MemoryRouter>));
+    expect(await screen.findByText('auth:teacherRejectedTitle')).toBeInTheDocument();
   });
 });
