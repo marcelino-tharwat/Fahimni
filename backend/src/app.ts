@@ -31,6 +31,7 @@ import teacherPlanRoutes from "./modules/teacher-plans/teacher-plan.routes.js";
 import teacherWalletRoutes from "./modules/teacher-wallet/teacher-wallet.routes.js";
 import adminRoutes from "./modules/admin/admin.routes.js";
 import notificationRoutes from "./modules/notifications/notifications.routes.js";
+import subjectRoutes from "./modules/subjects/subjects.routes.js";
 
 export function createApp(): Application {
   const app = express();
@@ -96,6 +97,8 @@ export function createApp(): Application {
   app.use("/api/teacher", teacherWalletRoutes);
 
   app.use("/api/notifications", notificationRoutes);
+
+  app.use("/api/subjects", subjectRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

@@ -3,11 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { User, Mail, Phone, BookOpen, CheckCircle } from "lucide-react";
+import { User, Mail, Phone, BookOpen, CheckCircle, ChevronDown } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Card } from "@/shared/components/ui/Card";
 import { apiClient } from "@/shared/lib/api/client";
+import { useSubjects } from "@/features/subjects/useSubjects";
 import { ProofUpload } from "./ProofUpload";
 
 const teacherRequestSchema = z.object({
@@ -17,7 +18,7 @@ const teacherRequestSchema = z.object({
     .string()
     .trim()
     .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "validation:mobileInvalid"),
-  subject: z.string().trim().max(200).optional(),
+  subject: z.string().trim().optional(),
   bio: z.string().trim().max(1000).optional(),
   consent: z.literal(true, { message: "teacherRequest:consentRequired" }),
 });
@@ -30,7 +31,8 @@ interface ProofFileItem {
 }
 
 export function TeacherRequestForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === 'ar';
   const [proofFiles, setProofFiles] = useState<ProofFileItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -38,11 +40,15 @@ export function TeacherRequestForm() {
     publicReference: string;
     createdAt: string;
   } | null>(null);
+  const { subjects, loading: subjectsLoading } = useSubjects();
+  const [subjectOpen, setSubjectOpen] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<FormValues>({
     resolver: zodResolver(teacherRequestSchema),
     defaultValues: {
@@ -159,13 +165,68 @@ export function TeacherRequestForm() {
           {...register("mobile")}
         />
 
-        <Input
-          label={t("teacherRequest:subject")}
-          placeholder={t("teacherRequest:subjectPlaceholder")}
-          icon={<BookOpen size={18} />}
-          error={errors.subject?.message && t(errors.subject.message)}
-          {...register("subject")}
-        />
+        <input type="hidden" {...register("subject")} />
+        <div className="relative w-full">
+          <label className="mb-1 block font-cairo text-sm font-medium text-text-primary">
+            {t("teacherRequest:subject")}
+          </label>
+          <button
+            type="button"
+            onClick={() => !subjectsLoading && setSubjectOpen((o) => !o)}
+            disabled={subjectsLoading}
+            dir={isRtl ? "rtl" : "ltr"}
+            className={`relative flex w-full items-center rounded-input border py-3 outline-none transition focus:border-accent focus:ring-2 focus:ring-cyan-100 ${
+              isRtl ? "pr-11 pl-3" : "pl-11 pr-3"
+            } ${errors.subject?.message ? "border-red-400" : "border-border"} ${subjectsLoading ? "cursor-not-allowed opacity-60" : ""}`}
+          >
+            <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
+              <BookOpen size={18} />
+            </span>
+            <span className={`flex-1 font-cairo text-body ${isRtl ? "text-right" : "text-left"} ${selectedSubject ? "text-text-primary" : "text-text-secondary"}`}>
+              {subjectsLoading
+                ? t("auth:loading", "...")
+                : selectedSubject
+                  ? selectedSubject
+                  : t("teacherRequest:subjectPlaceholder", "مثال: اللغة العربية، الرياضيات")}
+            </span>
+            <ChevronDown
+              size={18}
+              className={`shrink-0 text-gray-400 transition-transform ${subjectOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+          {errors.subject?.message && (
+            <p className="mt-1.5 text-xs text-red-500">{t(errors.subject.message)}</p>
+          )}
+          {subjectOpen && !subjectsLoading && (
+            <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+              {subjects.length === 0 ? (
+                <p className="px-4 py-3 font-cairo text-sm text-gray-500">
+                  {t("auth:noStages", "لا توجد خيارات")}
+                </p>
+              ) : (
+                subjects.map((subject) => (
+                  <button
+                    key={subject.code}
+                    type="button"
+                    onClick={() => {
+                      setSelectedSubject(subject.displayName);
+                      setValue("subject", subject.displayName, { shouldValidate: true });
+                      setSubjectOpen(false);
+                    }}
+                    className={`relative flex w-full items-center py-2.5 font-cairo text-body transition hover:bg-gray-50 ${
+                      isRtl ? "pr-11 pl-4 text-right" : "pl-11 pr-4 text-left"
+                    } ${selectedSubject === subject.displayName ? "bg-cyan-50 font-semibold text-cyan-700" : "text-text-primary"}`}
+                  >
+                    <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
+                      <BookOpen size={16} />
+                    </span>
+                    <span className="flex-1">{subject.displayName}</span>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="flex w-full flex-col gap-1">
           <label className="text-start font-cairo text-sm font-medium text-text-primary">
