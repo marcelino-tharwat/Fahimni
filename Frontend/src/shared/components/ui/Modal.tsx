@@ -23,6 +23,20 @@ const FOCUSABLE =
 export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  // Kept up to date every render without being a dependency of the effect
+  // below — callers typically pass an inline `() => setOpen(false)`, which is
+  // a new function on every render. If it were a dependency, the effect would
+  // tear down and re-run on every keystroke inside the modal (e.g. typing in a
+  // textarea that updates parent state), which would steal focus away from
+  // the field back to the first focusable element (often the close button) —
+  // and from there, pressing Space would "click" that button and close the
+  // modal. Depending only on `isOpen` keeps the focus/tab-trap setup stable
+  // for the entire time the modal is open.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   // Accessibility: Escape closes, Tab is trapped within the dialog, focus moves
   // into the dialog on open and is restored to the previous element on close.
   useEffect(() => {
@@ -38,7 +52,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
 
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key === 'Tab') {
@@ -64,7 +78,8 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       document.removeEventListener('keydown', handleKey);
       previouslyFocused?.focus?.();
     };
-  }, [isOpen, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onClose is read via onCloseRef, see above.
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
