@@ -74,8 +74,8 @@ async function fetchOwnedChaptersWithLessons(
   const chapters = await db.chapter.findMany({
     where: {
       id: { in: chapterIds },
+      teacherId,
       deletedAt: null,
-      stage: { teacherId, deletedAt: null },
     },
     select: {
       id: true,
@@ -104,7 +104,7 @@ function assertBucketBudget(buckets: AllocationBucket[]): void {
 /**
  * Normalize + authorize a generation request into an {@link AllocationPlan}.
  * Ownership is proven for every referenced chapter/lesson via the shared scope
- * resolvers (lesson → chapter → stage → teacherId). Cross-field shape and the
+ * resolvers (lesson → chapter → teacherId). Cross-field shape and the
  * per-bucket sum are already validated by the DTO; this layer adds ownership,
  * chapter/lesson membership, and structural guards that require the database.
  */

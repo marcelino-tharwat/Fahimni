@@ -173,7 +173,7 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(activeStage.id);
 
     const activeChapter = await prisma.chapter.create({
-      data: { name: `Active Chapter ${suffix}`, sortOrder: 1, price: null, stageId: activeStage.id },
+      data: { name: `Active Chapter ${suffix}`, sortOrder: 1, price: null, stageId: activeStage.id, teacherId: activeTeacher.id },
     });
     owned.chapterIds.push(activeChapter.id);
 
@@ -184,7 +184,7 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(bannedStage.id);
 
     const bannedChapter = await prisma.chapter.create({
-      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: bannedStage.id },
+      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: bannedStage.id, teacherId: bannedTeacher.id },
     });
     owned.chapterIds.push(bannedChapter.id);
 
@@ -236,7 +236,7 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(inactiveStage.id);
 
     const inactiveChapter = await prisma.chapter.create({
-      data: { name: `Inactive Chapter ${suffix}`, sortOrder: 1, price: null, stageId: inactiveStage.id },
+      data: { name: `Inactive Chapter ${suffix}`, sortOrder: 1, price: null, stageId: inactiveStage.id, teacherId: inactiveTeacher.id },
     });
     owned.chapterIds.push(inactiveChapter.id);
 
@@ -285,7 +285,7 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(freeStage.id);
 
     const freeChapter = await prisma.chapter.create({
-      data: { name: `Free Chapter ${suffix}`, sortOrder: 1, price: null, stageId: freeStage.id },
+      data: { name: `Free Chapter ${suffix}`, sortOrder: 1, price: null, stageId: freeStage.id, teacherId: freeTeacher.id },
     });
     owned.chapterIds.push(freeChapter.id);
 
@@ -334,11 +334,9 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(stage.id);
 
     const chapter = await prisma.chapter.create({
-      data: { name: `Banned Enrolled Chapter ${suffix}`, sortOrder: 1, price: null, stageId: stage.id },
+      data: { name: `Banned Enrolled Chapter ${suffix}`, sortOrder: 1, price: null, stageId: stage.id, teacherId: bannedTeacher.id },
     });
     owned.chapterIds.push(chapter.id);
-
-    // Student profile (this stage is the student's "home" stage).
     await prisma.studentProfile.create({
       data: { userId: student.id, stageId: stage.id },
     });
@@ -395,7 +393,7 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(stage.id);
 
     const chapter = await prisma.chapter.create({
-      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: stage.id },
+      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: stage.id, teacherId: bannedTeacher.id },
     });
     owned.chapterIds.push(chapter.id);
 
@@ -468,7 +466,7 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(bannedStage.id);
 
     const bannedChapter = await prisma.chapter.create({
-      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: bannedStage.id },
+      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: bannedStage.id, teacherId: bannedTeacher.id },
     });
     owned.chapterIds.push(bannedChapter.id);
 
@@ -494,7 +492,7 @@ describe("hide banned teacher content from All Content", () => {
 
     // Payment checkout for a paid banned teacher's chapter (create one).
     const bannedPaidChapter = await prisma.chapter.create({
-      data: { name: `Banned Paid Chapter ${suffix}`, sortOrder: 2, price: 50, stageId: bannedStage.id },
+      data: { name: `Banned Paid Chapter ${suffix}`, sortOrder: 2, price: 50, stageId: bannedStage.id, teacherId: bannedTeacher.id },
     });
     owned.chapterIds.push(bannedPaidChapter.id);
 
@@ -540,7 +538,7 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(stage.id);
 
     const chapter = await prisma.chapter.create({
-      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: stage.id },
+      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: stage.id, teacherId: bannedTeacher.id },
     });
     owned.chapterIds.push(chapter.id);
 
@@ -611,7 +609,7 @@ describe("hide banned teacher content from All Content", () => {
     owned.stageIds.push(bannedStage.id);
 
     const bannedChapter = await prisma.chapter.create({
-      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: bannedStage.id },
+      data: { name: `Banned Chapter ${suffix}`, sortOrder: 1, price: null, stageId: bannedStage.id, teacherId: bannedTeacher.id },
     });
     owned.chapterIds.push(bannedChapter.id);
 

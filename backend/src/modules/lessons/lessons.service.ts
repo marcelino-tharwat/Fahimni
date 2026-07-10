@@ -47,6 +47,8 @@ function stripMaterials(lesson: Record<string, unknown>): Record<string, unknown
 /**
  * Sync DTO for list/reorder endpoints. Returns attachment metadata WITHOUT a
  * signed `url`, so listing N lessons makes zero storage round-trips.
+ *
+ * Ownership chain: Lesson → Chapter → chapter.teacherId
  */
 function toLightDTO(lesson: Record<string, unknown>): LessonResponseDTO {
   const attachments = extractMaterials(lesson).map((m) => ({
@@ -87,9 +89,9 @@ async function toFullDTO(
 }
 
 export class LessonsService {
-  // Resolve and authorize a chapter through its Stage ownership chain
-  // (Chapter -> Stage -> Teacher). Soft-deleted chapters and stages are
-  // excluded so they cannot be used to create or list lessons.
+  // Resolve and authorize a chapter through the ownership chain
+  // (Chapter → chapter.teacherId). Soft-deleted chapters are excluded
+  // so they cannot be used to create or list lessons.
   private async assertChapterOwned(
     chapterId: string,
     teacherId: string,
@@ -97,8 +99,8 @@ export class LessonsService {
     const chapter = await prisma.chapter.findFirst({
       where: {
         id: chapterId,
+        teacherId,
         deletedAt: null,
-        stage: { teacherId, deletedAt: null },
       },
       select: { id: true },
     });
@@ -171,7 +173,7 @@ export class LessonsService {
       where: {
         id,
         deletedAt: null,
-        chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+        chapter: { teacherId, deletedAt: null },
       },
       select: lessonSelectWithMaterials,
     });
@@ -204,7 +206,7 @@ export class LessonsService {
       where: {
         id,
         deletedAt: null,
-        chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+        chapter: { teacherId, deletedAt: null },
       },
       select: { id: true, chapterId: true },
     });
@@ -275,7 +277,7 @@ export class LessonsService {
       where: {
         id,
         deletedAt: null,
-        chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+        chapter: { teacherId, deletedAt: null },
       },
       select: {
         id: true,
@@ -341,7 +343,7 @@ export class LessonsService {
         where: {
           id: { in: ids },
           deletedAt: null,
-          chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+          chapter: { teacherId, deletedAt: null },
         },
         include: { chapter: { select: { id: true } } },
       });

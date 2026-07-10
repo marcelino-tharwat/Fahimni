@@ -23,7 +23,7 @@ import {
  * Student-scoped routes derive the studentId from req.user.id (never the body
  * or a query param), so a student can never act on another student's data.
  * OPERATION (teacher) access is further scoped inside the service layer to
- * chapters in the teacher's own stages (chapter.stage.teacherId === actorId);
+ * chapters in the teacher's own chapters (chapter.teacherId === actorId);
  * ADMIN bypasses that ownership check.
  */
 const router = Router();

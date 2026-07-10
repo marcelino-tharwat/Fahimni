@@ -993,5 +993,56 @@
         "whatsappSupport": "دعم عبر واتساب"
       }
     }
+  },
+  "wallet": {
+    "pageTitle": "الرصيد",
+    "pageSubtitle": "أرباحك من اشتراكات ومدفوعات الطلاب في محتواك، وبيانات استلام المستحقات",
+    "loading": "جارٍ تحميل بيانات الرصيد...",
+    "errorTitle": "تعذّر تحميل بيانات الرصيد",
+    "retry": "إعادة المحاولة",
+    "currency": "ج.م",
+    "cards": {
+      "totalEarnings": "إجمالي الأرباح",
+      "availableBalance": "الرصيد المتاح",
+      "heldWithdrawals": "مبالغ معلقة",
+      "completedWithdrawals": "تم تحويله"
+    },
+    "withdrawals": {
+      "title": "طلبات السحب",
+      "empty": "لا توجد طلبات سحب بعد",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "requestedAt": "تاريخ الطلب",
+      "note": "ملاحظة",
+      "statusLabels": {
+        "PENDING": "قيد الانتظار",
+        "PROCESSING": "قيد المعالجة",
+        "TRANSFERRED": "تم التحويل",
+        "REJECTED": "مرفوض",
+        "CANCELLED": "ملغي"
+      }
+    },
+    "payoutProfile": {
+      "title": "بيانات استلام الأرباح",
+      "instaPayHandle": "رقم/حساب InstaPay",
+      "vodafoneCashNumber": "رقم محفظة Vodafone Cash",
+      "notSet": "لم يتم تحديده بعد",
+      "editButton": "تعديل بيانات الاستلام",
+      "modalTitle": "تعديل بيانات استلام الأرباح",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "cancel": "إلغاء",
+      "saved": "تم تحديث بيانات الاستلام بنجاح",
+      "saveError": "تعذّر تحديث بيانات الاستلام",
+      "instaPayPlaceholder": "ahmed@instapay",
+      "vodafoneCashPlaceholder": "01012345678"
+    },
+    "validation": {
+      "instaPayMin": "يجب أن يكون حساب InstaPay ٣ أحرف على الأقل",
+      "instaPayMax": "يجب ألا يزيد حساب InstaPay عن ٥٠ حرفًا",
+      "instaPayInvalid": "حساب InstaPay يجب أن يحتوي على حروف وأرقام و @ . _ - فقط",
+      "vodafoneInvalid": "رقم محفظة Vodafone Cash يجب أن يكون رقم موبايل مصري صحيح (مثال: 01012345678)",
+      "atLeastOneRequired": "يجب إدخال بيانات استلام واحدة على الأقل"
+    }
   }
 }

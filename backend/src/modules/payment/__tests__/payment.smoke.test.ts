@@ -8,7 +8,8 @@ const mockPrisma = vi.hoisted(() => ({
       id: "",
       price: 100,
       deletedAt: null,
-      stage: { teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" }, teacherId: "t1" },
+      teacherId: "t1",
+      teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" },
     }),
   },
   enrollment: { findFirst: vi.fn(), upsert: vi.fn() },
@@ -108,7 +109,8 @@ describe("PaymentService", () => {
         id: "ch1",
         price: null,
         deletedAt: null,
-        stage: { teacherId: "t1", teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" } },
+        teacherId: "t1",
+        teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" },
         name: "Free Chapter",
       });
 
@@ -123,7 +125,8 @@ describe("PaymentService", () => {
         id: "ch1",
         price: 100,
         deletedAt: null,
-        stage: { teacherId: "t1", teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" } },
+        teacherId: "t1",
+        teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" },
         name: "Paid Chapter",
       });
 
@@ -162,7 +165,7 @@ describe("PaymentService", () => {
         paymobOrderId: orderId,
         status: "SUCCESS",
         amount: 100,
-        chapter: { stage: { teacherId: "t1" } },
+        chapter: { teacherId: "t1" },
       });
 
       await service.handleWebhook(payload, validHmac);

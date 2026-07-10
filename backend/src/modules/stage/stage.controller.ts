@@ -4,13 +4,12 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { StageService } from "./stage.service.js";
 import type { StageResponseDTO } from "./stage.types.js";
-import type { CreateStageInput, UpdateStageInput, ReorderInput } from "./stage.validation.js";
 
 const stageService = new StageService();
 
 export class StageController {
   /**
-   * GET /stages/public — no auth required. Returns all non-deleted stages
+   * GET /stages/public — no auth required. Returns all active non-deleted stages
    * in sort order for the signup dropdown.
    */
   public listPublic = asyncHandler(
@@ -26,9 +25,12 @@ export class StageController {
     },
   );
 
+  /**
+   * GET /stages — teacher listing of all active stages (admin-managed).
+   */
   public list = asyncHandler(
-    async (req: Request, res: Response, _next: NextFunction) => {
-      const stages = await stageService.list(req.user!.id);
+    async (_req: Request, res: Response, _next: NextFunction) => {
+      const stages = await stageService.list();
 
       res
         .status(200)
@@ -39,6 +41,9 @@ export class StageController {
     },
   );
 
+  /**
+   * GET /stages/:id — get one active stage.
+   */
   public getById = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const id = req.params.id;
@@ -46,7 +51,7 @@ export class StageController {
         return next(new AppError("Invalid stage ID", 400));
       }
 
-      const stage = await stageService.getById(id, req.user!.id);
+      const stage = await stageService.getById(id);
 
       res
         .status(200)
@@ -54,67 +59,6 @@ export class StageController {
           "Stage fetched successfully",
           stage,
         ));
-    },
-  );
-
-  public create = asyncHandler(
-    async (req: Request, res: Response, _next: NextFunction) => {
-      const input = req.body as CreateStageInput;
-      const stage = await stageService.create(input, req.user!.id);
-
-      res
-        .status(201)
-        .json(okResponse<StageResponseDTO>(
-          "Stage created successfully",
-          stage,
-        ));
-    },
-  );
-
-  public update = asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const id = req.params.id;
-      if (typeof id !== "string") {
-        return next(new AppError("Invalid stage ID", 400));
-      }
-
-      const input = req.body as UpdateStageInput;
-      const stage = await stageService.update(id, req.user!.id, input);
-
-      res
-        .status(200)
-        .json(okResponse<StageResponseDTO>(
-          "Stage updated successfully",
-          stage,
-        ));
-    },
-  );
-
-  public reorder = asyncHandler(
-    async (req: Request, res: Response, _next: NextFunction) => {
-      const ids = req.body as ReorderInput;
-      const items = await stageService.reorder(ids, req.user!.id);
-
-      res
-        .status(200)
-        .json(okResponse<StageResponseDTO[]>(
-          "Stages reordered successfully",
-          items,
-        ));
-    },
-  );
-
-  public delete = asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const id = req.params.id;
-      if (typeof id !== "string") {
-        return next(new AppError("Invalid stage ID", 400));
-      }
-
-      const force = req.query.force === "true";
-      await stageService.delete(id, req.user!.id, force);
-
-      res.status(200).json(okResponse("Stage deleted successfully"));
     },
   );
 }

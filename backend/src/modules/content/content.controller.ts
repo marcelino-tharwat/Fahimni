@@ -27,11 +27,11 @@ export class ContentController {
       const teacherId = req.user!.id;
 
       const stages = await prisma.stage.findMany({
-        where: { teacherId, deletedAt: null },
+        where: { deletedAt: null, isActive: true },
         orderBy: { sortOrder: "asc" },
         include: {
           chapters: {
-            where: { deletedAt: null },
+            where: { teacherId, deletedAt: null },
             orderBy: { sortOrder: "asc" },
             include: {
               lessons: {
@@ -49,15 +49,14 @@ export class ContentController {
           select: { id: true, fullName: true, email: true, role: true },
         });
 
-        const [allStages, allChapters, allLessons, teacherStagesAll] =
+        const [allStages, allChapters, allLessons, teacherChapters] =
           await Promise.all([
             prisma.stage.count(),
             prisma.chapter.count(),
             prisma.lesson.count(),
-            prisma.stage.findMany({
+            prisma.chapter.findMany({
               where: { teacherId },
-              select: { id: true, name: true, deletedAt: true, sortOrder: true },
-              orderBy: { sortOrder: "asc" },
+              select: { id: true, name: true, deletedAt: true },
             }),
           ]);
 
@@ -69,18 +68,18 @@ export class ContentController {
             chapters: allChapters,
             lessons: allLessons,
           },
-          stagesForTeacher: {
-            total: teacherStagesAll.length,
-            withDeletedAtNull: teacherStagesAll.filter((s) => s.deletedAt === null).length,
-            withDeletedAtSet: teacherStagesAll.filter((s) => s.deletedAt !== null).length,
-            records: teacherStagesAll,
+          teachersChapters: {
+            total: teacherChapters.length,
+            withDeletedAtNull: teacherChapters.filter((s) => s.deletedAt === null).length,
+            withDeletedAtSet: teacherChapters.filter((s) => s.deletedAt !== null).length,
+            records: teacherChapters,
           },
           jwtUserId: teacherId,
           hints: [
             "If authenticatedUser is null → token sub points to deleted user",
             "If databaseTotals are 0 → seed may have run on different DB",
-            "If stagesForTeacher.total is 0 → user ID doesn't match any teacherId on stages",
-            "If stagesForTeacher.withDeletedAtSet > 0 → stages are soft-deleted",
+            "If teachersChapters.total is 0 → user ID doesn't match any teacherId on chapters",
+            "If teachersChapters.withDeletedAtSet > 0 → chapters are soft-deleted",
             "Use seed credentials: ahmed.hassan@school.edu / Teacher@123456",
           ],
         };
@@ -114,6 +113,7 @@ export class ContentController {
             name: chapter.name,
             sortOrder: chapter.sortOrder,
             lessonCount: chapter.lessons.length,
+            imageUrl: chapter.imageUrl ?? null,
           },
           lessons: chapter.lessons.map((lesson) => ({
             id: lesson.id,
@@ -144,20 +144,30 @@ export class ContentController {
         where: {
           id: studentProfile.stageId,
           deletedAt: null,
-          teacher: {
-            role: "OPERATION",
-            status: "ACTIVE",
-            teacherApprovalState: "APPROVED",
-          },
+          isActive: true,
         },
         orderBy: { sortOrder: "asc" },
         include: {
           chapters: {
-            where: { deletedAt: null },
+            where: {
+              deletedAt: null,
+              teacher: {
+                role: "OPERATION",
+                status: "ACTIVE",
+                teacherApprovalState: "APPROVED",
+              },
+            },
             orderBy: { sortOrder: "asc" },
             include: {
               lessons: {
                 orderBy: { sortOrder: "asc" },
+              },
+              teacher: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  teacherProfile: { select: { subject: true } },
+                },
               },
             },
           },
@@ -215,8 +225,14 @@ export class ContentController {
                 description: chapter.description,
                 sortOrder: chapter.sortOrder,
                 price,
+                imageUrl: chapter.imageUrl ?? null,
                 lessonCount: activeLessons.length,
                 enrollmentStatus,
+                teacher: {
+                  id: chapter.teacher.id,
+                  fullName: chapter.teacher.fullName,
+                  subject: chapter.teacher.teacherProfile?.subject ?? null,
+                },
               };
 
               return {
@@ -312,6 +328,7 @@ export class ContentController {
           description: chapter.description,
           sortOrder: chapter.sortOrder,
           price: chapter.price ? Number(chapter.price) : null,
+          imageUrl: chapter.imageUrl ?? null,
           stageId: chapter.stageId,
           stageName: chapter.stage.name,
           lessonCount: totalLessons,

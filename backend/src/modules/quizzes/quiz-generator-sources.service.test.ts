@@ -66,7 +66,7 @@ describe("getGeneratorSources", () => {
     const d = db([], []);
     await getGeneratorSources(TEACHER, undefined, d);
     const where = (d.stage.findMany as ReturnType<typeof vi.fn>).mock.calls[0]![0].where;
-    expect(where.teacherId).toBe(TEACHER);
+    expect(where.isActive).toBe(true);
     expect(where.deletedAt).toBeNull();
   });
 });

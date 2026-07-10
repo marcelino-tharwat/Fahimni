@@ -106,8 +106,8 @@ export async function resolveAndValidateQuizContentScope(
   const chapter = await db.chapter.findFirst({
     where: {
       id: input.chapterId,
+      teacherId,
       deletedAt: null,
-      stage: { teacherId, deletedAt: null },
     },
     select: { id: true, name: true },
   });
@@ -167,7 +167,7 @@ export async function resolveAndValidateQuizContentScope(
       id: { in: lessonIds },
       deletedAt: null,
       chapterId: chapter.id,
-      chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+      chapter: { teacherId, deletedAt: null },
     },
     select: { id: true, title: true },
     orderBy: { sortOrder: "asc" },
@@ -181,7 +181,7 @@ export async function resolveAndValidateQuizContentScope(
         id: { in: missing },
         deletedAt: null,
         chapterId: { not: chapter.id },
-        chapter: { stage: { teacherId } },
+        chapter: { teacherId },
       },
       select: { id: true },
     });
@@ -238,7 +238,7 @@ function normalizeUuidList(ids: string[], label: string): string[] {
 
 /**
  * Resolve + authorize MULTI_CHAPTER generation content. Every chapter must be
- * owned by the teacher (proven via chapter.stage.teacherId). Lessons across all
+ * owned by the teacher (proven via chapter.teacherId). Lessons across all
  * chapters are gathered. The returned `chapterId` is the first chapter as a safe
  * default placement — generation source is independent of lesson placement.
  */
@@ -257,8 +257,8 @@ export async function resolveMultiChapterScope(
   const chapters = await db.chapter.findMany({
     where: {
       id: { in: ids },
+      teacherId,
       deletedAt: null,
-      stage: { teacherId, deletedAt: null },
     },
     select: { id: true, name: true },
     orderBy: { sortOrder: "asc" },
@@ -316,7 +316,7 @@ export async function resolveMultiChapterScope(
 
 /**
  * Resolve + authorize FULL_CURRICULUM generation content. The stage must be
- * owned by the teacher; all of its chapters + lessons are gathered.
+ * active; only the teacher's own chapters within it are gathered.
  */
 export async function resolveFullCurriculumScope(
   stageId: string,
@@ -330,7 +330,7 @@ export async function resolveFullCurriculumScope(
   }
 
   const stage = await db.stage.findFirst({
-    where: { id: stageId, deletedAt: null, teacherId },
+    where: { id: stageId, deletedAt: null, isActive: true },
     select: { id: true, name: true },
   });
   if (!stage) {
@@ -338,7 +338,7 @@ export async function resolveFullCurriculumScope(
   }
 
   const chapters = await db.chapter.findMany({
-    where: { stageId: stage.id, deletedAt: null },
+    where: { stageId: stage.id, teacherId, deletedAt: null },
     select: { id: true, name: true },
     orderBy: { sortOrder: "asc" },
   });
@@ -526,15 +526,15 @@ export async function resolveTeacherQuizSourceScopes(
       ? db.chapter.findMany({
           where: {
             id: { in: [...chapterIds] },
+            teacherId,
             deletedAt: null,
-            stage: { teacherId, deletedAt: null },
           },
           select: { id: true, name: true },
         })
       : Promise.resolve([]),
     stageIds.size > 0
       ? db.stage.findMany({
-          where: { id: { in: [...stageIds] }, deletedAt: null, teacherId },
+          where: { id: { in: [...stageIds] }, deletedAt: null, isActive: true },
           select: { id: true, name: true },
         })
       : Promise.resolve([]),

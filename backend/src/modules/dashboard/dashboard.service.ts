@@ -55,7 +55,7 @@ export class DashboardService {
    * Aggregate dashboard statistics for the authenticated teacher.
    *
    * Every figure is scoped to `teacherId` through the real ownership chain
-   * (Stage.teacherId -> Chapter -> Lesson; Enrollment -> Chapter -> Stage),
+   * (Chapter.teacherId -> Lesson; Enrollment -> Chapter -> teacherId),
    * respects soft-deletes (`deletedAt`) and the enrollment `status` filter,
    * and is computed with count/aggregate queries — no entities are loaded.
    * The independent reads run in parallel to stay well under the 200ms target.
@@ -72,15 +72,15 @@ export class DashboardService {
       recentRows,
     ] = await Promise.all([
       prisma.stage.count({
-        where: { teacherId, deletedAt: null },
+        where: { deletedAt: null, chapters: { some: { teacherId, deletedAt: null } } },
       }),
       prisma.chapter.count({
-        where: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+        where: { teacherId, deletedAt: null },
       }),
       prisma.lesson.count({
         where: {
           deletedAt: null,
-          chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+          chapter: { teacherId, deletedAt: null },
         },
       }),
       this.countDistinctStudents(teacherId),

@@ -263,14 +263,28 @@ beforeAll(async () => {
 
   await prisma.chapter.upsert({
     where: { id: IDS.chapter },
-    create: { id: IDS.chapter, name: "QUnlock Chapter", sortOrder: 1, stageId: IDS.stage, price: 0 },
-    update: { deletedAt: null, stageId: IDS.stage, price: 0 },
+    create: {
+      id: IDS.chapter,
+      name: "QUnlock Chapter",
+      sortOrder: 1,
+      stageId: IDS.stage,
+      price: 0,
+      teacherId: teacher.id,
+    },
+    update: { deletedAt: null, stageId: IDS.stage, price: 0, teacherId: teacher.id },
   });
   // A PAID chapter in the SAME stage that the student is NOT enrolled in.
   await prisma.chapter.upsert({
     where: { id: IDS.paidChapter },
-    create: { id: IDS.paidChapter, name: "QUnlock Paid Chapter", sortOrder: 2, stageId: IDS.stage, price: 100 },
-    update: { deletedAt: null, stageId: IDS.stage, price: 100 },
+    create: {
+      id: IDS.paidChapter,
+      name: "QUnlock Paid Chapter",
+      sortOrder: 2,
+      stageId: IDS.stage,
+      price: 100,
+      teacherId: teacher.id,
+    },
+    update: { deletedAt: null, stageId: IDS.stage, price: 100, teacherId: teacher.id },
   });
 
   const lessonDefs = [

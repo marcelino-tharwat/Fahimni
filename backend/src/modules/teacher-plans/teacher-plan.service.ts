@@ -309,7 +309,7 @@ export class TeacherPlanService {
   async countTeacherStudents(teacherId: string): Promise<number> {
     const result = await prisma.enrollment.findMany({
       where: {
-        chapter: { stage: { teacherId } },
+        chapter: { teacherId },
         status: "ACTIVE",
       },
       select: { studentId: true },
@@ -322,7 +322,7 @@ export class TeacherPlanService {
     const result = await prisma.lessonMaterial.aggregate({
       where: {
         lesson: {
-          chapter: { stage: { teacherId } },
+          chapter: { teacherId },
         },
         deletedAt: null,
       },

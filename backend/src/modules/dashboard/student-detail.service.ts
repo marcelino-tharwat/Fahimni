@@ -57,11 +57,11 @@ export class StudentDetailService {
     const { page, pageSize } = query;
 
     // 1. Ownership + chapter filter list (G6). Distinct chapters the student is
-    //    ACTIVELY enrolled in within the caller's stages, ordered for the UI.
+    //    ACTIVELY enrolled in within the caller's chapters, ordered for the UI.
     const enrolledChapters = await prisma.chapter.findMany({
       where: {
+        teacherId,
         deletedAt: null,
-        stage: { teacherId, deletedAt: null },
         enrollments: { some: { studentId, status: "ACTIVE" } },
       },
       select: { id: true, name: true, sortOrder: true },
@@ -95,7 +95,7 @@ export class StudentDetailService {
           where: {
             studentId,
             status: "ACTIVE",
-            chapter: { deletedAt: null, stage: { teacherId, deletedAt: null } },
+            chapter: { teacherId, deletedAt: null },
           },
           _min: { enrolledAt: true },
         }),
@@ -265,8 +265,7 @@ export class StudentDetailService {
         FROM "lesson_progress" lp
         JOIN "lessons" l ON l."id" = lp."lessonId" AND l."deletedAt" IS NULL
         JOIN "chapters" c ON c."id" = l."chapterId" AND c."deletedAt" IS NULL
-        JOIN "stages" s ON s."id" = c."stageId" AND s."deletedAt" IS NULL
-        WHERE s."teacherId" = $1 AND lp."studentId" = $2
+        WHERE c."teacherId" = $1 AND lp."studentId" = $2
       ),
       qa AS (
         SELECT AVG((qa."score" / NULLIF(qa."totalPoints", 0)) * 100)
@@ -275,16 +274,14 @@ export class StudentDetailService {
         FROM "quiz_attempts" qa
         JOIN "quizzes" qz ON qz."id" = qa."quizId"
         JOIN "chapters" c ON c."id" = qz."chapterId" AND c."deletedAt" IS NULL
-        JOIN "stages" s ON s."id" = c."stageId" AND s."deletedAt" IS NULL
-        WHERE s."teacherId" = $1 AND qa."studentId" = $2
+        WHERE c."teacherId" = $1 AND qa."studentId" = $2
       ),
       tl AS (
         SELECT COUNT(DISTINCT l."id")::int AS total_lessons
         FROM "lessons" l
         JOIN "chapters" c ON c."id" = l."chapterId" AND c."deletedAt" IS NULL
         JOIN "enrollments" e ON e."chapterId" = c."id" AND e."status" = 'ACTIVE'
-        JOIN "stages" s ON s."id" = c."stageId" AND s."deletedAt" IS NULL
-        WHERE l."deletedAt" IS NULL AND s."teacherId" = $1 AND e."studentId" = $2
+        WHERE l."deletedAt" IS NULL AND c."teacherId" = $1 AND e."studentId" = $2
       ),
       lg AS (
         SELECT MAX(rt."createdAt") AS last_login

@@ -131,16 +131,15 @@ export class AdminRevenueService {
   async getRevenueByTeacher(query: RevenueRankingQuery): Promise<Paginated<RevenueByTeacherRow>> {
     const { page, limit } = query;
 
-    // Course revenue attributed via chapter → stage.teacherId (SUCCESS only).
+    // Course revenue attributed via chapter.teacherId (SUCCESS only).
     const courseRows = await prisma.$queryRaw<
       { teacherId: string; revenue: number | null; cnt: bigint | number }[]
     >`
-      SELECT s."teacherId" AS "teacherId", SUM(pt.amount) AS revenue, COUNT(*) AS cnt
+      SELECT c."teacherId" AS "teacherId", SUM(pt.amount) AS revenue, COUNT(*) AS cnt
       FROM payment_transactions pt
       JOIN chapters c ON c.id = pt."chapterId"
-      JOIN stages s ON s.id = c."stageId"
       WHERE pt.status = 'SUCCESS'
-      GROUP BY s."teacherId"
+      GROUP BY c."teacherId"
     `;
 
     // Platform revenue the teacher paid for their plan (SUCCESS subscription payments).
@@ -196,13 +195,12 @@ export class AdminRevenueService {
     const rows = await prisma.$queryRaw<
       { chapterId: string; chapterName: string; teacherId: string; revenue: number | null; cnt: bigint | number }[]
     >`
-      SELECT c.id AS "chapterId", c.name AS "chapterName", s."teacherId" AS "teacherId",
+      SELECT c.id AS "chapterId", c.name AS "chapterName", c."teacherId" AS "teacherId",
              SUM(pt.amount) AS revenue, COUNT(*) AS cnt
       FROM payment_transactions pt
       JOIN chapters c ON c.id = pt."chapterId"
-      JOIN stages s ON s.id = c."stageId"
       WHERE pt.status = 'SUCCESS'
-      GROUP BY c.id, c.name, s."teacherId"
+      GROUP BY c.id, c.name, c."teacherId"
       ORDER BY revenue DESC
     `;
 
@@ -231,7 +229,7 @@ export class AdminRevenueService {
     const where: Prisma.PaymentTransactionWhereInput = {
       ...(status ? { status } : {}),
       ...(studentId ? { studentId } : {}),
-      ...(teacherId ? { chapter: { stage: { teacherId } } } : {}),
+      ...(teacherId ? { chapter: { teacherId } } : {}),
       ...(dateFrom || dateTo
         ? { createdAt: { ...(dateFrom ? { gte: dateFrom } : {}), ...(dateTo ? { lte: dateTo } : {}) } }
         : {}),
@@ -240,7 +238,7 @@ export class AdminRevenueService {
             OR: [
               { student: { fullName: { contains: q, mode: "insensitive" } } },
               { student: { email: { contains: q, mode: "insensitive" } } },
-              { chapter: { stage: { teacher: { fullName: { contains: q, mode: "insensitive" } } } } },
+              { chapter: { teacher: { fullName: { contains: q, mode: "insensitive" } } } },
             ],
           }
         : {}),
@@ -256,7 +254,7 @@ export class AdminRevenueService {
           chapter: {
             select: {
               id: true, name: true,
-              stage: { select: { teacher: { select: { id: true, fullName: true } } } },
+              teacher: { select: { id: true, fullName: true } },
             },
           },
         },
@@ -281,7 +279,7 @@ export class AdminRevenueService {
         chapter: {
           select: {
             id: true, name: true,
-            stage: { select: { teacher: { select: { id: true, fullName: true } } } },
+            teacher: { select: { id: true, fullName: true } },
           },
         },
       },
@@ -298,15 +296,13 @@ export class AdminRevenueService {
     createdAt: Date;
     updatedAt: Date;
     student: { id: string; fullName: string; email: string };
-    chapter: { id: string; name: string; stage: { teacher: { id: string; fullName: string } } };
+    chapter: { id: string; name: string; teacher: { id: string; fullName: string } };
   }): CoursePaymentDTO {
     return {
       id: p.id,
       student: p.student,
       chapter: { id: p.chapter.id, name: p.chapter.name },
-      teacher: p.chapter.stage?.teacher
-        ? { id: p.chapter.stage.teacher.id, fullName: p.chapter.stage.teacher.fullName }
-        : null,
+      teacher: { id: p.chapter.teacher.id, fullName: p.chapter.teacher.fullName },
       amount: p.amount,
       currency: p.currency,
       status: p.status,

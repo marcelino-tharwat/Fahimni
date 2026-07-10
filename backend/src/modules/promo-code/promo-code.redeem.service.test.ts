@@ -12,7 +12,7 @@ const mockPrisma = vi.hoisted(() => {
       findUnique: vi.fn().mockResolvedValue({
         id: "",
         deletedAt: null,
-        stage: { teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" } },
+        teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" },
       }),
     },
     enrollment: { findUnique: vi.fn() },
@@ -35,7 +35,7 @@ const past = new Date(Date.now() - 86_400_000);
 const visibleChapter = {
   id: CHAPTER,
   deletedAt: null,
-  stage: { teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" } },
+  teacher: { status: "ACTIVE", role: "OPERATION", teacherApprovalState: "APPROVED" },
 };
 
 function enrollmentRow() {

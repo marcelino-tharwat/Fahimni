@@ -227,7 +227,7 @@ export class AdminUsersService {
         where: { studentId: userId },
       }),
       role === "OPERATION"
-        ? prisma.stage.count({ where: { teacherId: userId } })
+        ? prisma.stage.count({ where: { chapters: { some: { teacherId: userId } } } })
         : Promise.resolve(0),
       role === "OPERATION"
         ? prisma.teacherSubscription.count({
@@ -729,7 +729,6 @@ export class AdminUsersService {
     userId: string,
   ): Promise<void> {
     const [
-      stagesCount,
       chaptersUnderTeacherCount,
       lessonsUnderTeacherCount,
       quizzesOwnedCount,
@@ -742,23 +741,16 @@ export class AdminUsersService {
       teacherRegistrationRequestCount,
       materialsCount,
     ] = await Promise.all([
-      prisma.stage.count({ where: { teacherId: userId } }),
-      prisma.chapter.count({
-        where: { stage: { teacherId: userId } },
-      }),
+      prisma.chapter.count({ where: { teacherId: userId } }),
       prisma.lesson.count({
-        where: { chapter: { stage: { teacherId: userId } } },
+        where: { chapter: { teacherId: userId } },
       }),
       prisma.quiz.count({ where: { createdBy: userId } }),
       prisma.enrollment.count({
-        where: {
-          chapter: { stage: { teacherId: userId } },
-        },
+        where: { chapter: { teacherId: userId } },
       }),
       prisma.paymentTransaction.count({
-        where: {
-          chapter: { stage: { teacherId: userId } },
-        },
+        where: { chapter: { teacherId: userId } },
       }),
       prisma.teacherSubscription.count({
         where: { teacherId: userId },
@@ -776,12 +768,11 @@ export class AdminUsersService {
         where: { userId },
       }),
       prisma.lessonMaterial.count({
-        where: { lesson: { chapter: { stage: { teacherId: userId } } } },
+        where: { lesson: { chapter: { teacherId: userId } } },
       }),
     ]);
 
     const hasDependencies =
-      stagesCount > 0 ||
       chaptersUnderTeacherCount > 0 ||
       lessonsUnderTeacherCount > 0 ||
       quizzesOwnedCount > 0 ||
@@ -894,7 +885,6 @@ export class AdminUsersService {
     }
 
     const [
-      stagesCount,
       chaptersUnderTeacherCount,
       lessonsUnderTeacherCount,
       quizzesOwnedCount,
@@ -906,21 +896,20 @@ export class AdminUsersService {
       aiUsageEventsCount,
       materialsCount,
     ] = await Promise.all([
-      prisma.stage.count({ where: { teacherId: userId } }),
-      prisma.chapter.count({ where: { stage: { teacherId: userId } } }),
-      prisma.lesson.count({ where: { chapter: { stage: { teacherId: userId } } } }),
+      prisma.chapter.count({ where: { teacherId: userId } }),
+      prisma.lesson.count({ where: { chapter: { teacherId: userId } } }),
       prisma.quiz.count({ where: { createdBy: userId } }),
-      prisma.enrollment.count({ where: { chapter: { stage: { teacherId: userId } } } }),
-      prisma.paymentTransaction.count({ where: { chapter: { stage: { teacherId: userId } } } }),
+      prisma.enrollment.count({ where: { chapter: { teacherId: userId } } }),
+      prisma.paymentTransaction.count({ where: { chapter: { teacherId: userId } } }),
       prisma.teacherSubscription.count({ where: { teacherId: userId } }),
       prisma.teacherSubscriptionPayment.count({ where: { teacherId: userId } }),
       prisma.teacherSubscriptionRequest.count({ where: { teacherId: userId } }),
       prisma.teacherAiUsageEvent.count({ where: { teacherId: userId } }),
-      prisma.lessonMaterial.count({ where: { lesson: { chapter: { stage: { teacherId: userId } } } } }),
+      prisma.lessonMaterial.count({ where: { lesson: { chapter: { teacherId: userId } } } }),
     ]);
 
     const details = {
-      stagesCount,
+      stagesCount: 0, // Stages are admin-owned; no longer scoped to teachers
       chaptersCount: chaptersUnderTeacherCount,
       lessonsCount: lessonsUnderTeacherCount,
       quizzesCount: quizzesOwnedCount,

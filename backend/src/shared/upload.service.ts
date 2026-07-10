@@ -29,4 +29,8 @@ export class UploadService {
   public async uploadLogo(buffer: Buffer): Promise<string> {
     return this.uploadImage(buffer, "teachers/logos");
   }
+
+  public async uploadChapterImage(buffer: Buffer): Promise<string> {
+    return this.uploadImage(buffer, "chapters");
+  }
 }

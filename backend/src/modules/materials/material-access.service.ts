@@ -52,8 +52,8 @@ export async function loadActiveMaterial(
               id: true,
               stageId: true,
               price: true,
+              teacherId: true,
               deletedAt: true,
-              stage: { select: { teacherId: true, deletedAt: true } },
             },
           },
         },
@@ -64,8 +64,7 @@ export async function loadActiveMaterial(
   if (
     !row ||
     row.lesson.deletedAt !== null ||
-    row.lesson.chapter.deletedAt !== null ||
-    row.lesson.chapter.stage.deletedAt !== null
+    row.lesson.chapter.deletedAt !== null
   ) {
     throw new AppError("Material not found", 404);
   }
@@ -92,7 +91,7 @@ export async function loadActiveMaterial(
         row.lesson.chapter.price !== null
           ? Number(row.lesson.chapter.price)
           : null,
-      teacherId: row.lesson.chapter.stage.teacherId,
+      teacherId: row.lesson.chapter.teacherId,
     },
   };
 }
@@ -164,7 +163,7 @@ export async function assertMaterialPathOwnedByTeacher(
         deletedAt: null,
         chapter: {
           deletedAt: null,
-          stage: { teacherId, deletedAt: null },
+          teacherId,
         },
       },
     },

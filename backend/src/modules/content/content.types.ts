@@ -10,6 +10,7 @@ export interface ChapterNode {
   name: string;
   sortOrder: number;
   lessonCount: number;
+  imageUrl: string | null;
 }
 
 export interface LessonNode {
@@ -49,14 +50,22 @@ export interface ContentTreeResponse {
 
 export type EnrollmentStatus = "free" | "purchased" | "locked";
 
+export interface StudentTeacherNode {
+  id: string;
+  fullName: string;
+  subject: string | null;
+}
+
 export interface StudentChapterNode {
   id: string;
   name: string;
   description: string | null;
   sortOrder: number;
   price: number | null;
+  imageUrl: string | null;
   lessonCount: number;
   enrollmentStatus: EnrollmentStatus;
+  teacher: StudentTeacherNode;
 }
 
 export interface StudentContentTreeResponse {
@@ -73,6 +82,7 @@ export interface MyCourseResponse {
   description: string | null;
   sortOrder: number;
   price: number | null;
+  imageUrl: string | null;
   stageId: string;
   stageName: string;
   lessonCount: number;

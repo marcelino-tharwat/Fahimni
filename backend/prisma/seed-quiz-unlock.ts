@@ -199,8 +199,9 @@ export async function seedQuizUnlockScenario(): Promise<void> {
       sortOrder: 1,
       stageId: QUIZ_UNLOCK_IDS.stage,
       price: 0,
+      teacherId,
     },
-    update: { deletedAt: null, stageId: QUIZ_UNLOCK_IDS.stage, price: 0 },
+    update: { deletedAt: null, stageId: QUIZ_UNLOCK_IDS.stage, price: 0, teacherId },
   });
 
   const lessons = [

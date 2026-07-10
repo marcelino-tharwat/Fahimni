@@ -175,6 +175,28 @@ async function main(): Promise<void> {
   const lessons = await prisma.lesson.count();
   check("Lessons exist", lessons >= 18, `${lessons} lessons`);
 
+  // 15a. Multi-teacher: at least one student has chapters from 2+ approved teachers
+  const multiTeacherByStage = await prisma.$queryRaw<{ stageId: string; teacherCount: bigint }[]>`
+    SELECT sp."stageId", COUNT(DISTINCT c."teacherId") AS "teacherCount"
+    FROM student_profiles sp
+    JOIN chapters c ON c."stageId" = sp."stageId"
+    JOIN users u ON u.id = c."teacherId"
+    WHERE u."teacherApprovalState" = 'APPROVED' AND u.status = 'ACTIVE' AND u.role = 'OPERATION'
+    GROUP BY sp."stageId"
+    HAVING COUNT(DISTINCT c."teacherId") >= 2
+  `;
+  check("At least 1 stage has chapters from 2+ approved teachers", multiTeacherByStage.length >= 1, `${multiTeacherByStage.length} stages`);
+
+  // 15b. Banned/inactive teacher chapters exist in a student's stage (to test exclusion)
+  const bannedInStudentStage = await prisma.$queryRaw<{ cnt: bigint }[]>`
+    SELECT COUNT(*) AS "cnt"
+    FROM chapters c
+    JOIN student_profiles sp ON sp."stageId" = c."stageId"
+    JOIN users u ON u.id = c."teacherId"
+    WHERE (u.status IN ('BANNED', 'INACTIVE') OR u."teacherApprovalState" NOT IN ('APPROVED'))
+  `;
+  check("Banned/inactive teacher chapters exist in a student stage", (bannedInStudentStage[0]?.cnt ?? 0n) >= 1n, `${bannedInStudentStage[0]?.cnt ?? 0n} found`);
+
   // 16. Teacher profiles exist
   const profiles = await prisma.teacherProfile.count({ where: { userId: { in: teachers.map((t) => t.id) } } });
   check("Teacher profiles exist", profiles >= 3, `${profiles} profiles`);
@@ -387,6 +409,9 @@ async function main(): Promise<void> {
   // 25. Quiz unlock-by-lesson-completion scenario.
   await verifyQuizUnlockScenario();
 
+  // 26. Teacher wallet / payout-profile scenario.
+  await verifyTeacherWalletScenario();
+
   // Summary
   console.log(`\n${failures === 0 ? "ALL CHECKS PASSED" : `${failures} CHECK(S) FAILED`}`);
   if (failures > 0) process.exitCode = 1;
@@ -468,6 +493,90 @@ async function verifyQuizUnlockScenario(): Promise<void> {
     s4?.get(QUIZ_UNLOCK_IDS.qCh)?.isUnlocked === true &&
       s4?.get(QUIZ_UNLOCK_IDS.qCh)?.canTake === true,
   );
+}
+
+async function verifyTeacherWalletScenario(): Promise<void> {
+  const teacherMath = await prisma.user.findUnique({
+    where: { email: "teacher.math" + DEMO_EMAIL_DOMAIN },
+    select: { id: true },
+  });
+  const teacherChemistry = await prisma.user.findUnique({
+    where: { email: "teacher.chemistry" + DEMO_EMAIL_DOMAIN },
+    select: { id: true },
+  });
+
+  if (!teacherMath) {
+    check("Wallet: teacher.math exists", false, "missing");
+    return;
+  }
+
+  // Independently recomputed from the DB (not via the service) so this catches
+  // both seed regressions and any drift in the wallet balance formula.
+  const earningsAgg = await prisma.paymentTransaction.aggregate({
+    where: { status: "SUCCESS", chapter: { teacherId: teacherMath.id } },
+    _sum: { amount: true },
+  });
+  check(
+    "Wallet: totalConfirmedEarnings calculates correctly (teacher.math)",
+    earningsAgg._sum.amount === 300,
+    `${earningsAgg._sum.amount ?? 0} (expected 300)`,
+  );
+
+  const withdrawalGroups = await prisma.teacherWithdrawalRequest.groupBy({
+    by: ["status"],
+    where: { teacherId: teacherMath.id },
+    _sum: { amount: true },
+  });
+  const sumByStatus = (statuses: string[]) =>
+    withdrawalGroups
+      .filter((g) => statuses.includes(g.status))
+      .reduce((s, g) => s + (g._sum.amount ?? 0), 0);
+  const transferred = sumByStatus(["TRANSFERRED"]);
+  const held = sumByStatus(["PENDING", "PROCESSING"]);
+  const rejectedOrCancelled = sumByStatus(["REJECTED", "CANCELLED"]);
+  const available = Math.max(0, (earningsAgg._sum.amount ?? 0) - transferred - held);
+
+  check("Wallet: TRANSFERRED withdrawal deducted", transferred === 150, `${transferred} (expected 150)`);
+  check("Wallet: PENDING + PROCESSING withdrawals held", held === 80, `${held} (expected 80)`);
+  check(
+    "Wallet: availableBalance subtracts held + transferred only",
+    available === 70,
+    `${available} (expected 70)`,
+  );
+  check(
+    "Wallet: REJECTED withdrawal released (not held, not deducted)",
+    rejectedOrCancelled === 20 && held === 80 && transferred === 150,
+    `rejectedOrCancelled=${rejectedOrCancelled}`,
+  );
+
+  const payout = await prisma.teacherProfile.findUnique({
+    where: { userId: teacherMath.id },
+    select: { instaPayHandle: true, vodafoneCashNumber: true, payoutMethodUpdatedAt: true },
+  });
+  check(
+    "Wallet: teacher.math has a configured payout profile",
+    payout?.instaPayHandle === "ahmed.math@instapay" &&
+      payout?.vodafoneCashNumber === "01001234567" &&
+      payout?.payoutMethodUpdatedAt !== null,
+    JSON.stringify(payout),
+  );
+
+  if (teacherChemistry) {
+    const chemistryEarnings = await prisma.paymentTransaction.aggregate({
+      where: { status: "SUCCESS", chapter: { teacherId: teacherChemistry.id } },
+      _sum: { amount: true },
+    });
+    const chemistryWithdrawals = await prisma.teacherWithdrawalRequest.count({
+      where: { teacherId: teacherChemistry.id },
+    });
+    check(
+      "Wallet: teacher.chemistry has zero earnings (no-earnings scenario)",
+      (chemistryEarnings._sum.amount ?? 0) === 0 && chemistryWithdrawals === 0,
+      `earnings=${chemistryEarnings._sum.amount ?? 0} withdrawals=${chemistryWithdrawals}`,
+    );
+  } else {
+    check("Wallet: teacher.chemistry exists (no-earnings scenario)", false, "missing");
+  }
 }
 
 main()

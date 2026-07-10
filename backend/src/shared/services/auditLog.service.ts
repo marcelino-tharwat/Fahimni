@@ -33,6 +33,7 @@ export type AuditLogAction =
   | "STUDENT_UNENROLLED"
   | "PAYMENT_COMPLETED"
   | "PAYMENT_FAILED"
+  | "TEACHER_PAYOUT_METHOD_UPDATED"
   // Admin (platform-level) actions — not scoped to a single teacher.
   | "USER_CREATED"
   | "USER_UPDATED"
@@ -58,6 +59,7 @@ export type AuditLogAction =
   | "ADMIN_PLAN_DEACTIVATED"
   | "ADMIN_PLAN_RECOMMENDED_CHANGED"
   | "ADMIN_PLANS_REORDERED"
+  | "STAGES_REORDERED"
   // Legacy values retained so historical rows remain readable.
   | "DELETE_STAGE"
   | "DELETE_CHAPTER"

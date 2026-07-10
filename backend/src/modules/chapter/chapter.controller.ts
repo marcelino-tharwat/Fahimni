@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
+import { UploadService } from "../../shared/upload.service.js";
 import { ChapterService } from "./chapter.service.js";
 import { QuizService } from "../quizzes/quizzes.service.js";
 import { quizVisibilityService } from "../quizzes/quiz-visibility.service.js";
@@ -13,6 +14,7 @@ import type { CreateChapterInput, UpdateChapterInput, ReorderInput } from "./cha
 
 const chapterService = new ChapterService();
 const quizService = new QuizService();
+const uploadService = new UploadService();
 
 export class ChapterController {
   public create = asyncHandler(
@@ -22,8 +24,26 @@ export class ChapterController {
         throw new AppError("Invalid stage ID", 400);
       }
 
-      const input = req.body as CreateChapterInput;
-      const chapter = await chapterService.create(input, stageId, req.user!.id);
+      const input = req.body as CreateChapterInput & { sortOrder: string };
+      const sortOrder = parseInt(String(input.sortOrder), 10);
+
+      // Handle image upload if provided
+      let imageUrl: string | null = null;
+      if (req.file) {
+        imageUrl = await uploadService.uploadChapterImage(req.file.buffer);
+      }
+
+      const chapter = await chapterService.create(
+        {
+          name: input.name,
+          description: input.description ?? null,
+          sortOrder: isNaN(sortOrder) ? 1 : sortOrder,
+          price: input.price ?? null,
+        },
+        stageId,
+        req.user!.id,
+        imageUrl,
+      );
 
       res
         .status(201)
@@ -87,7 +107,14 @@ export class ChapterController {
       }
 
       const input = req.body as UpdateChapterInput;
-      const chapter = await chapterService.update(id, req.user!.id, input);
+
+      // Handle image upload if provided
+      let imageUrl: string | undefined;
+      if (req.file) {
+        imageUrl = await uploadService.uploadChapterImage(req.file.buffer);
+      }
+
+      const chapter = await chapterService.update(id, req.user!.id, input, imageUrl);
 
       res
         .status(200)
