@@ -64,7 +64,19 @@ async function createUser(role: "OPERATION" | "STUDENT", fullName: string) {
   const email = `qresults-${id.slice(0, 8)}@e2e.test`;
   mobileSeq += 1;
   const mobile = `01${String((Date.now() + mobileSeq) % 1_000_000_000).padStart(9, "0")}`;
-  await prisma.user.create({ data: { id, email, fullName, mobile, password: pwHash, role, status: "ACTIVE" } });
+  await prisma.user.create({
+    data: {
+      id,
+      email,
+      fullName,
+      mobile,
+      password: pwHash,
+      role,
+      status: "ACTIVE",
+      // Teachers must be APPROVED to pass requireActiveTeacherSubscription.
+      teacherApprovalState: role === "OPERATION" ? "APPROVED" : "NONE",
+    },
+  });
   owned.userIds.push(id);
   return { id, email };
 }

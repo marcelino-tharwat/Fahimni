@@ -93,6 +93,35 @@ beforeAll(async () => {
     sourceChapterIds: [],
     sourceStageId: fx.stageId,
   });
+
+  // These SS/MS/FS quizzes are CHAPTER-scope and live in a chapter that has 3
+  // lessons + a lesson quiz (Q1). Under the unified unlock policy a chapter quiz
+  // requires all lessons completed AND the last lesson quiz completed. This test
+  // only exercises source-scope provenance + the attempt flow, so give student2
+  // the completed prerequisites deterministically.
+  for (const lessonId of [fx.lessonA1Id, fx.lessonA2Id, fx.lessonA3Id]) {
+    await prisma.lessonProgress.upsert({
+      where: { studentId_lessonId: { studentId: fx.student2Id, lessonId } },
+      create: { studentId: fx.student2Id, lessonId, completed: true },
+      update: { completed: true },
+    });
+  }
+  // Q1 is the (only) non-gate lesson quiz → the previous-quiz for chapter quizzes.
+  await prisma.quizAttempt.deleteMany({
+    where: { studentId: fx.student2Id, quizId: fx.quizQ1Id },
+  });
+  await prisma.quizAttempt.create({
+    data: {
+      quizId: fx.quizQ1Id,
+      studentId: fx.student2Id,
+      answers: [],
+      status: "GRADED",
+      score: 1,
+      totalPoints: 1,
+      startedAt: new Date(),
+      completedAt: new Date(),
+    },
+  });
 });
 
 afterAll(async () => {

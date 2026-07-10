@@ -6,6 +6,7 @@ import { logger } from "../src/config/logger.js";
 import { assertLocalDatabase } from "../src/seed/local-guard.js";
 
 import { TEACHER_PLANS } from "../src/modules/teacher-plans/teacher-plan.seed-data.js";
+import { seedQuizUnlockScenario } from "./seed-quiz-unlock.js";
 import type { Prisma } from "../src/generated/prisma/client.js";
 
 const BCRYPT_ROUNDS = 12;
@@ -2123,6 +2124,8 @@ async function main(): Promise<void> {
 
   await cleanupSeedOwnedRecords();
   await seedAll();
+  // Quiz unlock-by-lesson-completion demo scenario (self-contained + idempotent).
+  await seedQuizUnlockScenario();
 
   await logSeedCounts();
 

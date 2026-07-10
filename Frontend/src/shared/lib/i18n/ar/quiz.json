@@ -85,6 +85,23 @@
       "viewResult": "عرض النتيجة",
       "viewAnswers": "عرض الإجابات",
       "retake": "إعادة المحاولة"
+    },
+    "availability": {
+      "available": "متاح",
+      "locked": "مغلق",
+      "completed": "مكتمل",
+      "retakeAvailable": "إعادة متاحة"
+    },
+    "chapterQuiz": "كويز نهاية الفصل",
+    "lockedAction": "مقفول",
+    "lockReasons": {
+      "LESSON_NOT_COMPLETED": "أكمل مشاهدة الدرس أولًا",
+      "CHAPTER_LESSONS_NOT_COMPLETED": "أكمل دروس الفصل أولًا",
+      "PREVIOUS_QUIZ_NOT_COMPLETED": "يجب إنهاء الكويز السابق أولًا",
+      "ENROLLMENT_REQUIRED": "يجب الاشتراك في هذا المحتوى أولًا",
+      "QUIZ_NOT_PUBLISHED": "هذا الاختبار غير متاح حاليًا",
+      "ATTEMPT_ALREADY_COMPLETED": "لقد أكملت هذا الاختبار بالفعل",
+      "RETAKE_NOT_ALLOWED": "لا يمكن إعادة هذه المحاولة"
     }
   },
   "results": {

@@ -75,6 +75,8 @@ async function createUser(role: "STUDENT" | "OPERATION") {
       password: pwHash,
       role,
       status: "ACTIVE",
+      // Teachers must be APPROVED to pass requireActiveTeacherSubscription.
+      teacherApprovalState: role === "OPERATION" ? "APPROVED" : "NONE",
     },
   });
   owned.userIds.push(id);

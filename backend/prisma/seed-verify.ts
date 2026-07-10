@@ -368,9 +368,90 @@ async function main(): Promise<void> {
   const paidChapters = await prisma.chapter.count({ where: { price: { not: null } } });
   check("Paid chapters exist", paidChapters >= 3, `${paidChapters} with price`);
 
+  // 25. Quiz unlock-by-lesson-completion scenario.
+  await verifyQuizUnlockScenario();
+
   // Summary
   console.log(`\n${failures === 0 ? "ALL CHECKS PASSED" : `${failures} CHECK(S) FAILED`}`);
   if (failures > 0) process.exitCode = 1;
+}
+
+async function verifyQuizUnlockScenario(): Promise<void> {
+  const { computeChapterQuizEligibility } = await import(
+    "../src/modules/quizzes/student-quiz-eligibility.service.js"
+  );
+  const { QUIZ_UNLOCK_IDS, QUIZ_UNLOCK_STUDENT_EMAILS } = await import(
+    "./seed-quiz-unlock.js"
+  );
+
+  const emailToId = new Map<string, string>();
+  const rows = await prisma.user.findMany({
+    where: { email: { in: Object.values(QUIZ_UNLOCK_STUDENT_EMAILS) } },
+    select: { id: true, email: true },
+  });
+  for (const r of rows) emailToId.set(r.email, r.id);
+
+  const elig = async (email: string) => {
+    const id = emailToId.get(email);
+    if (!id) return null;
+    return computeChapterQuizEligibility(id, QUIZ_UNLOCK_IDS.chapter, 0);
+  };
+
+  // Locked quizzes remain VISIBLE (all 3 present) for a student who did nothing.
+  const s0 = await elig(QUIZ_UNLOCK_STUDENT_EMAILS.s0);
+  check(
+    "Unlock: My Quizzes lists all 3 quizzes (locked stay visible)",
+    !!s0 && s0.size === 3,
+    `${s0?.size ?? 0} quizzes`,
+  );
+  check(
+    "Unlock: lesson-1 quiz LOCKED before lesson 1 completed",
+    s0?.get(QUIZ_UNLOCK_IDS.qL1)?.isUnlocked === false &&
+      s0?.get(QUIZ_UNLOCK_IDS.qL1)?.lockReasonCode === "LESSON_NOT_COMPLETED",
+    s0?.get(QUIZ_UNLOCK_IDS.qL1)?.lockReasonCode ?? "n/a",
+  );
+
+  // s1: lesson 1 done → lesson-1 quiz unlocked, lesson-2 still locked.
+  const s1 = await elig(QUIZ_UNLOCK_STUDENT_EMAILS.s1);
+  check(
+    "Unlock: lesson-1 quiz UNLOCKED after lesson 1 completed",
+    s1?.get(QUIZ_UNLOCK_IDS.qL1)?.isUnlocked === true,
+  );
+  check(
+    "Unlock: lesson-2 quiz LOCKED until lesson 2 completed",
+    s1?.get(QUIZ_UNLOCK_IDS.qL2)?.isUnlocked === false,
+    s1?.get(QUIZ_UNLOCK_IDS.qL2)?.lockReasonCode ?? "n/a",
+  );
+
+  // s2: lessons 1-2 done + quiz 1 passed → lesson-2 quiz unlocked, chapter locked.
+  const s2 = await elig(QUIZ_UNLOCK_STUDENT_EMAILS.s2);
+  check(
+    "Unlock: lesson-2 quiz UNLOCKED after lesson 2 + quiz 1 completed",
+    s2?.get(QUIZ_UNLOCK_IDS.qL2)?.isUnlocked === true,
+  );
+  check(
+    "Unlock: chapter quiz LOCKED until all lessons completed",
+    s2?.get(QUIZ_UNLOCK_IDS.qCh)?.isUnlocked === false &&
+      s2?.get(QUIZ_UNLOCK_IDS.qCh)?.lockReasonCode === "CHAPTER_LESSONS_NOT_COMPLETED",
+    s2?.get(QUIZ_UNLOCK_IDS.qCh)?.lockReasonCode ?? "n/a",
+  );
+
+  // s3: all lessons done but quizzes not taken → chapter quiz locked on prev quiz.
+  const s3 = await elig(QUIZ_UNLOCK_STUDENT_EMAILS.s3);
+  check(
+    "Unlock: chapter quiz LOCKED when previous quiz incomplete",
+    s3?.get(QUIZ_UNLOCK_IDS.qCh)?.isUnlocked === false &&
+      s3?.get(QUIZ_UNLOCK_IDS.qCh)?.lockReasonCode === "PREVIOUS_QUIZ_NOT_COMPLETED",
+    s3?.get(QUIZ_UNLOCK_IDS.qCh)?.lockReasonCode ?? "n/a",
+  );
+
+  // s4: all lessons + quizzes 1-2 passed → chapter quiz unlocked.
+  const s4 = await elig(QUIZ_UNLOCK_STUDENT_EMAILS.s4);
+  check(
+    "Unlock: chapter quiz UNLOCKED after all lessons + previous quizzes",
+    s4?.get(QUIZ_UNLOCK_IDS.qCh)?.isUnlocked === true &&
+      s4?.get(QUIZ_UNLOCK_IDS.qCh)?.canTake === true,
+  );
 }
 
 main()

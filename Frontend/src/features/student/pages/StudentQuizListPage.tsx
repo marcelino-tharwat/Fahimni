@@ -15,6 +15,8 @@ import {
   AlertCircle,
   GraduationCap,
   Layers,
+  Lock,
+  Flag,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
 import { Badge } from '@/shared/components/ui';
@@ -92,21 +94,49 @@ function QuizRow({
   scopeMeta?: ReactNode;
 }) {
   const { t } = useTranslation();
-  const cfg = statusConfig[quiz.status];
+  // Backend-authoritative unlock signal. `isUnlocked === false` disables taking
+  // the quiz; undefined (legacy payloads) is treated as unlocked.
+  const locked = quiz.isUnlocked === false;
+  const cfg = locked
+    ? { bg: 'bg-gray-100', iconColor: 'text-gray-400', icon: Lock }
+    : statusConfig[quiz.status];
   const Icon = cfg.icon;
   const action = resolveQuizStudentAction(quiz);
+  const isChapterQuiz = quiz.quizScope === 'CHAPTER';
+  // Lock reason is rendered through i18n (keyed by the backend lockReasonCode),
+  // with the backend-provided message as a fallback.
+  const lockText = quiz.lockReasonCode
+    ? t(`quiz:quiz.lockReasons.${quiz.lockReasonCode}`, {
+        defaultValue: quiz.lockReason ?? '',
+      })
+    : (quiz.lockReason ?? '');
+
+  // Availability badge label + tone.
+  const availability = locked
+    ? { label: t('quiz:quiz.availability.locked'), variant: 'default' as const }
+    : quiz.status === 'passed'
+      ? { label: t('quiz:quiz.availability.completed'), variant: 'success' as const }
+      : quiz.retakeAllowed && quiz.status === 'failed'
+        ? { label: t('quiz:quiz.availability.retakeAvailable'), variant: 'warning' as const }
+        : { label: t('quiz:quiz.availability.available'), variant: 'info' as const };
 
   return (
-    <div className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-gray-50">
+    <div className={cn('flex items-center gap-4 px-5 py-4 transition-colors', !locked && 'hover:bg-gray-50', locked && 'opacity-80')}>
       <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-lg', cfg.bg)}>
         <Icon size={20} className={cfg.iconColor} />
       </div>
 
       <div className="min-w-0 flex-1">
         <p className="truncate font-cairo text-body font-semibold text-navy-800">{quiz.title}</p>
-        {scopeMeta && (
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">{scopeMeta}</div>
-        )}
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+          {isChapterQuiz && (
+            <span className="inline-flex items-center gap-1 rounded-badge bg-purple-50 px-2.5 py-0.5 font-cairo text-caption font-medium text-purple-700">
+              <Flag size={12} />
+              {t('quiz:quiz.chapterQuiz')}
+            </span>
+          )}
+          {scopeMeta}
+        </div>
         <div className="mt-1 flex flex-wrap items-center gap-3 font-cairo text-caption text-gray-600">
           <span className="inline-flex items-center gap-1">
             <FileText size={12} />
@@ -147,6 +177,7 @@ function QuizRow({
         <Badge variant={difficultyVariant[quiz.difficulty]}>
           {t(`quiz:difficulty.${quiz.difficulty}`)}
         </Badge>
+        <Badge variant={availability.variant}>{availability.label}</Badge>
         <Badge
           variant={
             quiz.status === 'new'
@@ -165,44 +196,66 @@ function QuizRow({
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-1.5">
-        {action === 'start' && (
-          <button
-            type="button"
-            onClick={() => onStart(quiz.id)}
-            className="inline-flex items-center gap-1.5 rounded-btn bg-cyan-gradient px-4 py-2 font-cairo text-small font-bold text-white shadow-glow transition-opacity hover:opacity-90"
-          >
-            <Play size={14} />
-            {t('quiz:quiz.action.start')}
-          </button>
-        )}
-        {action === 'resume' && (
-          <button
-            type="button"
-            onClick={() => onStart(quiz.id)}
-            className="inline-flex items-center gap-1.5 rounded-btn bg-cyan-gradient px-4 py-2 font-cairo text-small font-bold text-white shadow-glow transition-opacity hover:opacity-90"
-          >
-            <Play size={14} />
-            {t('quiz:quiz.action.continue')}
-          </button>
-        )}
-        {action === 'viewResult' && quiz.attemptId && (
-          <button
-            type="button"
-            onClick={() => onViewResult(quiz.id, quiz.attemptId!)}
-            className="inline-flex items-center gap-1.5 rounded-btn border-2 border-cyan-500 px-4 py-2 font-cairo text-small font-bold text-cyan-500 transition-colors hover:bg-cyan-50"
-          >
-            <Eye size={14} />
-            {t('quiz:quiz.action.viewResult')}
-          </button>
-        )}
-        {quiz.retakeAllowed && quiz.status === 'failed' && (
-          <button
-            type="button"
-            onClick={() => onStart(quiz.id)}
-            className="font-cairo text-small font-medium text-cyan-500 transition-opacity hover:opacity-70"
-          >
-            {t('quiz:quiz.action.retake')}
-          </button>
+        {locked ? (
+          <>
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              title={lockText || undefined}
+              className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-btn bg-gray-200 px-4 py-2 font-cairo text-small font-bold text-gray-500"
+            >
+              <Lock size={14} />
+              {t('quiz:quiz.action.start')}
+            </button>
+            {lockText && (
+              <p className="max-w-45 text-end font-cairo text-caption text-gray-500">
+                {lockText}
+              </p>
+            )}
+          </>
+        ) : (
+          <>
+            {action === 'start' && (
+              <button
+                type="button"
+                onClick={() => onStart(quiz.id)}
+                className="inline-flex items-center gap-1.5 rounded-btn bg-cyan-gradient px-4 py-2 font-cairo text-small font-bold text-white shadow-glow transition-opacity hover:opacity-90"
+              >
+                <Play size={14} />
+                {t('quiz:quiz.action.start')}
+              </button>
+            )}
+            {action === 'resume' && (
+              <button
+                type="button"
+                onClick={() => onStart(quiz.id)}
+                className="inline-flex items-center gap-1.5 rounded-btn bg-cyan-gradient px-4 py-2 font-cairo text-small font-bold text-white shadow-glow transition-opacity hover:opacity-90"
+              >
+                <Play size={14} />
+                {t('quiz:quiz.action.continue')}
+              </button>
+            )}
+            {action === 'viewResult' && quiz.attemptId && (
+              <button
+                type="button"
+                onClick={() => onViewResult(quiz.id, quiz.attemptId!)}
+                className="inline-flex items-center gap-1.5 rounded-btn border-2 border-cyan-500 px-4 py-2 font-cairo text-small font-bold text-cyan-500 transition-colors hover:bg-cyan-50"
+              >
+                <Eye size={14} />
+                {t('quiz:quiz.action.viewResult')}
+              </button>
+            )}
+            {quiz.retakeAllowed && quiz.status === 'failed' && (
+              <button
+                type="button"
+                onClick={() => onStart(quiz.id)}
+                className="font-cairo text-small font-medium text-cyan-500 transition-opacity hover:opacity-70"
+              >
+                {t('quiz:quiz.action.retake')}
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

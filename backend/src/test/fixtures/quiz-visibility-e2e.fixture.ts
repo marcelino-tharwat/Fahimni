@@ -54,8 +54,9 @@ export async function seedQuizVisibilityE2EFixture(): Promise<QuizVisibilityE2EF
       password: pwHash,
       role: "OPERATION",
       status: "ACTIVE",
+      teacherApprovalState: "APPROVED",
     },
-    update: { password: pwHash, status: "ACTIVE" },
+    update: { password: pwHash, status: "ACTIVE", teacherApprovalState: "APPROVED" },
   });
 
   const teacher2 = await prisma.user.upsert({
@@ -67,8 +68,9 @@ export async function seedQuizVisibilityE2EFixture(): Promise<QuizVisibilityE2EF
       password: pwHash,
       role: "OPERATION",
       status: "ACTIVE",
+      teacherApprovalState: "APPROVED",
     },
-    update: { password: pwHash, status: "ACTIVE" },
+    update: { password: pwHash, status: "ACTIVE", teacherApprovalState: "APPROVED" },
   });
 
   const student1 = await prisma.user.upsert({

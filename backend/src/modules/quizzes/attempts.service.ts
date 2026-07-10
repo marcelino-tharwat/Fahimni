@@ -57,6 +57,10 @@ import {
   listStudentAccessibleChapters,
 } from "../progression/student-chapter-access.js";
 import { deriveQuizDisplayStatus } from "./quiz-attempt-display.js";
+import {
+  computeChapterQuizEligibility,
+  type QuizEligibility,
+} from "./student-quiz-eligibility.service.js";
 import { resolveStudentQuizSourceScopes } from "./quiz-scope.js";
 import type { QuizSourceScopeRow } from "./quiz-scope.js";
 import { Prisma } from "../../generated/prisma/client.js";
@@ -152,9 +156,29 @@ export class AttemptsService {
       quizzesByChapter.set(q.chapterId, list);
     }
 
+    // Compute unified eligibility (unlock / lock reason / ordering) per chapter.
+    // Every quiz stays VISIBLE in the list; eligibility only decides whether the
+    // student may take it. The attempt-start endpoint re-checks the same policy.
+    const eligibilityByChapter = new Map<
+      string,
+      Map<string, QuizEligibility>
+    >(
+      await Promise.all(
+        accessible.map(
+          async (ch) =>
+            [
+              ch.id,
+              await computeChapterQuizEligibility(studentId, ch.id, ch.price),
+            ] as const,
+        ),
+      ),
+    );
+
     const chapters = accessible.map((ch) => {
       const chapterQuizzes = quizzesByChapter.get(ch.id) ?? [];
+      const chapterEligibility = eligibilityByChapter.get(ch.id);
       const mapped = chapterQuizzes.map((q) => {
+        const elig = chapterEligibility?.get(q.id);
         const attempt = attemptByQuiz.get(q.id);
         const display = deriveQuizDisplayStatus(
           attempt
@@ -192,8 +216,30 @@ export class AttemptsService {
           ...(src?.stage ? { sourceStage: src.stage } : {}),
           ...(display.score !== undefined ? { score: display.score } : {}),
           ...(display.retakeAllowed !== undefined ? { retakeAllowed: display.retakeAllowed } : {}),
+          // Unified eligibility — quiz stays visible; these decide "canTake".
+          quizScope: elig?.quizScope ?? "CHAPTER",
+          isUnlocked: elig?.isUnlocked ?? true,
+          canTake: elig?.canTake ?? true,
+          lockReason: elig?.lockReason ?? null,
+          lockReasonCode: elig?.lockReasonCode ?? null,
+          lessonId: elig?.lessonId ?? null,
+          order: elig?.order ?? 0,
+          requiredLessonIds: elig?.requiredLessonIds ?? [],
+          completedLessonIds: elig?.completedLessonIds ?? [],
+          previousQuizId: elig?.previousQuizId ?? null,
+          previousQuizCompleted: elig?.previousQuizCompleted ?? true,
+          attemptState: elig?.attemptState ?? {
+            hasAttempt: attempt !== undefined,
+            latestStatus: attempt?.status ?? null,
+            canRetake: display.retakeAllowed ?? false,
+            bestScore: display.score ?? null,
+          },
         };
       });
+
+      // Deterministic progression order: lesson quizzes by lesson order, then
+      // the chapter-end quiz(zes) last.
+      mapped.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
 
       return {
         id: ch.id,
@@ -349,6 +395,34 @@ export class AttemptsService {
         "Complete the prerequisite lesson before starting this quiz",
         403,
         progressionStart.code ?? "QUIZ_PREREQUISITE_LESSON_INCOMPLETE",
+      );
+    }
+
+    // Unified unlock gate — the same policy the student list uses. This is the
+    // authoritative server-side check: a locked quiz cannot be started even by
+    // hitting this endpoint directly (frontend disabling is not enough).
+    // Runs AFTER the legacy progression gate so its specific
+    // QUIZ_PREREQUISITE_LESSON_INCOMPLETE code is preserved for gate quizzes.
+    const eligibilityMap = await computeChapterQuizEligibility(
+      studentId,
+      quiz.chapterId,
+      chapterPrice,
+    );
+    const eligibility = eligibilityMap.get(quizId);
+    if (eligibility && !eligibility.isUnlocked) {
+      logger.warn("quiz_access_check_denied", {
+        ...accessLog,
+        chapterId: quiz.chapterId,
+        safeReasonCode: "QUIZ_LOCKED",
+        lockReasonCode: eligibility.lockReasonCode,
+      });
+      throw new AppError(
+        eligibility.lockReason ?? "This quiz is locked",
+        403,
+        "QUIZ_LOCKED",
+        eligibility.lockReasonCode
+          ? { lockReasonCode: eligibility.lockReasonCode }
+          : undefined,
       );
     }
 
