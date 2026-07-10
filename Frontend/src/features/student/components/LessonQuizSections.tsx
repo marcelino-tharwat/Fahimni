@@ -36,6 +36,15 @@ function QuizActionCard({
   const { t } = useTranslation();
   const meta = toQuizItemMeta(quiz);
   const action = resolveQuizStudentAction(meta);
+  // Same backend-authoritative unlock signal used by the My Quizzes list, so the
+  // lesson-page card and the My Quizzes card behave identically.
+  const locked = quiz.isUnlocked === false;
+  // Lock reason via i18n (keyed by lockReasonCode), backend message as fallback.
+  const lockText = quiz.lockReasonCode
+    ? t(`quiz:quiz.lockReasons.${quiz.lockReasonCode}`, {
+        defaultValue: quiz.lockReason ?? '',
+      })
+    : (quiz.lockReason ?? '');
 
   const subtitle =
     action === 'retake'
@@ -71,19 +80,28 @@ function QuizActionCard({
             {t(`quiz:quiz.status.${meta.status}`, { score: meta.score ?? 0 })}
           </Badge>
         ) : null}
+        {locked && lockText && (
+          <span className="font-cairo text-xs text-gray-500">{lockText}</span>
+        )}
       </div>
-      <Button
-        variant={action === 'viewResult' ? 'outline' : 'primary'}
-        onClick={() => onNavigate(quiz.id, action, quiz.attemptId)}
-      >
-        {action === 'retake'
-          ? t('quiz:quiz.action.retake')
-          : action === 'viewResult'
-            ? t('quiz:quiz.action.viewResult')
-            : action === 'resume'
-              ? t('quiz:quiz.action.continue')
-              : t('student:takeQuiz')}
-      </Button>
+      {locked ? (
+        <Button variant="secondary" disabled title={lockText || undefined}>
+          {t('quiz:quiz.availability.locked')}
+        </Button>
+      ) : (
+        <Button
+          variant={action === 'viewResult' ? 'outline' : 'primary'}
+          onClick={() => onNavigate(quiz.id, action, quiz.attemptId)}
+        >
+          {action === 'retake'
+            ? t('quiz:quiz.action.retake')
+            : action === 'viewResult'
+              ? t('quiz:quiz.action.viewResult')
+              : action === 'resume'
+                ? t('quiz:quiz.action.continue')
+                : t('student:takeQuiz')}
+        </Button>
+      )}
     </Card>
   );
 }

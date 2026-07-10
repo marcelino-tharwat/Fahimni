@@ -28,6 +28,15 @@ export interface StudentQuizVisibilityDTO {
   displayStatus: QuizDisplayStatus;
   score?: number;
   retakeAllowed?: boolean;
+  // Unified eligibility (same policy as the My Quizzes list) so the lesson-page
+  // quiz card and the My Quizzes card share one source of truth.
+  quizScope?: "LESSON" | "CHAPTER";
+  isUnlocked?: boolean;
+  canTake?: boolean;
+  lockReason?: string | null;
+  lockReasonCode?: string | null;
+  previousQuizId?: string | null;
+  previousQuizCompleted?: boolean;
 }
 
 export interface LessonQuizzesSectionDTO {

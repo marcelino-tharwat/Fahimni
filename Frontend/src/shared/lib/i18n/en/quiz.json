@@ -86,6 +86,23 @@
       "viewResult": "View Result",
       "viewAnswers": "View Answers",
       "retake": "Retake"
+    },
+    "availability": {
+      "available": "Available",
+      "locked": "Locked",
+      "completed": "Completed",
+      "retakeAvailable": "Retake available"
+    },
+    "chapterQuiz": "Chapter final quiz",
+    "lockedAction": "Locked",
+    "lockReasons": {
+      "LESSON_NOT_COMPLETED": "Complete the lesson first",
+      "CHAPTER_LESSONS_NOT_COMPLETED": "Complete the chapter lessons first",
+      "PREVIOUS_QUIZ_NOT_COMPLETED": "Finish the previous quiz first",
+      "ENROLLMENT_REQUIRED": "You must enroll in this content first",
+      "QUIZ_NOT_PUBLISHED": "This quiz is not available yet",
+      "ATTEMPT_ALREADY_COMPLETED": "You have already completed this quiz",
+      "RETAKE_NOT_ALLOWED": "This attempt cannot be retaken"
     }
   },
   "results": {

@@ -1,6 +1,7 @@
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { deriveQuizDisplayStatus } from "./quiz-attempt-display.js";
+import { computeChapterQuizEligibility } from "./student-quiz-eligibility.service.js";
 import type {
   LessonQuizzesSectionDTO,
   StudentQuizVisibilityDTO,
@@ -221,6 +222,23 @@ export class QuizVisibilityService {
         .map((l) => [l.requiredQuizId, l.id]),
     );
 
+    // Unified eligibility for this chapter (same policy as My Quizzes). All
+    // quizzes here share one chapterId, so compute it once.
+    const chapterId = quizzes[0]?.chapterId ?? null;
+    let eligibility: Awaited<ReturnType<typeof computeChapterQuizEligibility>> | null =
+      null;
+    if (chapterId) {
+      const chapter = await prisma.chapter.findUnique({
+        where: { id: chapterId },
+        select: { price: true },
+      });
+      const price =
+        chapter?.price !== null && chapter?.price !== undefined
+          ? Number(chapter.price)
+          : null;
+      eligibility = await computeChapterQuizEligibility(studentId, chapterId, price);
+    }
+
     return quizzes.map((quiz) => {
       const linkedLessonIds = quiz.quizLessons.map((r) => r.lessonId);
       const gateLessonId = requiredForByQuiz.get(quiz.id) ?? null;
@@ -232,7 +250,7 @@ export class QuizVisibilityService {
             : null;
 
       const src = sourceScopes.get(quiz.id);
-      return buildVisibilityDto(quiz, attemptByQuiz.get(quiz.id), {
+      const dto = buildVisibilityDto(quiz, attemptByQuiz.get(quiz.id), {
         requiredForLessonId,
         linkedLessonIds,
         ...(src
@@ -244,6 +262,18 @@ export class QuizVisibilityService {
             }
           : {}),
       });
+
+      const elig = eligibility?.get(quiz.id);
+      if (elig) {
+        dto.quizScope = elig.quizScope;
+        dto.isUnlocked = elig.isUnlocked;
+        dto.canTake = elig.canTake;
+        dto.lockReason = elig.lockReason;
+        dto.lockReasonCode = elig.lockReasonCode;
+        dto.previousQuizId = elig.previousQuizId;
+        dto.previousQuizCompleted = elig.previousQuizCompleted;
+      }
+      return dto;
     });
   }
 

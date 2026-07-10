@@ -2,6 +2,35 @@ export type QuizStatus = 'new' | 'passed' | 'failed' | 'pending';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type QuizAttemptStatus = 'IN_PROGRESS' | 'COMPLETED' | 'GRADED' | 'NOT_STARTED';
 
+/** Quiz placement scope — a per-lesson quiz vs the chapter-end quiz. */
+export type QuizScope = 'LESSON' | 'CHAPTER';
+
+/** Backend lock reason codes (mirrors StudentQuizEligibility). */
+export type QuizLockReasonCode =
+  | 'LESSON_NOT_COMPLETED'
+  | 'CHAPTER_LESSONS_NOT_COMPLETED'
+  | 'PREVIOUS_QUIZ_NOT_COMPLETED'
+  | 'ENROLLMENT_REQUIRED'
+  | 'QUIZ_NOT_PUBLISHED'
+  | 'ATTEMPT_ALREADY_COMPLETED'
+  | 'RETAKE_NOT_ALLOWED';
+
+/**
+ * Unified eligibility fields the backend attaches to every student-facing quiz.
+ * Optional so legacy payloads / tests without them are treated as unlocked.
+ */
+export interface QuizEligibilityFields {
+  quizScope?: QuizScope;
+  isUnlocked?: boolean;
+  canTake?: boolean;
+  lockReason?: string | null;
+  lockReasonCode?: QuizLockReasonCode | null;
+  lessonId?: string | null;
+  order?: number;
+  previousQuizId?: string | null;
+  previousQuizCompleted?: boolean;
+}
+
 /**
  * Source scope classifies how many chapters/stages the quiz was generated from.
  * Resolved server-side (never trusted from the client). Legacy quizzes default
@@ -17,7 +46,7 @@ export interface QuizSourceRef {
 }
 
 /** Mirrors backend StudentQuizVisibilityDTO (lesson/chapter quiz surfaces). */
-export interface StudentQuizVisibility {
+export interface StudentQuizVisibility extends QuizEligibilityFields {
   id: string;
   title: string;
   description: string | null;
@@ -41,7 +70,7 @@ export interface LessonQuizzesSection {
   required: StudentQuizVisibility | null;
 }
 
-export interface QuizItem {
+export interface QuizItem extends QuizEligibilityFields {
   id: string;
   title: string;
   questionCount: number;
