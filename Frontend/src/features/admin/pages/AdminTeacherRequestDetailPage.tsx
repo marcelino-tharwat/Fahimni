@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -15,6 +15,8 @@ import {
 import { adminTeacherRequestsApi } from '@/features/admin/api/adminTeacherRequests';
 import { statusVariant } from './AdminTeacherRequestsPage';
 import type { AccountProvisioning } from '@/features/admin/types/teacherRequests';
+
+type RejectionMode = 'EDIT_ALLOWED' | 'FINAL_REJECTION';
 
 const provisioningTone: Record<AccountProvisioning, 'success' | 'warning' | 'danger'> = {
   CREATED_PENDING_PASSWORD_RESET: 'success',
@@ -37,8 +39,11 @@ export function AdminTeacherRequestDetailPage() {
   const [createAccount, setCreateAccount] = useState(true);
   const [approveNotes, setApproveNotes] = useState('');
   const [rejectNotes, setRejectNotes] = useState('');
+  const [rejectionMode, setRejectionMode] = useState<RejectionMode>('EDIT_ALLOWED');
   const [provisioning, setProvisioning] = useState<AccountProvisioning | null>(null);
   const [docState, setDocState] = useState<Record<number, 'loading' | 'unavailable'>>({});
+
+  const rejectTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const backLink = (
     <Link to="/admin/teacher-requests" className="inline-flex items-center gap-1.5 font-cairo text-sm font-medium text-accent hover:underline">
@@ -76,9 +81,9 @@ export function AdminTeacherRequestDetailPage() {
   };
 
   const handleReject = () => {
-    if (!rejectNotes.trim()) return;
+    if (!rejectNotes.trim() || !rejectionMode) return;
     reject.mutate(
-      { adminNotes: rejectNotes.trim() },
+      { adminNotes: rejectNotes.trim(), rejectionMode },
       {
         onSuccess: () => {
           setRejectOpen(false);
@@ -247,12 +252,48 @@ export function AdminTeacherRequestDetailPage() {
       </Modal>
 
       {/* Reject modal */}
-      <Modal isOpen={rejectOpen} onClose={() => setRejectOpen(false)} title={t('adminTeacherRequests.detail.rejectTitle', 'رفض طلب المدرس')}>
+      <Modal isOpen={rejectOpen} onClose={() => setRejectOpen(false)} title={t('adminTeacherRequests.detail.rejectTitle', 'رفض طلب المدرس')} initialFocusRef={rejectTextareaRef}>
         <div className="flex flex-col gap-3">
-          <label className="font-cairo text-sm text-text-primary">
+          {/* Rejection mode selector */}
+          <div className="flex flex-col gap-2">
+            <label className="font-cairo text-sm font-semibold text-text-primary">
+              {t('adminTeacherRequests.detail.rejectionMode', 'نوع الرفض')}
+            </label>
+            <label className="flex items-center gap-2 rounded-btn border border-border bg-surface p-3 font-cairo text-sm text-text-primary hover:bg-gray-50 has-[:checked]:border-accent has-[:checked]:bg-accent/5">
+              <input
+                type="radio"
+                name="rejectionMode"
+                value="EDIT_ALLOWED"
+                checked={rejectionMode === 'EDIT_ALLOWED'}
+                onChange={() => setRejectionMode('EDIT_ALLOWED')}
+                className="h-4 w-4 text-accent"
+              />
+              <div className="flex flex-col">
+                <span className="font-medium">{t('adminTeacherRequests.detail.editAllowed', 'السماح بالتعديل وإعادة الإرسال')}</span>
+                <span className="text-xs text-text-muted">{t('adminTeacherRequests.detail.editAllowedHint', 'يمكن للمدرس تعديل البيانات وإعادة الإرسال')}</span>
+              </div>
+            </label>
+            <label className="flex items-center gap-2 rounded-btn border border-border bg-surface p-3 font-cairo text-sm text-text-primary hover:bg-gray-50 has-[:checked]:border-accent has-[:checked]:bg-accent/5">
+              <input
+                type="radio"
+                name="rejectionMode"
+                value="FINAL_REJECTION"
+                checked={rejectionMode === 'FINAL_REJECTION'}
+                onChange={() => setRejectionMode('FINAL_REJECTION')}
+                className="h-4 w-4 text-accent"
+              />
+              <div className="flex flex-col">
+                <span className="font-medium">{t('adminTeacherRequests.detail.finalRejection', 'رفض نهائي')}</span>
+                <span className="text-xs text-text-muted">{t('adminTeacherRequests.detail.finalRejectionHint', 'لا يمكن للمدرس إعادة التقديم')}</span>
+              </div>
+            </label>
+          </div>
+
+          <label className="font-cairo text-sm font-semibold text-text-primary">
             {t('adminTeacherRequests.detail.rejectNotesLabel', 'سبب الرفض (مطلوب)')}
           </label>
           <textarea
+            ref={rejectTextareaRef}
             value={rejectNotes}
             onChange={(e) => setRejectNotes(e.target.value)}
             aria-label={t('adminTeacherRequests.detail.rejectNotesLabel', 'سبب الرفض (مطلوب)')}
@@ -286,7 +327,6 @@ const docIcon: Record<DocumentPreviewType, typeof FileText> = {
   OTHER: File,
 };
 
-/** Human-readable file size (no locale-specific separators to keep tests stable). */
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;

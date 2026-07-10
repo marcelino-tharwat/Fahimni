@@ -51,3 +51,15 @@ export const updateTeacherProfileSchema = z
 export type UpdateTeacherProfileInput = z.infer<
   typeof updateTeacherProfileSchema
 >;
+
+export const resubmitRequestSchema = z.object({
+  fullName: z.string().trim().min(3).max(100).optional(),
+  mobile: z
+    .string()
+    .trim()
+    .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "Mobile must be a valid Egyptian number")
+    .optional(),
+  subject: z.string().trim().optional(),
+  bio: z.string().trim().max(500).optional(),
+});
+export type ResubmitRequestInput = z.infer<typeof resubmitRequestSchema>;

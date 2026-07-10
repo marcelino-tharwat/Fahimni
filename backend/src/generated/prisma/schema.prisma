@@ -596,6 +596,11 @@ enum TeacherRequestStatus {
   REJECTED
 }
 
+enum RejectionMode {
+  EDIT_ALLOWED
+  FINAL_REJECTION
+}
+
 /// Teacher account lifecycle, orthogonal to User.status. NONE for non-teachers
 /// and legacy rows. Teachers created via unified registration start
 /// PENDING_REVIEW; admin approval sets APPROVED, rejection sets REJECTED.
@@ -619,6 +624,8 @@ model TeacherRegistrationRequest {
   /// JSON array of {originalName, mimeType, size, path}
   proofDocuments  Json                 @default("[]")
   adminNotes      String?
+  /// EDIT_ALLOWED | FINAL_REJECTION — only set when status = REJECTED
+  rejectionMode   RejectionMode?
   reviewedById    String?
   reviewedAt      DateTime?
   // Optional link to the pending OPERATION user created at unified registration.

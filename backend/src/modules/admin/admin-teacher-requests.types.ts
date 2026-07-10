@@ -1,5 +1,7 @@
 export type TeacherRequestStatus = "PENDING" | "APPROVED" | "REJECTED";
 
+export type RejectionMode = "EDIT_ALLOWED" | "FINAL_REJECTION";
+
 export interface ReviewerRef {
   id: string;
   fullName: string;
@@ -100,4 +102,5 @@ export interface ApproveResponse {
 
 export interface RejectResponse {
   request: AdminTeacherRequestListItem;
+  rejectionMode: RejectionMode | null;
 }

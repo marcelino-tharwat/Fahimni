@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
@@ -9,6 +9,7 @@ interface ModalProps {
   title?: string;
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg';
+  initialFocusRef?: RefObject<HTMLElement | null>;
 }
 
 const sizeClasses: Record<NonNullable<ModalProps['size']>, string> = {
@@ -20,7 +21,7 @@ const sizeClasses: Record<NonNullable<ModalProps['size']>, string> = {
 const FOCUSABLE =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, size = 'md', initialFocusRef }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
   // Kept up to date every render without being a dependency of the effect
@@ -48,7 +49,13 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         (el) => !el.hasAttribute('disabled'),
       );
 
-    (focusable()[0] ?? dialogRef.current)?.focus();
+    // If the caller provided an initialFocusRef, focus that element.
+    // Otherwise focus the first focusable element (close button).
+    if (initialFocusRef?.current) {
+      initialFocusRef.current.focus();
+    } else {
+      (focusable()[0] ?? dialogRef.current)?.focus();
+    }
 
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {

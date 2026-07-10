@@ -34,7 +34,7 @@ export function useApproveTeacherRequest(requestId: string) {
 export function useRejectTeacherRequest(requestId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: { adminNotes: string }) => adminTeacherRequestsApi.reject(requestId, body),
+    mutationFn: (body: { adminNotes: string; rejectionMode: 'EDIT_ALLOWED' | 'FINAL_REJECTION' }) => adminTeacherRequestsApi.reject(requestId, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: KEY });
     },

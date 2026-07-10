@@ -172,7 +172,41 @@ describe('AdminTeacherRequestDetailPage', () => {
     fireEvent.change(within(dialog).getByLabelText('adminTeacherRequests.detail.rejectNotesLabel'), { target: { value: 'not enough proof' } });
     expect(confirm).not.toBeDisabled();
     fireEvent.click(confirm);
-    expect(rejectMutate).toHaveBeenCalledWith({ adminNotes: 'not enough proof' }, expect.any(Object));
+    expect(rejectMutate).toHaveBeenCalledWith({ adminNotes: 'not enough proof', rejectionMode: 'EDIT_ALLOWED' }, expect.any(Object));
+  });
+
+  it('reject modal textarea is the initially focused element', async () => {
+    renderDetail();
+    fireEvent.click(screen.getByText('adminTeacherRequests.detail.reject'));
+    await waitFor(() => {
+      const textarea = screen.getByLabelText('adminTeacherRequests.detail.rejectNotesLabel');
+      expect(textarea).toHaveFocus();
+    });
+  });
+
+  it('reject modal focus stays in textarea while typing', async () => {
+    renderDetail();
+    fireEvent.click(screen.getByText('adminTeacherRequests.detail.reject'));
+    const textarea = await screen.findByLabelText('adminTeacherRequests.detail.rejectNotesLabel');
+    // Focus the textarea explicitly for the test typing
+    textarea.focus();
+    expect(textarea).toHaveFocus();
+
+    for (const char of ['a', 'b', 'c']) {
+      fireEvent.change(textarea, { target: { value: (textarea as HTMLTextAreaElement).value + char } });
+      expect(textarea).toHaveFocus();
+    }
+  });
+
+  it('reject modal close button never steals focus while typing', () => {
+    renderDetail();
+    fireEvent.click(screen.getByText('adminTeacherRequests.detail.reject'));
+    const textarea = screen.getByLabelText('adminTeacherRequests.detail.rejectNotesLabel');
+    textarea.focus();
+    // Simulate typing the first character (which triggers parent re-render via setRejectNotes)
+    fireEvent.change(textarea, { target: { value: 'a' } });
+    // After re-render the textarea must still have focus
+    expect(textarea).toHaveFocus();
   });
 
   it('8a. document open triggers the signed-url flow', async () => {

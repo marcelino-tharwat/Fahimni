@@ -311,6 +311,22 @@ async function main(): Promise<void> {
     check("Failed-payment teacher exists", false, "missing");
   }
 
+  // 20e2. Rejected editable linked request has EDIT_ALLOWED and canEditAndResubmit = true.
+  const editableReq = await prisma.teacherRegistrationRequest.findFirst({
+    where: { publicReference: DEMO_REF_PREFIX + "REQ_009" },
+    select: { rejectionMode: true, adminNotes: true, status: true },
+  });
+  check("REQ_009 exists and is REJECTED", editableReq?.status === "REJECTED", editableReq?.status ?? "missing");
+  check("REQ_009 has EDIT_ALLOWED rejectionMode", editableReq?.rejectionMode === "EDIT_ALLOWED", editableReq?.rejectionMode ?? "null");
+  check("REQ_009 has rejection reason (adminNotes)", !!editableReq?.adminNotes, editableReq?.adminNotes?.slice(0, 30) ?? "empty");
+
+  // 20e3. Rejected final linked request has FINAL_REJECTION.
+  const finalReq = await prisma.teacherRegistrationRequest.findFirst({
+    where: { publicReference: DEMO_REF_PREFIX + "REQ_005" },
+    select: { rejectionMode: true, status: true },
+  });
+  check("REQ_005 (final rejection) has FINAL_REJECTION", finalReq?.rejectionMode === "FINAL_REJECTION", finalReq?.rejectionMode ?? "null");
+
   // 20f. A linked request carries a multi-document proof set with at least one PDF,
   //      one image, and one document missing a storage path (renders UNAVAILABLE).
   const multiDocReq = await prisma.teacherRegistrationRequest.findFirst({

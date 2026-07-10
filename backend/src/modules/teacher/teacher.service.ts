@@ -3,10 +3,11 @@ import { Prisma } from "../../generated/prisma/client.js";
 import { userPublicFields } from "../users/user.types.js";
 import { teacherPublicFields } from "./teacher.types.js";
 import type { TeacherProfileResponseDTO } from "./teacher.types.js";
-import type { UpdateTeacherProfileInput } from "./teacher.validation.js";
+import type { UpdateTeacherProfileInput, ResubmitRequestInput } from "./teacher.validation.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { UploadService } from "../../shared/upload.service.js";
 import { teacherPlanEntitlementService } from "../teacher-plans/teacher-plan-entitlement.service.js";
+import { auditLogService } from "../../shared/services/auditLog.service.js";
 
 type TeacherProfileUpdateData = {
   subject?: string | null;
@@ -27,6 +28,9 @@ export interface ReviewStatusResponse {
     status: string;
     submittedAt: string | null;
     reviewedAt: string | null;
+    rejectionReason: string | null;
+    rejectionMode: "EDIT_ALLOWED" | "FINAL_REJECTION" | null;
+    canEditAndResubmit: boolean;
   } | null;
   message: string;
 }
@@ -48,7 +52,7 @@ export class TeacherService {
     const entitlement = await teacherPlanEntitlementService.resolve(userId);
 
     // Find the most recent linked registration request (safe data only — no
-    // admin notes, no proof document paths, no reviewedBy details).
+    // proof document paths, no reviewedBy details, no admin private data).
     const request = await prisma.teacherRegistrationRequest.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
@@ -57,6 +61,8 @@ export class TeacherService {
         status: true,
         createdAt: true,
         reviewedAt: true,
+        adminNotes: true,
+        rejectionMode: true,
       },
     });
 
@@ -73,6 +79,9 @@ export class TeacherService {
         "مرحبًا بك. يرجى إكمال طلب التسجيل كمدرس.",
     };
 
+    const rmStr = request?.rejectionMode ? (request.rejectionMode as unknown as string) : null;
+    const isEditAllowed = rmStr === "EDIT_ALLOWED";
+
     return {
       teacherApprovalState: state,
       accessState: entitlement.accessState as ReviewStatusResponse["accessState"],
@@ -83,10 +92,80 @@ export class TeacherService {
             status: request.status,
             submittedAt: request.createdAt.toISOString(),
             reviewedAt: request.reviewedAt?.toISOString() ?? null,
+            rejectionReason: request.adminNotes ?? null,
+            rejectionMode: (rmStr === "EDIT_ALLOWED" ? "EDIT_ALLOWED" : rmStr === "FINAL_REJECTION" ? "FINAL_REJECTION" : null) as "EDIT_ALLOWED" | "FINAL_REJECTION" | null,
+            canEditAndResubmit: request.status === "REJECTED" && isEditAllowed,
           }
         : null,
       message: (messages[state] ?? messages.NONE) as string,
     };
+  }
+
+  public async resubmitRequest(userId: string, input: ResubmitRequestInput): Promise<{ publicReference: string; status: string }> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, role: true, teacherApprovalState: true },
+    });
+    if (!user || user.role !== "OPERATION") {
+      throw new AppError("Not authorized", 403);
+    }
+
+    const request = await prisma.teacherRegistrationRequest.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        publicReference: true,
+        status: true,
+        rejectionMode: true,
+      },
+    });
+
+    if (!request) {
+      throw new AppError("No registration request found", 404);
+    }
+    if (request.status !== "REJECTED" || request.rejectionMode !== "EDIT_ALLOWED") {
+      throw new AppError("هذا الطلب مرفوض رفضًا نهائيًا ولا يمكن إعادة التقديم", 403, "REQUEST_REJECTION_FINAL");
+    }
+
+    const updated = await prisma.$transaction(async (tx) => {
+      const req = await tx.teacherRegistrationRequest.update({
+        where: { id: request.id },
+        data: {
+          status: "PENDING",
+          reviewedById: null,
+          reviewedAt: null,
+          adminNotes: null,
+          rejectionMode: null,
+          ...(input.fullName ? { fullName: input.fullName } : {}),
+          ...(input.mobile ? { mobile: input.mobile } : {}),
+          ...(input.subject ? { subject: input.subject } : {}),
+          ...(input.bio ? { bio: input.bio } : {}),
+        },
+        select: { publicReference: true, status: true },
+      });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { teacherApprovalState: "PENDING_REVIEW" },
+      });
+
+      await auditLogService.record(
+        {
+          action: "TEACHER_REQUEST_RESUBMITTED",
+          resourceType: "TeacherRegistrationRequest",
+          resourceId: request.id,
+          actorId: userId,
+          actorType: "TEACHER",
+          details: { publicReference: req.publicReference },
+        },
+        tx,
+      );
+
+      return req;
+    });
+
+    return { publicReference: updated.publicReference, status: updated.status };
   }
 
   public async getProfile(userId: string): Promise<TeacherProfileResponseDTO> {

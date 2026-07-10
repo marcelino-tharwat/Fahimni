@@ -428,6 +428,7 @@ exports.Prisma.TeacherRegistrationRequestScalarFieldEnum = {
   status: 'status',
   proofDocuments: 'proofDocuments',
   adminNotes: 'adminNotes',
+  rejectionMode: 'rejectionMode',
   reviewedById: 'reviewedById',
   reviewedAt: 'reviewedAt',
   userId: 'userId',
@@ -668,6 +669,11 @@ exports.TeacherRequestStatus = exports.$Enums.TeacherRequestStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED'
+};
+
+exports.RejectionMode = exports.$Enums.RejectionMode = {
+  EDIT_ALLOWED: 'EDIT_ALLOWED',
+  FINAL_REJECTION: 'FINAL_REJECTION'
 };
 
 exports.AiMessageRole = exports.$Enums.AiMessageRole = {

@@ -18,5 +18,6 @@ export type ApproveRequestInput = z.infer<typeof approveRequestSchema>;
 
 export const rejectRequestSchema = z.object({
   adminNotes: z.string().trim().min(1, "Admin notes are required to reject a request").max(2000),
+  rejectionMode: z.enum(["EDIT_ALLOWED", "FINAL_REJECTION"]),
 });
 export type RejectRequestInput = z.infer<typeof rejectRequestSchema>;

@@ -370,6 +370,7 @@ CHAPTERS.forEach((ch, ci) => {
 const LIFECYCLE_TEACHER_IDS = [
   sid("teacher-pending"),
   sid("teacher-rejected-user"),
+  sid("teacher-rejected-editable"),
   sid("teacher-pending-payment"),
   sid("teacher-failed-payment"),
   sid("teacher-clean"),
@@ -377,6 +378,7 @@ const LIFECYCLE_TEACHER_IDS = [
 const LIFECYCLE_TEACHER_EMAILS = [
   "teacher.pending" + DEMO_EMAIL_DOMAIN,
   "teacher.rejected.user" + DEMO_EMAIL_DOMAIN,
+  "teacher.rejected.editable" + DEMO_EMAIL_DOMAIN,
   "teacher.pending.payment" + DEMO_EMAIL_DOMAIN,
   "teacher.failed.payment" + DEMO_EMAIL_DOMAIN,
   "teacher.clean" + DEMO_EMAIL_DOMAIN,
@@ -425,26 +427,41 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
     if (ids.length === 0) return;
 
     await tx.quizAttempt.deleteMany({ where: { studentId: { in: ids } } });
-    await tx.lessonProgress.deleteMany({ where: { studentId: { in: ids } } });
-    await tx.enrollment.deleteMany({ where: { studentId: { in: ids } } });
-    await tx.paymentTransaction.deleteMany({
-      where: { studentId: { in: ids } },
-    });
-    await tx.aiTutorUsage.deleteMany({ where: { studentId: { in: ids } } });
 
-    const ownedLessons = await tx.lesson.findMany({
+    // Delete lesson progress for ALL lessons owned by the seed teachers (not just
+    // progress owned by seed students — e2e tests may create progress for non-seed
+    // students against seed-owned lessons, which would block lesson deletion below).
+    const ownedLessonIds = await tx.lesson.findMany({
       where: { chapter: { stage: { teacherId: { in: ids } } } },
       select: { id: true },
     });
-    const lessonIds = ownedLessons.map((l) => l.id);
+    const olIds = ownedLessonIds.map((l) => l.id);
+    if (olIds.length > 0) {
+      await tx.lessonProgress.deleteMany({ where: { lessonId: { in: olIds } } });
+      await tx.lessonMaterialDownload.deleteMany({ where: { materialId: { in: olIds } } });
+      await tx.lessonMaterial.deleteMany({ where: { lessonId: { in: olIds } } });
+    }
+
+    await tx.enrollment.deleteMany({ where: { studentId: { in: ids } } });
+
+    // Also delete enrollments for chapters owned by seed teachers (e2e tests may
+    // create enrollments for non-seed students on seed-owned chapters).
+    const stageIds = STAGES.map((s) => s.id);
+    const chapterIds = CHAPTERS.map((c) => c.id);
+    await tx.enrollment.deleteMany({ where: { chapterId: { in: chapterIds } } });
+    await tx.paymentTransaction.deleteMany({
+      where: {
+        OR: [
+          { studentId: { in: ids } },
+          { chapterId: { in: chapterIds } },
+        ],
+      },
+    });
+    await tx.aiTutorUsage.deleteMany({ where: { studentId: { in: ids } } });
+
+    const lessonIds = olIds;
     if (lessonIds.length > 0) {
       await tx.$executeRaw`DELETE FROM content_chunks WHERE "lessonId" = ANY(${lessonIds}::text[])`;
-      await tx.lessonMaterialDownload.deleteMany({
-        where: { materialId: { in: lessonIds } },
-      });
-      await tx.lessonMaterial.deleteMany({
-        where: { lessonId: { in: lessonIds } },
-      });
     }
 
     await tx.quizLesson.deleteMany({
@@ -490,18 +507,17 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
       },
     });
 
-    const stageIds = STAGES.map((s) => s.id);
-    await tx.paymentTransaction.deleteMany({
-      where: { chapter: { stageId: { in: stageIds } } },
-    });
-
     await tx.lesson.deleteMany({
       where: { chapter: { stage: { teacherId: { in: ids } } } },
     });
     await tx.chapter.deleteMany({
       where: { stage: { teacherId: { in: ids } } },
     });
-    await tx.studentProfile.deleteMany({ where: { userId: { in: ids } } });
+    // Also delete student profiles referencing seed stages (e2e may create profiles
+    // for non-seed students referencing our stages, blocking stage deletion).
+    await tx.studentProfile.deleteMany({
+      where: { OR: [{ userId: { in: ids } }, { stageId: { in: stageIds } }] },
+    });
     await tx.stage.deleteMany({ where: { teacherId: { in: ids } } });
     await tx.teacherProfile.deleteMany({ where: { userId: { in: ids } } });
 
@@ -660,6 +676,17 @@ async function seedAll(): Promise<void> {
           mobile: "01000000050",
           subject: "اللغة الإنجليزية",
           bio: "طلب مرفوض من الإدارة.",
+          state: "REJECTED" as const,
+          status: "INACTIVE" as const,
+        },
+        {
+          id: sid("teacher-rejected-editable"),
+          profileId: sid("profile-rejected-editable"),
+          email: "teacher.rejected.editable" + DEMO_EMAIL_DOMAIN,
+          fullName: "أ. ندى المدرّسة المرفوضة القابلة للتعديل",
+          mobile: "01000000055",
+          subject: "العلوم",
+          bio: "طلب مرفوض مع إمكانية التعديل.",
           state: "REJECTED" as const,
           status: "INACTIVE" as const,
         },
@@ -1184,7 +1211,7 @@ async function seedAll(): Promise<void> {
 
       await tx.teacherRegistrationRequest.upsert({
         where: { publicReference: DEMO_REF_PREFIX + "REQ_003" },
-        update: { status: "REJECTED" },
+        update: { status: "REJECTED", rejectionMode: "FINAL_REJECTION" },
         create: {
           id: sid("req-rejected"),
           publicReference: DEMO_REF_PREFIX + "REQ_003",
@@ -1199,6 +1226,7 @@ async function seedAll(): Promise<void> {
           reviewedAt: daysAgo(10),
           adminNotes:
             "المستندات المقدمة غير مكتملة. يُرجى إعادة التقديم بعد استكمال الأوراق.",
+          rejectionMode: "FINAL_REJECTION",
         },
       });
 
@@ -1270,6 +1298,7 @@ async function seedAll(): Promise<void> {
           reviewedById: ADMIN.id,
           reviewedAt: daysAgo(5),
           adminNotes: "لم تُستوفَ متطلبات المراجعة.",
+          rejectionMode: "FINAL_REJECTION",
           userId: sid("teacher-rejected-user"),
         },
       });
@@ -1337,6 +1366,28 @@ async function seedAll(): Promise<void> {
           reviewedById: ADMIN.id,
           reviewedAt: daysAgo(3),
           userId: sid("teacher-failed-payment"),
+        },
+      });
+
+      // REQ_009 — rejected linked request with EDIT_ALLOWED policy (teacher can resubmit).
+      await tx.teacherRegistrationRequest.upsert({
+        where: { publicReference: DEMO_REF_PREFIX + "REQ_009" },
+        update: { status: "REJECTED", userId: sid("teacher-rejected-editable") },
+        create: {
+          id: sid("req-rejected-editable-linked"),
+          publicReference: DEMO_REF_PREFIX + "REQ_009",
+          fullName: "أ. ندى المدرّسة المرفوضة القابلة للتعديل",
+          email: "teacher.rejected.editable" + DEMO_EMAIL_DOMAIN,
+          mobile: "01000000055",
+          subject: "العلوم",
+          bio: "طلب مرفوض مع إمكانية التعديل.",
+          status: "REJECTED",
+          proofDocuments: [],
+          reviewedById: ADMIN.id,
+          reviewedAt: daysAgo(3),
+          adminNotes: "يرجى تحديث المستندات وإعادة الإرسال.",
+          rejectionMode: "EDIT_ALLOWED",
+          userId: sid("teacher-rejected-editable"),
         },
       });
 

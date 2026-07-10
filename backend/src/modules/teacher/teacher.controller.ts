@@ -4,7 +4,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { TeacherService } from "./teacher.service.js";
 import type { TeacherProfileResponseDTO } from "./teacher.types.js";
-import type { UpdateTeacherProfileInput } from "./teacher.validation.js";
+import type { UpdateTeacherProfileInput, ResubmitRequestInput } from "./teacher.validation.js";
 
 const teacherService = new TeacherService();
 
@@ -13,6 +13,14 @@ export class TeacherController {
     async (req: Request, res: Response, _next: NextFunction) => {
       const status = await teacherService.getReviewStatus(req.user!.id);
       res.status(200).json(okResponse("Review status fetched successfully", status));
+    },
+  );
+
+  public resubmitRequest = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const input = (req.validated?.body ?? req.body) as ResubmitRequestInput;
+      const result = await teacherService.resubmitRequest(req.user!.id, input);
+      res.status(200).json(okResponse("تم إعادة إرسال الطلب بنجاح", result));
     },
   );
 
