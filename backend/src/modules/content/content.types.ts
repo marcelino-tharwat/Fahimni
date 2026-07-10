@@ -50,6 +50,12 @@ export interface ContentTreeResponse {
 
 export type EnrollmentStatus = "free" | "purchased" | "locked";
 
+export interface StudentTeacherNode {
+  id: string;
+  fullName: string;
+  subject: string | null;
+}
+
 export interface StudentChapterNode {
   id: string;
   name: string;
@@ -59,6 +65,7 @@ export interface StudentChapterNode {
   imageUrl: string | null;
   lessonCount: number;
   enrollmentStatus: EnrollmentStatus;
+  teacher: StudentTeacherNode;
 }
 
 export interface StudentContentTreeResponse {

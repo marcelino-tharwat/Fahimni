@@ -285,6 +285,16 @@ const CHAPTERS: ChapterDef[] = [
     teacherIdx: 0,
   },
   {
+    id: sid("ch-math-3"),
+    name: "ميكانيكا الرياضيات — معلم فيزيائي في مرحلة الرياضيات",
+    description:
+      "فصل إضافي من المعلم الفيزيائي في مرحلة الرياضيات — لإظهار محتوى متعدد المعلمين.",
+    sortOrder: 3,
+    stageId: STAGES[0]!.id,
+    price: null,
+    teacherIdx: 1,
+  },
+  {
     id: sid("ch-physics-1"),
     name: "الميكانيكا — الحركة والقوى",
     description: "قوانين نيوتن للحركة وتطبيقاتها.",

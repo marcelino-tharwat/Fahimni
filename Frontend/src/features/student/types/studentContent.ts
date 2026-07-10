@@ -41,8 +41,14 @@ export interface StudentChapterNode {
   sortOrder: number;
   /** null means the chapter is free (no price). */
   price: number | null;
+  imageUrl?: string | null;
   lessonCount: number;
   enrollmentStatus: EnrollmentStatus;
+  teacher?: {
+    id: string;
+    fullName: string;
+    subject?: string | null;
+  };
 }
 
 export interface StudentStageNode {
