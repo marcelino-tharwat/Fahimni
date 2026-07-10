@@ -8,10 +8,20 @@ import {
   AlertCircle,
   Landmark,
   Pencil,
+  Plus,
+  X,
 } from 'lucide-react';
 import { Card, Badge, Button } from '@/shared/components/ui';
-import { useTeacherWallet } from '@/features/teacher/hooks/useTeacherWallet';
+import { useAppDispatch } from '@/shared/store/hooks';
+import { addToast } from '@/shared/store/slices/toastSlice';
+import type { ApiError } from '@/shared/lib/api/client';
+import {
+  useTeacherWallet,
+  useTeacherWithdrawals,
+  useCancelWithdrawal,
+} from '@/features/teacher/hooks/useTeacherWallet';
 import { EditPayoutProfileModal } from '@/features/teacher/components/EditPayoutProfileModal';
+import { RequestWithdrawalModal } from '@/features/teacher/components/RequestWithdrawalModal';
 import type { WithdrawalStatus } from '@/features/teacher/types/wallet';
 
 const withdrawalStatusVariant: Record<
@@ -73,8 +83,28 @@ function WalletSkeleton() {
 
 export function TeacherWalletPage() {
   const { t } = useTranslation('teacher');
+  const dispatch = useAppDispatch();
   const { data, isLoading, isError, refetch } = useTeacherWallet();
+  const { data: withdrawals } = useTeacherWithdrawals();
+  const cancelWithdrawal = useCancelWithdrawal();
   const [editOpen, setEditOpen] = useState(false);
+  const [requestOpen, setRequestOpen] = useState(false);
+
+  const handleCancel = (withdrawalId: string) => {
+    cancelWithdrawal.mutate(withdrawalId, {
+      onSuccess: () => {
+        dispatch(addToast({ type: 'success', message: t('wallet.withdrawals.cancelled') }));
+      },
+      onError: (error) => {
+        dispatch(
+          addToast({
+            type: 'error',
+            message: (error as ApiError)?.message ?? t('wallet.withdrawals.cancelError'),
+          }),
+        );
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -138,11 +168,29 @@ export function TeacherWalletPage() {
         />
       </div>
 
+      {!data.payoutProfile.instaPayHandle && !data.payoutProfile.vodafoneCashNumber && (
+        <div
+          className="flex items-center gap-2 rounded-card border border-warning/30 bg-warning/10 p-3"
+          data-testid="no-payout-method-warning"
+        >
+          <AlertCircle size={18} className="shrink-0 text-warning" />
+          <p className="font-cairo text-sm text-warning">
+            {t('wallet.withdrawals.noPayoutMethodWarning')}
+          </p>
+        </div>
+      )}
+
       <Card>
-        <h2 className="mb-3 font-cairo text-base font-bold text-navy-900">
-          {t('wallet.withdrawals.title')}
-        </h2>
-        {data.latestWithdrawals.length === 0 ? (
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="font-cairo text-base font-bold text-navy-900">
+            {t('wallet.withdrawals.title')}
+          </h2>
+          <Button onClick={() => setRequestOpen(true)} data-testid="request-withdrawal-btn">
+            <Plus size={16} />
+            {t('wallet.withdrawals.requestButton')}
+          </Button>
+        </div>
+        {!withdrawals || withdrawals.length === 0 ? (
           <p className="py-6 text-center font-cairo text-sm text-text-muted" data-testid="withdrawals-empty">
             {t('wallet.withdrawals.empty')}
           </p>
@@ -160,11 +208,14 @@ export function TeacherWalletPage() {
                   <th className="px-3 py-2 text-start font-cairo text-xs font-semibold text-text-secondary">
                     {t('wallet.withdrawals.requestedAt')}
                   </th>
+                  <th className="px-3 py-2 text-start font-cairo text-xs font-semibold text-text-secondary">
+                    {t('wallet.withdrawals.actions')}
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {data.latestWithdrawals.map((w) => (
-                  <tr key={w.id} className="border-b border-border/60">
+                {withdrawals.map((w) => (
+                  <tr key={w.id} className="border-b border-border/60" data-testid={`withdrawal-row-${w.id}`}>
                     <td className="px-3 py-2 font-cairo text-sm text-text-primary">
                       {Math.round(w.amount).toLocaleString('ar-EG')} {w.currency}
                     </td>
@@ -175,6 +226,22 @@ export function TeacherWalletPage() {
                     </td>
                     <td className="px-3 py-2 font-cairo text-sm text-text-secondary">
                       {new Date(w.requestedAt).toLocaleDateString('ar-EG')}
+                    </td>
+                    <td className="px-3 py-2">
+                      {w.status === 'PENDING' ? (
+                        <button
+                          type="button"
+                          onClick={() => handleCancel(w.id)}
+                          disabled={cancelWithdrawal.isPending}
+                          data-testid={`cancel-withdrawal-${w.id}`}
+                          className="inline-flex items-center gap-1 font-cairo text-xs font-medium text-danger hover:opacity-80 disabled:opacity-50"
+                        >
+                          <X size={12} />
+                          {t('wallet.withdrawals.cancelButton')}
+                        </button>
+                      ) : (
+                        <span className="font-cairo text-xs text-text-muted">—</span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -228,6 +295,12 @@ export function TeacherWalletPage() {
         isOpen={editOpen}
         onClose={() => setEditOpen(false)}
         currentProfile={data.payoutProfile}
+      />
+      <RequestWithdrawalModal
+        isOpen={requestOpen}
+        onClose={() => setRequestOpen(false)}
+        availableBalance={data.availableBalance}
+        currency={currency}
       />
     </div>
   );

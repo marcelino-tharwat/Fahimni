@@ -1013,6 +1013,7 @@
       "amount": "Amount",
       "status": "Status",
       "requestedAt": "Requested At",
+      "actions": "Actions",
       "note": "Note",
       "statusLabels": {
         "PENDING": "Pending",
@@ -1020,6 +1021,23 @@
         "TRANSFERRED": "Transferred",
         "REJECTED": "Rejected",
         "CANCELLED": "Cancelled"
+      },
+      "requestButton": "Request Withdrawal",
+      "cancelButton": "Cancel",
+      "cancelled": "Withdrawal request cancelled",
+      "cancelError": "Could not cancel the withdrawal request",
+      "noPayoutMethodWarning": "Add your payout details in your financial profile first",
+      "requestModalTitle": "Request a Withdrawal",
+      "availableBalanceHint": "Available balance: {{amount}} {{currency}}",
+      "submit": "Submit Request",
+      "submitting": "Submitting...",
+      "requestSaved": "Withdrawal request submitted successfully",
+      "requestError": "Could not submit the withdrawal request",
+      "validation": {
+        "amountRequired": "Amount is required",
+        "amountPositive": "Amount must be greater than zero",
+        "amountExceedsBalance": "The requested amount exceeds your available balance",
+        "noteMax": "Note must not exceed 500 characters"
       }
     },
     "payoutProfile": {

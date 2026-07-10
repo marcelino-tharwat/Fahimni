@@ -22,6 +22,7 @@
     "tenants": "Academies",
     "plans": "Plans & Subscriptions",
     "subscriptions": "Subscriptions",
+    "teacherWithdrawals": "Withdrawals",
     "revenue": "Revenue",
     "payments": "Payments",
     "auditLogs": "Audit Logs"
@@ -378,6 +379,49 @@
       "approvedToast": "Request approved",
       "rejectedToast": "Request rejected",
       "actionError": "Failed to perform the action"
+    }
+  },
+  "adminTeacherWithdrawals": {
+    "title": "Teacher Withdrawal Requests",
+    "subtitle": "Review and process teacher withdrawal requests",
+    "searchPlaceholder": "Search by teacher name or email",
+    "statusFilter": "Filter by status",
+    "errorLoading": "Failed to load withdrawal requests",
+    "retry": "Retry",
+    "emptyTitle": "No withdrawal requests",
+    "emptyDescription": "No matching requests",
+    "totalCount": "{{count}} requests",
+    "view": "View",
+    "status": {
+      "ALL": "All",
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "TRANSFERRED": "Transferred",
+      "REJECTED": "Rejected",
+      "CANCELLED": "Cancelled"
+    },
+    "action": {
+      "processing": "Accept / Start Transfer",
+      "transferred": "Mark Transferred",
+      "rejected": "Reject"
+    },
+    "col": {
+      "teacher": "Teacher",
+      "amount": "Amount",
+      "status": "Status",
+      "requestedAt": "Requested At"
+    },
+    "detail": {
+      "title": "Withdrawal Request Details",
+      "processedAt": "Processed At",
+      "transferredAt": "Transferred At",
+      "cancelledAt": "Cancelled/Rejected At",
+      "payoutMethod": "Payout Details",
+      "teacherNote": "Teacher Note",
+      "adminNote": "Admin Note",
+      "readOnly": "Final state — no actions available",
+      "updated": "Withdrawal request status updated",
+      "updateError": "Could not update the withdrawal request status"
     }
   },
   "support": {

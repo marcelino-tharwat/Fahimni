@@ -32,3 +32,28 @@ export interface UpdatePayoutProfileInput {
   instaPayHandle?: string;
   vodafoneCashNumber?: string;
 }
+
+/** Payout destination snapshot at request time — safe fields only. */
+export interface PayoutMethodSnapshot {
+  instaPayHandle: string | null;
+  vodafoneCashNumber: string | null;
+}
+
+/** GET /api/teacher/withdrawals list item — the teacher's own request. */
+export interface TeacherWithdrawalListItem {
+  id: string;
+  amount: number;
+  currency: string;
+  status: WithdrawalStatus;
+  payoutMethodSnapshot: PayoutMethodSnapshot | null;
+  teacherNote: string | null;
+  requestedAt: string;
+  processedAt: string | null;
+  transferredAt: string | null;
+  cancelledAt: string | null;
+}
+
+export interface CreateWithdrawalInput {
+  amount: number;
+  teacherNote?: string;
+}

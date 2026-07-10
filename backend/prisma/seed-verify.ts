@@ -180,7 +180,7 @@ async function main(): Promise<void> {
     SELECT sp."stageId", COUNT(DISTINCT c."teacherId") AS "teacherCount"
     FROM student_profiles sp
     JOIN chapters c ON c."stageId" = sp."stageId"
-    JOIN users u ON u.id = c."teacherId"
+    JOIN "User" u ON u.id = c."teacherId"
     WHERE u."teacherApprovalState" = 'APPROVED' AND u.status = 'ACTIVE' AND u.role = 'OPERATION'
     GROUP BY sp."stageId"
     HAVING COUNT(DISTINCT c."teacherId") >= 2
@@ -192,7 +192,7 @@ async function main(): Promise<void> {
     SELECT COUNT(*) AS "cnt"
     FROM chapters c
     JOIN student_profiles sp ON sp."stageId" = c."stageId"
-    JOIN users u ON u.id = c."teacherId"
+    JOIN "User" u ON u.id = c."teacherId"
     WHERE (u.status IN ('BANNED', 'INACTIVE') OR u."teacherApprovalState" NOT IN ('APPROVED'))
   `;
   check("Banned/inactive teacher chapters exist in a student stage", (bannedInStudentStage[0]?.cnt ?? 0n) >= 1n, `${bannedInStudentStage[0]?.cnt ?? 0n} found`);
@@ -560,9 +560,17 @@ async function verifyTeacherWalletScenario(): Promise<void> {
     `${available} (expected 70)`,
   );
   check(
-    "Wallet: REJECTED withdrawal released (not held, not deducted)",
-    rejectedOrCancelled === 20 && held === 80 && transferred === 150,
+    "Wallet: REJECTED + CANCELLED withdrawals released (not held, not deducted)",
+    // REJECTED=20 + CANCELLED=40 — both fully excluded from held/transferred.
+    rejectedOrCancelled === 60 && held === 80 && transferred === 150,
     `rejectedOrCancelled=${rejectedOrCancelled}`,
+  );
+
+  const cancelledOnly = sumByStatus(["CANCELLED"]);
+  check(
+    "Wallet: CANCELLED withdrawal scenario present and released",
+    cancelledOnly === 40,
+    `${cancelledOnly} (expected 40)`,
   );
 
   const payout = await prisma.teacherProfile.findUnique({
@@ -590,9 +598,89 @@ async function verifyTeacherWalletScenario(): Promise<void> {
       (chemistryEarnings._sum.amount ?? 0) === 0 && chemistryWithdrawals === 0,
       `earnings=${chemistryEarnings._sum.amount ?? 0} withdrawals=${chemistryWithdrawals}`,
     );
+
+    const chemistryProfile = await prisma.teacherProfile.findUnique({
+      where: { userId: teacherChemistry.id },
+      select: { instaPayHandle: true, vodafoneCashNumber: true },
+    });
+    check(
+      "Wallet: teacher.chemistry has no payout profile (no-payout-method scenario)",
+      !chemistryProfile?.instaPayHandle && !chemistryProfile?.vodafoneCashNumber,
+      JSON.stringify(chemistryProfile),
+    );
   } else {
     check("Wallet: teacher.chemistry exists (no-earnings scenario)", false, "missing");
   }
+
+  // Withdrawal status/timestamp integrity: every seeded scenario status
+  // (PENDING/PROCESSING/TRANSFERRED/REJECTED/CANCELLED) is present exactly
+  // once for teacher.math, and each has the timestamps its status implies.
+  const mathWithdrawals = await prisma.teacherWithdrawalRequest.findMany({
+    where: { teacherId: teacherMath.id },
+    select: {
+      status: true,
+      processedAt: true,
+      transferredAt: true,
+      cancelledAt: true,
+    },
+  });
+  const byStatus = new Map(mathWithdrawals.map((w) => [w.status, w]));
+  check(
+    "Seed: all 5 withdrawal statuses present for teacher.math",
+    ["PENDING", "PROCESSING", "TRANSFERRED", "REJECTED", "CANCELLED"].every((s) => byStatus.has(s)),
+    `${[...byStatus.keys()].join(", ")}`,
+  );
+  check(
+    "Seed: PENDING withdrawal has no processed/transferred/cancelled timestamp",
+    byStatus.get("PENDING")?.processedAt == null &&
+      byStatus.get("PENDING")?.transferredAt == null &&
+      byStatus.get("PENDING")?.cancelledAt == null,
+  );
+  check(
+    "Seed: PROCESSING withdrawal has processedAt but no transferred/cancelled timestamp",
+    byStatus.get("PROCESSING")?.processedAt != null &&
+      byStatus.get("PROCESSING")?.transferredAt == null &&
+      byStatus.get("PROCESSING")?.cancelledAt == null,
+  );
+  check(
+    "Seed: TRANSFERRED withdrawal has transferredAt set",
+    byStatus.get("TRANSFERRED")?.transferredAt != null,
+  );
+  check(
+    "Seed: REJECTED withdrawal has a release timestamp (cancelledAt) set",
+    byStatus.get("REJECTED")?.cancelledAt != null,
+  );
+  check(
+    "Seed: CANCELLED withdrawal has cancelledAt set",
+    byStatus.get("CANCELLED")?.cancelledAt != null,
+  );
+
+  // No test/helper path can revert PROCESSING to PENDING, or reopen any final
+  // status — exercised directly against the state-machine guard used by both
+  // the teacher-cancel and admin-status-update service methods.
+  const { assertValidAdminTransition } = await import(
+    "../src/modules/teacher-wallet/withdrawal-status.js"
+  );
+  const rejectsTransition = (from: string, to: string): boolean => {
+    try {
+      assertValidAdminTransition(from as never, to as never);
+      return false;
+    } catch {
+      return true;
+    }
+  };
+  check(
+    "Seed guard: PROCESSING cannot be returned to PENDING",
+    rejectsTransition("PROCESSING", "PENDING"),
+  );
+  check(
+    "Seed guard: final statuses (TRANSFERRED/REJECTED/CANCELLED) reject any further transition",
+    ["TRANSFERRED", "REJECTED", "CANCELLED"].every((from) =>
+      ["PENDING", "PROCESSING", "TRANSFERRED", "REJECTED", "CANCELLED"]
+        .filter((to) => to !== from)
+        .every((to) => rejectsTransition(from, to)),
+    ),
+  );
 }
 
 main()

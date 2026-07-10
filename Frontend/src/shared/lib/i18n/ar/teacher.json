@@ -1013,13 +1013,31 @@
       "amount": "المبلغ",
       "status": "الحالة",
       "requestedAt": "تاريخ الطلب",
+      "actions": "إجراءات",
       "note": "ملاحظة",
       "statusLabels": {
         "PENDING": "قيد الانتظار",
-        "PROCESSING": "قيد المعالجة",
+        "PROCESSING": "جاري التحويل",
         "TRANSFERRED": "تم التحويل",
         "REJECTED": "مرفوض",
         "CANCELLED": "ملغي"
+      },
+      "requestButton": "طلب سحب",
+      "cancelButton": "إلغاء",
+      "cancelled": "تم إلغاء طلب السحب",
+      "cancelError": "تعذّر إلغاء طلب السحب",
+      "noPayoutMethodWarning": "أضف بيانات التحويل أولًا من ملفك المالي",
+      "requestModalTitle": "طلب سحب رصيد",
+      "availableBalanceHint": "الرصيد المتاح للسحب: {{amount}} {{currency}}",
+      "submit": "إرسال الطلب",
+      "submitting": "جارٍ الإرسال...",
+      "requestSaved": "تم إرسال طلب السحب بنجاح",
+      "requestError": "تعذّر إرسال طلب السحب",
+      "validation": {
+        "amountRequired": "يجب إدخال المبلغ",
+        "amountPositive": "يجب أن يكون المبلغ أكبر من صفر",
+        "amountExceedsBalance": "المبلغ المطلوب أكبر من الرصيد المتاح",
+        "noteMax": "يجب ألا تزيد الملاحظة عن ٥٠٠ حرف"
       }
     },
     "payoutProfile": {
