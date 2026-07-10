@@ -149,11 +149,25 @@ export class ContentController {
         orderBy: { sortOrder: "asc" },
         include: {
           chapters: {
-            where: { deletedAt: null },
+            where: {
+              deletedAt: null,
+              teacher: {
+                role: "OPERATION",
+                status: "ACTIVE",
+                teacherApprovalState: "APPROVED",
+              },
+            },
             orderBy: { sortOrder: "asc" },
             include: {
               lessons: {
                 orderBy: { sortOrder: "asc" },
+              },
+              teacher: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  teacherProfile: { select: { subject: true } },
+                },
               },
             },
           },
@@ -214,6 +228,11 @@ export class ContentController {
                 imageUrl: chapter.imageUrl ?? null,
                 lessonCount: activeLessons.length,
                 enrollmentStatus,
+                teacher: {
+                  id: chapter.teacher.id,
+                  fullName: chapter.teacher.fullName,
+                  subject: chapter.teacher.teacherProfile?.subject ?? null,
+                },
               };
 
               return {

@@ -96,6 +96,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await prisma.enrollment.deleteMany({ where: { chapterId: { in: owned.chapterIds } } });
   await prisma.chapter.deleteMany({ where: { id: { in: owned.chapterIds } } });
+  await prisma.studentProfile.deleteMany({ where: { stageId: { in: owned.stageIds } } });
   await prisma.stage.deleteMany({ where: { id: { in: owned.stageIds } } });
   // The free enrollment records a STUDENT_ENROLLED audit log (userId RESTRICT
   // FK), so it must be cleared before the users it references.
@@ -118,6 +119,7 @@ describe("student tree — free enrollment flips free → purchased", () => {
         password: pwHash,
         role: "OPERATION",
         status: "ACTIVE",
+        teacherApprovalState: "APPROVED",
       },
     });
     owned.userIds.push(teacher.id);
@@ -139,9 +141,14 @@ describe("student tree — free enrollment flips free → purchased", () => {
     });
     owned.stageIds.push(stage.id);
 
+    // Link student to the stage so the tree endpoint can resolve it.
+    await prisma.studentProfile.create({
+      data: { userId: student.id, stageId: stage.id },
+    });
+
     // price 0 → a free chapter.
     const chapter = await prisma.chapter.create({
-      data: { name: `Free Chapter ${suffix}`, sortOrder: 1, price: 0, stageId: stage.id },
+      data: { name: `Free Chapter ${suffix}`, sortOrder: 1, price: 0, stageId: stage.id, teacherId: teacher.id },
     });
     owned.chapterIds.push(chapter.id);
 

@@ -290,6 +290,9 @@ function ChapterRow({
         {chapter.description && (
           <p className="truncate font-cairo text-xs text-gray-400">{chapter.description}</p>
         )}
+        {chapter.teacher && (
+          <p className="truncate font-cairo text-xs text-cyan-600">{chapter.teacher.fullName}</p>
+        )}
       </div>
     </>
   );

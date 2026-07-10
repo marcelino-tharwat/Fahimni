@@ -175,6 +175,28 @@ async function main(): Promise<void> {
   const lessons = await prisma.lesson.count();
   check("Lessons exist", lessons >= 18, `${lessons} lessons`);
 
+  // 15a. Multi-teacher: at least one student has chapters from 2+ approved teachers
+  const multiTeacherByStage = await prisma.$queryRaw<{ stageId: string; teacherCount: bigint }[]>`
+    SELECT sp."stageId", COUNT(DISTINCT c."teacherId") AS "teacherCount"
+    FROM student_profiles sp
+    JOIN chapters c ON c."stageId" = sp."stageId"
+    JOIN users u ON u.id = c."teacherId"
+    WHERE u."teacherApprovalState" = 'APPROVED' AND u.status = 'ACTIVE' AND u.role = 'OPERATION'
+    GROUP BY sp."stageId"
+    HAVING COUNT(DISTINCT c."teacherId") >= 2
+  `;
+  check("At least 1 stage has chapters from 2+ approved teachers", multiTeacherByStage.length >= 1, `${multiTeacherByStage.length} stages`);
+
+  // 15b. Banned/inactive teacher chapters exist in a student's stage (to test exclusion)
+  const bannedInStudentStage = await prisma.$queryRaw<{ cnt: bigint }[]>`
+    SELECT COUNT(*) AS "cnt"
+    FROM chapters c
+    JOIN student_profiles sp ON sp."stageId" = c."stageId"
+    JOIN users u ON u.id = c."teacherId"
+    WHERE (u.status IN ('BANNED', 'INACTIVE') OR u."teacherApprovalState" NOT IN ('APPROVED'))
+  `;
+  check("Banned/inactive teacher chapters exist in a student stage", (bannedInStudentStage[0]?.cnt ?? 0n) >= 1n, `${bannedInStudentStage[0]?.cnt ?? 0n} found`);
+
   // 16. Teacher profiles exist
   const profiles = await prisma.teacherProfile.count({ where: { userId: { in: teachers.map((t) => t.id) } } });
   check("Teacher profiles exist", profiles >= 3, `${profiles} profiles`);
