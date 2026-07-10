@@ -10,6 +10,16 @@ import { updateTeacherProfileSchema } from "./teacher.validation.js";
 const router = Router();
 const controller = new TeacherController();
 
+// Review-status endpoint — accessible for ALL OPERATION users (including
+// PENDING_REVIEW / REJECTED) so they can see their registration state.
+// Must come BEFORE the gated routes.
+router.get(
+  "/review-status",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  controller.getReviewStatus,
+);
+
 router.get(
   "/profile",
   authenticateMiddleware,

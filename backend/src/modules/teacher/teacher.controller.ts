@@ -9,6 +9,13 @@ import type { UpdateTeacherProfileInput } from "./teacher.validation.js";
 const teacherService = new TeacherService();
 
 export class TeacherController {
+  public getReviewStatus = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const status = await teacherService.getReviewStatus(req.user!.id);
+      res.status(200).json(okResponse("Review status fetched successfully", status));
+    },
+  );
+
   public getProfile = asyncHandler(
     async (req: Request, res: Response, _next: NextFunction) => {
       const profile = await teacherService.getProfile(req.user!.id);
