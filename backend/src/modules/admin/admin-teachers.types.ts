@@ -4,7 +4,7 @@ import type { Status, BillingInterval, SubscriptionStatus } from "../../generate
  * Per-teacher aggregated metrics. Two revenue values are surfaced SEPARATELY and
  * must never be summed into one figure:
  *  - confirmedCourseRevenue          → money students paid for THIS teacher's
- *    course content (SUCCESS PaymentTransaction through chapter → stage.teacherId).
+ *    course content (SUCCESS PaymentTransaction through chapter → chapter.teacherId).
  *  - confirmedSubscriptionPayments   → money THIS teacher paid the PLATFORM for a
  *    plan (SUCCESS TeacherSubscriptionPayment.teacherId). Platform revenue, a cost
  *    to the teacher — deliberately kept distinct from course revenue.

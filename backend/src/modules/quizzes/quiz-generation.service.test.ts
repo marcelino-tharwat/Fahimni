@@ -390,9 +390,9 @@ describe("QuizGenerationService.generate", () => {
     primeHappyPath(m);
     await service().generate(CHAPTER_INPUT, TEACHER);
     const where = m.prisma.chapter.findFirst.mock.calls[0]![0] as {
-      where: { stage: { teacherId: string } };
+      where: { teacherId: string };
     };
-    expect(where.where.stage.teacherId).toBe(TEACHER);
+    expect(where.where.teacherId).toBe(TEACHER);
   });
 
   it("fails the whole request when any lesson is missing/unauthorized", async () => {

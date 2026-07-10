@@ -28,7 +28,7 @@ export class PaymentService {
         name: true,
         price: true,
         deletedAt: true,
-        stage: { select: { teacherId: true } },
+        teacherId: true,
       },
     });
 
@@ -134,7 +134,7 @@ export class PaymentService {
       where: { paymobOrderId },
       include: {
         chapter: {
-          select: { stage: { select: { teacherId: true } } },
+          select: { teacherId: true },
         },
       },
     });
@@ -203,7 +203,7 @@ export class PaymentService {
         resourceId: transaction.id,
         actorId: transaction.studentId,
         actorType: "STUDENT",
-        scopeTeacherId: transaction.chapter.stage.teacherId,
+        scopeTeacherId: transaction.chapter.teacherId,
         details: {
           chapterId: transaction.chapterId,
           amount: transaction.amount,
@@ -232,7 +232,7 @@ export class PaymentService {
         resourceId: transaction.id,
         actorId: transaction.studentId,
         actorType: "STUDENT",
-        scopeTeacherId: transaction.chapter.stage.teacherId,
+        scopeTeacherId: transaction.chapter.teacherId,
         details: {
           chapterId: transaction.chapterId,
           amount: transaction.amount,

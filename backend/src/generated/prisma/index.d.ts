@@ -4146,6 +4146,7 @@ export namespace Prisma {
     quizzes: number
     refreshTokens: number
     stages: number
+    chaptersOwned: number
     paymentTransactions: number
     aiTutorUsage: number
     aiConversations: number
@@ -4172,6 +4173,7 @@ export namespace Prisma {
     quizzes?: boolean | UserCountOutputTypeCountQuizzesArgs
     refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
     stages?: boolean | UserCountOutputTypeCountStagesArgs
+    chaptersOwned?: boolean | UserCountOutputTypeCountChaptersOwnedArgs
     paymentTransactions?: boolean | UserCountOutputTypeCountPaymentTransactionsArgs
     aiTutorUsage?: boolean | UserCountOutputTypeCountAiTutorUsageArgs
     aiConversations?: boolean | UserCountOutputTypeCountAiConversationsArgs
@@ -4278,6 +4280,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountStagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountChaptersOwnedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChapterWhereInput
   }
 
   /**
@@ -5035,6 +5044,7 @@ export namespace Prisma {
     quizzes?: boolean | User$quizzesArgs<ExtArgs>
     refreshTokens?: boolean | User$refreshTokensArgs<ExtArgs>
     stages?: boolean | User$stagesArgs<ExtArgs>
+    chaptersOwned?: boolean | User$chaptersOwnedArgs<ExtArgs>
     studentProfile?: boolean | User$studentProfileArgs<ExtArgs>
     teacherProfile?: boolean | User$teacherProfileArgs<ExtArgs>
     paymentTransactions?: boolean | User$paymentTransactionsArgs<ExtArgs>
@@ -5108,6 +5118,7 @@ export namespace Prisma {
     quizzes?: boolean | User$quizzesArgs<ExtArgs>
     refreshTokens?: boolean | User$refreshTokensArgs<ExtArgs>
     stages?: boolean | User$stagesArgs<ExtArgs>
+    chaptersOwned?: boolean | User$chaptersOwnedArgs<ExtArgs>
     studentProfile?: boolean | User$studentProfileArgs<ExtArgs>
     teacherProfile?: boolean | User$teacherProfileArgs<ExtArgs>
     paymentTransactions?: boolean | User$paymentTransactionsArgs<ExtArgs>
@@ -5142,6 +5153,7 @@ export namespace Prisma {
       quizzes: Prisma.$QuizPayload<ExtArgs>[]
       refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
       stages: Prisma.$StagePayload<ExtArgs>[]
+      chaptersOwned: Prisma.$ChapterPayload<ExtArgs>[]
       studentProfile: Prisma.$StudentProfilePayload<ExtArgs> | null
       teacherProfile: Prisma.$TeacherProfilePayload<ExtArgs> | null
       paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
@@ -5575,6 +5587,7 @@ export namespace Prisma {
     quizzes<T extends User$quizzesArgs<ExtArgs> = {}>(args?: Subset<T, User$quizzesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuizPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     refreshTokens<T extends User$refreshTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     stages<T extends User$stagesArgs<ExtArgs> = {}>(args?: Subset<T, User$stagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    chaptersOwned<T extends User$chaptersOwnedArgs<ExtArgs> = {}>(args?: Subset<T, User$chaptersOwnedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     studentProfile<T extends User$studentProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$studentProfileArgs<ExtArgs>>): Prisma__StudentProfileClient<$Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     teacherProfile<T extends User$teacherProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherProfileArgs<ExtArgs>>): Prisma__TeacherProfileClient<$Result.GetResult<Prisma.$TeacherProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     paymentTransactions<T extends User$paymentTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -6325,6 +6338,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: StageScalarFieldEnum | StageScalarFieldEnum[]
+  }
+
+  /**
+   * User.chaptersOwned
+   */
+  export type User$chaptersOwnedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    where?: ChapterWhereInput
+    orderBy?: ChapterOrderByWithRelationInput | ChapterOrderByWithRelationInput[]
+    cursor?: ChapterWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChapterScalarFieldEnum | ChapterScalarFieldEnum[]
   }
 
   /**
@@ -8933,6 +8970,7 @@ export namespace Prisma {
     description: string | null
     sortOrder: number | null
     teacherId: string | null
+    isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
@@ -8944,6 +8982,7 @@ export namespace Prisma {
     description: string | null
     sortOrder: number | null
     teacherId: string | null
+    isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
@@ -8955,6 +8994,7 @@ export namespace Prisma {
     description: number
     sortOrder: number
     teacherId: number
+    isActive: number
     createdAt: number
     updatedAt: number
     deletedAt: number
@@ -8976,6 +9016,7 @@ export namespace Prisma {
     description?: true
     sortOrder?: true
     teacherId?: true
+    isActive?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -8987,6 +9028,7 @@ export namespace Prisma {
     description?: true
     sortOrder?: true
     teacherId?: true
+    isActive?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -8998,6 +9040,7 @@ export namespace Prisma {
     description?: true
     sortOrder?: true
     teacherId?: true
+    isActive?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -9095,7 +9138,8 @@ export namespace Prisma {
     name: string
     description: string | null
     sortOrder: number
-    teacherId: string
+    teacherId: string | null
+    isActive: boolean
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -9126,12 +9170,13 @@ export namespace Prisma {
     description?: boolean
     sortOrder?: boolean
     teacherId?: boolean
+    isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
     chapters?: boolean | Stage$chaptersArgs<ExtArgs>
     studentProfiles?: boolean | Stage$studentProfilesArgs<ExtArgs>
-    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    teacher?: boolean | Stage$teacherArgs<ExtArgs>
     _count?: boolean | StageCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["stage"]>
 
@@ -9141,10 +9186,11 @@ export namespace Prisma {
     description?: boolean
     sortOrder?: boolean
     teacherId?: boolean
+    isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
-    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    teacher?: boolean | Stage$teacherArgs<ExtArgs>
   }, ExtArgs["result"]["stage"]>
 
   export type StageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9153,10 +9199,11 @@ export namespace Prisma {
     description?: boolean
     sortOrder?: boolean
     teacherId?: boolean
+    isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
-    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    teacher?: boolean | Stage$teacherArgs<ExtArgs>
   }, ExtArgs["result"]["stage"]>
 
   export type StageSelectScalar = {
@@ -9165,23 +9212,24 @@ export namespace Prisma {
     description?: boolean
     sortOrder?: boolean
     teacherId?: boolean
+    isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
   }
 
-  export type StageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "teacherId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stage"]>
+  export type StageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "teacherId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stage"]>
   export type StageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapters?: boolean | Stage$chaptersArgs<ExtArgs>
     studentProfiles?: boolean | Stage$studentProfilesArgs<ExtArgs>
-    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    teacher?: boolean | Stage$teacherArgs<ExtArgs>
     _count?: boolean | StageCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    teacher?: boolean | Stage$teacherArgs<ExtArgs>
   }
   export type StageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    teacher?: boolean | UserDefaultArgs<ExtArgs>
+    teacher?: boolean | Stage$teacherArgs<ExtArgs>
   }
 
   export type $StagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9189,14 +9237,15 @@ export namespace Prisma {
     objects: {
       chapters: Prisma.$ChapterPayload<ExtArgs>[]
       studentProfiles: Prisma.$StudentProfilePayload<ExtArgs>[]
-      teacher: Prisma.$UserPayload<ExtArgs>
+      teacher: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
       description: string | null
       sortOrder: number
-      teacherId: string
+      teacherId: string | null
+      isActive: boolean
       createdAt: Date
       updatedAt: Date
       deletedAt: Date | null
@@ -9596,7 +9645,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     chapters<T extends Stage$chaptersArgs<ExtArgs> = {}>(args?: Subset<T, Stage$chaptersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     studentProfiles<T extends Stage$studentProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Stage$studentProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    teacher<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    teacher<T extends Stage$teacherArgs<ExtArgs> = {}>(args?: Subset<T, Stage$teacherArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9631,6 +9680,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Stage", 'String'>
     readonly sortOrder: FieldRef<"Stage", 'Int'>
     readonly teacherId: FieldRef<"Stage", 'String'>
+    readonly isActive: FieldRef<"Stage", 'Boolean'>
     readonly createdAt: FieldRef<"Stage", 'DateTime'>
     readonly updatedAt: FieldRef<"Stage", 'DateTime'>
     readonly deletedAt: FieldRef<"Stage", 'DateTime'>
@@ -10083,6 +10133,25 @@ export namespace Prisma {
   }
 
   /**
+   * Stage.teacher
+   */
+  export type Stage$teacherArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * Stage without action
    */
   export type StageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10129,6 +10198,8 @@ export namespace Prisma {
     description: string | null
     sortOrder: number | null
     price: Decimal | null
+    imageUrl: string | null
+    teacherId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
@@ -10141,6 +10212,8 @@ export namespace Prisma {
     description: string | null
     sortOrder: number | null
     price: Decimal | null
+    imageUrl: string | null
+    teacherId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     deletedAt: Date | null
@@ -10153,6 +10226,8 @@ export namespace Prisma {
     description: number
     sortOrder: number
     price: number
+    imageUrl: number
+    teacherId: number
     createdAt: number
     updatedAt: number
     deletedAt: number
@@ -10177,6 +10252,8 @@ export namespace Prisma {
     description?: true
     sortOrder?: true
     price?: true
+    imageUrl?: true
+    teacherId?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -10189,6 +10266,8 @@ export namespace Prisma {
     description?: true
     sortOrder?: true
     price?: true
+    imageUrl?: true
+    teacherId?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -10201,6 +10280,8 @@ export namespace Prisma {
     description?: true
     sortOrder?: true
     price?: true
+    imageUrl?: true
+    teacherId?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -10300,6 +10381,8 @@ export namespace Prisma {
     description: string | null
     sortOrder: number
     price: Decimal | null
+    imageUrl: string | null
+    teacherId: string
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -10331,11 +10414,14 @@ export namespace Prisma {
     description?: boolean
     sortOrder?: boolean
     price?: boolean
+    imageUrl?: boolean
+    teacherId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
     stageId?: boolean
     stage?: boolean | StageDefaultArgs<ExtArgs>
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
     enrollments?: boolean | Chapter$enrollmentsArgs<ExtArgs>
     lessons?: boolean | Chapter$lessonsArgs<ExtArgs>
     quizzes?: boolean | Chapter$quizzesArgs<ExtArgs>
@@ -10350,11 +10436,14 @@ export namespace Prisma {
     description?: boolean
     sortOrder?: boolean
     price?: boolean
+    imageUrl?: boolean
+    teacherId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
     stageId?: boolean
     stage?: boolean | StageDefaultArgs<ExtArgs>
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["chapter"]>
 
   export type ChapterSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10363,11 +10452,14 @@ export namespace Prisma {
     description?: boolean
     sortOrder?: boolean
     price?: boolean
+    imageUrl?: boolean
+    teacherId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
     stageId?: boolean
     stage?: boolean | StageDefaultArgs<ExtArgs>
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["chapter"]>
 
   export type ChapterSelectScalar = {
@@ -10376,15 +10468,18 @@ export namespace Prisma {
     description?: boolean
     sortOrder?: boolean
     price?: boolean
+    imageUrl?: boolean
+    teacherId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
     stageId?: boolean
   }
 
-  export type ChapterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "price" | "createdAt" | "updatedAt" | "deletedAt" | "stageId", ExtArgs["result"]["chapter"]>
+  export type ChapterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "price" | "imageUrl" | "teacherId" | "createdAt" | "updatedAt" | "deletedAt" | "stageId", ExtArgs["result"]["chapter"]>
   export type ChapterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     stage?: boolean | StageDefaultArgs<ExtArgs>
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
     enrollments?: boolean | Chapter$enrollmentsArgs<ExtArgs>
     lessons?: boolean | Chapter$lessonsArgs<ExtArgs>
     quizzes?: boolean | Chapter$quizzesArgs<ExtArgs>
@@ -10394,15 +10489,18 @@ export namespace Prisma {
   }
   export type ChapterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     stage?: boolean | StageDefaultArgs<ExtArgs>
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ChapterIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     stage?: boolean | StageDefaultArgs<ExtArgs>
+    teacher?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $ChapterPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Chapter"
     objects: {
       stage: Prisma.$StagePayload<ExtArgs>
+      teacher: Prisma.$UserPayload<ExtArgs>
       enrollments: Prisma.$EnrollmentPayload<ExtArgs>[]
       lessons: Prisma.$LessonPayload<ExtArgs>[]
       quizzes: Prisma.$QuizPayload<ExtArgs>[]
@@ -10415,6 +10513,8 @@ export namespace Prisma {
       description: string | null
       sortOrder: number
       price: Prisma.Decimal | null
+      imageUrl: string | null
+      teacherId: string
       createdAt: Date
       updatedAt: Date
       deletedAt: Date | null
@@ -10814,6 +10914,7 @@ export namespace Prisma {
   export interface Prisma__ChapterClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     stage<T extends StageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StageDefaultArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    teacher<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     enrollments<T extends Chapter$enrollmentsArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     lessons<T extends Chapter$lessonsArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$lessonsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     quizzes<T extends Chapter$quizzesArgs<ExtArgs> = {}>(args?: Subset<T, Chapter$quizzesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuizPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -10853,6 +10954,8 @@ export namespace Prisma {
     readonly description: FieldRef<"Chapter", 'String'>
     readonly sortOrder: FieldRef<"Chapter", 'Int'>
     readonly price: FieldRef<"Chapter", 'Decimal'>
+    readonly imageUrl: FieldRef<"Chapter", 'String'>
+    readonly teacherId: FieldRef<"Chapter", 'String'>
     readonly createdAt: FieldRef<"Chapter", 'DateTime'>
     readonly updatedAt: FieldRef<"Chapter", 'DateTime'>
     readonly deletedAt: FieldRef<"Chapter", 'DateTime'>
@@ -44446,6 +44549,7 @@ export namespace Prisma {
     description: 'description',
     sortOrder: 'sortOrder',
     teacherId: 'teacherId',
+    isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     deletedAt: 'deletedAt'
@@ -44460,6 +44564,8 @@ export namespace Prisma {
     description: 'description',
     sortOrder: 'sortOrder',
     price: 'price',
+    imageUrl: 'imageUrl',
+    teacherId: 'teacherId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     deletedAt: 'deletedAt',
@@ -45065,6 +45171,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Decimal'
    */
   export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -45159,13 +45272,6 @@ export namespace Prisma {
    * Reference to a field of type 'PaymentStatus[]'
    */
   export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -45466,6 +45572,7 @@ export namespace Prisma {
     quizzes?: QuizListRelationFilter
     refreshTokens?: RefreshTokenListRelationFilter
     stages?: StageListRelationFilter
+    chaptersOwned?: ChapterListRelationFilter
     studentProfile?: XOR<StudentProfileNullableScalarRelationFilter, StudentProfileWhereInput> | null
     teacherProfile?: XOR<TeacherProfileNullableScalarRelationFilter, TeacherProfileWhereInput> | null
     paymentTransactions?: PaymentTransactionListRelationFilter
@@ -45506,6 +45613,7 @@ export namespace Prisma {
     quizzes?: QuizOrderByRelationAggregateInput
     refreshTokens?: RefreshTokenOrderByRelationAggregateInput
     stages?: StageOrderByRelationAggregateInput
+    chaptersOwned?: ChapterOrderByRelationAggregateInput
     studentProfile?: StudentProfileOrderByWithRelationInput
     teacherProfile?: TeacherProfileOrderByWithRelationInput
     paymentTransactions?: PaymentTransactionOrderByRelationAggregateInput
@@ -45549,6 +45657,7 @@ export namespace Prisma {
     quizzes?: QuizListRelationFilter
     refreshTokens?: RefreshTokenListRelationFilter
     stages?: StageListRelationFilter
+    chaptersOwned?: ChapterListRelationFilter
     studentProfile?: XOR<StudentProfileNullableScalarRelationFilter, StudentProfileWhereInput> | null
     teacherProfile?: XOR<TeacherProfileNullableScalarRelationFilter, TeacherProfileWhereInput> | null
     paymentTransactions?: PaymentTransactionListRelationFilter
@@ -45758,13 +45867,14 @@ export namespace Prisma {
     name?: StringFilter<"Stage"> | string
     description?: StringNullableFilter<"Stage"> | string | null
     sortOrder?: IntFilter<"Stage"> | number
-    teacherId?: StringFilter<"Stage"> | string
+    teacherId?: StringNullableFilter<"Stage"> | string | null
+    isActive?: BoolFilter<"Stage"> | boolean
     createdAt?: DateTimeFilter<"Stage"> | Date | string
     updatedAt?: DateTimeFilter<"Stage"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
     chapters?: ChapterListRelationFilter
     studentProfiles?: StudentProfileListRelationFilter
-    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
+    teacher?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type StageOrderByWithRelationInput = {
@@ -45772,7 +45882,8 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
-    teacherId?: SortOrder
+    teacherId?: SortOrderInput | SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
@@ -45789,13 +45900,14 @@ export namespace Prisma {
     name?: StringFilter<"Stage"> | string
     description?: StringNullableFilter<"Stage"> | string | null
     sortOrder?: IntFilter<"Stage"> | number
-    teacherId?: StringFilter<"Stage"> | string
+    teacherId?: StringNullableFilter<"Stage"> | string | null
+    isActive?: BoolFilter<"Stage"> | boolean
     createdAt?: DateTimeFilter<"Stage"> | Date | string
     updatedAt?: DateTimeFilter<"Stage"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
     chapters?: ChapterListRelationFilter
     studentProfiles?: StudentProfileListRelationFilter
-    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
+    teacher?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type StageOrderByWithAggregationInput = {
@@ -45803,7 +45915,8 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
-    teacherId?: SortOrder
+    teacherId?: SortOrderInput | SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
@@ -45822,7 +45935,8 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Stage"> | string
     description?: StringNullableWithAggregatesFilter<"Stage"> | string | null
     sortOrder?: IntWithAggregatesFilter<"Stage"> | number
-    teacherId?: StringWithAggregatesFilter<"Stage"> | string
+    teacherId?: StringNullableWithAggregatesFilter<"Stage"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Stage"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Stage"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Stage"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Stage"> | Date | string | null
@@ -45837,11 +45951,14 @@ export namespace Prisma {
     description?: StringNullableFilter<"Chapter"> | string | null
     sortOrder?: IntFilter<"Chapter"> | number
     price?: DecimalNullableFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: StringNullableFilter<"Chapter"> | string | null
+    teacherId?: StringFilter<"Chapter"> | string
     createdAt?: DateTimeFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeFilter<"Chapter"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Chapter"> | Date | string | null
     stageId?: StringFilter<"Chapter"> | string
     stage?: XOR<StageScalarRelationFilter, StageWhereInput>
+    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
     enrollments?: EnrollmentListRelationFilter
     lessons?: LessonListRelationFilter
     quizzes?: QuizListRelationFilter
@@ -45855,11 +45972,14 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
     price?: SortOrderInput | SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
     stageId?: SortOrder
     stage?: StageOrderByWithRelationInput
+    teacher?: UserOrderByWithRelationInput
     enrollments?: EnrollmentOrderByRelationAggregateInput
     lessons?: LessonOrderByRelationAggregateInput
     quizzes?: QuizOrderByRelationAggregateInput
@@ -45876,11 +45996,14 @@ export namespace Prisma {
     description?: StringNullableFilter<"Chapter"> | string | null
     sortOrder?: IntFilter<"Chapter"> | number
     price?: DecimalNullableFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: StringNullableFilter<"Chapter"> | string | null
+    teacherId?: StringFilter<"Chapter"> | string
     createdAt?: DateTimeFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeFilter<"Chapter"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Chapter"> | Date | string | null
     stageId?: StringFilter<"Chapter"> | string
     stage?: XOR<StageScalarRelationFilter, StageWhereInput>
+    teacher?: XOR<UserScalarRelationFilter, UserWhereInput>
     enrollments?: EnrollmentListRelationFilter
     lessons?: LessonListRelationFilter
     quizzes?: QuizListRelationFilter
@@ -45894,6 +46017,8 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
     price?: SortOrderInput | SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
@@ -45914,6 +46039,8 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Chapter"> | string | null
     sortOrder?: IntWithAggregatesFilter<"Chapter"> | number
     price?: DecimalNullableWithAggregatesFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: StringNullableWithAggregatesFilter<"Chapter"> | string | null
+    teacherId?: StringWithAggregatesFilter<"Chapter"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Chapter"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Chapter"> | Date | string | null
@@ -48373,6 +48500,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -48413,6 +48541,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -48453,6 +48582,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -48493,6 +48623,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -48713,12 +48844,13 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapters?: ChapterCreateNestedManyWithoutStageInput
     studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
-    teacher: UserCreateNestedOneWithoutStagesInput
+    teacher?: UserCreateNestedOneWithoutStagesInput
   }
 
   export type StageUncheckedCreateInput = {
@@ -48726,7 +48858,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
-    teacherId: string
+    teacherId?: string | null
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -48739,12 +48872,13 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUpdateManyWithoutStageNestedInput
     studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
-    teacher?: UserUpdateOneRequiredWithoutStagesNestedInput
+    teacher?: UserUpdateOneWithoutStagesNestedInput
   }
 
   export type StageUncheckedUpdateInput = {
@@ -48752,7 +48886,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    teacherId?: StringFieldUpdateOperationsInput | string
+    teacherId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -48765,7 +48900,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
-    teacherId: string
+    teacherId?: string | null
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -48776,6 +48912,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -48786,7 +48923,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    teacherId?: StringFieldUpdateOperationsInput | string
+    teacherId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -48798,10 +48936,12 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     stage: StageCreateNestedOneWithoutChaptersInput
+    teacher: UserCreateNestedOneWithoutChaptersOwnedInput
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
@@ -48815,6 +48955,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -48832,10 +48974,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    teacher?: UserUpdateOneRequiredWithoutChaptersOwnedNestedInput
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
@@ -48849,6 +48993,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -48866,6 +49012,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -48878,6 +49026,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -48889,6 +49038,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -51666,6 +51817,12 @@ export namespace Prisma {
     none?: StageWhereInput
   }
 
+  export type ChapterListRelationFilter = {
+    every?: ChapterWhereInput
+    some?: ChapterWhereInput
+    none?: ChapterWhereInput
+  }
+
   export type StudentProfileNullableScalarRelationFilter = {
     is?: StudentProfileWhereInput | null
     isNot?: StudentProfileWhereInput | null
@@ -51777,6 +51934,10 @@ export namespace Prisma {
   }
 
   export type StageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ChapterOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -52098,10 +52259,9 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type ChapterListRelationFilter = {
-    every?: ChapterWhereInput
-    some?: ChapterWhereInput
-    none?: ChapterWhereInput
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type StudentProfileListRelationFilter = {
@@ -52110,8 +52270,9 @@ export namespace Prisma {
     none?: StudentProfileWhereInput
   }
 
-  export type ChapterOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type StudentProfileOrderByRelationAggregateInput = {
@@ -52124,6 +52285,7 @@ export namespace Prisma {
     description?: SortOrder
     sortOrder?: SortOrder
     teacherId?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -52139,6 +52301,7 @@ export namespace Prisma {
     description?: SortOrder
     sortOrder?: SortOrder
     teacherId?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -52150,6 +52313,7 @@ export namespace Prisma {
     description?: SortOrder
     sortOrder?: SortOrder
     teacherId?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -52157,6 +52321,14 @@ export namespace Prisma {
 
   export type StageSumOrderByAggregateInput = {
     sortOrder?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type DecimalNullableFilter<$PrismaModel = never> = {
@@ -52186,6 +52358,8 @@ export namespace Prisma {
     description?: SortOrder
     sortOrder?: SortOrder
     price?: SortOrder
+    imageUrl?: SortOrder
+    teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -52203,6 +52377,8 @@ export namespace Prisma {
     description?: SortOrder
     sortOrder?: SortOrder
     price?: SortOrder
+    imageUrl?: SortOrder
+    teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -52215,6 +52391,8 @@ export namespace Prisma {
     description?: SortOrder
     sortOrder?: SortOrder
     price?: SortOrder
+    imageUrl?: SortOrder
+    teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -52620,11 +52798,6 @@ export namespace Prisma {
     _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type LessonScalarRelationFilter = {
     is?: LessonWhereInput
     isNot?: LessonWhereInput
@@ -52660,14 +52833,6 @@ export namespace Prisma {
     completed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type LessonMaterialCountOrderByAggregateInput = {
@@ -53369,11 +53534,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
     _max?: NestedEnumAttemptSubmissionReasonNullableFilter<$PrismaModel>
-  }
-
-  export type UserNullableScalarRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
   }
 
   export type PromoCodeCountOrderByAggregateInput = {
@@ -54320,6 +54480,13 @@ export namespace Prisma {
     connect?: StageWhereUniqueInput | StageWhereUniqueInput[]
   }
 
+  export type ChapterCreateNestedManyWithoutTeacherInput = {
+    create?: XOR<ChapterCreateWithoutTeacherInput, ChapterUncheckedCreateWithoutTeacherInput> | ChapterCreateWithoutTeacherInput[] | ChapterUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: ChapterCreateOrConnectWithoutTeacherInput | ChapterCreateOrConnectWithoutTeacherInput[]
+    createMany?: ChapterCreateManyTeacherInputEnvelope
+    connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+  }
+
   export type StudentProfileCreateNestedOneWithoutUserInput = {
     create?: XOR<StudentProfileCreateWithoutUserInput, StudentProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: StudentProfileCreateOrConnectWithoutUserInput
@@ -54497,6 +54664,13 @@ export namespace Prisma {
     connectOrCreate?: StageCreateOrConnectWithoutTeacherInput | StageCreateOrConnectWithoutTeacherInput[]
     createMany?: StageCreateManyTeacherInputEnvelope
     connect?: StageWhereUniqueInput | StageWhereUniqueInput[]
+  }
+
+  export type ChapterUncheckedCreateNestedManyWithoutTeacherInput = {
+    create?: XOR<ChapterCreateWithoutTeacherInput, ChapterUncheckedCreateWithoutTeacherInput> | ChapterCreateWithoutTeacherInput[] | ChapterUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: ChapterCreateOrConnectWithoutTeacherInput | ChapterCreateOrConnectWithoutTeacherInput[]
+    createMany?: ChapterCreateManyTeacherInputEnvelope
+    connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
   }
 
   export type StudentProfileUncheckedCreateNestedOneWithoutUserInput = {
@@ -54792,6 +54966,20 @@ export namespace Prisma {
     update?: StageUpdateWithWhereUniqueWithoutTeacherInput | StageUpdateWithWhereUniqueWithoutTeacherInput[]
     updateMany?: StageUpdateManyWithWhereWithoutTeacherInput | StageUpdateManyWithWhereWithoutTeacherInput[]
     deleteMany?: StageScalarWhereInput | StageScalarWhereInput[]
+  }
+
+  export type ChapterUpdateManyWithoutTeacherNestedInput = {
+    create?: XOR<ChapterCreateWithoutTeacherInput, ChapterUncheckedCreateWithoutTeacherInput> | ChapterCreateWithoutTeacherInput[] | ChapterUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: ChapterCreateOrConnectWithoutTeacherInput | ChapterCreateOrConnectWithoutTeacherInput[]
+    upsert?: ChapterUpsertWithWhereUniqueWithoutTeacherInput | ChapterUpsertWithWhereUniqueWithoutTeacherInput[]
+    createMany?: ChapterCreateManyTeacherInputEnvelope
+    set?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    disconnect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    delete?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    update?: ChapterUpdateWithWhereUniqueWithoutTeacherInput | ChapterUpdateWithWhereUniqueWithoutTeacherInput[]
+    updateMany?: ChapterUpdateManyWithWhereWithoutTeacherInput | ChapterUpdateManyWithWhereWithoutTeacherInput[]
+    deleteMany?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
   }
 
   export type StudentProfileUpdateOneWithoutUserNestedInput = {
@@ -55146,6 +55334,20 @@ export namespace Prisma {
     deleteMany?: StageScalarWhereInput | StageScalarWhereInput[]
   }
 
+  export type ChapterUncheckedUpdateManyWithoutTeacherNestedInput = {
+    create?: XOR<ChapterCreateWithoutTeacherInput, ChapterUncheckedCreateWithoutTeacherInput> | ChapterCreateWithoutTeacherInput[] | ChapterUncheckedCreateWithoutTeacherInput[]
+    connectOrCreate?: ChapterCreateOrConnectWithoutTeacherInput | ChapterCreateOrConnectWithoutTeacherInput[]
+    upsert?: ChapterUpsertWithWhereUniqueWithoutTeacherInput | ChapterUpsertWithWhereUniqueWithoutTeacherInput[]
+    createMany?: ChapterCreateManyTeacherInputEnvelope
+    set?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    disconnect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    delete?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    update?: ChapterUpdateWithWhereUniqueWithoutTeacherInput | ChapterUpdateWithWhereUniqueWithoutTeacherInput[]
+    updateMany?: ChapterUpdateManyWithWhereWithoutTeacherInput | ChapterUpdateManyWithWhereWithoutTeacherInput[]
+    deleteMany?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+  }
+
   export type StudentProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<StudentProfileCreateWithoutUserInput, StudentProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: StudentProfileCreateOrConnectWithoutUserInput
@@ -55404,6 +55606,10 @@ export namespace Prisma {
     connect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type ChapterUpdateManyWithoutStageNestedInput = {
     create?: XOR<ChapterCreateWithoutStageInput, ChapterUncheckedCreateWithoutStageInput> | ChapterCreateWithoutStageInput[] | ChapterUncheckedCreateWithoutStageInput[]
     connectOrCreate?: ChapterCreateOrConnectWithoutStageInput | ChapterCreateOrConnectWithoutStageInput[]
@@ -55432,10 +55638,12 @@ export namespace Prisma {
     deleteMany?: StudentProfileScalarWhereInput | StudentProfileScalarWhereInput[]
   }
 
-  export type UserUpdateOneRequiredWithoutStagesNestedInput = {
+  export type UserUpdateOneWithoutStagesNestedInput = {
     create?: XOR<UserCreateWithoutStagesInput, UserUncheckedCreateWithoutStagesInput>
     connectOrCreate?: UserCreateOrConnectWithoutStagesInput
     upsert?: UserUpsertWithoutStagesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutStagesInput, UserUpdateWithoutStagesInput>, UserUncheckedUpdateWithoutStagesInput>
   }
@@ -55472,6 +55680,12 @@ export namespace Prisma {
     create?: XOR<StageCreateWithoutChaptersInput, StageUncheckedCreateWithoutChaptersInput>
     connectOrCreate?: StageCreateOrConnectWithoutChaptersInput
     connect?: StageWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutChaptersOwnedInput = {
+    create?: XOR<UserCreateWithoutChaptersOwnedInput, UserUncheckedCreateWithoutChaptersOwnedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutChaptersOwnedInput
+    connect?: UserWhereUniqueInput
   }
 
   export type EnrollmentCreateNestedManyWithoutChapterInput = {
@@ -55558,6 +55772,14 @@ export namespace Prisma {
     upsert?: StageUpsertWithoutChaptersInput
     connect?: StageWhereUniqueInput
     update?: XOR<XOR<StageUpdateToOneWithWhereWithoutChaptersInput, StageUpdateWithoutChaptersInput>, StageUncheckedUpdateWithoutChaptersInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutChaptersOwnedNestedInput = {
+    create?: XOR<UserCreateWithoutChaptersOwnedInput, UserUncheckedCreateWithoutChaptersOwnedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutChaptersOwnedInput
+    upsert?: UserUpsertWithoutChaptersOwnedInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutChaptersOwnedInput, UserUpdateWithoutChaptersOwnedInput>, UserUncheckedUpdateWithoutChaptersOwnedInput>
   }
 
   export type EnrollmentUpdateManyWithoutChapterNestedInput = {
@@ -56002,10 +56224,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutLessonProgressInput, UserUncheckedCreateWithoutLessonProgressInput>
     connectOrCreate?: UserCreateOrConnectWithoutLessonProgressInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type LessonUpdateOneRequiredWithoutLessonProgressNestedInput = {
@@ -57414,6 +57632,19 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type NestedDecimalNullableFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
@@ -57546,19 +57777,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
     _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -58411,6 +58629,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -58423,6 +58642,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -58437,6 +58657,52 @@ export namespace Prisma {
 
   export type StageCreateManyTeacherInputEnvelope = {
     data: StageCreateManyTeacherInput | StageCreateManyTeacherInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ChapterCreateWithoutTeacherInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    stage: StageCreateNestedOneWithoutChaptersInput
+    enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
+    lessons?: LessonCreateNestedManyWithoutChapterInput
+    quizzes?: QuizCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeCreateNestedManyWithoutChapterInput
+  }
+
+  export type ChapterUncheckedCreateWithoutTeacherInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    stageId: string
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutChapterInput
+    lessons?: LessonUncheckedCreateNestedManyWithoutChapterInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutChapterInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutChapterInput
+    promoCodes?: PromoCodeUncheckedCreateNestedManyWithoutChapterInput
+  }
+
+  export type ChapterCreateOrConnectWithoutTeacherInput = {
+    where: ChapterWhereUniqueInput
+    create: XOR<ChapterCreateWithoutTeacherInput, ChapterUncheckedCreateWithoutTeacherInput>
+  }
+
+  export type ChapterCreateManyTeacherInputEnvelope = {
+    data: ChapterCreateManyTeacherInput | ChapterCreateManyTeacherInput[]
     skipDuplicates?: boolean
   }
 
@@ -59294,10 +59560,44 @@ export namespace Prisma {
     name?: StringFilter<"Stage"> | string
     description?: StringNullableFilter<"Stage"> | string | null
     sortOrder?: IntFilter<"Stage"> | number
-    teacherId?: StringFilter<"Stage"> | string
+    teacherId?: StringNullableFilter<"Stage"> | string | null
+    isActive?: BoolFilter<"Stage"> | boolean
     createdAt?: DateTimeFilter<"Stage"> | Date | string
     updatedAt?: DateTimeFilter<"Stage"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
+  }
+
+  export type ChapterUpsertWithWhereUniqueWithoutTeacherInput = {
+    where: ChapterWhereUniqueInput
+    update: XOR<ChapterUpdateWithoutTeacherInput, ChapterUncheckedUpdateWithoutTeacherInput>
+    create: XOR<ChapterCreateWithoutTeacherInput, ChapterUncheckedCreateWithoutTeacherInput>
+  }
+
+  export type ChapterUpdateWithWhereUniqueWithoutTeacherInput = {
+    where: ChapterWhereUniqueInput
+    data: XOR<ChapterUpdateWithoutTeacherInput, ChapterUncheckedUpdateWithoutTeacherInput>
+  }
+
+  export type ChapterUpdateManyWithWhereWithoutTeacherInput = {
+    where: ChapterScalarWhereInput
+    data: XOR<ChapterUpdateManyMutationInput, ChapterUncheckedUpdateManyWithoutTeacherInput>
+  }
+
+  export type ChapterScalarWhereInput = {
+    AND?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+    OR?: ChapterScalarWhereInput[]
+    NOT?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+    id?: StringFilter<"Chapter"> | string
+    name?: StringFilter<"Chapter"> | string
+    description?: StringNullableFilter<"Chapter"> | string | null
+    sortOrder?: IntFilter<"Chapter"> | number
+    price?: DecimalNullableFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: StringNullableFilter<"Chapter"> | string | null
+    teacherId?: StringFilter<"Chapter"> | string
+    createdAt?: DateTimeFilter<"Chapter"> | Date | string
+    updatedAt?: DateTimeFilter<"Chapter"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"Chapter"> | Date | string | null
+    stageId?: StringFilter<"Chapter"> | string
   }
 
   export type StudentProfileUpsertWithoutUserInput = {
@@ -59723,6 +60023,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
@@ -59762,6 +60063,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
@@ -59786,11 +60088,12 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapters?: ChapterCreateNestedManyWithoutStageInput
-    teacher: UserCreateNestedOneWithoutStagesInput
+    teacher?: UserCreateNestedOneWithoutStagesInput
   }
 
   export type StageUncheckedCreateWithoutStudentProfilesInput = {
@@ -59798,7 +60101,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
-    teacherId: string
+    teacherId?: string | null
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -59846,6 +60150,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
@@ -59885,6 +60190,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
@@ -59915,11 +60221,12 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUpdateManyWithoutStageNestedInput
-    teacher?: UserUpdateOneRequiredWithoutStagesNestedInput
+    teacher?: UserUpdateOneWithoutStagesNestedInput
   }
 
   export type StageUncheckedUpdateWithoutStudentProfilesInput = {
@@ -59927,7 +60234,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    teacherId?: StringFieldUpdateOperationsInput | string
+    teacherId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59959,6 +60267,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
@@ -59998,6 +60307,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
@@ -60053,6 +60363,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
@@ -60092,6 +60403,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
@@ -60112,9 +60424,11 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+    teacher: UserCreateNestedOneWithoutChaptersOwnedInput
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
@@ -60128,6 +60442,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -60196,6 +60512,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -60235,6 +60552,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -60269,21 +60587,6 @@ export namespace Prisma {
   export type ChapterUpdateManyWithWhereWithoutStageInput = {
     where: ChapterScalarWhereInput
     data: XOR<ChapterUpdateManyMutationInput, ChapterUncheckedUpdateManyWithoutStageInput>
-  }
-
-  export type ChapterScalarWhereInput = {
-    AND?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
-    OR?: ChapterScalarWhereInput[]
-    NOT?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
-    id?: StringFilter<"Chapter"> | string
-    name?: StringFilter<"Chapter"> | string
-    description?: StringNullableFilter<"Chapter"> | string | null
-    sortOrder?: IntFilter<"Chapter"> | number
-    price?: DecimalNullableFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
-    createdAt?: DateTimeFilter<"Chapter"> | Date | string
-    updatedAt?: DateTimeFilter<"Chapter"> | Date | string
-    deletedAt?: DateTimeNullableFilter<"Chapter"> | Date | string | null
-    stageId?: StringFilter<"Chapter"> | string
   }
 
   export type StudentProfileUpsertWithWhereUniqueWithoutStageInput = {
@@ -60348,6 +60651,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -60387,6 +60691,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -60407,11 +60712,12 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
-    teacher: UserCreateNestedOneWithoutStagesInput
+    teacher?: UserCreateNestedOneWithoutStagesInput
   }
 
   export type StageUncheckedCreateWithoutChaptersInput = {
@@ -60419,7 +60725,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
-    teacherId: string
+    teacherId?: string | null
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -60429,6 +60736,91 @@ export namespace Prisma {
   export type StageCreateOrConnectWithoutChaptersInput = {
     where: StageWhereUniqueInput
     create: XOR<StageCreateWithoutChaptersInput, StageUncheckedCreateWithoutChaptersInput>
+  }
+
+  export type UserCreateWithoutChaptersOwnedInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+  }
+
+  export type UserUncheckedCreateWithoutChaptersOwnedInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  }
+
+  export type UserCreateOrConnectWithoutChaptersOwnedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutChaptersOwnedInput, UserUncheckedCreateWithoutChaptersOwnedInput>
   }
 
   export type EnrollmentCreateWithoutChapterInput = {
@@ -60669,11 +61061,12 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
-    teacher?: UserUpdateOneRequiredWithoutStagesNestedInput
+    teacher?: UserUpdateOneWithoutStagesNestedInput
   }
 
   export type StageUncheckedUpdateWithoutChaptersInput = {
@@ -60681,11 +61074,103 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    teacherId?: StringFieldUpdateOperationsInput | string
+    teacherId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
+  }
+
+  export type UserUpsertWithoutChaptersOwnedInput = {
+    update: XOR<UserUpdateWithoutChaptersOwnedInput, UserUncheckedUpdateWithoutChaptersOwnedInput>
+    create: XOR<UserCreateWithoutChaptersOwnedInput, UserUncheckedCreateWithoutChaptersOwnedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutChaptersOwnedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutChaptersOwnedInput, UserUncheckedUpdateWithoutChaptersOwnedInput>
+  }
+
+  export type UserUpdateWithoutChaptersOwnedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutChaptersOwnedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type EnrollmentUpsertWithWhereUniqueWithoutChapterInput = {
@@ -60877,10 +61362,12 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     stage: StageCreateNestedOneWithoutChaptersInput
+    teacher: UserCreateNestedOneWithoutChaptersOwnedInput
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
@@ -60893,6 +61380,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -61082,10 +61571,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    teacher?: UserUpdateOneRequiredWithoutChaptersOwnedNestedInput
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
@@ -61098,6 +61589,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61227,6 +61720,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -61266,6 +61760,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -61321,6 +61816,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -61360,6 +61856,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -61381,10 +61878,12 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     stage: StageCreateNestedOneWithoutChaptersInput
+    teacher: UserCreateNestedOneWithoutChaptersOwnedInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
@@ -61397,6 +61896,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -61436,6 +61937,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -61475,6 +61977,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -61512,10 +62015,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    teacher?: UserUpdateOneRequiredWithoutChaptersOwnedNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
@@ -61528,6 +62033,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61573,6 +62080,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -61612,6 +62120,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -61652,6 +62161,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
@@ -61691,6 +62201,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
@@ -61716,10 +62227,12 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     stage: StageCreateNestedOneWithoutChaptersInput
+    teacher: UserCreateNestedOneWithoutChaptersOwnedInput
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
@@ -61732,6 +62245,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -61783,6 +62298,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
@@ -61822,6 +62338,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
@@ -61853,10 +62370,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    teacher?: UserUpdateOneRequiredWithoutChaptersOwnedNestedInput
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
@@ -61869,6 +62388,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61946,6 +62467,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -61985,6 +62507,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -62089,6 +62612,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -62128,6 +62652,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -62300,6 +62825,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -62339,6 +62865,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -62421,6 +62948,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -62460,6 +62988,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -62624,6 +63153,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -62663,6 +63193,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -62718,6 +63249,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -62757,6 +63289,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -62795,6 +63328,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -62834,6 +63368,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -62889,6 +63424,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -62928,6 +63464,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -62967,6 +63504,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -63006,6 +63544,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -63061,6 +63600,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -63100,6 +63640,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -63267,10 +63808,12 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     stage: StageCreateNestedOneWithoutChaptersInput
+    teacher: UserCreateNestedOneWithoutChaptersOwnedInput
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutChapterInput
@@ -63283,6 +63826,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -63322,6 +63867,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -63361,6 +63907,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -63479,10 +64026,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    teacher?: UserUpdateOneRequiredWithoutChaptersOwnedNestedInput
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
@@ -63495,6 +64044,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63540,6 +64091,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -63579,6 +64131,7 @@ export namespace Prisma {
     quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -64047,6 +64600,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -64086,6 +64640,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -64212,6 +64767,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -64251,6 +64807,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -64290,6 +64847,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -64329,6 +64887,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -64373,6 +64932,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -64412,6 +64972,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -64438,10 +64999,12 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     stage: StageCreateNestedOneWithoutChaptersInput
+    teacher: UserCreateNestedOneWithoutChaptersOwnedInput
     enrollments?: EnrollmentCreateNestedManyWithoutChapterInput
     lessons?: LessonCreateNestedManyWithoutChapterInput
     quizzes?: QuizCreateNestedManyWithoutChapterInput
@@ -64454,6 +65017,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -64504,6 +65069,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -64543,6 +65109,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -64593,6 +65160,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -64632,6 +65200,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -64664,10 +65233,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    teacher?: UserUpdateOneRequiredWithoutChaptersOwnedNestedInput
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
@@ -64680,6 +65251,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -64714,6 +65287,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -64753,6 +65327,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -64836,6 +65411,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -64875,6 +65451,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -64975,6 +65552,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -65014,6 +65592,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -65120,6 +65699,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -65159,6 +65739,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -65199,6 +65780,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -65238,6 +65820,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -65293,6 +65876,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -65332,6 +65916,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -65370,6 +65955,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -65409,6 +65995,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -65464,6 +66051,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -65503,6 +66091,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -65543,6 +66132,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -65582,6 +66172,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -65671,6 +66262,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -65710,6 +66302,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -66049,6 +66642,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -66088,6 +66682,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -66268,6 +66863,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -66307,6 +66903,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -66433,6 +67030,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -66472,6 +67070,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -66576,6 +67175,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -66615,6 +67215,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -66709,6 +67310,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -66748,6 +67350,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -66889,6 +67492,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -66928,6 +67532,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -67065,6 +67670,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -67104,6 +67710,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -67245,6 +67852,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -67284,6 +67892,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -67421,6 +68030,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -67460,6 +68070,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -67504,6 +68115,7 @@ export namespace Prisma {
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
     stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
@@ -67543,6 +68155,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
     refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
     stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
     studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
     teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
     paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
@@ -67598,6 +68211,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -67637,6 +68251,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -67687,6 +68302,7 @@ export namespace Prisma {
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
     stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
@@ -67726,6 +68342,7 @@ export namespace Prisma {
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
     refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
     stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
     studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
     teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
     paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
@@ -67887,9 +68504,23 @@ export namespace Prisma {
     name: string
     description?: string | null
     sortOrder: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
+  }
+
+  export type ChapterCreateManyTeacherInput = {
+    id?: string
+    name: string
+    description?: string | null
+    sortOrder: number
+    price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    stageId: string
   }
 
   export type PaymentTransactionCreateManyStudentInput = {
@@ -68468,6 +69099,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -68480,6 +69112,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -68492,9 +69125,59 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ChapterUpdateWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stage?: StageUpdateOneRequiredWithoutChaptersNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
+    lessons?: LessonUpdateManyWithoutChapterNestedInput
+    quizzes?: QuizUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUpdateManyWithoutChapterNestedInput
+  }
+
+  export type ChapterUncheckedUpdateWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stageId?: StringFieldUpdateOperationsInput | string
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutChapterNestedInput
+    lessons?: LessonUncheckedUpdateManyWithoutChapterNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutChapterNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutChapterNestedInput
+    promoCodes?: PromoCodeUncheckedUpdateManyWithoutChapterNestedInput
+  }
+
+  export type ChapterUncheckedUpdateManyWithoutTeacherInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    stageId?: StringFieldUpdateOperationsInput | string
   }
 
   export type PaymentTransactionUpdateWithoutStudentInput = {
@@ -68914,6 +69597,8 @@ export namespace Prisma {
     description?: string | null
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
+    imageUrl?: string | null
+    teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -68932,9 +69617,11 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    teacher?: UserUpdateOneRequiredWithoutChaptersOwnedNestedInput
     enrollments?: EnrollmentUpdateManyWithoutChapterNestedInput
     lessons?: LessonUpdateManyWithoutChapterNestedInput
     quizzes?: QuizUpdateManyWithoutChapterNestedInput
@@ -68948,6 +69635,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -68964,6 +69653,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

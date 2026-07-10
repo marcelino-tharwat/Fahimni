@@ -126,8 +126,15 @@ beforeAll(async () => {
   });
   await prisma.chapter.upsert({
     where: { id: IDS.chapter },
-    create: { id: IDS.chapter, name: "E2E Wallet Chapter", sortOrder: 1, stageId: IDS.stage, price: 100 },
-    update: { deletedAt: null, stageId: IDS.stage, price: 100 },
+    create: {
+      id: IDS.chapter,
+      name: "E2E Wallet Chapter",
+      sortOrder: 1,
+      stageId: IDS.stage,
+      price: 100,
+      teacherId: teacherAId,
+    },
+    update: { deletedAt: null, stageId: IDS.stage, price: 100, teacherId: teacherAId },
   });
 
   const pwHash = await bcrypt.hash(PW, 12);

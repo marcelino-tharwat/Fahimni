@@ -46,11 +46,12 @@ export class TeacherWalletService {
 
     const [earningsAgg, withdrawalGroups, latestRows] = await Promise.all([
       // Teacher earnings = SUCCESS student payments on chapters this teacher
-      // owns (PaymentTransaction -> Chapter -> Stage.teacherId). Deliberately
-      // NOT TeacherSubscriptionPayment (that is the teacher's OWN plan spend,
-      // not earnings from students).
+      // owns directly (PaymentTransaction -> Chapter.teacherId — the canonical
+      // ownership field; Chapter no longer only inherits ownership via its
+      // Stage). Deliberately NOT TeacherSubscriptionPayment (that is the
+      // teacher's OWN plan spend, not earnings from students).
       prisma.paymentTransaction.aggregate({
-        where: { status: "SUCCESS", chapter: { stage: { teacherId } } },
+        where: { status: "SUCCESS", chapter: { teacherId } },
         _sum: { amount: true },
       }),
       prisma.teacherWithdrawalRequest.groupBy({

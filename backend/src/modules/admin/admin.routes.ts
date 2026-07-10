@@ -6,6 +6,13 @@ import { asyncHandler } from "../../shared/utils/asyncHandler.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import userRoutes from "../users/user.routes.js";
 import { AdminStatsController } from "./admin-stats.controller.js";
+import { AdminStagesController } from "./admin-stages.controller.js";
+import {
+  createStageSchema,
+  listStagesQuerySchema,
+  reorderSchema as stageReorderSchema,
+  updateStageSchema,
+} from "./admin-stages.validation.js";
 import { AdminTeachersController } from "./admin-teachers.controller.js";
 import { listTeachersQuerySchema } from "./admin-teachers.validation.js";
 import { AdminTeacherDetailController } from "./admin-teacher-detail.controller.js";
@@ -87,6 +94,7 @@ import {
  */
 const router = Router();
 const statsController = new AdminStatsController();
+const stagesController = new AdminStagesController();
 const teachersController = new AdminTeachersController();
 const teacherDetailController = new AdminTeacherDetailController();
 const studentsController = new AdminStudentsController();
@@ -104,6 +112,30 @@ router.use(authenticateMiddleware, authorizeMiddleware("ADMIN"));
 
 /** Global platform metrics for the admin dashboard (overview only). */
 router.get("/stats", asyncHandler(statsController.getStats));
+
+// ── Stages management (admin-owned, CRUD + reorder) ──
+router.get(
+  "/stages",
+  validateRequest(listStagesQuerySchema, "query"),
+  asyncHandler(stagesController.list),
+);
+router.post(
+  "/stages",
+  validateRequest(createStageSchema, "body"),
+  asyncHandler(stagesController.create),
+);
+router.patch(
+  "/stages/reorder",
+  validateRequest(stageReorderSchema, "body"),
+  asyncHandler(stagesController.reorder),
+);
+router.get("/stages/:id", asyncHandler(stagesController.getById));
+router.patch(
+  "/stages/:id",
+  validateRequest(updateStageSchema, "body"),
+  asyncHandler(stagesController.update),
+);
+router.delete("/stages/:id", asyncHandler(stagesController.delete));
 
 /** Paginated teacher management list (User.role = OPERATION) with per-teacher stats. */
 router.get(

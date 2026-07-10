@@ -475,7 +475,7 @@ async function verifyTeacherWalletScenario(): Promise<void> {
   // Independently recomputed from the DB (not via the service) so this catches
   // both seed regressions and any drift in the wallet balance formula.
   const earningsAgg = await prisma.paymentTransaction.aggregate({
-    where: { status: "SUCCESS", chapter: { stage: { teacherId: teacherMath.id } } },
+    where: { status: "SUCCESS", chapter: { teacherId: teacherMath.id } },
     _sum: { amount: true },
   });
   check(
@@ -525,7 +525,7 @@ async function verifyTeacherWalletScenario(): Promise<void> {
 
   if (teacherChemistry) {
     const chemistryEarnings = await prisma.paymentTransaction.aggregate({
-      where: { status: "SUCCESS", chapter: { stage: { teacherId: teacherChemistry.id } } },
+      where: { status: "SUCCESS", chapter: { teacherId: teacherChemistry.id } },
       _sum: { amount: true },
     });
     const chemistryWithdrawals = await prisma.teacherWithdrawalRequest.count({

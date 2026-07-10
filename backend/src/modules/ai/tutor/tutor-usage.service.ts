@@ -64,19 +64,15 @@ export class TutorUsageService {
       where: {
         studentId,
         status: "ACTIVE",
-        chapter: { deletedAt: null, stage: { deletedAt: null } },
+        chapter: { deletedAt: null },
       },
       select: {
         chapter: {
           select: {
-            stage: {
+            teacher: {
               select: {
-                teacher: {
-                  select: {
-                    teacherProfile: {
-                      select: { aiTutorDailyQueryLimit: true },
-                    },
-                  },
+                teacherProfile: {
+                  select: { aiTutorDailyQueryLimit: true },
                 },
               },
             },
@@ -86,7 +82,7 @@ export class TutorUsageService {
     });
 
     const caps = enrollments
-      .map((e) => e.chapter.stage.teacher.teacherProfile?.aiTutorDailyQueryLimit)
+      .map((e) => e.chapter.teacher.teacherProfile?.aiTutorDailyQueryLimit)
       .filter((n): n is number => typeof n === "number");
 
     return caps.length > 0 ? Math.max(...caps) : this.defaultLimit;

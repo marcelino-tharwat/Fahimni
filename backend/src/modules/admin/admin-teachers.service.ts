@@ -40,7 +40,7 @@ type SumRow = { tid: string; val: number };
  * rawCallback / provider ids / storage paths.
  *
  * Metric attribution (all teacher-scoped through the ownership chain
- * Enrollment/Payment → Chapter → Stage.teacherId, matching the admin dashboard):
+ * Enrollment/Payment → Chapter → chapter.teacherId, matching the admin dashboard):
  *  - studentsCount  = COUNT(DISTINCT enrollment.studentId) through that chain.
  *  - enrollmentsCount = COUNT(enrollment) through that chain.
  *  - confirmedCourseRevenue = SUM(SUCCESS PaymentTransaction.amount) through it.
@@ -122,7 +122,7 @@ export class AdminTeachersService {
 
   /**
    * Compute every per-teacher metric for the given (small, page-sized) id set.
-   * Chain-joined metrics use grouped raw SQL (Chapter has no teacherId column);
+   * Content-chain metrics use grouped raw SQL via chapter.teacherId;
    * teacherId-native metrics use Prisma groupBy.
    */
   private async aggregateStats(ids: string[]): Promise<Map<string, TeacherStats>> {
@@ -142,61 +142,53 @@ export class AdminTeachersService {
       aiUsage,
     ] = await Promise.all([
       prisma.$queryRaw<CountRow[]>`
-        SELECT s."teacherId" AS tid, COUNT(*)::int AS cnt
-        FROM stages s
-        WHERE s."teacherId" IN (${idList}) AND s."deletedAt" IS NULL
-        GROUP BY s."teacherId"`,
+        SELECT c."teacherId" AS tid, COUNT(DISTINCT c."stageId")::int AS cnt
+        FROM chapters c
+        WHERE c."teacherId" IN (${idList}) AND c."deletedAt" IS NULL
+        GROUP BY c."teacherId"`,
       prisma.$queryRaw<CountRow[]>`
-        SELECT s."teacherId" AS tid, COUNT(*)::int AS cnt
-        FROM chapters c JOIN stages s ON s.id = c."stageId"
-        WHERE s."teacherId" IN (${idList})
-          AND c."deletedAt" IS NULL AND s."deletedAt" IS NULL
-        GROUP BY s."teacherId"`,
+        SELECT c."teacherId" AS tid, COUNT(*)::int AS cnt
+        FROM chapters c
+        WHERE c."teacherId" IN (${idList}) AND c."deletedAt" IS NULL
+        GROUP BY c."teacherId"`,
       prisma.$queryRaw<CountRow[]>`
-        SELECT s."teacherId" AS tid, COUNT(*)::int AS cnt
+        SELECT c."teacherId" AS tid, COUNT(*)::int AS cnt
         FROM lessons l
         JOIN chapters c ON c.id = l."chapterId"
-        JOIN stages s ON s.id = c."stageId"
-        WHERE s."teacherId" IN (${idList})
-          AND l."deletedAt" IS NULL AND c."deletedAt" IS NULL AND s."deletedAt" IS NULL
-        GROUP BY s."teacherId"`,
+        WHERE c."teacherId" IN (${idList})
+          AND l."deletedAt" IS NULL AND c."deletedAt" IS NULL
+        GROUP BY c."teacherId"`,
       prisma.$queryRaw<CountRow[]>`
-        SELECT s."teacherId" AS tid, COUNT(*)::int AS cnt
+        SELECT c."teacherId" AS tid, COUNT(*)::int AS cnt
         FROM quizzes q
         JOIN chapters c ON c.id = q."chapterId"
-        JOIN stages s ON s.id = c."stageId"
-        WHERE s."teacherId" IN (${idList})
-          AND c."deletedAt" IS NULL AND s."deletedAt" IS NULL
-        GROUP BY s."teacherId"`,
+        WHERE c."teacherId" IN (${idList}) AND c."deletedAt" IS NULL
+        GROUP BY c."teacherId"`,
       prisma.$queryRaw<CountRow[]>`
-        SELECT s."teacherId" AS tid, COUNT(*)::int AS cnt
+        SELECT c."teacherId" AS tid, COUNT(*)::int AS cnt
         FROM enrollments e
         JOIN chapters c ON c.id = e."chapterId"
-        JOIN stages s ON s.id = c."stageId"
-        WHERE s."teacherId" IN (${idList})
-        GROUP BY s."teacherId"`,
+        WHERE c."teacherId" IN (${idList})
+        GROUP BY c."teacherId"`,
       prisma.$queryRaw<CountRow[]>`
-        SELECT s."teacherId" AS tid, COUNT(DISTINCT e."studentId")::int AS cnt
+        SELECT c."teacherId" AS tid, COUNT(DISTINCT e."studentId")::int AS cnt
         FROM enrollments e
         JOIN chapters c ON c.id = e."chapterId"
-        JOIN stages s ON s.id = c."stageId"
-        WHERE s."teacherId" IN (${idList})
-        GROUP BY s."teacherId"`,
+        WHERE c."teacherId" IN (${idList})
+        GROUP BY c."teacherId"`,
       prisma.$queryRaw<SumRow[]>`
-        SELECT s."teacherId" AS tid, COALESCE(SUM(pt.amount), 0)::float8 AS val
+        SELECT c."teacherId" AS tid, COALESCE(SUM(pt.amount), 0)::float8 AS val
         FROM payment_transactions pt
         JOIN chapters c ON c.id = pt."chapterId"
-        JOIN stages s ON s.id = c."stageId"
-        WHERE s."teacherId" IN (${idList}) AND pt.status = 'SUCCESS'
-        GROUP BY s."teacherId"`,
+        WHERE c."teacherId" IN (${idList}) AND pt.status = 'SUCCESS'
+        GROUP BY c."teacherId"`,
       prisma.$queryRaw<SumRow[]>`
-        SELECT s."teacherId" AS tid, COALESCE(SUM(pt.amount), 0)::float8 AS val
+        SELECT c."teacherId" AS tid, COALESCE(SUM(pt.amount), 0)::float8 AS val
         FROM payment_transactions pt
         JOIN chapters c ON c.id = pt."chapterId"
-        JOIN stages s ON s.id = c."stageId"
-        WHERE s."teacherId" IN (${idList})
+        WHERE c."teacherId" IN (${idList})
           AND pt.status = 'SUCCESS' AND pt."createdAt" >= ${monthStart}
-        GROUP BY s."teacherId"`,
+        GROUP BY c."teacherId"`,
       prisma.teacherSubscriptionPayment.groupBy({
         by: ["teacherId"],
         where: { teacherId: { in: ids }, status: "SUCCESS" },

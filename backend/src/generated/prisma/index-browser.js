@@ -163,6 +163,7 @@ exports.Prisma.StageScalarFieldEnum = {
   description: 'description',
   sortOrder: 'sortOrder',
   teacherId: 'teacherId',
+  isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -174,6 +175,8 @@ exports.Prisma.ChapterScalarFieldEnum = {
   description: 'description',
   sortOrder: 'sortOrder',
   price: 'price',
+  imageUrl: 'imageUrl',
+  teacherId: 'teacherId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt',

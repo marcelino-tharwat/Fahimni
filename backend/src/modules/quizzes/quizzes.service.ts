@@ -622,12 +622,12 @@ export class QuizService {
     }
 
     // Chapter must exist, be active, and belong to the same teacher
-    // (Chapter -> Stage -> teacherId). Prevents cross-teacher assignment.
+    // (Chapter -> teacherId). Prevents cross-teacher assignment.
     const chapter = await prisma.chapter.findFirst({
       where: {
         id: chapterId,
+        teacherId,
         deletedAt: null,
-        stage: { teacherId, deletedAt: null },
       },
       select: { id: true },
     });
