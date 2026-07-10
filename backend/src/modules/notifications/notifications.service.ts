@@ -2,6 +2,7 @@ import { prisma } from "../../config/database.js";
 import { notificationsRepository } from "./notifications.repository.js";
 import type { NotificationResponseDTO } from "./notifications.types.js";
 import type { NotificationType } from "../../generated/prisma/index.js";
+import { getIO } from "../../shared/services/socket.service.js";
 
 interface NotifyInput {
   type: NotificationType;
@@ -33,6 +34,14 @@ export class NotificationsService {
     }));
 
     await notificationsRepository.createMany(data);
+
+    const targetRooms = enrollments.map((e) => `user:${e.studentId}`);
+    try {
+      const io = getIO();
+      io.to(targetRooms).emit("notification:new");
+    } catch {
+      // socket not available — fallback to polling
+    }
   }
 
   async getNotifications(

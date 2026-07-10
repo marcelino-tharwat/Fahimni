@@ -1,13 +1,18 @@
+import http from "http";
 import { createApp } from "./app.js";
 import { env } from "./config/env.js";
 import { logger } from "./config/logger.js";
+import { initializeSocket } from "./shared/services/socket.service.js";
 
 const port = env.PORT || 3000;
 
 logger.info("server_starting", { environment: env.NODE_ENV, port });
 
 const app = createApp();
-const server = app.listen(port, () => {
+const server = http.createServer(app);
+initializeSocket(server);
+
+server.listen(port, () => {
   logger.info("server_started", { environment: env.NODE_ENV, port });
 });
 

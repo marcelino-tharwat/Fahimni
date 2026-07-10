@@ -1,6 +1,8 @@
 import { apiClient, type ApiError } from '@/shared/lib/api/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Socket } from 'socket.io-client';
 import type { ApiResponse } from '@/shared/types/api';
+import { queryClient } from '@/app/config/queryClient';
 
 export interface NotificationItem {
   id: string;
@@ -69,5 +71,11 @@ export function useMarkAsRead() {
     onError: (_error: ApiError) => {
       // Silently fail — marking as read is non-critical
     },
+  });
+}
+
+export function setupNotificationSocketListeners(socket: Socket): void {
+  socket.on('notification:new', () => {
+    void queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_KEY });
   });
 }
