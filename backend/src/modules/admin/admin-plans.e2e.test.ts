@@ -300,7 +300,10 @@ describe("GET /api/admin/plans — stats", () => {
     const d = await listData("?limit=100");
     const free = d.data.find((p) => p.code === "FREE")!;
     expect(free.stats.confirmedRevenue).toBe(0);
-    expect(free.stats.freeEntitlementsCount).toBeGreaterThanOrEqual(2); // both teachers w/o paid sub on FREE
+    // freeEntitlementsCount is a GLOBAL count of approved teachers without a paid
+    // subscription. The fixtures guarantee at least one (the unsubscribed teacher);
+    // teacherA/teacherB are on paid plans. >= 1 is robust to ambient data.
+    expect(free.stats.freeEntitlementsCount).toBeGreaterThanOrEqual(1);
   });
 
   it("12. pro plan stats — has active subscription and payment", async () => {

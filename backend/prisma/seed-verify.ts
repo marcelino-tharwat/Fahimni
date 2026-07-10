@@ -31,11 +31,20 @@ async function main(): Promise<void> {
   check("At least 5 students", students.length >= 5, `${students.length} found`);
   const studentIds = students.map((s) => s.id);
 
-  // 4. All seed accounts have ACTIVE status — EXCEPT teachers deliberately left
-  //    INACTIVE by the lifecycle demo (PENDING_REVIEW / REJECTED are not active).
+  // 4. All seed accounts have ACTIVE status — EXCEPT accounts deliberately left
+  //    non-active by the demos: the lifecycle teachers (PENDING_REVIEW / REJECTED)
+  //    and the admin-management demo teachers seeded BANNED / INACTIVE (used to
+  //    exercise ban/unban and inactive-account flows).
   const allSeed = await prisma.user.findMany({ where: { email: { endsWith: DEMO_EMAIL_DOMAIN } } });
+  const DELIBERATELY_NON_ACTIVE_EMAILS = new Set([
+    "teacher.banned" + DEMO_EMAIL_DOMAIN,
+    "teacher.inactive" + DEMO_EMAIL_DOMAIN,
+  ]);
   const shouldBeActive = allSeed.filter(
-    (u) => u.teacherApprovalState !== "PENDING_REVIEW" && u.teacherApprovalState !== "REJECTED",
+    (u) =>
+      u.teacherApprovalState !== "PENDING_REVIEW" &&
+      u.teacherApprovalState !== "REJECTED" &&
+      !DELIBERATELY_NON_ACTIVE_EMAILS.has(u.email),
   );
   check(
     "All active-lifecycle seed accounts ACTIVE",

@@ -52,7 +52,7 @@ async function http(
 }
 
 async function login(email: string): Promise<string> {
-  const r = await http("POST", "/api/auth/login", { body: { email, password: PW } });
+  const r = await http("POST", "/api/v1/auth/login", { body: { email, password: PW } });
   const cookie = r.setCookie
     .map((c) => c.split(";")[0]!)
     .find((c) => c.startsWith("access_token="));
@@ -197,8 +197,10 @@ afterAll(async () => {
 function getPlans(r: HttpResult): unknown[] {
   const data = r.json?.plans ?? r.json?.data;
   if (Array.isArray(data)) return data;
-  // admin endpoint wraps in { data: { plans: [...] } }
+  // Admin endpoint wraps a paginated payload in okResponse:
+  // { data: { data: [...], meta } } — also tolerate a legacy { data: { plans } }.
   const d = r.json?.data as Record<string, unknown> | null;
+  if (d && Array.isArray(d.data)) return d.data;
   if (d && Array.isArray(d.plans)) return d.plans;
   return [];
 }
@@ -390,10 +392,10 @@ describe("Admin Plans — Entitlements Safety", () => {
       const codes = plans.map((p: Record<string, unknown>) => p.code);
       // The inactive plan must NOT be in the list
       expect(codes).not.toContain(expect.stringContaining("ARCHIVED"));
-      // Every plan returned must be active
-      for (const p of plans as Record<string, unknown>[]) {
-        expect(p.isActive).toBe(true);
-      }
+      // The public teacher catalog returns ONLY active plans (the public DTO
+      // intentionally omits the isActive flag), so the deactivated plan created in
+      // setup must be absent from the list.
+      expect((plans as Record<string, unknown>[]).some((p) => p.id === deactivatedPlanId)).toBe(false);
     });
 
     it("returns plans with features as Record<string, boolean> from API", async () => {
@@ -419,7 +421,9 @@ describe("Admin Plans — Entitlements Safety", () => {
 
   describe("7. Admin API — inactive plan visibility", () => {
     it("returns the inactive plan from admin GET /api/admin/plans", async () => {
-      const r = await get("/api/admin/plans", adminCookie);
+      // High limit so the created inactive plan is on the page even when the
+      // seeded catalog adds several plans (admin sees inactive plans too).
+      const r = await get("/api/admin/plans?limit=100", adminCookie);
       expect(r.status).toBe(200);
       const plans = getPlans(r) as Record<string, unknown>[];
       const inactive = plans.find((p) => p.id === deactivatedPlanId);
