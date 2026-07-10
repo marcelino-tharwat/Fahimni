@@ -4,6 +4,7 @@ export const stagePublicFields = {
   description: true,
   sortOrder: true,
   teacherId: true,
+  isActive: true,
   createdAt: true,
   updatedAt: true,
 } as const;
@@ -13,7 +14,8 @@ export interface StageResponseDTO {
   name: string;
   description: string | null;
   sortOrder: number;
-  teacherId: string;
+  teacherId: string | null;
+  isActive: boolean;
   chapterCount: number;
   lessonCount: number;
   createdAt: Date;

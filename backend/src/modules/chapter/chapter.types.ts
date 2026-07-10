@@ -4,6 +4,8 @@ export interface ChapterResponseDTO {
   description: string | null;
   sortOrder: number;
   price: number | null;
+  imageUrl: string | null;
+  teacherId: string;
   stageId: string;
   lessonsCount: number;
   createdAt: Date;
@@ -20,6 +22,7 @@ export interface StudentChapterResponseDTO {
   name: string;
   description: string | null;
   price: number | null;
+  imageUrl: string | null;
   stageId: string;
   stageName: string;
   lessonsCount: number;
@@ -35,6 +38,8 @@ export const chapterPublicFields = {
   description: true,
   sortOrder: true,
   price: true,
+  imageUrl: true,
+  teacherId: true,
   stageId: true,
   createdAt: true,
   updatedAt: true,

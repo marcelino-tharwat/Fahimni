@@ -77,8 +77,8 @@ describe("resolveTeacherQuizSourceScopes", () => {
 
     await resolveTeacherQuizSourceScopes([multiRow, fullRow], TEACHER, db as never);
 
-    expect(db.chapter.findMany.mock.calls[0]![0].where.stage.teacherId).toBe(TEACHER);
-    expect(db.stage.findMany.mock.calls[0]![0].where.teacherId).toBe(TEACHER);
+    expect(db.chapter.findMany.mock.calls[0]![0].where.teacherId).toBe(TEACHER);
+    expect(db.stage.findMany.mock.calls[0]![0].where.isActive).toBe(true);
   });
 
   it("drops ids the teacher does not own from the display arrays", async () => {

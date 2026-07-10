@@ -13,7 +13,7 @@ export type StudentFilter =
   | "without_active_teacher"
   | "payment_pending";
 
-/** Distinct teacher a student is connected to (through enrollment → stage.teacher). */
+/** Distinct teacher a student is connected to (through enrollment → chapter.teacher). */
 export interface StudentTeacherRef {
   id: string;
   fullName: string;

@@ -4,6 +4,7 @@ import { authenticateMiddleware } from "../../shared/middlewares/authenticate.mi
 import { authorizeMiddleware } from "../../shared/middlewares/authorize.middleware.js";
 import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
+import { upload } from "../../shared/middlewares/upload.middleware.js";
 import { createChapterSchema, updateChapterSchema, reorderSchema } from "./chapter.validation.js";
 import { lessonNestedRouter } from "../lessons/lessons.routes.js";
 
@@ -24,7 +25,7 @@ chapterNestedRouter.post(
   "/",
   authenticateMiddleware,
   authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
-  validateRequest(createChapterSchema),
+  upload.single("image"),
   controller.create,
 );
 
@@ -68,6 +69,7 @@ chapterStandaloneRouter.put(
   "/:id",
   authenticateMiddleware,
   authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
+  upload.single("image"),
   validateRequest(updateChapterSchema),
   controller.update,
 );

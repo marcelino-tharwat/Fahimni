@@ -74,7 +74,7 @@ describe("resolveMultiChapterScope", () => {
     db.lesson.findMany.mockResolvedValue([{ id: L1, title: "l1" }]);
     await resolveMultiChapterScope([CH1, CH2], TEACHER, db as never);
     const where = db.chapter.findMany.mock.calls[0]![0].where;
-    expect(where.stage.teacherId).toBe(TEACHER);
+    expect(where.teacherId).toBe(TEACHER);
     expect(where.deletedAt).toBeNull();
   });
 });
@@ -105,12 +105,14 @@ describe("resolveFullCurriculumScope", () => {
     );
   });
 
-  it("scopes the stage lookup to the requesting teacher", async () => {
+  it("scopes the stage lookup to active stages by id", async () => {
     db.stage.findFirst.mockResolvedValue({ id: STAGE, name: "الصف" });
     db.chapter.findMany.mockResolvedValue([{ id: CH1, name: "ch1" }]);
     db.lesson.findMany.mockResolvedValue([{ id: L1, title: "l1" }]);
     await resolveFullCurriculumScope(STAGE, TEACHER, db as never);
     const where = db.stage.findFirst.mock.calls[0]![0].where;
-    expect(where.teacherId).toBe(TEACHER);
+    expect(where.id).toBe(STAGE);
+    expect(where.deletedAt).toBeNull();
+    expect(where.isActive).toBe(true);
   });
 });

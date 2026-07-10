@@ -29,13 +29,14 @@ export class ChapterService {
     input: CreateChapterInput,
     stageId: string,
     teacherId: string,
+    imageUrl?: string | null,
   ): Promise<ChapterResponseDTO> {
     const stage = await prisma.stage.findFirst({
-      where: { id: stageId, teacherId, deletedAt: null },
+      where: { id: stageId, deletedAt: null, isActive: true },
     });
 
     if (!stage) {
-      throw new AppError("Stage not found", 404);
+      throw new AppError("Stage not found or inactive", 404);
     }
 
     const chapter = await prisma.chapter.create({
@@ -44,6 +45,8 @@ export class ChapterService {
         description: input.description ?? null,
         sortOrder: input.sortOrder,
         price: input.price ?? null,
+        imageUrl: imageUrl ?? null,
+        teacherId,
         stageId,
       },
       select: {
@@ -70,7 +73,7 @@ export class ChapterService {
     teacherId: string,
   ): Promise<ChapterResponseDTO[]> {
     const stage = await prisma.stage.findFirst({
-      where: { id: stageId, teacherId, deletedAt: null },
+      where: { id: stageId, deletedAt: null, isActive: true },
       select: { id: true },
     });
 
@@ -79,7 +82,7 @@ export class ChapterService {
     }
 
     const chapters = await prisma.chapter.findMany({
-      where: { stageId, deletedAt: null },
+      where: { stageId, teacherId, deletedAt: null },
       orderBy: { sortOrder: "asc" },
       select: {
         ...chapterPublicFields,
@@ -102,7 +105,7 @@ export class ChapterService {
     teacherId: string,
   ): Promise<ChapterResponseDTO> {
     const chapter = await prisma.chapter.findFirst({
-      where: { id, deletedAt: null, stage: { teacherId, deletedAt: null } },
+      where: { id, teacherId, deletedAt: null },
       select: {
         ...chapterPublicFields,
         price: true,
@@ -120,7 +123,7 @@ export class ChapterService {
   }
 
   /**
-   * Student-facing variant of getById. Does NOT filter by stage.teacherId
+   * Student-facing variant of getById. Does NOT filter by teacherId
    * (students have no teacher relationship), but still excludes soft-deleted
    * chapters. Returns a lighter DTO with stageName instead of internal fields.
    */
@@ -134,6 +137,7 @@ export class ChapterService {
         name: true,
         description: true,
         price: true,
+        imageUrl: true,
         stageId: true,
         stage: {
           select: { name: true },
@@ -150,6 +154,7 @@ export class ChapterService {
       name: chapter.name,
       description: chapter.description,
       price: chapter.price !== null ? Number(chapter.price) : null,
+      imageUrl: chapter.imageUrl,
       stageId: chapter.stageId,
       stageName: chapter.stage.name,
       lessonsCount: await this.countLessons(chapter.id),
@@ -160,9 +165,10 @@ export class ChapterService {
     id: string,
     teacherId: string,
     input: UpdateChapterInput,
+    imageUrl?: string | null,
   ): Promise<ChapterResponseDTO> {
     const existing = await prisma.chapter.findFirst({
-      where: { id, deletedAt: null, stage: { teacherId, deletedAt: null } },
+      where: { id, teacherId, deletedAt: null },
     });
 
     if (!existing) {
@@ -181,6 +187,9 @@ export class ChapterService {
     }
     if (input.price !== undefined) {
       data.price = input.price;
+    }
+    if (imageUrl !== undefined) {
+      data.imageUrl = imageUrl;
     }
 
     const chapter = await prisma.chapter.update({
@@ -210,7 +219,7 @@ export class ChapterService {
 
   public async delete(id: string, teacherId: string, force: boolean): Promise<void> {
     const chapter = await prisma.chapter.findFirst({
-      where: { id, deletedAt: null, stage: { teacherId, deletedAt: null } },
+      where: { id, teacherId, deletedAt: null },
       include: {
         lessons: {
           where: { deletedAt: null },
@@ -313,8 +322,8 @@ export class ChapterService {
       const requested = await tx.chapter.findMany({
         where: {
           id: { in: ids },
+          teacherId,
           deletedAt: null,
-          stage: { teacherId, deletedAt: null },
         },
         include: { stage: { select: { id: true } } },
       });
@@ -331,7 +340,7 @@ export class ChapterService {
       const stageId = [...stageIds][0]!;
 
       const allChapters = await tx.chapter.findMany({
-        where: { stageId, deletedAt: null },
+        where: { stageId, teacherId, deletedAt: null },
         select: { id: true },
       });
 

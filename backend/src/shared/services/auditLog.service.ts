@@ -57,6 +57,7 @@ export type AuditLogAction =
   | "ADMIN_PLAN_DEACTIVATED"
   | "ADMIN_PLAN_RECOMMENDED_CHANGED"
   | "ADMIN_PLANS_REORDERED"
+  | "STAGES_REORDERED"
   // Legacy values retained so historical rows remain readable.
   | "DELETE_STAGE"
   | "DELETE_CHAPTER"

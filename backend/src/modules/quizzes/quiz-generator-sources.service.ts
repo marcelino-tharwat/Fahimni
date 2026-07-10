@@ -4,7 +4,7 @@ import { prisma as defaultPrisma } from "../../config/database.js";
  * Teacher-facing curriculum eligibility for the AI quiz generator. Reports which
  * stages / chapters / lessons have usable indexed content so the frontend can
  * disable ineligible options and warn about weak lessons *before* a request is
- * ever sent. Ownership is scoped to the authenticated teacher (stage.teacherId).
+ * ever sent. Ownership is scoped to the authenticated teacher (chapter.teacherId).
  *
  * "Usable content" == at least one indexed RAG chunk (content_chunks) for the
  * lesson — the exact precondition the generator enforces at runtime.
@@ -51,9 +51,10 @@ type PrismaLike = Pick<typeof defaultPrisma, "stage" | "$queryRaw">;
 
 /**
  * Build the eligibility snapshot for a teacher. When `stageId` is provided the
- * result is limited to that (owned) stage; otherwise all owned stages are
- * returned. Lessons/chapters are always included so the frontend can drive the
- * per-lesson / per-chapter allocation UI and its content warnings.
+ * result is limited to that (active) stage; otherwise all active stages with
+ * the teacher's chapters are returned. Lessons/chapters are always included so
+ * the frontend can drive the per-lesson / per-chapter allocation UI and its
+ * content warnings.
  */
 export async function getGeneratorSources(
   teacherId: string,
@@ -62,15 +63,17 @@ export async function getGeneratorSources(
 ): Promise<GeneratorSourcesResult> {
   const stages = await db.stage.findMany({
     where: {
-      teacherId,
       deletedAt: null,
-      ...(stageId ? { id: stageId } : {}),
+      isActive: true,
+      ...(stageId ? { id: stageId } : {
+        chapters: { some: { teacherId, deletedAt: null } },
+      }),
     },
     select: {
       id: true,
       name: true,
       chapters: {
-        where: { deletedAt: null },
+        where: { teacherId, deletedAt: null },
         select: {
           id: true,
           name: true,

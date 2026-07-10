@@ -9,7 +9,7 @@ import { studentPublicFields } from "./student.types.js";
 import { getStudentProfileOverview } from "./student-profile.service.js";
 import {
   assertStudentVisibleToTeacher,
-  assertStageOwnedByTeacher,
+  assertStageExistsAndActive,
 } from "../teacher-access/teacher-access.service.js";
 import type {
   CreateStudentInput,
@@ -37,7 +37,7 @@ export class StudentController {
                 status: "ACTIVE",
                 chapter: {
                   deletedAt: null,
-                  stage: { teacherId, deletedAt: null },
+                  teacherId,
                 },
               },
             },
@@ -208,7 +208,7 @@ export class StudentController {
       // teacher cannot attach a student to another teacher's stage. The teacher id
       // is taken from the auth context, never from the request body.
       if (req.user?.role === "OPERATION") {
-        await assertStageOwnedByTeacher(stageId, req.user.id);
+        await assertStageExistsAndActive(stageId);
       }
 
       const existing = await prisma.user.findFirst({

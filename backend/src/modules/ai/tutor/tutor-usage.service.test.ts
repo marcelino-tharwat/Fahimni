@@ -12,10 +12,8 @@ function fakePrisma(queryResult: Array<{ count: number }>) {
 function enrollmentWithCap(cap: number | null) {
   return {
     chapter: {
-      stage: {
-        teacher: {
-          teacherProfile: cap === null ? null : { aiTutorDailyQueryLimit: cap },
-        },
+      teacher: {
+        teacherProfile: cap === null ? null : { aiTutorDailyQueryLimit: cap },
       },
     },
   };

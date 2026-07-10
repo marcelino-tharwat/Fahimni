@@ -783,6 +783,7 @@ async function seedAll(): Promise<void> {
             description: ch.description,
             sortOrder: ch.sortOrder,
             price: ch.price,
+            teacherId: TEACHERS[ch.teacherIdx]!.id,
           },
           create: {
             id: ch.id,
@@ -791,6 +792,7 @@ async function seedAll(): Promise<void> {
             sortOrder: ch.sortOrder,
             stageId: ch.stageId,
             price: ch.price,
+            teacherId: TEACHERS[ch.teacherIdx]!.id,
           },
         });
       }
