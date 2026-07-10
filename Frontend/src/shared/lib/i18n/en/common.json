@@ -22,7 +22,8 @@
     "plans": "Plans & Subscriptions",
     "subscriptions": "Subscriptions",
     "revenue": "Revenue",
-    "payments": "Payments"
+    "payments": "Payments",
+    "auditLogs": "Audit Logs"
   },
   "roles": {
     "ADMIN": "Admin",
@@ -47,6 +48,35 @@
     "generate": "Generate"
   },
   "andLabel": "and",
+  "auditLogs": {
+    "title": "Audit Logs",
+    "subtitle": "System events with sanitized metadata (no secrets)",
+    "search": "Search",
+    "searchPlaceholder": "Search by actor / action",
+    "action": "Action",
+    "allActions": "All actions",
+    "entityType": "Entity type",
+    "allEntities": "All entities",
+    "fromDate": "From date",
+    "toDate": "To date",
+    "clearFilters": "Clear filters",
+    "colAction": "Action",
+    "colEntity": "Entity",
+    "colActor": "Actor",
+    "colDate": "Date",
+    "colView": "View",
+    "details": "Details",
+    "detailTitle": "Event details",
+    "entityId": "Entity ID",
+    "actor": "Actor",
+    "date": "Date",
+    "metadata": "Metadata (sanitized)",
+    "empty": "No events",
+    "error": "Failed to load the log",
+    "prev": "Previous",
+    "next": "Next",
+    "system": "System"
+  },
   "status": {
     "loading": "Loading...",
     "error": "An error occurred",

@@ -340,6 +340,15 @@ async function main(): Promise<void> {
   check("COURSE_PURCHASE platform promo exists", coursePromos >= 1, `${coursePromos} found`);
   check("TEACHER_PLAN platform promo exists", planPromos >= 1, `${planPromos} found`);
 
+  // 22b. Audit logs exist and cover the key admin actions.
+  const auditTotal = await prisma.auditLog.count();
+  check("Audit logs exist", auditTotal >= 5, `${auditTotal} found`);
+  const auditActions = await prisma.auditLog.findMany({ distinct: ["action"], select: { action: true } });
+  const actionSet = new Set(auditActions.map((a) => a.action));
+  const requiredActions = ["USER_CREATED", "TEACHER_REQUEST_APPROVED", "TEACHER_REQUEST_REJECTED", "ADMIN_PLAN_CREATED"];
+  const missingActions = requiredActions.filter((a) => !actionSet.has(a));
+  check("Audit logs cover key admin actions", missingActions.length === 0, missingActions.length ? `missing: ${missingActions.join(", ")}` : "ok");
+
   // 23. Teacher subscriptions exist
   const subs = await prisma.teacherSubscription.count({
     where: { teacherId: { in: teachers.map((t) => t.id) } },
