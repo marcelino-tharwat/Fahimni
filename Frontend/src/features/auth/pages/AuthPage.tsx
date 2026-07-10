@@ -147,7 +147,15 @@ function LoginForm() {
     setLoading(true);
     try {
       const res = await dispatch(loginThunk({ email: v.email, password: v.password })).unwrap();
-      navigate(dashboardPathByRole[res.user.role]);
+      // Redirect based on access state — pending/rejected teachers go to their
+      // review-status pages; everyone else follows the normal role-based path.
+      if (res.accessState === 'TEACHER_PENDING_REVIEW') {
+        navigate('/teacher/pending-review');
+      } else if (res.accessState === 'TEACHER_REJECTED') {
+        navigate('/teacher/rejected');
+      } else {
+        navigate(dashboardPathByRole[res.user.role]);
+      }
     } catch (err) {
       setError(err ? String(err) : t("auth:errGeneric"));
     } finally {

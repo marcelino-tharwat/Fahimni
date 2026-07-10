@@ -354,7 +354,7 @@ export function EssayGradingDetailPage() {
   return (
     <>
       <EssayGradingToast message={t('essayGrading.submitSuccess')} show={showToast} />
-      <div className="pb-24">
+      <div className="pb-8">
         <EssayPageShell>
           <EssayBreadcrumb
             items={[
@@ -444,39 +444,29 @@ export function EssayGradingDetailPage() {
       </div>
 
       {!readOnly && data.essayAnswers.length > 0 && (
-        <div
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-[#E5E7EB] bg-white px-4 py-3.5 sm:px-6"
-          style={{ boxShadow: '0 -2px 12px rgba(0,0,0,0.06)' }}
-        >
-          <div className="mx-auto flex max-w-4xl items-center justify-between gap-3">
-            <p className="text-sm text-[#6B7280]">
-              {t('essayGrading.progress', {
-                graded: gradedCount,
-                total: data.essayAnswers.length,
-                score: totalPts,
-                max: maxPts,
-              })}
-            </p>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!validation.valid || gradeMutation.isPending}
-              className={cn(
-                'flex h-11 items-center gap-2 rounded-xl px-6 text-sm font-bold text-white transition-all active:scale-[0.97]',
-                (!validation.valid || gradeMutation.isPending) && 'cursor-not-allowed opacity-50',
-              )}
-              style={{ background: ESSAY_GRADING_CYAN }}
-            >
-              {gradeMutation.isPending ? (
-                <>
-                  <Loader2 size={15} className="animate-spin" />
-                  {t('essayGrading.submitting')}
-                </>
-              ) : (
-                t('essayGrading.submitGrading')
-              )}
-            </button>
-          </div>
+        <div className="fixed bottom-6 left-[calc(50%+8rem)] z-30 flex max-sm:left-1/2 -translate-x-1/2 items-center gap-3 rounded-full border border-[#E5E7EB] bg-white px-3 py-2 shadow-lg">
+          <span className="rounded-full bg-[#F3F4F6] px-3 py-1 text-xs font-semibold text-[#6B7280]">
+            {gradedCount}/{data.essayAnswers.length}
+          </span>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!validation.valid || gradeMutation.isPending}
+            className={cn(
+              'flex h-9 items-center gap-2 rounded-full px-5 text-sm font-bold text-white transition-all active:scale-[0.97]',
+              (!validation.valid || gradeMutation.isPending) && 'cursor-not-allowed opacity-50',
+            )}
+            style={{ background: ESSAY_GRADING_CYAN }}
+          >
+            {gradeMutation.isPending ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                {t('essayGrading.submitting')}
+              </>
+            ) : (
+              t('essayGrading.submitGrading')
+            )}
+          </button>
         </div>
       )}
     </>

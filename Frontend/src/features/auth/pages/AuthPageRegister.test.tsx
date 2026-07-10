@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthPage } from './AuthPage';
 import { TeacherPendingReviewPage } from '@/features/teacher/pages/TeacherPendingReviewPage';
 import { TeacherRequestForm } from '@/features/teacher-request/components/TeacherRequestForm';
@@ -124,10 +125,27 @@ describe('AuthPage — register account types', () => {
 });
 
 describe('teacher pending review + public request', () => {
-  it('6. TeacherPendingReviewPage renders the pending message', () => {
-    render(<MemoryRouter><TeacherPendingReviewPage /></MemoryRouter>);
-    expect(screen.getByText('auth:teacherPendingTitle')).toBeInTheDocument();
-    expect(screen.getByText('auth:teacherPendingMessage')).toBeInTheDocument();
+  function withQueryClient(children: React.ReactNode) {
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+  }
+
+  it('6. TeacherPendingReviewPage renders the pending message', async () => {
+    mApi.get.mockResolvedValue({
+      data: {
+        data: {
+          teacherApprovalState: 'PENDING_REVIEW',
+          accessState: 'TEACHER_PENDING_REVIEW',
+          canAccessTeacherFeatures: false,
+          request: { publicReference: 'TR-2026-123456', status: 'PENDING', submittedAt: '2026-01-01T00:00:00.000Z', reviewedAt: null },
+          message: 'مرحبًا بك، تم استلام طلبك وهو الآن قيد المراجعة من الإدارة.',
+        },
+      },
+    });
+    render(withQueryClient(<MemoryRouter><TeacherPendingReviewPage /></MemoryRouter>));
+    expect(await screen.findByText('auth:teacherPendingTitle')).toBeInTheDocument();
+    // The page now displays the server-provided message when available.
+    expect(screen.getByText('مرحبًا بك، تم استلام طلبك وهو الآن قيد المراجعة من الإدارة.')).toBeInTheDocument();
   });
 
   it('7. existing public teacher request form still renders', () => {

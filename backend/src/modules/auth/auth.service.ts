@@ -68,19 +68,33 @@ export class AuthService {
       throw error;
     }
 
-    // Teacher lifecycle gating with specific codes (never the generic inactive
-    // message). Checked before the generic INACTIVE guard because pending/rejected
-    // teachers are INACTIVE by design.
+    // BANNED users are always blocked — no exceptions.
+    if (user.status === "BANNED") {
+      const error = new Error(
+        "Account is inactive. Contact support.",
+      ) as ApiError;
+      error.status = 403;
+      throw error;
+    }
+
+    // Teacher lifecycle gating — pending/rejected teachers are allowed to login
+    // in restricted mode (they can see their review-status page but cannot access
+    // teacher features). Approved teachers proceed normally. Other INACTIVE
+    // non-teacher users remain blocked.
     if (user.role === "OPERATION") {
       if (user.teacherApprovalState === "PENDING_REVIEW") {
-        throw new AppError("حسابك قيد المراجعة من الإدارة", 403, "TEACHER_PENDING_REVIEW");
+        const result = await this.generateSession(user.id);
+        const { password: _, ...safeUser } = user;
+        return { user: safeUser, accessState: "TEACHER_PENDING_REVIEW" as const, ...result };
       }
       if (user.teacherApprovalState === "REJECTED") {
-        throw new AppError("تم رفض طلب انضمامك", 403, "TEACHER_REJECTED");
+        const result = await this.generateSession(user.id);
+        const { password: _, ...safeUser } = user;
+        return { user: safeUser, accessState: "TEACHER_REJECTED" as const, ...result };
       }
     }
 
-    if (user.status === "INACTIVE" || user.status === "BANNED") {
+    if (user.status === "INACTIVE") {
       const error = new Error(
         "Account is inactive. Contact support.",
       ) as ApiError;
@@ -480,10 +494,30 @@ export class AuthService {
     if (payloadVersion !== undefined && user.tokenVersion !== payloadVersion) {
       throw new AppError("Session superseded by new login", 401);
     }
-    if (user.status === "INACTIVE" || user.status === "BANNED") {
+    // BANNED users are always blocked from refreshing.
+    if (user.status === "BANNED") {
       const error = new Error("Account is inactive. Contact support.") as ApiError;
       error.status = 403;
       throw error;
+    }
+
+    // INACTIVE teachers with PENDING_REVIEW or REJECTED approval state are
+    // allowed to refresh (restricted mode — they can view their review-status
+    // page). Other INACTIVE users remain blocked.
+    if (user.status === "INACTIVE") {
+      const fullUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true, teacherApprovalState: true },
+      });
+      const isRestrictedTeacher =
+        fullUser?.role === "OPERATION" &&
+        (fullUser?.teacherApprovalState === "PENDING_REVIEW" ||
+          fullUser?.teacherApprovalState === "REJECTED");
+      if (!isRestrictedTeacher) {
+        const error = new Error("Account is inactive. Contact support.") as ApiError;
+        error.status = 403;
+        throw error;
+      }
     }
 
     // 3. Rotate atomically IN PLACE — preserves the row id and createdAt so the
