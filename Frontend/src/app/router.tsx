@@ -79,6 +79,7 @@ import { AdminPromoCodesManagementPage } from '@/features/admin/pages/AdminPromo
 import { AdminAuditLogsPage } from '@/features/admin/pages/AdminAuditLogsPage';
 import { AdminPlansPage } from '@/features/admin/pages/AdminPlansPage';
 import { AdminSubscriptionsPage } from '@/features/admin/pages/AdminSubscriptionsPage';
+import { AdminTeacherWithdrawalsPage } from '@/features/admin/pages/AdminTeacherWithdrawalsPage';
 import { AdminRevenuePage } from '@/features/admin/pages/AdminRevenuePage';
 import { AdminPaymentsPage } from '@/features/admin/pages/AdminPaymentsPage';
 
@@ -222,6 +223,7 @@ const router = createBrowserRouter([
               { path: '/admin/promo-codes', element: <AdminPromoCodesManagementPage /> },
               { path: '/admin/plans', element: <AdminPlansPage /> },
               { path: '/admin/subscriptions', element: <AdminSubscriptionsPage /> },
+              { path: '/admin/teacher-withdrawals', element: <AdminTeacherWithdrawalsPage /> },
               { path: '/admin/revenue', element: <AdminRevenuePage /> },
               { path: '/admin/payments', element: <AdminPaymentsPage /> },
               { path: '/admin/audit-logs', element: <AdminAuditLogsPage /> },

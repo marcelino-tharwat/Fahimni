@@ -31,6 +31,11 @@ import {
   listTeacherRequestsQuerySchema,
   rejectRequestSchema,
 } from "./admin-teacher-requests.validation.js";
+import { AdminTeacherWithdrawalsController } from "./admin-teacher-withdrawals.controller.js";
+import {
+  listAdminWithdrawalsQuerySchema,
+  updateWithdrawalStatusSchema,
+} from "./admin-teacher-withdrawals.validation.js";
 import { AdminPlansController } from "./admin-plans.controller.js";
 import {
   createPlanSchema,
@@ -99,6 +104,7 @@ const teachersController = new AdminTeachersController();
 const teacherDetailController = new AdminTeacherDetailController();
 const studentsController = new AdminStudentsController();
 const teacherRequestsController = new AdminTeacherRequestsController();
+const teacherWithdrawalsController = new AdminTeacherWithdrawalsController();
 const plansController = new AdminPlansController();
 const adminUsersController = new AdminUsersController();
 const subscriptionsController = new AdminSubscriptionsController();
@@ -227,6 +233,26 @@ router.patch(
   "/teacher-requests/:requestId/reject",
   validateRequest(rejectRequestSchema, "body"),
   asyncHandler(teacherRequestsController.reject),
+);
+
+// ── Teacher withdrawal requests review. Static list before dynamic :withdrawalId. ──
+// Strict forward-only status transitions enforced in the service layer (see
+// ../teacher-wallet/withdrawal-status.ts) — never step back, never reopen a
+// final request. Every successful status change writes an AuditLog; a
+// rejected transition never modifies the record.
+router.get(
+  "/teacher-withdrawals",
+  validateRequest(listAdminWithdrawalsQuerySchema, "query"),
+  asyncHandler(teacherWithdrawalsController.list),
+);
+router.get(
+  "/teacher-withdrawals/:withdrawalId",
+  asyncHandler(teacherWithdrawalsController.getDetail),
+);
+router.patch(
+  "/teacher-withdrawals/:withdrawalId/status",
+  validateRequest(updateWithdrawalStatusSchema, "body"),
+  asyncHandler(teacherWithdrawalsController.updateStatus),
 );
 
 // ── Plans catalog & mutations ──

@@ -1,12 +1,18 @@
 import { prisma } from "../../config/database.js";
+import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
 import type {
+  PayoutMethodSnapshotDTO,
   PayoutProfileDTO,
   TeacherWalletDTO,
+  TeacherWithdrawalListItemDTO,
   WithdrawalSummaryDTO,
 } from "./teacher-wallet.types.js";
-import type { UpdatePayoutProfileInput } from "./teacher-wallet.validation.js";
+import type {
+  CreateWithdrawalInput,
+  UpdatePayoutProfileInput,
+} from "./teacher-wallet.validation.js";
 
 const HELD_STATUSES = ["PENDING", "PROCESSING"] as const;
 const LATEST_WITHDRAWALS_LIMIT = 10;
@@ -183,6 +189,203 @@ export class TeacherWalletService {
     });
 
     return toPayoutProfileDTO(updated);
+  }
+
+  /** GET /api/teacher/withdrawals — the teacher's own requests, newest first. */
+  public async listWithdrawals(teacherId: string): Promise<TeacherWithdrawalListItemDTO[]> {
+    const rows = await prisma.teacherWithdrawalRequest.findMany({
+      where: { teacherId },
+      orderBy: { requestedAt: "desc" },
+    });
+    return rows.map((r) => this.toWithdrawalListItemDTO(r));
+  }
+
+  /**
+   * POST /api/teacher/withdrawals — request a withdrawal from available
+   * balance. The balance re-check and the insert happen inside one
+   * transaction, serialized per-teacher via a Postgres advisory lock
+   * (released automatically at commit/rollback), so two concurrent requests
+   * for the same teacher can never together exceed availableBalance.
+   */
+  public async createWithdrawal(
+    teacherId: string,
+    input: CreateWithdrawalInput,
+  ): Promise<TeacherWithdrawalListItemDTO> {
+    const profile = await prisma.teacherProfile.findUnique({
+      where: { userId: teacherId },
+      select: { instaPayHandle: true, vodafoneCashNumber: true },
+    });
+    if (!profile) {
+      throw new AppError("Teacher profile not found", 404);
+    }
+    if (!profile.instaPayHandle && !profile.vodafoneCashNumber) {
+      throw new AppError(
+        "أضف بيانات التحويل أولًا من ملفك المالي",
+        400,
+        "WITHDRAWAL_PAYOUT_METHOD_REQUIRED",
+      );
+    }
+
+    const created = await prisma.$transaction(async (tx) => {
+      // Serialize concurrent withdrawal creation for THIS teacher only (the
+      // hash key is teacher-scoped, so other teachers are never blocked).
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${teacherId}))`;
+
+      const [earningsAgg, withdrawalGroups] = await Promise.all([
+        tx.paymentTransaction.aggregate({
+          where: { status: "SUCCESS", chapter: { teacherId } },
+          _sum: { amount: true },
+        }),
+        tx.teacherWithdrawalRequest.groupBy({
+          by: ["status"],
+          where: { teacherId },
+          _sum: { amount: true },
+        }),
+      ]);
+      const totalConfirmedEarnings = earningsAgg._sum.amount ?? 0;
+      const sumByStatus = (statuses: readonly string[]): number =>
+        withdrawalGroups
+          .filter((g) => statuses.includes(g.status))
+          .reduce((sum, g) => sum + (g._sum.amount ?? 0), 0);
+      const transferred = sumByStatus(["TRANSFERRED"]);
+      const held = sumByStatus(HELD_STATUSES);
+      const availableBalance = Math.max(0, totalConfirmedEarnings - transferred - held);
+
+      if (input.amount > availableBalance) {
+        throw new AppError(
+          "المبلغ المطلوب أكبر من الرصيد المتاح",
+          400,
+          "WITHDRAWAL_EXCEEDS_AVAILABLE_BALANCE",
+        );
+      }
+
+      const payoutMethodSnapshot: PayoutMethodSnapshotDTO = {
+        instaPayHandle: profile.instaPayHandle,
+        vodafoneCashNumber: profile.vodafoneCashNumber,
+      };
+
+      const row = await tx.teacherWithdrawalRequest.create({
+        data: {
+          teacherId,
+          amount: input.amount,
+          currency: "EGP",
+          status: "PENDING",
+          payoutMethodSnapshot: payoutMethodSnapshot as unknown as Prisma.InputJsonValue,
+          teacherNote: input.teacherNote ?? null,
+        },
+      });
+
+      await auditLogService.record(
+        {
+          action: "TEACHER_WITHDRAWAL_REQUESTED",
+          resourceType: "TEACHER_WITHDRAWAL_REQUEST",
+          resourceId: row.id,
+          actorId: teacherId,
+          actorType: "TEACHER",
+          scopeTeacherId: teacherId,
+          details: { amount: input.amount },
+        },
+        tx,
+      );
+
+      return row;
+    });
+
+    return this.toWithdrawalListItemDTO(created);
+  }
+
+  /**
+   * PATCH /api/teacher/withdrawals/:withdrawalId/cancel — teacher-only,
+   * PENDING-only. The conditional `updateMany` guard is defense-in-depth
+   * against a race between the ownership/status check and the write; a lost
+   * race reports the same error and never partially modifies the record.
+   */
+  public async cancelWithdrawal(
+    teacherId: string,
+    withdrawalId: string,
+  ): Promise<TeacherWithdrawalListItemDTO> {
+    const existing = await prisma.teacherWithdrawalRequest.findFirst({
+      where: { id: withdrawalId, teacherId },
+    });
+    if (!existing) {
+      throw new AppError("Withdrawal request not found", 404, "WITHDRAWAL_NOT_FOUND");
+    }
+    if (existing.status !== "PENDING") {
+      throw new AppError(
+        "لا يمكن إلغاء طلب السحب في هذه الحالة",
+        409,
+        "WITHDRAWAL_CANNOT_BE_CANCELLED",
+      );
+    }
+
+    const updated = await prisma.$transaction(async (tx) => {
+      const result = await tx.teacherWithdrawalRequest.updateMany({
+        where: { id: withdrawalId, teacherId, status: "PENDING" },
+        data: { status: "CANCELLED", cancelledAt: new Date() },
+      });
+      if (result.count === 0) {
+        throw new AppError(
+          "لا يمكن إلغاء طلب السحب في هذه الحالة",
+          409,
+          "WITHDRAWAL_CANNOT_BE_CANCELLED",
+        );
+      }
+
+      await auditLogService.record(
+        {
+          action: "TEACHER_WITHDRAWAL_CANCELLED",
+          resourceType: "TEACHER_WITHDRAWAL_REQUEST",
+          resourceId: withdrawalId,
+          actorId: teacherId,
+          actorType: "TEACHER",
+          scopeTeacherId: teacherId,
+        },
+        tx,
+      );
+
+      return tx.teacherWithdrawalRequest.findUniqueOrThrow({ where: { id: withdrawalId } });
+    });
+
+    return this.toWithdrawalListItemDTO(updated);
+  }
+
+  private toWithdrawalListItemDTO(row: {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    payoutMethodSnapshot: Prisma.JsonValue;
+    teacherNote: string | null;
+    requestedAt: Date;
+    processedAt: Date | null;
+    transferredAt: Date | null;
+    cancelledAt: Date | null;
+  }): TeacherWithdrawalListItemDTO {
+    const snapshot = row.payoutMethodSnapshot;
+    const isPlainObject =
+      snapshot !== null && typeof snapshot === "object" && !Array.isArray(snapshot);
+    const payoutMethodSnapshot: PayoutMethodSnapshotDTO | null = isPlainObject
+      ? {
+          instaPayHandle:
+            ((snapshot as Record<string, unknown>).instaPayHandle as string | undefined) ?? null,
+          vodafoneCashNumber:
+            ((snapshot as Record<string, unknown>).vodafoneCashNumber as string | undefined) ??
+            null,
+        }
+      : null;
+
+    return {
+      id: row.id,
+      amount: row.amount,
+      currency: row.currency,
+      status: row.status,
+      payoutMethodSnapshot,
+      teacherNote: row.teacherNote,
+      requestedAt: row.requestedAt.toISOString(),
+      processedAt: row.processedAt?.toISOString() ?? null,
+      transferredAt: row.transferredAt?.toISOString() ?? null,
+      cancelledAt: row.cancelledAt?.toISOString() ?? null,
+    };
   }
 }
 

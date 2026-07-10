@@ -228,3 +228,28 @@ export function createPayoutProfileSchema(t: TFunction) {
 export type PayoutProfileFormInput = z.infer<
   ReturnType<typeof createPayoutProfileSchema>
 >;
+
+/**
+ * Client-side mirror of the backend `createWithdrawalSchema`
+ * (backend/src/modules/teacher-wallet/teacher-wallet.validation.ts), plus a
+ * pre-emptive `availableBalance` ceiling so the over-balance error can surface
+ * inline before a round-trip — the backend re-checks this atomically anyway
+ * (frontend-only validation is never sufficient on its own).
+ */
+export function createWithdrawalRequestSchema(t: TFunction, availableBalance: number) {
+  return z.object({
+    amount: z
+      .number({ message: t("wallet.withdrawals.validation.amountRequired") })
+      .positive(t("wallet.withdrawals.validation.amountPositive"))
+      .max(availableBalance, t("wallet.withdrawals.validation.amountExceedsBalance")),
+    teacherNote: z
+      .string()
+      .trim()
+      .max(500, t("wallet.withdrawals.validation.noteMax"))
+      .optional(),
+  });
+}
+
+export type WithdrawalRequestFormInput = z.infer<
+  ReturnType<typeof createWithdrawalRequestSchema>
+>;

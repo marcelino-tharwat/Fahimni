@@ -4,12 +4,15 @@ import { render, screen, cleanup, fireEvent, waitFor, within } from '@testing-li
 import '@testing-library/jest-dom/vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { TeacherWalletPage } from './TeacherWalletPage';
-import type { TeacherWallet } from '@/features/teacher/types/wallet';
+import type { TeacherWallet, TeacherWithdrawalListItem } from '@/features/teacher/types/wallet';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown> | string) => {
       if (typeof opts === 'object' && opts?.defaultValue) return opts.defaultValue as string;
+      if (typeof opts === 'object' && typeof opts.amount !== 'undefined') {
+        return `${key}:${opts.amount}:${opts.currency}`;
+      }
       return key;
     },
   }),
@@ -23,14 +26,21 @@ vi.mock('@/shared/store/slices/toastSlice', () => ({
   addToast: vi.fn(),
 }));
 
-const { mockUseTeacherWallet, mockMutate } = vi.hoisted(() => ({
-  mockUseTeacherWallet: vi.fn(),
-  mockMutate: vi.fn(),
-}));
+const { mockUseTeacherWallet, mockUseTeacherWithdrawals, mockUpdateMutate, mockCreateMutate, mockCancelMutate } =
+  vi.hoisted(() => ({
+    mockUseTeacherWallet: vi.fn(),
+    mockUseTeacherWithdrawals: vi.fn(),
+    mockUpdateMutate: vi.fn(),
+    mockCreateMutate: vi.fn(),
+    mockCancelMutate: vi.fn(),
+  }));
 
 vi.mock('@/features/teacher/hooks/useTeacherWallet', () => ({
   useTeacherWallet: mockUseTeacherWallet,
-  useUpdatePayoutProfile: () => ({ mutate: mockMutate, isPending: false }),
+  useTeacherWithdrawals: mockUseTeacherWithdrawals,
+  useUpdatePayoutProfile: () => ({ mutate: mockUpdateMutate, isPending: false }),
+  useCreateWithdrawal: () => ({ mutate: mockCreateMutate, isPending: false }),
+  useCancelWithdrawal: () => ({ mutate: mockCancelMutate, isPending: false }),
 }));
 
 function wallet(overrides: Partial<TeacherWallet> = {}): TeacherWallet {
@@ -40,19 +50,7 @@ function wallet(overrides: Partial<TeacherWallet> = {}): TeacherWallet {
     heldWithdrawals: 80,
     completedWithdrawals: 150,
     currency: 'EGP',
-    latestWithdrawals: [
-      {
-        id: 'w1',
-        amount: 150,
-        currency: 'EGP',
-        status: 'TRANSFERRED',
-        requestedAt: '2026-06-01T00:00:00.000Z',
-        processedAt: '2026-06-02T00:00:00.000Z',
-        transferredAt: '2026-06-03T00:00:00.000Z',
-        cancelledAt: null,
-        teacherNote: null,
-      },
-    ],
+    latestWithdrawals: [],
     payoutProfile: {
       instaPayHandle: 'ahmed.math@instapay',
       vodafoneCashNumber: '01001234567',
@@ -62,8 +60,25 @@ function wallet(overrides: Partial<TeacherWallet> = {}): TeacherWallet {
   };
 }
 
-function loaded(data: TeacherWallet) {
+function withdrawal(overrides: Partial<TeacherWithdrawalListItem> = {}): TeacherWithdrawalListItem {
+  return {
+    id: 'w1',
+    amount: 150,
+    currency: 'EGP',
+    status: 'TRANSFERRED',
+    payoutMethodSnapshot: { instaPayHandle: 'ahmed.math@instapay', vodafoneCashNumber: '01001234567' },
+    teacherNote: null,
+    requestedAt: '2026-06-01T00:00:00.000Z',
+    processedAt: '2026-06-02T00:00:00.000Z',
+    transferredAt: '2026-06-03T00:00:00.000Z',
+    cancelledAt: null,
+    ...overrides,
+  };
+}
+
+function loaded(data: TeacherWallet, withdrawals: TeacherWithdrawalListItem[] = []) {
   mockUseTeacherWallet.mockReturnValue({ data, isLoading: false, isError: false, refetch: vi.fn() });
+  mockUseTeacherWithdrawals.mockReturnValue({ data: withdrawals, isLoading: false, isError: false });
 }
 
 function renderPage() {
@@ -104,19 +119,20 @@ describe('TeacherWalletPage', () => {
   });
 
   it('renders the withdrawals table when data exists', () => {
-    loaded(wallet());
+    loaded(wallet(), [withdrawal()]);
     renderPage();
     expect(screen.getByTestId('withdrawals-table')).toBeInTheDocument();
   });
 
   it('renders the empty state when there are no withdrawals', () => {
-    loaded(wallet({ latestWithdrawals: [] }));
+    loaded(wallet(), []);
     renderPage();
     expect(screen.getByTestId('withdrawals-empty')).toBeInTheDocument();
   });
 
   it('shows the loading state', () => {
     mockUseTeacherWallet.mockReturnValue({ data: undefined, isLoading: true, isError: false, refetch: vi.fn() });
+    mockUseTeacherWithdrawals.mockReturnValue({ data: undefined, isLoading: true, isError: false });
     renderPage();
     expect(screen.getByTestId('wallet-skeleton')).toBeInTheDocument();
   });
@@ -124,6 +140,7 @@ describe('TeacherWalletPage', () => {
   it('shows the error state with a retry action', () => {
     const refetch = vi.fn();
     mockUseTeacherWallet.mockReturnValue({ data: undefined, isLoading: false, isError: true, refetch });
+    mockUseTeacherWithdrawals.mockReturnValue({ data: undefined, isLoading: false, isError: false });
     renderPage();
     fireEvent.click(screen.getByText('wallet.retry'));
     expect(refetch).toHaveBeenCalled();
@@ -151,7 +168,7 @@ describe('TeacherWalletPage', () => {
     fireEvent.click(screen.getByText('wallet.payoutProfile.save'));
 
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith(
+      expect(mockUpdateMutate).toHaveBeenCalledWith(
         expect.objectContaining({ instaPayHandle: 'new.handle@instapay' }),
         expect.any(Object),
       );
@@ -170,7 +187,7 @@ describe('TeacherWalletPage', () => {
     await waitFor(() => {
       expect(screen.getByText('wallet.validation.instaPayMin')).toBeInTheDocument();
     });
-    expect(mockMutate).not.toHaveBeenCalled();
+    expect(mockUpdateMutate).not.toHaveBeenCalled();
   });
 
   it('5b. invalid Vodafone Cash number shows a validation error and does not call the mutation', async () => {
@@ -185,6 +202,99 @@ describe('TeacherWalletPage', () => {
     await waitFor(() => {
       expect(screen.getByText('wallet.validation.vodafoneInvalid')).toBeInTheDocument();
     });
-    expect(mockMutate).not.toHaveBeenCalled();
+    expect(mockUpdateMutate).not.toHaveBeenCalled();
+  });
+
+  // ── Withdrawal request / cancel flow ──────────────────────────────────────
+
+  it('renders a "no payout method" warning when neither payout field is set', () => {
+    loaded(
+      wallet({
+        payoutProfile: { instaPayHandle: null, vodafoneCashNumber: null, payoutMethodUpdatedAt: null },
+      }),
+    );
+    renderPage();
+    expect(screen.getByTestId('no-payout-method-warning')).toBeInTheDocument();
+  });
+
+  it('does not render the no-payout-method warning when a payout method is set', () => {
+    loaded(wallet());
+    renderPage();
+    expect(screen.queryByTestId('no-payout-method-warning')).not.toBeInTheDocument();
+  });
+
+  it('request withdrawal modal renders and submits', async () => {
+    loaded(wallet());
+    renderPage();
+    fireEvent.click(screen.getByTestId('request-withdrawal-btn'));
+
+    const amountInput = screen.getByLabelText('wallet.withdrawals.amount');
+    fireEvent.change(amountInput, { target: { value: '50' } });
+    fireEvent.click(screen.getByText('wallet.withdrawals.submit'));
+
+    await waitFor(() => {
+      expect(mockCreateMutate).toHaveBeenCalledWith(
+        expect.objectContaining({ amount: 50 }),
+        expect.any(Object),
+      );
+    });
+  });
+
+  it('over-balance error renders and the mutation is not called', async () => {
+    loaded(wallet({ availableBalance: 70 }));
+    renderPage();
+    fireEvent.click(screen.getByTestId('request-withdrawal-btn'));
+
+    const amountInput = screen.getByLabelText('wallet.withdrawals.amount');
+    fireEvent.change(amountInput, { target: { value: '999' } });
+    fireEvent.click(screen.getByText('wallet.withdrawals.submit'));
+
+    await waitFor(() => {
+      expect(screen.getByText('wallet.withdrawals.validation.amountExceedsBalance')).toBeInTheDocument();
+    });
+    expect(mockCreateMutate).not.toHaveBeenCalled();
+  });
+
+  it('5 & 13. cancel button appears only for PENDING and disappears once it leaves PENDING', () => {
+    loaded(wallet(), [
+      withdrawal({ id: 'w-pending', status: 'PENDING' }),
+      withdrawal({ id: 'w-processing', status: 'PROCESSING' }),
+    ]);
+    renderPage();
+    expect(screen.getByTestId('cancel-withdrawal-w-pending')).toBeInTheDocument();
+    expect(screen.queryByTestId('cancel-withdrawal-w-processing')).not.toBeInTheDocument();
+  });
+
+  it('clicking cancel calls the cancel mutation for that withdrawal', () => {
+    loaded(wallet(), [withdrawal({ id: 'w-pending', status: 'PENDING' })]);
+    renderPage();
+    fireEvent.click(screen.getByTestId('cancel-withdrawal-w-pending'));
+    expect(mockCancelMutate).toHaveBeenCalledWith('w-pending', expect.any(Object));
+  });
+
+  it('12. final statuses (TRANSFERRED/REJECTED/CANCELLED) render read-only rows with no cancel button', () => {
+    loaded(wallet(), [
+      withdrawal({ id: 'w-t', status: 'TRANSFERRED' }),
+      withdrawal({ id: 'w-r', status: 'REJECTED' }),
+      withdrawal({ id: 'w-c', status: 'CANCELLED' }),
+    ]);
+    renderPage();
+    expect(screen.queryByTestId('cancel-withdrawal-w-t')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('cancel-withdrawal-w-r')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('cancel-withdrawal-w-c')).not.toBeInTheDocument();
+  });
+
+  it('9. status badges render for every withdrawal status', () => {
+    loaded(wallet(), [
+      withdrawal({ id: 'w1', status: 'PENDING' }),
+      withdrawal({ id: 'w2', status: 'PROCESSING' }),
+      withdrawal({ id: 'w3', status: 'TRANSFERRED' }),
+      withdrawal({ id: 'w4', status: 'REJECTED' }),
+      withdrawal({ id: 'w5', status: 'CANCELLED' }),
+    ]);
+    renderPage();
+    for (const status of ['PENDING', 'PROCESSING', 'TRANSFERRED', 'REJECTED', 'CANCELLED']) {
+      expect(screen.getByText(`wallet.withdrawals.statusLabels.${status}`)).toBeInTheDocument();
+    }
   });
 });
