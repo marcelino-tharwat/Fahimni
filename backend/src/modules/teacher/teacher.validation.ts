@@ -3,6 +3,12 @@ import {
   AI_TUTOR_LIMIT_MIN,
   AI_TUTOR_LIMIT_MAX,
 } from "../ai/tutor/tutor.constants.js";
+import { SUBJECT_CATALOG } from "../subjects/subjects.js";
+
+const VALID_SUBJECT_NAMES = SUBJECT_CATALOG.map((s) => s.displayName) as [
+  string,
+  ...string[],
+];
 
 export const updateTeacherProfileSchema = z
   .object({
@@ -29,7 +35,7 @@ export const updateTeacherProfileSchema = z
         "Mobile number must be a valid Egyptian number (e.g. 01012345678)",
       )
       .optional(),
-    subject: z.string().trim().optional(),
+    subject: z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
     bio: z
       .string()
       .trim()

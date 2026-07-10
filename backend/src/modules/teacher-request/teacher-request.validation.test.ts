@@ -16,7 +16,7 @@ describe("createTeacherRequestSchema", () => {
       fullName: "Mohamed Ahmed",
       email: "m.ahmed@example.com",
       mobile: "+201012345678",
-      subject: "Mathematics",
+      subject: "الرياضيات",
       bio: "Experienced math teacher",
     });
     expect(result.success).toBe(true);
@@ -83,17 +83,17 @@ describe("createTeacherRequestSchema", () => {
       fullName: "Mohamed Ahmed",
       email: "m.ahmed@example.com",
       mobile: "01012345678",
-      subject: "Arabic Language",
+      subject: "اللغة العربية",
     });
     expect(result.success).toBe(true);
   });
 
-  it("rejects subject exceeding 200 characters", () => {
+  it("rejects invalid subject", () => {
     const result = createTeacherRequestSchema.safeParse({
       fullName: "Mohamed Ahmed",
       email: "m.ahmed@example.com",
       mobile: "01012345678",
-      subject: "X".repeat(201),
+      subject: "Fake Subject XYZ",
     });
     expect(result.success).toBe(false);
   });

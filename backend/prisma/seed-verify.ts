@@ -201,6 +201,38 @@ async function main(): Promise<void> {
   const profiles = await prisma.teacherProfile.count({ where: { userId: { in: teachers.map((t) => t.id) } } });
   check("Teacher profiles exist", profiles >= 3, `${profiles} profiles`);
 
+  // 16a. All teacher subjects are from the controlled catalog
+  const VALID_SUBJECTS = [
+    "اللغة العربية", "اللغة الإنجليزية", "الرياضيات", "الفيزياء", "الكيمياء",
+    "الأحياء", "الجيولوجيا", "التاريخ", "الجغرافيا", "الفلسفة", "التربية الإسلامية",
+  ];
+  const teacherProfiles = await prisma.teacherProfile.findMany({
+    where: { userId: { in: teachers.map((t) => t.id) } },
+    select: { subject: true },
+  });
+  const invalidSubjects = teacherProfiles.filter(
+    (p) => p.subject != null && !VALID_SUBJECTS.includes(p.subject),
+  );
+  check(
+    "All teacher profile subjects are from the controlled catalog",
+    invalidSubjects.length === 0,
+    invalidSubjects.length > 0 ? `${invalidSubjects.length} invalid: ${invalidSubjects.map((i) => i.subject).join(", ")}` : "all valid",
+  );
+
+  // 16b. Teacher registration request subjects are from the controlled catalog
+  const allRegRequests = await prisma.teacherRegistrationRequest.findMany({
+    where: { publicReference: { startsWith: DEMO_REF_PREFIX } },
+    select: { subject: true },
+  });
+  const invalidRegSubjects = allRegRequests.filter(
+    (r) => r.subject != null && !VALID_SUBJECTS.includes(r.subject),
+  );
+  check(
+    "All teacher registration request subjects are from the controlled catalog",
+    invalidRegSubjects.length === 0,
+    invalidRegSubjects.length > 0 ? `${invalidRegSubjects.length} invalid` : "all valid",
+  );
+
   // 17. Quizzes exist
   const quizzes = await prisma.quiz.count({ where: { createdBy: { in: teachers.map((t) => t.id) } } });
   check("Quizzes exist", quizzes >= 6, `${quizzes} quizzes`);

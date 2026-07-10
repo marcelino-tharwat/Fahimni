@@ -37,7 +37,7 @@ import { FilesController } from "../files/files.controller.js";
 import { assertStudentVisibleToTeacher } from "../teacher-access/teacher-access.service.js";
 import { assertChapterOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
 import { assertLessonOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
-import { assertStageOwnedByTeacher } from "../teacher-access/teacher-access.service.js";
+import { assertStageExistsAndActive } from "../teacher-access/teacher-access.service.js";
 import { AppError } from "../../shared/utils/AppError.js";
 
 // ─── Fixture IDs ─────────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ describe("Teacher ownership guards (unit)", () => {
                   status: "ACTIVE",
                   chapter: {
                     deletedAt: null,
-                    stage: { teacherId: T_A, deletedAt: null },
+                    teacherId: T_A,
                   },
                 },
               },
@@ -410,16 +410,16 @@ describe("Teacher ownership guards (unit)", () => {
       );
     });
 
-    it("assertStageOwnedByTeacher throws 404 when stage not owned", async () => {
+    it("assertStageExistsAndActive throws 404 when stage not found", async () => {
       mockPrisma.stage.findFirst.mockResolvedValue(null);
-      await expect(assertStageOwnedByTeacher(STAGE_B, T_A)).rejects.toThrowError(
-        new AppError("Stage not found", 404),
+      await expect(assertStageExistsAndActive(STAGE_B)).rejects.toThrowError(
+        new AppError("Stage not found or inactive", 404),
       );
     });
 
-    it("assertStageOwnedByTeacher passes when stage is owned", async () => {
+    it("assertStageExistsAndActive passes when stage exists and is active", async () => {
       mockPrisma.stage.findFirst.mockResolvedValue({ id: STAGE_A });
-      await expect(assertStageOwnedByTeacher(STAGE_A, T_A)).resolves.toEqual({ id: STAGE_A });
+      await expect(assertStageExistsAndActive(STAGE_A)).resolves.toEqual({ id: STAGE_A });
     });
   });
 

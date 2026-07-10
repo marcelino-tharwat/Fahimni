@@ -1,4 +1,10 @@
 import { z } from "zod";
+import { isValidSubject, SUBJECT_CATALOG } from "../subjects/subjects.js";
+
+const VALID_SUBJECT_NAMES = SUBJECT_CATALOG.map((s) => s.displayName) as [
+  string,
+  ...string[],
+];
 
 const passwordSchema = z
   .string()
@@ -35,7 +41,7 @@ export const registerSchema = z
     // Teacher-only optional profile fields captured at unified registration.
     subject: z.preprocess(
       (v) => (v === "" ? undefined : v),
-      z.string().trim().min(2).max(200).optional(),
+      z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
     ),
     bio: z.preprocess(
       (v) => (v === "" ? undefined : v),
