@@ -21,7 +21,8 @@
     "plans": "الباقات والاشتراكات",
     "subscriptions": "الاشتراكات",
     "revenue": "الإيرادات",
-    "payments": "المدفوعات"
+    "payments": "المدفوعات",
+    "auditLogs": "سجل التدقيق"
   },
   "roles": {
     "ADMIN": "مسؤول",
@@ -46,6 +47,35 @@
     "generate": "توليد"
   },
   "andLabel": "و",
+  "auditLogs": {
+    "title": "سجلّ التدقيق",
+    "subtitle": "أحداث النظام مع بيانات وصفية مُنقّاة (بدون أي أسرار)",
+    "search": "بحث",
+    "searchPlaceholder": "بحث بالمنفّذ / الإجراء",
+    "action": "الإجراء",
+    "allActions": "كل الإجراءات",
+    "entityType": "نوع الكيان",
+    "allEntities": "كل الكيانات",
+    "fromDate": "من تاريخ",
+    "toDate": "إلى تاريخ",
+    "clearFilters": "مسح الفلاتر",
+    "colAction": "الإجراء",
+    "colEntity": "الكيان",
+    "colActor": "المنفّذ",
+    "colDate": "التاريخ",
+    "colView": "عرض",
+    "details": "تفاصيل",
+    "detailTitle": "تفاصيل الحدث",
+    "entityId": "معرّف الكيان",
+    "actor": "المنفّذ",
+    "date": "التاريخ",
+    "metadata": "البيانات الوصفية (مُنقّاة)",
+    "empty": "لا توجد أحداث",
+    "error": "تعذّر تحميل السجلّ",
+    "prev": "السابق",
+    "next": "التالي",
+    "system": "النظام"
+  },
   "status": {
     "loading": "جاري التحميل...",
     "error": "حدث خطأ",

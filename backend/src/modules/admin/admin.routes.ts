@@ -60,6 +60,8 @@ import {
   listSubscriptionPaymentsQuerySchema,
   revenueRankingQuerySchema,
 } from "./admin-revenue.validation.js";
+import { AdminAuditLogsController } from "./admin-audit-logs.controller.js";
+import { listAuditLogsQuerySchema } from "./admin-audit-logs.validation.js";
 import { AdminPromoCodesController } from "./admin-promo-codes.controller.js";
 import {
   createPromoCodeSchema,
@@ -94,6 +96,7 @@ const adminUsersController = new AdminUsersController();
 const subscriptionsController = new AdminSubscriptionsController();
 const revenueController = new AdminRevenueController();
 const promoCodesController = new AdminPromoCodesController();
+const auditLogsController = new AdminAuditLogsController();
 
 // The convention: authenticate first, then require the ADMIN role. Applies to
 // every route and every sub-router declared after this line.
@@ -332,6 +335,16 @@ router.patch(
   validateRequest(updatePromoCodeSchema, "body"),
   asyncHandler(promoCodesController.update),
 );
+
+// ── Audit logs viewer (read-only). Safe fields only; metadata sanitised on the
+// way out. Static routes before dynamic :auditLogId. ──
+router.get(
+  "/audit-logs",
+  validateRequest(listAuditLogsQuerySchema, "query"),
+  asyncHandler(auditLogsController.list),
+);
+router.get("/audit-logs/filters", asyncHandler(auditLogsController.getFilterOptions));
+router.get("/audit-logs/:auditLogId", asyncHandler(auditLogsController.getById));
 
 /** Lightweight identity check — confirms the caller is an authenticated admin. */
 router.get("/me", (req, res) => {
