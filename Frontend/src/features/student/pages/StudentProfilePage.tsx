@@ -30,6 +30,7 @@ import {
 } from '@/features/student/lib/studentProfilePresentation';
 import { cn } from '@/shared/lib/utils/cn';
 import { addToast } from '@/shared/store/slices/toastSlice';
+import { translateApiError } from '@/shared/lib/api/translateError';
 
 function CircularProgress({ percent, size = 40 }: { percent: number; size?: number }) {
   const strokeWidth = 4;
@@ -355,8 +356,7 @@ function ProfileInfoCard({ student }: { student: StudentProfileIdentity }) {
           dispatch(addToast({ type: 'success', message: t('profile.saved') }));
         },
         onError: (error) => {
-          const err = error as { message?: string };
-          dispatch(addToast({ type: 'error', message: err.message || t('profile.saveError') }));
+          dispatch(addToast({ type: 'error', message: translateApiError(t, error) }));
         },
       },
     );

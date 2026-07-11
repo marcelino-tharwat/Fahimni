@@ -74,6 +74,13 @@ chapterStandaloneRouter.put(
   controller.update,
 );
 
+chapterStandaloneRouter.patch(
+  "/:id/visibility",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"), requireActiveTeacherSubscription,
+  controller.setVisibility,
+);
+
 chapterStandaloneRouter.delete(
   "/:id",
   authenticateMiddleware,

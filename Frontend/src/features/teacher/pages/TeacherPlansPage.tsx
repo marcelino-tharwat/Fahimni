@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, Loader2, AlertTriangle } from 'lucide-react';
 import { Card } from '@/shared/components/ui';
 import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { TeacherPlansCurrentPlanCard } from './TeacherPlansCurrentPlanCard';
 import { TeacherPlanPromoBox } from '@/features/teacher/components/TeacherPlanPromoBox';
 import type { TeacherPlan, SubscriptionMeResponse } from '@/features/teacher/types/teacherPlans';
@@ -25,6 +26,8 @@ export function TeacherPlansPage() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorField, setErrorField] = useState<string | null>(null);
   const [paymentUnavailable, setPaymentUnavailable] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<Record<string, 'ONLINE' | 'PROMO'>>({});
+  const [promoCodes, setPromoCodes] = useState<Record<string, string>>({});
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -57,12 +60,19 @@ export function TeacherPlansPage() {
     setSuccessMsg(null);
     setPaymentUnavailable(false);
     try {
-      const result = await teacherPlansApi.checkout({ planId, billingInterval });
+      const method = paymentMethods[planId] ?? 'ONLINE';
+      const promoCode = method === 'PROMO' ? promoCodes[planId]?.trim() : undefined;
+      const result = await teacherPlansApi.checkout({ planId, billingInterval, promoCode });
       if (result.checkoutUrl) {
         window.location.assign(result.checkoutUrl);
         return; // navigating away — keep the button in its loading state
       }
-      setPaymentUnavailable(true);
+      if (result.status === 'SUCCESS') {
+        setSuccessMsg(t('plans.promoActivated', 'تم تفعيل الاشتراك باستخدام كود الخصم'));
+        await fetchData();
+      } else {
+        setPaymentUnavailable(true);
+      }
       setSubscribing(null);
     } catch (err: unknown) {
       const e = err as { statusCode?: number; code?: string; message?: string };
@@ -73,7 +83,7 @@ export function TeacherPlansPage() {
       ) {
         setPaymentUnavailable(true);
       } else {
-        setErrorField(e.message ?? t('plans.checkoutError', 'حدث خطأ أثناء بدء عملية الدفع'));
+        setErrorField(translateApiError(t, err));
       }
       setSubscribing(null);
     }
@@ -313,10 +323,43 @@ export function TeacherPlansPage() {
 
               <p className="mb-4 text-sm text-text-secondary">{t(`plans.planDescs.${plan.code}`, plan.description ?? '')}</p>
 
+              {!isFree && !isCurrentPlan(plan) && !hasPendingPayment(plan) && !hasPendingRequest(plan) && (
+                <div className="mb-3 rounded-card border border-border bg-gray-50 p-3">
+                  <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-text-secondary">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name={`payment-method-${plan.id}`}
+                        checked={(paymentMethods[plan.id] ?? 'ONLINE') === 'ONLINE'}
+                        onChange={() => setPaymentMethods((prev) => ({ ...prev, [plan.id]: 'ONLINE' }))}
+                      />
+                      {t('plans.payOnline', 'الدفع أونلاين')}
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name={`payment-method-${plan.id}`}
+                        checked={paymentMethods[plan.id] === 'PROMO'}
+                        onChange={() => setPaymentMethods((prev) => ({ ...prev, [plan.id]: 'PROMO' }))}
+                      />
+                      {t('plans.usePromoCode', 'استخدام كود خصم / كود اشتراك')}
+                    </label>
+                  </div>
+                  {paymentMethods[plan.id] === 'PROMO' && (
+                    <input
+                      value={promoCodes[plan.id] ?? ''}
+                      onChange={(e) => setPromoCodes((prev) => ({ ...prev, [plan.id]: e.target.value }))}
+                      placeholder={t('plans.promoCodePlaceholder', 'كود الخصم')}
+                      className="mt-3 h-10 w-full rounded-input border border-border bg-white px-3 font-cairo text-sm outline-none focus:border-accent"
+                    />
+                  )}
+                </div>
+              )}
+
               <button
                 type="button"
                 onClick={() => handleCheckout(plan.id)}
-                disabled={buttonDisabled}
+                disabled={buttonDisabled || (paymentMethods[plan.id] === 'PROMO' && !promoCodes[plan.id]?.trim())}
                 className={`min-h-[44px] w-full rounded-btn font-cairo text-sm font-semibold transition-all focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed ${
                   isCurrentPlan(plan)
                     ? 'bg-gray-100 text-gray-500'
@@ -340,7 +383,9 @@ export function TeacherPlansPage() {
                 ) : isFree ? (
                   t('plans.getStarted', 'ابدأ مجاناً')
                 ) : (
-                  t('plans.payNow', 'ادفع الآن')
+                  paymentMethods[plan.id] === 'PROMO'
+                    ? t('plans.applyPromo', 'تفعيل بالكود')
+                    : t('plans.payNow', 'ادفع الآن')
                 )}
               </button>
 

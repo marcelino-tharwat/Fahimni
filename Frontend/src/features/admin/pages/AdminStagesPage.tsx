@@ -19,29 +19,37 @@ export function AdminStagesPage() {
     queryFn: adminStagesApi.list,
   });
   const [editing, setEditing] = useState<AdminStage | null>(null);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [nameAr, setNameAr] = useState('');
+  const [nameEn, setNameEn] = useState('');
+  const [descriptionAr, setDescriptionAr] = useState('');
+  const [descriptionEn, setDescriptionEn] = useState('');
   const [sortOrder, setSortOrder] = useState('0');
 
   useEffect(() => {
     if (!editing) return;
-    setName(editing.name);
-    setDescription(editing.description ?? '');
+    setNameAr(editing.nameAr ?? editing.name);
+    setNameEn(editing.nameEn ?? editing.name);
+    setDescriptionAr(editing.descriptionAr ?? editing.description ?? '');
+    setDescriptionEn(editing.descriptionEn ?? editing.description ?? '');
     setSortOrder(String(editing.sortOrder));
   }, [editing]);
 
   const reset = () => {
     setEditing(null);
-    setName('');
-    setDescription('');
+    setNameAr('');
+    setNameEn('');
+    setDescriptionAr('');
+    setDescriptionEn('');
     setSortOrder('0');
   };
 
   const saveStage = useMutation({
     mutationFn: () => {
       const payload = {
-        name: name.trim(),
-        description: description.trim() || null,
+        nameAr: nameAr.trim(),
+        nameEn: nameEn.trim(),
+        descriptionAr: descriptionAr.trim() || null,
+        descriptionEn: descriptionEn.trim() || null,
         sortOrder: Number(sortOrder) || 0,
       };
       return editing ? adminStagesApi.update(editing.id, payload) : adminStagesApi.create(payload);
@@ -82,23 +90,35 @@ export function AdminStagesPage() {
       </div>
 
       <form
-        className="grid gap-3 rounded-card border border-border bg-surface p-4 shadow-card md:grid-cols-[1fr_1fr_120px_auto]"
+        className="grid gap-3 rounded-card border border-border bg-surface p-4 shadow-card md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_120px_auto]"
         onSubmit={(e) => {
           e.preventDefault();
-          if (!name.trim()) return;
+          if (!nameAr.trim() || !nameEn.trim()) return;
           saveStage.mutate();
         }}
       >
         <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={t('adminStages.name', 'Stage name')}
+          value={nameAr}
+          onChange={(e) => setNameAr(e.target.value)}
+          placeholder={t('adminStages.nameAr', 'Arabic name')}
           className="h-10 rounded-btn border border-border bg-white px-3 font-cairo text-sm outline-none focus:border-accent"
         />
         <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder={t('adminStages.description', 'Description')}
+          value={nameEn}
+          onChange={(e) => setNameEn(e.target.value)}
+          placeholder={t('adminStages.nameEn', 'English name')}
+          className="h-10 rounded-btn border border-border bg-white px-3 font-cairo text-sm outline-none focus:border-accent"
+        />
+        <input
+          value={descriptionAr}
+          onChange={(e) => setDescriptionAr(e.target.value)}
+          placeholder={t('adminStages.descriptionAr', 'Arabic description')}
+          className="h-10 rounded-btn border border-border bg-white px-3 font-cairo text-sm outline-none focus:border-accent"
+        />
+        <input
+          value={descriptionEn}
+          onChange={(e) => setDescriptionEn(e.target.value)}
+          placeholder={t('adminStages.descriptionEn', 'English description')}
           className="h-10 rounded-btn border border-border bg-white px-3 font-cairo text-sm outline-none focus:border-accent"
         />
         <input
@@ -109,7 +129,7 @@ export function AdminStagesPage() {
           className="h-10 rounded-btn border border-border bg-white px-3 font-cairo text-sm outline-none focus:border-accent"
           aria-label={t('adminStages.sortOrder', 'Sort order')}
         />
-        <Button type="submit" disabled={saveStage.isPending || !name.trim()}>
+        <Button type="submit" disabled={saveStage.isPending || !nameAr.trim() || !nameEn.trim()}>
           <Save size={16} />
           {editing ? t('actions.save') : t('actions.create')}
         </Button>
@@ -142,8 +162,9 @@ export function AdminStagesPage() {
               {stages.map((stage) => (
                 <tr key={stage.id} className="border-b border-border/50 last:border-0">
                   <td className="px-4 py-3">
-                    <div className="font-cairo font-semibold text-text-primary">{stage.name}</div>
-                    <div className="font-cairo text-xs text-text-secondary">{stage.description}</div>
+                    <div className="font-cairo font-semibold text-text-primary">{stage.nameAr ?? stage.name}</div>
+                    <div className="font-cairo text-xs text-text-secondary">{stage.nameEn ?? stage.name}</div>
+                    <div className="font-cairo text-xs text-text-secondary">{stage.descriptionAr ?? stage.descriptionEn ?? stage.description}</div>
                   </td>
                   <td className="px-4 py-3 font-cairo text-text-secondary">
                     {stage.chapterCount} / {stage.lessonCount}

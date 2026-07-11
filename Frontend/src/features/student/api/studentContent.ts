@@ -11,8 +11,11 @@ export const studentContentApi = {
    * GET /content/student/tree
    * Returns the tree array directly (no { success, message, data } envelope).
    */
-  getTree: async (): Promise<StudentContentTreeItem[]> => {
-    const { data } = await apiClient.get<unknown>('/content/student/tree');
+  getTree: async (filters?: { subject?: string; term?: string }): Promise<StudentContentTreeItem[]> => {
+    const hasFilters = Boolean(filters?.subject || filters?.term);
+    const { data } = hasFilters
+      ? await apiClient.get<unknown>('/content/student/tree', { params: filters })
+      : await apiClient.get<unknown>('/content/student/tree');
     return Array.isArray(data) ? (data as StudentContentTreeItem[]) : [];
   },
 

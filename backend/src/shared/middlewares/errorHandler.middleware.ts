@@ -1,5 +1,6 @@
 import type { ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
+import { MulterError } from "multer";
 import { env } from "../../config/env.js";
 import { logger } from "../../config/logger.js";
 import { AppError } from "../utils/AppError.js";
@@ -8,6 +9,27 @@ import {
   isPrismaClientError,
   mapPrismaClientError,
 } from "../utils/prismaErrors.js";
+import { getRequestLocale } from "../utils/locale.js";
+import { adaptZodError } from "../utils/validationCodes.js";
+
+const INTERNAL_ERROR_MESSAGE = {
+  en: "An internal error occurred. Please try again later.",
+  ar: "حدث خطأ داخلي. يرجى المحاولة لاحقاً.",
+};
+
+const MULTER_ERROR_CODE: Record<string, string> = {
+  LIMIT_FILE_SIZE: "FILE_TOO_LARGE",
+  LIMIT_FILE_COUNT: "MAX_FILES_EXCEEDED",
+  LIMIT_UNEXPECTED_FILE: "MAX_FILES_EXCEEDED",
+};
+
+const MULTER_ERROR_MESSAGE: Record<string, Record<"en" | "ar", string>> = {
+  FILE_TOO_LARGE: { en: "The file is too large", ar: "حجم الملف كبير جدًا" },
+  MAX_FILES_EXCEEDED: {
+    en: "Too many files uploaded",
+    ar: "تم تجاوز الحد الأقصى لعدد الملفات",
+  },
+};
 
 function requestPath(req: { originalUrl?: string; url?: string }): string {
   const url = req.originalUrl ?? req.url ?? "";
@@ -31,10 +53,34 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
       path: requestPath(req),
       statusCode: 400,
     });
+    const locale = getRequestLocale(req);
+    const { code, message, errors } = adaptZodError(err, locale);
     res.status(400).json({
       success: false,
-      message: "Validation error",
-      errors: err.flatten().fieldErrors,
+      statusCode: 400,
+      code,
+      message,
+      errors,
+    });
+    return;
+  }
+
+  if (err instanceof MulterError) {
+    const locale = getRequestLocale(req);
+    const code = MULTER_ERROR_CODE[err.code] ?? "FILE_UPLOAD_ERROR";
+    const message = MULTER_ERROR_MESSAGE[code]?.[locale] ?? err.message;
+    logger.warn("file_upload_error", {
+      requestId: req.requestId,
+      method: req.method,
+      path: requestPath(req),
+      statusCode: 400,
+      multerCode: err.code,
+    });
+    res.status(400).json({
+      success: false,
+      statusCode: 400,
+      code,
+      message,
     });
     return;
   }
@@ -71,7 +117,7 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     err instanceof Error ? err.message : "Internal server error";
 
   if (status >= 500 && isUnsafeInternalMessage(message)) {
-    message = "حدث خطأ داخلي. يرجى المحاولة لاحقاً.";
+    message = INTERNAL_ERROR_MESSAGE[getRequestLocale(req)];
   }
 
   const logMeta = {

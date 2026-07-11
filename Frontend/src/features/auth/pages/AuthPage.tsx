@@ -10,7 +10,8 @@ import {
 } from "lucide-react";
 import { AppHeader } from "@/shared/components/layout/AppHeader";
 import { useAppDispatch } from "@/shared/store/hooks";
-import { apiClient } from "@/shared/lib/api/client";
+import { apiClient, type ApiError } from "@/shared/lib/api/client";
+import { translateApiError, translateFieldErrors } from "@/shared/lib/api/translateError";
 import { login as loginThunk, register as registerThunk, googleLogin as googleLoginThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
 import type { PublicStage } from "@/features/student/types/student";
 import { ProofUpload } from "@/features/teacher-request/components/ProofUpload";
@@ -124,7 +125,7 @@ function SubmitButton({ children, disabled }: { children: React.ReactNode; disab
 /* ------------------------------------------------------------------ */
 
 function LoginForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -134,10 +135,23 @@ function LoginForm() {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<{ email: string; password: string }>({
     defaultValues: { email: "", password: "" },
   });
+
+  // Field validation messages are resolved (translated) at the moment RHF
+  // actually runs the rule, not on every render — so a language switch after
+  // a failed submit leaves stale-language text in `errors` until the rules
+  // are re-run. Re-validate any already-invalid fields so the visible
+  // messages update immediately when the UI language changes.
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      void trigger();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
 
   const onSubmit = async (v: { email: string; password: string }) => {
     if (inFlightRef.current) {
@@ -249,6 +263,7 @@ function RegisterForm() {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors },
     setValue,
     getValues,
@@ -256,6 +271,20 @@ function RegisterForm() {
   } = useForm<RegisterFormValues>({
     defaultValues: { fullName: "", email: "", mobile: "", password: "", confirmPassword: "", stageId: "", subject: "", bio: "" },
   });
+
+  // Same fix as LoginForm: re-run validation on any already-invalid fields so
+  // their messages switch language immediately, instead of staying frozen in
+  // whatever language was active during the last failed submit/blur. Server
+  // errors (duplicate email, etc.) aren't tied to a client-side rule, so
+  // re-triggering them would just clear them — leave those alone.
+  useEffect(() => {
+    const clientInvalidFields = (Object.keys(errors) as (keyof RegisterFormValues)[])
+      .filter((field) => errors[field]?.type !== "server");
+    if (clientInvalidFields.length > 0) {
+      void trigger(clientInvalidFields);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
 
   const isTeacher = accountType === "teacher";
 
@@ -300,23 +329,20 @@ function RegisterForm() {
       const res = await dispatch(registerThunk({ fullName: v.fullName, email: v.email, mobile: v.mobile, password: v.password, stageId: v.stageId, role: 'STUDENT', locale: i18n.language === 'en' ? 'en' : 'ar' })).unwrap();
       navigate(dashboardPathByRole[res.user.role]);
     } catch (err) {
-      const reject = err as { message?: string; fieldErrors?: Record<string, string[]> } | string;
-      const message = typeof reject === "string" ? reject : reject.message;
-      const fieldErrors = typeof reject === "object" ? reject.fieldErrors : undefined;
-
-      if (fieldErrors) {
-        const knownFields = new Set(["fullName", "email", "mobile", "password", "confirmPassword", "stageId", "subject", "bio"]);
-        let hasFieldError = false;
-        for (const [field, msgs] of Object.entries(fieldErrors)) {
-          if (knownFields.has(field) && msgs.length > 0) {
-            setFieldError(field as keyof RegisterFormValues, { message: msgs[0], type: "server" });
-            hasFieldError = true;
-          }
+      // Both paths land here as an `ApiError`-shaped object: the teacher path
+      // throws the raw client.ts error; the student path unwraps the
+      // register thunk's rejectValue, which is the same raw `ApiError`.
+      const apiErr = err as ApiError;
+      const knownFields = new Set(["fullName", "email", "mobile", "password", "confirmPassword", "stageId", "subject", "bio"]);
+      const fieldMessages = translateFieldErrors(t, apiErr);
+      let hasFieldError = false;
+      for (const [field, message] of Object.entries(fieldMessages)) {
+        if (knownFields.has(field)) {
+          setFieldError(field as keyof RegisterFormValues, { message, type: "server" });
+          hasFieldError = true;
         }
-        if (!hasFieldError) setError(message ?? t("auth:errGeneric"));
-      } else {
-        setError(message ?? t("auth:errGeneric"));
       }
+      if (!hasFieldError) setError(translateApiError(t, apiErr));
     } finally {
       inFlightRef.current = false;
       setLoading(false);
@@ -665,7 +691,7 @@ function StageSelect({
           {loading
             ? t("auth:loading")
             : selected
-              ? selected.name
+              ? selected.displayName ?? selected.name
               : t("auth:selectStage")}
         </span>
         <ChevronDown
@@ -699,7 +725,7 @@ function StageSelect({
                 <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
                   <GraduationCap size={16} />
                 </span>
-                <span className="flex-1">{stage.name}</span>
+                <span className="flex-1">{stage.displayName ?? stage.name}</span>
               </button>
             ))
           )}

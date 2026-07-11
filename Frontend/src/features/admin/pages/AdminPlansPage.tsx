@@ -10,6 +10,7 @@ import { Pagination } from '../components/promo-codes';
 import { useAdminPlans, useChangePlanStatus, useChangeRecommended, useReorderPlans } from '@/features/admin/hooks/useAdminPlans';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { CreatePlanModal } from '../components/plans/CreatePlanModal';
 import { EditPlanModal } from '../components/plans/EditPlanModal';
 import type { AdminPlanListItem } from '@/features/admin/types/plans';
@@ -82,8 +83,7 @@ export function AdminPlansPage() {
       });
       dispatch(addToast({ type: 'success', message: t('adminPlansMutations.statusConfirm.success') }));
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      dispatch(addToast({ type: 'error', message: `${t('adminPlansMutations.statusConfirm.error')}: ${msg}` }));
+      dispatch(addToast({ type: 'error', message: `${t('adminPlansMutations.statusConfirm.error')}: ${translateApiError(t, e)}` }));
     }
     setStatusTarget(null);
   };
@@ -97,8 +97,7 @@ export function AdminPlansPage() {
       });
       dispatch(addToast({ type: 'success', message: t('adminPlansMutations.recommendedConfirm.success') }));
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      dispatch(addToast({ type: 'error', message: `${t('adminPlansMutations.recommendedConfirm.error')}: ${msg}` }));
+      dispatch(addToast({ type: 'error', message: `${t('adminPlansMutations.recommendedConfirm.error')}: ${translateApiError(t, e)}` }));
     }
     setRecommendedTarget(null);
   };
@@ -123,8 +122,7 @@ export function AdminPlansPage() {
       dispatch(addToast({ type: 'success', message: t('adminPlansMutations.reorderConfirm.success') }));
       setReorderMode(false);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      dispatch(addToast({ type: 'error', message: `${t('adminPlansMutations.reorderConfirm.error')}: ${msg}` }));
+      dispatch(addToast({ type: 'error', message: `${t('adminPlansMutations.reorderConfirm.error')}: ${translateApiError(t, e)}` }));
     }
   };
 

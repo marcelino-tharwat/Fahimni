@@ -4,6 +4,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { UploadService } from "../../shared/upload.service.js";
 import { ChapterService } from "./chapter.service.js";
+import { createChapterSchema, updateChapterSchema } from "./chapter.validation.js";
 import { QuizService } from "../quizzes/quizzes.service.js";
 import { quizVisibilityService } from "../quizzes/quiz-visibility.service.js";
 import { assertStudentChapterAccess } from "../progression/student-chapter-access.js";
@@ -24,8 +25,7 @@ export class ChapterController {
         throw new AppError("Invalid stage ID", 400);
       }
 
-      const input = req.body as CreateChapterInput & { sortOrder: string };
-      const sortOrder = parseInt(String(input.sortOrder), 10);
+      const input = createChapterSchema.parse(req.body) as CreateChapterInput;
 
       // Handle image upload if provided
       let imageUrl: string | null = null;
@@ -37,9 +37,11 @@ export class ChapterController {
         {
           name: input.name,
           description: input.description ?? null,
-          sortOrder: isNaN(sortOrder) ? 1 : sortOrder,
+          sortOrder: input.sortOrder,
           price: input.price ?? null,
           subject: input.subject ?? null,
+          term: input.term,
+          isVisible: input.isVisible,
         },
         stageId,
         req.user!.id,
@@ -107,12 +109,14 @@ export class ChapterController {
         throw new AppError("Invalid chapter ID", 400);
       }
 
-      const input = req.body as UpdateChapterInput;
+      const input = updateChapterSchema.parse(req.body) as UpdateChapterInput;
 
       // Handle image upload if provided
-      let imageUrl: string | undefined;
+      let imageUrl: string | null | undefined;
       if (req.file) {
         imageUrl = await uploadService.uploadChapterImage(req.file.buffer);
+      } else if (input.removeImage) {
+        imageUrl = null;
       }
 
       const chapter = await chapterService.update(id, req.user!.id, input, imageUrl);
@@ -121,6 +125,29 @@ export class ChapterController {
         .status(200)
         .json(okResponse<ChapterResponseDTO>(
           "Chapter updated successfully",
+          chapter,
+        ));
+    },
+  );
+
+  public setVisibility = asyncHandler(
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const id = req.params.id;
+      if (typeof id !== "string") {
+        throw new AppError("Invalid chapter ID", 400);
+      }
+
+      const isVisible =
+        req.body?.isVisible === true ||
+        req.body?.isVisible === "true" ||
+        req.body?.isVisible === 1 ||
+        req.body?.isVisible === "1";
+      const chapter = await chapterService.setVisibility(id, req.user!.id, isVisible);
+
+      res
+        .status(200)
+        .json(okResponse<ChapterResponseDTO>(
+          "Chapter visibility updated successfully",
           chapter,
         ));
     },

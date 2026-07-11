@@ -1,11 +1,11 @@
 import { z } from "zod";
 
-const SCOPES = ["COURSE_PURCHASE", "TEACHER_PLAN"] as const;
+const SCOPES = ["TEACHER_PLAN"] as const;
 const DISCOUNT_TYPES = ["PERCENTAGE", "FIXED_AMOUNT"] as const;
 const BILLING = ["MONTHLY", "YEARLY", "ALL"] as const;
 
 export const listPromoCodesQuerySchema = z.object({
-  scope: z.enum(SCOPES).optional(),
+  scope: z.enum(SCOPES).optional().default("TEACHER_PLAN"),
   q: z.string().trim().max(100).optional(),
   isActive: z.coerce.boolean().optional(),
   page: z.coerce.number().int().min(1).default(1),
@@ -15,7 +15,7 @@ export const listPromoCodesQuerySchema = z.object({
 export const createPromoCodeSchema = z
   .object({
     code: z.string().trim().min(3).max(40).toUpperCase(),
-    scope: z.enum(SCOPES),
+    scope: z.enum(SCOPES).default("TEACHER_PLAN"),
     discountType: z.enum(DISCOUNT_TYPES),
     discountValue: z.number().positive(),
     currency: z.string().trim().length(3).toUpperCase().default("EGP"),
@@ -30,14 +30,6 @@ export const createPromoCodeSchema = z
   .superRefine((data, ctx) => {
     if (data.discountType === "PERCENTAGE" && data.discountValue > 100) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["discountValue"], message: "Percentage cannot exceed 100" });
-    }
-    if (data.scope === "COURSE_PURCHASE") {
-      if (data.applicablePlanIds.length > 0) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["applicablePlanIds"], message: "applicablePlanIds is only valid for TEACHER_PLAN" });
-      }
-      if (data.billingInterval !== "ALL") {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["billingInterval"], message: "billingInterval is only valid for TEACHER_PLAN" });
-      }
     }
     if (data.startsAt && data.expiresAt && data.startsAt > data.expiresAt) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["expiresAt"], message: "expiresAt must be after startsAt" });

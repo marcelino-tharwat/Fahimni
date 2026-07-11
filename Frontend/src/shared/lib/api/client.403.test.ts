@@ -15,9 +15,11 @@ describe('API client — 403 handler contract', () => {
     expect(_403Index).toBeLessThan(_401Index);
   });
 
-  it('19b. 403 handler returns the Arabic message without triggering refresh', () => {
-    expect(client).toMatch(/ليس لديك صلاحية للوصول إلى هذا المحتوى/);
-    // Must NOT call the refresh endpoint
+  it('19b. 403 handler normalizes the error without hardcoding a message in any language', () => {
+    // The message must be translated by the caller (translateApiError, by
+    // code) so it renders in whatever language the UI is currently in — the
+    // client must not bake in a fixed-language string here.
+    expect(client).not.toMatch(/ليس لديك صلاحية للوصول إلى هذا المحتوى/);
     expect(client).toMatch(/403/);
   });
 
@@ -30,7 +32,7 @@ describe('API client — 403 handler contract', () => {
 
     // The 403 block must return a Promise.reject, NOT fall through to refresh
     const _403block = handlerBody.slice(0, handlerBody.indexOf('=== 401'));
-    expect(_403block).toMatch(/Promise\.reject\(normalized\)/);
+    expect(_403block).toMatch(/Promise\.reject\(normalizeError\(error\)\)/);
     // forceLogout must NOT appear inside the 403 block
     expect(_403block).not.toMatch(/forceLogout/);
     // forceLogout still appears in the 401 block

@@ -91,7 +91,11 @@ model TeacherProfile {
 model Stage {
   id              String           @id @default(uuid())
   name            String
+  nameAr          String?
+  nameEn          String?
   description     String?
+  descriptionAr   String?
+  descriptionEn   String?
   sortOrder       Int
   teacherId       String?
   isActive        Boolean          @default(true)
@@ -113,6 +117,8 @@ model Chapter {
   sortOrder           Int
   price               Decimal?
   imageUrl            String?
+  term                AcademicTerm         @default(FIRST_TERM)
+  isVisible           Boolean              @default(true)
   teacherId           String
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
@@ -503,6 +509,11 @@ enum PromoBillingScope {
   MONTHLY
   YEARLY
   ALL
+}
+
+enum AcademicTerm {
+  FIRST_TERM
+  SECOND_TERM
 }
 
 model PlatformPromoCode {

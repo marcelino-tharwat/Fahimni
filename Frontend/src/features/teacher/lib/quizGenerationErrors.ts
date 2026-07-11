@@ -52,7 +52,7 @@ export function resolveQuizGenerationError(
     };
   }
 
-  if (isUnsafeTechnicalMessage(error.message)) {
+  if (isUnsafeTechnicalMessage(error.message ?? '')) {
     const reason = error.reason ?? 'GENERATION_FAILED';
     const i18nKey = REASON_I18N_KEY[reason] ?? 'generationErrorGeneric';
     if (language.startsWith('en')) {

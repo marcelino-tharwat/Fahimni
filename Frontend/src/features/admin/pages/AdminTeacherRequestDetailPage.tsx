@@ -9,6 +9,7 @@ import { Card, Badge, Spinner, Modal } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import {
   useAdminTeacherRequestDetail, useApproveTeacherRequest, useRejectTeacherRequest,
 } from '@/features/admin/hooks/useAdminTeacherRequests';
@@ -69,7 +70,7 @@ export function AdminTeacherRequestDetailPage() {
           refetch();
         },
         onError: (e: ApiError) => {
-          dispatch(addToast({ type: 'error', message: e.message ?? t('adminTeacherRequests.detail.actionError', 'تعذّر تنفيذ الإجراء') }));
+          dispatch(addToast({ type: 'error', message: translateApiError(t, e) }));
         },
       },
     );
@@ -86,7 +87,7 @@ export function AdminTeacherRequestDetailPage() {
           refetch();
         },
         onError: (e: ApiError) => {
-          dispatch(addToast({ type: 'error', message: e.message ?? t('adminTeacherRequests.detail.actionError', 'تعذّر تنفيذ الإجراء') }));
+          dispatch(addToast({ type: 'error', message: translateApiError(t, e) }));
         },
       },
     );
