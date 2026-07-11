@@ -21,33 +21,25 @@ export interface EmailRuntimeConfig {
   smtpSecure: boolean;
   smtpUser: string;
   smtpPass: string;
-  fromName: string;
-  fromAddress: string;
   from: string;
-  appBaseUrl: string;
+  clientUrl: string;
   adminEmail: string;
 }
 
 export function getEmailConfig(env: NodeJS.ProcessEnv = process.env): EmailRuntimeConfig {
-  const legacyFrom = env.EMAIL_FROM ?? "";
-  const legacyMatch = legacyFrom.match(/^(.*)<([^>]+)>$/);
-  const fromName = env.MAIL_FROM_NAME ?? legacyMatch?.[1]?.trim().replace(/^"|"$/g, "") ?? "Fahimni";
-  const fromAddress =
-    env.MAIL_FROM_ADDRESS ?? legacyMatch?.[2]?.trim() ?? legacyFrom.trim() ?? "no-reply@fahimni.local";
+  const smtpPort = numberFromEnv(env.EMAIL_PORT, 587);
 
   return {
     enabled: boolFromEnv(env.EMAIL_ENABLED, false),
     provider: "smtp",
     dryRun: boolFromEnv(env.EMAIL_DRY_RUN, true),
-    smtpHost: env.SMTP_HOST ?? env.EMAIL_HOST ?? "",
-    smtpPort: numberFromEnv(env.SMTP_PORT ?? env.EMAIL_PORT, 587),
-    smtpSecure: boolFromEnv(env.SMTP_SECURE, false),
-    smtpUser: env.SMTP_USER ?? env.EMAIL_USER ?? "",
-    smtpPass: env.SMTP_PASS ?? env.EMAIL_PASS ?? "",
-    fromName,
-    fromAddress,
-    from: `"${fromName}" <${fromAddress}>`,
-    appBaseUrl: env.APP_BASE_URL ?? env.FRONTEND_BASE_URL ?? env.CLIENT_URL ?? "http://localhost:5173",
+    smtpHost: env.EMAIL_HOST ?? "",
+    smtpPort,
+    smtpSecure: smtpPort === 465,
+    smtpUser: env.EMAIL_USER ?? "",
+    smtpPass: env.EMAIL_PASS ?? "",
+    from: env.EMAIL_FROM ?? "",
+    clientUrl: env.CLIENT_URL ?? "http://localhost:5173",
     adminEmail: env.ADMIN_EMAIL ?? "",
   };
 }

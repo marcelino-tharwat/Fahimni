@@ -16,6 +16,7 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   teacherApprovalState?: TeacherApprovalState;
+  locale?: 'ar' | 'en';
   createdAt: string;
   updatedAt?: string;
 }

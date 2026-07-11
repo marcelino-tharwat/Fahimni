@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Menu, ChevronDown, Globe, LogOut, GraduationCap, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { logoutUser } from '@/features/auth/store/authSlice';
+import { logoutUser, persistLocale } from '@/features/auth/store/authSlice';
 import { toggleSidebar } from '@/shared/store/slices/uiSlice';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { useTeacherProfile } from '@/features/teacher/hooks/useTeacherProfile';
@@ -103,7 +103,9 @@ function FullHeader({ showMenu, showBrand }: { showMenu: boolean; showBrand: boo
   }, [menuOpen]);
 
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar');
+    const next = i18n.language === 'ar' ? 'en' : 'ar';
+    i18n.changeLanguage(next);
+    if (user) void dispatch(persistLocale({ locale: next }));
     setMenuOpen(false);
   };
   const languageLabel = i18n.language === 'ar' ? 'English' : 'العربية';

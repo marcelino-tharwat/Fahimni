@@ -8,6 +8,7 @@ export interface UserRecord {
   role: Role;
   status: Status;
   teacherApprovalState: TeacherApprovalState;
+  locale: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,6 +23,7 @@ export const userPublicFields = {
   role: true,
   status: true,
   teacherApprovalState: true,
+  locale: true,
   createdAt: true,
   updatedAt: true,
 } as const;

@@ -54,7 +54,7 @@ function value(data: Record<string, unknown>, key: string, fallback = ""): strin
 
 function absUrl(pathOrUrl: string): string {
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
-  const base = getEmailConfig().appBaseUrl.replace(/\/$/, "");
+  const base = getEmailConfig().clientUrl.replace(/\/$/, "");
   return `${base}/${pathOrUrl.replace(/^\//, "")}`;
 }
 

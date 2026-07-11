@@ -18,16 +18,17 @@ const templates: EmailTemplateName[] = [
 ];
 
 describe("EmailService", () => {
-  it("reuses the injected provider and legacy SMTP env config", async () => {
+  it("reuses the injected provider and canonical email env config", async () => {
     const provider: EmailProvider = { send: vi.fn().mockResolvedValue({}) };
     const config = getEmailConfig({
       EMAIL_ENABLED: "true",
       EMAIL_DRY_RUN: "false",
       EMAIL_HOST: "smtp.local",
       EMAIL_PORT: "2525",
-      EMAIL_USER: "legacy-user",
-      EMAIL_PASS: "legacy-pass",
-      EMAIL_FROM: '"Fahimni" <legacy@example.test>',
+      EMAIL_USER: "smtp-user",
+      EMAIL_PASS: "smtp-pass",
+      EMAIL_FROM: '"Fahimni" <canonical@example.test>',
+      CLIENT_URL: "https://client.example.test",
     } as NodeJS.ProcessEnv);
 
     await new EmailService(provider, config).sendEmail({
@@ -38,7 +39,10 @@ describe("EmailService", () => {
 
     expect(provider.send).toHaveBeenCalledOnce();
     expect(config.smtpHost).toBe("smtp.local");
-    expect(config.from).toBe('"Fahimni" <legacy@example.test>');
+    expect(config.smtpPort).toBe(2525);
+    expect(config.smtpSecure).toBe(false);
+    expect(config.from).toBe('"Fahimni" <canonical@example.test>');
+    expect(config.clientUrl).toBe("https://client.example.test");
   });
 
   it("renders Arabic templates as RTL", () => {
@@ -70,11 +74,23 @@ describe("EmailService", () => {
     const provider: EmailProvider = { send: vi.fn().mockResolvedValue({}) };
     const result = await new EmailService(
       provider,
-      getEmailConfig({ EMAIL_ENABLED: "true", EMAIL_DRY_RUN: "true", SMTP_HOST: "smtp.local" } as NodeJS.ProcessEnv),
+      getEmailConfig({ EMAIL_ENABLED: "true", EMAIL_DRY_RUN: "true", EMAIL_HOST: "smtp.local" } as NodeJS.ProcessEnv),
     ).sendEmail({ to: "student@example.test", template: "studentPaymentSuccess", locale: "en" });
 
     expect(result.dryRun).toBe(true);
     expect(result.sent).toBe(false);
+    expect(provider.send).not.toHaveBeenCalled();
+  });
+
+  it("does not send when enabled without required canonical SMTP config", async () => {
+    const provider: EmailProvider = { send: vi.fn().mockResolvedValue({}) };
+    const result = await new EmailService(
+      provider,
+      getEmailConfig({ EMAIL_ENABLED: "true", EMAIL_DRY_RUN: "false", EMAIL_HOST: "smtp.local" } as NodeJS.ProcessEnv),
+    ).sendEmail({ to: "student@example.test", template: "studentPaymentSuccess", locale: "en" });
+
+    expect(result.sent).toBe(false);
+    expect(result.skipped).toBe(false);
     expect(provider.send).not.toHaveBeenCalled();
   });
 

@@ -224,7 +224,7 @@ type RegisterFormValues = {
 };
 
 function RegisterForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [accountType, setAccountType] = useState<AccountType>("student");
@@ -280,6 +280,7 @@ function RegisterForm() {
         fd.append('password', v.password);
         fd.append('confirmPassword', v.confirmPassword);
         fd.append('role', 'OPERATION');
+        fd.append('locale', i18n.language === 'en' ? 'en' : 'ar');
         if (v.subject) fd.append('subject', v.subject);
         if (v.bio) fd.append('bio', v.bio);
         for (const pf of proofFiles) fd.append('proofDocuments', pf.file);
@@ -296,7 +297,7 @@ function RegisterForm() {
         setTeacherPending(true);
         return;
       }
-      const res = await dispatch(registerThunk({ fullName: v.fullName, email: v.email, mobile: v.mobile, password: v.password, stageId: v.stageId, role: 'STUDENT' })).unwrap();
+      const res = await dispatch(registerThunk({ fullName: v.fullName, email: v.email, mobile: v.mobile, password: v.password, stageId: v.stageId, role: 'STUDENT', locale: i18n.language === 'en' ? 'en' : 'ar' })).unwrap();
       navigate(dashboardPathByRole[res.user.role]);
     } catch (err) {
       const reject = err as { message?: string; fieldErrors?: Record<string, string[]> } | string;
@@ -547,6 +548,10 @@ function SubjectSelect({
     <div ref={ref} className="relative w-full">
       <button
         type="button"
+        role="combobox"
+        aria-label={t("auth:subject", "التخصص")}
+        aria-expanded={open}
+        aria-haspopup="listbox"
         onClick={() => !loading && setOpen((o) => !o)}
         disabled={loading}
         dir={isRtl ? "rtl" : "ltr"}
@@ -573,7 +578,11 @@ function SubjectSelect({
         <p className="mt-1.5 text-xs text-red-500">{error}</p>
       )}
       {open && !loading && (
-        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+        <div
+          role="listbox"
+          aria-label={t("auth:subject", "التخصص")}
+          className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg"
+        >
           {subjects.length === 0 ? (
             <p className="px-4 py-3 font-cairo text-sm text-gray-500">
               {t("auth:noStages")}
@@ -583,6 +592,8 @@ function SubjectSelect({
               <button
                 key={subject.code}
                 type="button"
+                role="option"
+                aria-selected={selected === subject.displayName}
                 onClick={() => {
                   setSelected(subject.displayName);
                   onChange(subject.displayName);

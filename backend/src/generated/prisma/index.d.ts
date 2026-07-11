@@ -4814,6 +4814,7 @@ export namespace Prisma {
     role: $Enums.Role | null
     status: $Enums.Status | null
     teacherApprovalState: $Enums.TeacherApprovalState | null
+    locale: string | null
     tokenVersion: number | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4828,6 +4829,7 @@ export namespace Prisma {
     role: $Enums.Role | null
     status: $Enums.Status | null
     teacherApprovalState: $Enums.TeacherApprovalState | null
+    locale: string | null
     tokenVersion: number | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4842,6 +4844,7 @@ export namespace Prisma {
     role: number
     status: number
     teacherApprovalState: number
+    locale: number
     tokenVersion: number
     createdAt: number
     updatedAt: number
@@ -4866,6 +4869,7 @@ export namespace Prisma {
     role?: true
     status?: true
     teacherApprovalState?: true
+    locale?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4880,6 +4884,7 @@ export namespace Prisma {
     role?: true
     status?: true
     teacherApprovalState?: true
+    locale?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4894,6 +4899,7 @@ export namespace Prisma {
     role?: true
     status?: true
     teacherApprovalState?: true
+    locale?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4995,6 +5001,7 @@ export namespace Prisma {
     role: $Enums.Role
     status: $Enums.Status
     teacherApprovalState: $Enums.TeacherApprovalState
+    locale: string
     tokenVersion: number
     createdAt: Date
     updatedAt: Date
@@ -5028,6 +5035,7 @@ export namespace Prisma {
     role?: boolean
     status?: boolean
     teacherApprovalState?: boolean
+    locale?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5070,6 +5078,7 @@ export namespace Prisma {
     role?: boolean
     status?: boolean
     teacherApprovalState?: boolean
+    locale?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5084,6 +5093,7 @@ export namespace Prisma {
     role?: boolean
     status?: boolean
     teacherApprovalState?: boolean
+    locale?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5098,12 +5108,13 @@ export namespace Prisma {
     role?: boolean
     status?: boolean
     teacherApprovalState?: boolean
+    locale?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fullName" | "email" | "password" | "mobile" | "role" | "status" | "teacherApprovalState" | "tokenVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fullName" | "email" | "password" | "mobile" | "role" | "status" | "teacherApprovalState" | "locale" | "tokenVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     teacherRegistrationRequest?: boolean | User$teacherRegistrationRequestArgs<ExtArgs>
@@ -5177,6 +5188,7 @@ export namespace Prisma {
       role: $Enums.Role
       status: $Enums.Status
       teacherApprovalState: $Enums.TeacherApprovalState
+      locale: string
       tokenVersion: number
       createdAt: Date
       updatedAt: Date
@@ -5638,6 +5650,7 @@ export namespace Prisma {
     readonly role: FieldRef<"User", 'Role'>
     readonly status: FieldRef<"User", 'Status'>
     readonly teacherApprovalState: FieldRef<"User", 'TeacherApprovalState'>
+    readonly locale: FieldRef<"User", 'String'>
     readonly tokenVersion: FieldRef<"User", 'Int'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
@@ -44506,6 +44519,7 @@ export namespace Prisma {
     role: 'role',
     status: 'status',
     teacherApprovalState: 'teacherApprovalState',
+    locale: 'locale',
     tokenVersion: 'tokenVersion',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -45556,6 +45570,7 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     status?: EnumStatusFilter<"User"> | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFilter<"User"> | $Enums.TeacherApprovalState
+    locale?: StringFilter<"User"> | string
     tokenVersion?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -45597,6 +45612,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -45641,6 +45657,7 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     status?: EnumStatusFilter<"User"> | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFilter<"User"> | $Enums.TeacherApprovalState
+    locale?: StringFilter<"User"> | string
     tokenVersion?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -45682,6 +45699,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -45704,6 +45722,7 @@ export namespace Prisma {
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     status?: EnumStatusWithAggregatesFilter<"User"> | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateWithAggregatesFilter<"User"> | $Enums.TeacherApprovalState
+    locale?: StringWithAggregatesFilter<"User"> | string
     tokenVersion?: IntWithAggregatesFilter<"User"> | number
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -48484,6 +48503,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48525,6 +48545,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48566,6 +48587,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48607,6 +48629,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48648,6 +48671,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48662,6 +48686,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48676,6 +48701,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51990,6 +52016,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -52008,6 +52035,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -52022,6 +52050,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -60007,6 +60036,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60047,6 +60077,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60134,6 +60165,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60174,6 +60206,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60251,6 +60284,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60291,6 +60325,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60347,6 +60382,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60387,6 +60423,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60497,6 +60534,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60537,6 +60575,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60636,6 +60675,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60676,6 +60716,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60747,6 +60788,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60787,6 +60829,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61102,6 +61145,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61142,6 +61186,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61705,6 +61750,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61745,6 +61791,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61801,6 +61848,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61841,6 +61889,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61922,6 +61971,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61962,6 +62012,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62065,6 +62116,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62105,6 +62157,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62145,6 +62198,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62185,6 +62239,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62282,6 +62337,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62322,6 +62378,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62452,6 +62509,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62492,6 +62550,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62597,6 +62656,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62637,6 +62697,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62809,6 +62870,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62849,6 +62911,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62932,6 +62995,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62972,6 +63036,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63137,6 +63202,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63177,6 +63243,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63233,6 +63300,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63273,6 +63341,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63313,6 +63382,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63353,6 +63423,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63409,6 +63480,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63449,6 +63521,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63489,6 +63562,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63529,6 +63603,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63585,6 +63660,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63625,6 +63701,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63852,6 +63929,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63892,6 +63970,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64076,6 +64155,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64116,6 +64196,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64585,6 +64666,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64625,6 +64707,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64752,6 +64835,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64792,6 +64876,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64832,6 +64917,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64872,6 +64958,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64917,6 +65004,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64957,6 +65045,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65054,6 +65143,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65094,6 +65184,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65145,6 +65236,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65185,6 +65277,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65272,6 +65365,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65312,6 +65406,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65396,6 +65491,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65436,6 +65532,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65537,6 +65634,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65577,6 +65675,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65684,6 +65783,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65724,6 +65824,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65764,6 +65865,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65804,6 +65906,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65860,6 +65963,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65900,6 +66004,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65940,6 +66045,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65980,6 +66086,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66036,6 +66143,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66076,6 +66184,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66116,6 +66225,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66156,6 +66266,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66246,6 +66357,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66286,6 +66398,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66626,6 +66739,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66666,6 +66780,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66847,6 +66962,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66887,6 +67003,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67014,6 +67131,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67054,6 +67172,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67159,6 +67278,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67199,6 +67319,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67294,6 +67415,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67334,6 +67456,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67476,6 +67599,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67516,6 +67640,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67654,6 +67779,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67694,6 +67820,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67836,6 +67963,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67876,6 +68004,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68014,6 +68143,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68054,6 +68184,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68099,6 +68230,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68139,6 +68271,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68195,6 +68328,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68235,6 +68369,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68286,6 +68421,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68326,6 +68462,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

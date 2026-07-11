@@ -141,7 +141,7 @@ export const googleLogin = createAsyncThunk<
 
 export const register = createAsyncThunk<
   { user: User },
-  { fullName: string; email: string; mobile: string; password: string; stageId?: string; role?: string },
+  { fullName: string; email: string; mobile: string; password: string; stageId?: string; role?: string; locale?: 'ar' | 'en' },
   { rejectValue: RegisterReject }
 >('auth/register', async (payload, { rejectWithValue }) => {
   try {
@@ -157,6 +157,24 @@ export const register = createAsyncThunk<
       message: apiErr.message ?? 'حصل خطأ أثناء إنشاء الحساب.',
       fieldErrors: apiErr.errors,
     });
+  }
+});
+
+export const persistLocale = createAsyncThunk<
+  { user: User },
+  { locale: 'ar' | 'en' },
+  { rejectValue: string }
+>('auth/persistLocale', async ({ locale }, { rejectWithValue }) => {
+  try {
+    const { data } = await apiClient.patch<{
+      message: string;
+      data: { user: User };
+    }>('/v1/auth/locale', { locale });
+    saveUser(data.data.user);
+    return { user: data.data.user };
+  } catch (err) {
+    const apiErr = err as ApiError;
+    return rejectWithValue(apiErr.message ?? 'Locale update failed');
   }
 });
 

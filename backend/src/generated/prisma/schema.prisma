@@ -19,6 +19,7 @@ model User {
   // legacy rows; teachers move PENDING_REVIEW → APPROVED | REJECTED. The derived
   // "active teacher" (APPROVED + active subscription) is not stored here.
   teacherApprovalState        TeacherApprovalState         @default(NONE)
+  locale                      String                       @default("ar")
   tokenVersion                Int                          @default(0)
   createdAt                   DateTime                     @default(now())
   updatedAt                   DateTime                     @updatedAt

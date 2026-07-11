@@ -14,11 +14,13 @@ import type {
   VerifyOtpInput,
   ResetPasswordInput,
   ChangePasswordInput,
+  UpdateLocaleInput,
 } from "./auth.validation.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import type { ApiError } from "../../shared/types/common.types.js";
 import { logger } from "../../config/logger.js";
 import { uploadProofDocuments } from "./proof-documents.js";
+import { normalizeLocale, sendTransactionalEmail } from "../email/transactional-email.helpers.js";
 
 export class AuthService {
   constructor(private readonly tokenService = new TokenService()) {}
@@ -172,6 +174,7 @@ export class AuthService {
           password: hashedPassword,
           role: Role.STUDENT,
           status: Status.ACTIVE,
+          locale: normalizeLocale(input.locale),
         },
         select: userPublicFields,
       });
@@ -264,6 +267,7 @@ export class AuthService {
           role: Role.OPERATION,
           status: Status.INACTIVE,
           teacherApprovalState: "PENDING_REVIEW",
+          locale: normalizeLocale(input.locale),
         },
         select: userPublicFields,
       });
@@ -312,6 +316,19 @@ export class AuthService {
       }
     }
 
+    await sendTransactionalEmail({
+      to: input.email,
+      template: "teacherRegistrationSubmitted",
+      locale: input.locale,
+      data: {
+        teacherName: input.fullName,
+        referenceNumber: publicReference,
+        status: "PENDING_REVIEW",
+        statusUrl: `/teacher/register/status?ref=${encodeURIComponent(publicReference)}`,
+      },
+      metadata: { requestId: user.requestId },
+    });
+
     // The public reference lets the teacher track their request status later
     // (paired with their email/mobile on the public track endpoint).
     return { pending: true as const, user: user.created, trackingReference: publicReference };
@@ -321,7 +338,7 @@ export class AuthService {
     // 1. Find user by email
     const user = await prisma.user.findUnique({
       where: { email: input.email },
-      select: { id: true },
+      select: { id: true, locale: true },
     });
 
     if (!user) {
@@ -366,6 +383,18 @@ export class AuthService {
 
     // 6. MVP: console.log — SMS/email integration in v2
     console.log(`[OTP] ${input.email}: ${otp}`);
+
+    await sendTransactionalEmail({
+      to: input.email,
+      template: "passwordReset",
+      locale: user.locale,
+      data: {
+        otp,
+        expiresIn: "5 minutes",
+        resetUrl: "/reset-password",
+      },
+      metadata: { userId: user.id },
+    });
 
     return { message: "OTP sent successfully" };
   }
@@ -688,5 +717,13 @@ export class AuthService {
     });
 
     return { message: "Password changed successfully" };
+  }
+
+  public async updateLocale(userId: string, input: UpdateLocaleInput) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { locale: input.locale },
+      select: userPublicFields,
+    });
   }
 }

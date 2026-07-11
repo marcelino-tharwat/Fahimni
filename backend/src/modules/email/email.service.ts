@@ -32,10 +32,37 @@ export class EmailService {
       subject: rendered.subject,
     };
 
-    if (!this.config.enabled || this.config.dryRun) return result;
+    if (!this.config.enabled || this.config.dryRun) {
+      console.info("[EmailService] email skipped", {
+        to: parsedTo.data,
+        template: input.template,
+        subject: rendered.subject,
+        locale,
+        dryRun: this.config.dryRun,
+        disabled: !this.config.enabled,
+      });
+      return result;
+    }
 
-    if (!this.config.smtpHost) {
-      if (input.critical) throw new Error("SMTP_HOST is required when email sending is enabled");
+    const missingConfig = [
+      !this.config.smtpHost ? "EMAIL_HOST" : "",
+      !this.config.smtpUser ? "EMAIL_USER" : "",
+      !this.config.smtpPass ? "EMAIL_PASS" : "",
+      !this.config.from ? "EMAIL_FROM" : "",
+    ].filter(Boolean);
+
+    if (missingConfig.length > 0) {
+      console.warn("[EmailService] SMTP config missing", {
+        to: parsedTo.data,
+        template: input.template,
+        subject: rendered.subject,
+        locale,
+        dryRun: this.config.dryRun,
+        missing: missingConfig,
+      });
+      if (input.critical) {
+        throw new Error(`${missingConfig.join(", ")} required when email sending is enabled`);
+      }
       return result;
     }
 

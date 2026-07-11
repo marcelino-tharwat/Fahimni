@@ -9,6 +9,13 @@ import { TeacherPendingReviewPage } from '@/features/teacher/pages/TeacherPendin
 import { TeacherRequestForm } from '@/features/teacher-request/components/TeacherRequestForm';
 import { apiClient } from '@/shared/lib/api/client';
 
+vi.mock('@/features/subjects/useSubjects', () => ({
+  useSubjects: () => ({
+    subjects: [{ code: 'BIO', displayName: 'Biology', isActive: true }],
+    loading: false,
+  }),
+}));
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'ar' } }),
   Trans: ({ children }: { children?: unknown }) => (children ?? null) as never,
@@ -63,7 +70,7 @@ describe('AuthPage — register account types', () => {
     fireEvent.click(screen.getByText('auth:accountTypeTeacher'));
     expect(screen.getByPlaceholderText('auth:password')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('auth:confirmPassword')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('auth:subject')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'auth:subject' })).toBeInTheDocument();
     // Proof-document upload is present for teacher registration.
     expect(document.querySelector('input[type="file"]')).toBeInTheDocument();
   });
@@ -92,7 +99,8 @@ describe('AuthPage — register account types', () => {
     fireEvent.change(screen.getByPlaceholderText('auth:mobile'), { target: { value: '01012345678' } });
     fireEvent.change(screen.getByPlaceholderText('auth:password'), { target: { value: 'Passw0rd!' } });
     fireEvent.change(screen.getByPlaceholderText('auth:confirmPassword'), { target: { value: 'Passw0rd!' } });
-    fireEvent.change(screen.getByPlaceholderText('auth:subject'), { target: { value: 'Biology' } });
+    fireEvent.click(screen.getByRole('combobox', { name: 'auth:subject' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Biology' }));
     fireEvent.click(screen.getByText('auth:registerButton'));
     // Teacher registration is submitted as multipart/form-data (proof docs ride along).
     await waitFor(() => expect(mApi.post).toHaveBeenCalledWith(
@@ -103,6 +111,7 @@ describe('AuthPage — register account types', () => {
     const fd = mApi.post.mock.calls.at(-1)![1] as FormData;
     expect(fd.get('role')).toBe('OPERATION');
     expect(fd.get('email')).toBe('teacher@example.com');
+    expect(fd.get('subject')).toBe('Biology');
     expect(await screen.findByTestId('teacher-pending-message')).toBeInTheDocument();
   });
 
@@ -116,7 +125,8 @@ describe('AuthPage — register account types', () => {
     fireEvent.change(screen.getByPlaceholderText('auth:mobile'), { target: { value: '01012345678' } });
     fireEvent.change(screen.getByPlaceholderText('auth:password'), { target: { value: 'Passw0rd!' } });
     fireEvent.change(screen.getByPlaceholderText('auth:confirmPassword'), { target: { value: 'Passw0rd!' } });
-    fireEvent.change(screen.getByPlaceholderText('auth:subject'), { target: { value: 'Biology' } });
+    fireEvent.click(screen.getByRole('combobox', { name: 'auth:subject' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Biology' }));
     fireEvent.click(screen.getByText('auth:registerButton'));
     const refBlock = await screen.findByTestId('tracking-reference');
     expect(refBlock).toHaveTextContent('TR-2026-654321');
