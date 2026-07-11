@@ -91,6 +91,11 @@ export type AiTutorUsage = $Result.DefaultSelection<Prisma.$AiTutorUsagePayload>
  */
 export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
 /**
+ * Model EmailLog
+ * 
+ */
+export type EmailLog = $Result.DefaultSelection<Prisma.$EmailLogPayload>
+/**
  * Model RefreshToken
  * 
  */
@@ -308,6 +313,17 @@ export const OtpType: {
 export type OtpType = (typeof OtpType)[keyof typeof OtpType]
 
 
+export const EmailLogStatus: {
+  QUEUED: 'QUEUED',
+  SENT: 'SENT',
+  FAILED: 'FAILED',
+  DRY_RUN: 'DRY_RUN',
+  SKIPPED_DUPLICATE: 'SKIPPED_DUPLICATE'
+};
+
+export type EmailLogStatus = (typeof EmailLogStatus)[keyof typeof EmailLogStatus]
+
+
 export const EnrollmentStatus: {
   ACTIVE: 'ACTIVE',
   DEACTIVATED: 'DEACTIVATED',
@@ -482,6 +498,10 @@ export const AttemptSubmissionReason: typeof $Enums.AttemptSubmissionReason
 export type OtpType = $Enums.OtpType
 
 export const OtpType: typeof $Enums.OtpType
+
+export type EmailLogStatus = $Enums.EmailLogStatus
+
+export const EmailLogStatus: typeof $Enums.EmailLogStatus
 
 export type EnrollmentStatus = $Enums.EnrollmentStatus
 
@@ -805,6 +825,16 @@ export class PrismaClient<
     * ```
     */
   get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.emailLog`: Exposes CRUD operations for the **EmailLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EmailLogs
+    * const emailLogs = await prisma.emailLog.findMany()
+    * ```
+    */
+  get emailLog(): Prisma.EmailLogDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.refreshToken`: Exposes CRUD operations for the **RefreshToken** model.
@@ -1434,6 +1464,7 @@ export namespace Prisma {
     ContentChunk: 'ContentChunk',
     AiTutorUsage: 'AiTutorUsage',
     AuditLog: 'AuditLog',
+    EmailLog: 'EmailLog',
     RefreshToken: 'RefreshToken',
     Quiz: 'Quiz',
     QuizLesson: 'QuizLesson',
@@ -1467,7 +1498,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "platformPromoCode" | "platformPromoRedemption" | "notification" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment" | "teacherWithdrawalRequest"
+      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "emailLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "platformPromoCode" | "platformPromoRedemption" | "notification" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment" | "teacherWithdrawalRequest"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2578,6 +2609,80 @@ export namespace Prisma {
           count: {
             args: Prisma.AuditLogCountArgs<ExtArgs>
             result: $Utils.Optional<AuditLogCountAggregateOutputType> | number
+          }
+        }
+      }
+      EmailLog: {
+        payload: Prisma.$EmailLogPayload<ExtArgs>
+        fields: Prisma.EmailLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EmailLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EmailLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>
+          }
+          findFirst: {
+            args: Prisma.EmailLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EmailLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>
+          }
+          findMany: {
+            args: Prisma.EmailLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>[]
+          }
+          create: {
+            args: Prisma.EmailLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>
+          }
+          createMany: {
+            args: Prisma.EmailLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EmailLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>[]
+          }
+          delete: {
+            args: Prisma.EmailLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>
+          }
+          update: {
+            args: Prisma.EmailLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.EmailLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EmailLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EmailLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.EmailLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailLogPayload>
+          }
+          aggregate: {
+            args: Prisma.EmailLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEmailLog>
+          }
+          groupBy: {
+            args: Prisma.EmailLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EmailLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EmailLogCountArgs<ExtArgs>
+            result: $Utils.Optional<EmailLogCountAggregateOutputType> | number
           }
         }
       }
@@ -4036,6 +4141,7 @@ export namespace Prisma {
     contentChunk?: ContentChunkOmit
     aiTutorUsage?: AiTutorUsageOmit
     auditLog?: AuditLogOmit
+    emailLog?: EmailLogOmit
     refreshToken?: RefreshTokenOmit
     quiz?: QuizOmit
     quizLesson?: QuizLessonOmit
@@ -4814,6 +4920,7 @@ export namespace Prisma {
     role: $Enums.Role | null
     status: $Enums.Status | null
     teacherApprovalState: $Enums.TeacherApprovalState | null
+    locale: string | null
     tokenVersion: number | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4828,6 +4935,7 @@ export namespace Prisma {
     role: $Enums.Role | null
     status: $Enums.Status | null
     teacherApprovalState: $Enums.TeacherApprovalState | null
+    locale: string | null
     tokenVersion: number | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4842,6 +4950,7 @@ export namespace Prisma {
     role: number
     status: number
     teacherApprovalState: number
+    locale: number
     tokenVersion: number
     createdAt: number
     updatedAt: number
@@ -4866,6 +4975,7 @@ export namespace Prisma {
     role?: true
     status?: true
     teacherApprovalState?: true
+    locale?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4880,6 +4990,7 @@ export namespace Prisma {
     role?: true
     status?: true
     teacherApprovalState?: true
+    locale?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4894,6 +5005,7 @@ export namespace Prisma {
     role?: true
     status?: true
     teacherApprovalState?: true
+    locale?: true
     tokenVersion?: true
     createdAt?: true
     updatedAt?: true
@@ -4995,6 +5107,7 @@ export namespace Prisma {
     role: $Enums.Role
     status: $Enums.Status
     teacherApprovalState: $Enums.TeacherApprovalState
+    locale: string
     tokenVersion: number
     createdAt: Date
     updatedAt: Date
@@ -5028,6 +5141,7 @@ export namespace Prisma {
     role?: boolean
     status?: boolean
     teacherApprovalState?: boolean
+    locale?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5070,6 +5184,7 @@ export namespace Prisma {
     role?: boolean
     status?: boolean
     teacherApprovalState?: boolean
+    locale?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5084,6 +5199,7 @@ export namespace Prisma {
     role?: boolean
     status?: boolean
     teacherApprovalState?: boolean
+    locale?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -5098,12 +5214,13 @@ export namespace Prisma {
     role?: boolean
     status?: boolean
     teacherApprovalState?: boolean
+    locale?: boolean
     tokenVersion?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fullName" | "email" | "password" | "mobile" | "role" | "status" | "teacherApprovalState" | "tokenVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fullName" | "email" | "password" | "mobile" | "role" | "status" | "teacherApprovalState" | "locale" | "tokenVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     teacherRegistrationRequest?: boolean | User$teacherRegistrationRequestArgs<ExtArgs>
@@ -5177,6 +5294,7 @@ export namespace Prisma {
       role: $Enums.Role
       status: $Enums.Status
       teacherApprovalState: $Enums.TeacherApprovalState
+      locale: string
       tokenVersion: number
       createdAt: Date
       updatedAt: Date
@@ -5638,6 +5756,7 @@ export namespace Prisma {
     readonly role: FieldRef<"User", 'Role'>
     readonly status: FieldRef<"User", 'Status'>
     readonly teacherApprovalState: FieldRef<"User", 'TeacherApprovalState'>
+    readonly locale: FieldRef<"User", 'String'>
     readonly tokenVersion: FieldRef<"User", 'Int'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
@@ -22933,6 +23052,1119 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AuditLogInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model EmailLog
+   */
+
+  export type AggregateEmailLog = {
+    _count: EmailLogCountAggregateOutputType | null
+    _min: EmailLogMinAggregateOutputType | null
+    _max: EmailLogMaxAggregateOutputType | null
+  }
+
+  export type EmailLogMinAggregateOutputType = {
+    id: string | null
+    to: string | null
+    subject: string | null
+    template: string | null
+    locale: string | null
+    status: $Enums.EmailLogStatus | null
+    providerMessageId: string | null
+    entityType: string | null
+    entityId: string | null
+    dedupeKey: string | null
+    errorMessage: string | null
+    createdAt: Date | null
+    sentAt: Date | null
+  }
+
+  export type EmailLogMaxAggregateOutputType = {
+    id: string | null
+    to: string | null
+    subject: string | null
+    template: string | null
+    locale: string | null
+    status: $Enums.EmailLogStatus | null
+    providerMessageId: string | null
+    entityType: string | null
+    entityId: string | null
+    dedupeKey: string | null
+    errorMessage: string | null
+    createdAt: Date | null
+    sentAt: Date | null
+  }
+
+  export type EmailLogCountAggregateOutputType = {
+    id: number
+    to: number
+    subject: number
+    template: number
+    locale: number
+    status: number
+    providerMessageId: number
+    entityType: number
+    entityId: number
+    dedupeKey: number
+    errorMessage: number
+    metadata: number
+    createdAt: number
+    sentAt: number
+    _all: number
+  }
+
+
+  export type EmailLogMinAggregateInputType = {
+    id?: true
+    to?: true
+    subject?: true
+    template?: true
+    locale?: true
+    status?: true
+    providerMessageId?: true
+    entityType?: true
+    entityId?: true
+    dedupeKey?: true
+    errorMessage?: true
+    createdAt?: true
+    sentAt?: true
+  }
+
+  export type EmailLogMaxAggregateInputType = {
+    id?: true
+    to?: true
+    subject?: true
+    template?: true
+    locale?: true
+    status?: true
+    providerMessageId?: true
+    entityType?: true
+    entityId?: true
+    dedupeKey?: true
+    errorMessage?: true
+    createdAt?: true
+    sentAt?: true
+  }
+
+  export type EmailLogCountAggregateInputType = {
+    id?: true
+    to?: true
+    subject?: true
+    template?: true
+    locale?: true
+    status?: true
+    providerMessageId?: true
+    entityType?: true
+    entityId?: true
+    dedupeKey?: true
+    errorMessage?: true
+    metadata?: true
+    createdAt?: true
+    sentAt?: true
+    _all?: true
+  }
+
+  export type EmailLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EmailLog to aggregate.
+     */
+    where?: EmailLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailLogs to fetch.
+     */
+    orderBy?: EmailLogOrderByWithRelationInput | EmailLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EmailLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EmailLogs
+    **/
+    _count?: true | EmailLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EmailLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EmailLogMaxAggregateInputType
+  }
+
+  export type GetEmailLogAggregateType<T extends EmailLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateEmailLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEmailLog[P]>
+      : GetScalarType<T[P], AggregateEmailLog[P]>
+  }
+
+
+
+
+  export type EmailLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmailLogWhereInput
+    orderBy?: EmailLogOrderByWithAggregationInput | EmailLogOrderByWithAggregationInput[]
+    by: EmailLogScalarFieldEnum[] | EmailLogScalarFieldEnum
+    having?: EmailLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EmailLogCountAggregateInputType | true
+    _min?: EmailLogMinAggregateInputType
+    _max?: EmailLogMaxAggregateInputType
+  }
+
+  export type EmailLogGroupByOutputType = {
+    id: string
+    to: string
+    subject: string
+    template: string
+    locale: string
+    status: $Enums.EmailLogStatus
+    providerMessageId: string | null
+    entityType: string | null
+    entityId: string | null
+    dedupeKey: string | null
+    errorMessage: string | null
+    metadata: JsonValue | null
+    createdAt: Date
+    sentAt: Date | null
+    _count: EmailLogCountAggregateOutputType | null
+    _min: EmailLogMinAggregateOutputType | null
+    _max: EmailLogMaxAggregateOutputType | null
+  }
+
+  type GetEmailLogGroupByPayload<T extends EmailLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EmailLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EmailLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EmailLogGroupByOutputType[P]>
+            : GetScalarType<T[P], EmailLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EmailLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    to?: boolean
+    subject?: boolean
+    template?: boolean
+    locale?: boolean
+    status?: boolean
+    providerMessageId?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    dedupeKey?: boolean
+    errorMessage?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    sentAt?: boolean
+  }, ExtArgs["result"]["emailLog"]>
+
+  export type EmailLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    to?: boolean
+    subject?: boolean
+    template?: boolean
+    locale?: boolean
+    status?: boolean
+    providerMessageId?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    dedupeKey?: boolean
+    errorMessage?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    sentAt?: boolean
+  }, ExtArgs["result"]["emailLog"]>
+
+  export type EmailLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    to?: boolean
+    subject?: boolean
+    template?: boolean
+    locale?: boolean
+    status?: boolean
+    providerMessageId?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    dedupeKey?: boolean
+    errorMessage?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    sentAt?: boolean
+  }, ExtArgs["result"]["emailLog"]>
+
+  export type EmailLogSelectScalar = {
+    id?: boolean
+    to?: boolean
+    subject?: boolean
+    template?: boolean
+    locale?: boolean
+    status?: boolean
+    providerMessageId?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    dedupeKey?: boolean
+    errorMessage?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    sentAt?: boolean
+  }
+
+  export type EmailLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "to" | "subject" | "template" | "locale" | "status" | "providerMessageId" | "entityType" | "entityId" | "dedupeKey" | "errorMessage" | "metadata" | "createdAt" | "sentAt", ExtArgs["result"]["emailLog"]>
+
+  export type $EmailLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EmailLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      to: string
+      subject: string
+      template: string
+      locale: string
+      status: $Enums.EmailLogStatus
+      providerMessageId: string | null
+      entityType: string | null
+      entityId: string | null
+      dedupeKey: string | null
+      errorMessage: string | null
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+      sentAt: Date | null
+    }, ExtArgs["result"]["emailLog"]>
+    composites: {}
+  }
+
+  type EmailLogGetPayload<S extends boolean | null | undefined | EmailLogDefaultArgs> = $Result.GetResult<Prisma.$EmailLogPayload, S>
+
+  type EmailLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EmailLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EmailLogCountAggregateInputType | true
+    }
+
+  export interface EmailLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EmailLog'], meta: { name: 'EmailLog' } }
+    /**
+     * Find zero or one EmailLog that matches the filter.
+     * @param {EmailLogFindUniqueArgs} args - Arguments to find a EmailLog
+     * @example
+     * // Get one EmailLog
+     * const emailLog = await prisma.emailLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EmailLogFindUniqueArgs>(args: SelectSubset<T, EmailLogFindUniqueArgs<ExtArgs>>): Prisma__EmailLogClient<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EmailLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EmailLogFindUniqueOrThrowArgs} args - Arguments to find a EmailLog
+     * @example
+     * // Get one EmailLog
+     * const emailLog = await prisma.emailLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EmailLogFindUniqueOrThrowArgs>(args: SelectSubset<T, EmailLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EmailLogClient<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EmailLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailLogFindFirstArgs} args - Arguments to find a EmailLog
+     * @example
+     * // Get one EmailLog
+     * const emailLog = await prisma.emailLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EmailLogFindFirstArgs>(args?: SelectSubset<T, EmailLogFindFirstArgs<ExtArgs>>): Prisma__EmailLogClient<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EmailLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailLogFindFirstOrThrowArgs} args - Arguments to find a EmailLog
+     * @example
+     * // Get one EmailLog
+     * const emailLog = await prisma.emailLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EmailLogFindFirstOrThrowArgs>(args?: SelectSubset<T, EmailLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__EmailLogClient<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EmailLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EmailLogs
+     * const emailLogs = await prisma.emailLog.findMany()
+     * 
+     * // Get first 10 EmailLogs
+     * const emailLogs = await prisma.emailLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const emailLogWithIdOnly = await prisma.emailLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EmailLogFindManyArgs>(args?: SelectSubset<T, EmailLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EmailLog.
+     * @param {EmailLogCreateArgs} args - Arguments to create a EmailLog.
+     * @example
+     * // Create one EmailLog
+     * const EmailLog = await prisma.emailLog.create({
+     *   data: {
+     *     // ... data to create a EmailLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends EmailLogCreateArgs>(args: SelectSubset<T, EmailLogCreateArgs<ExtArgs>>): Prisma__EmailLogClient<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EmailLogs.
+     * @param {EmailLogCreateManyArgs} args - Arguments to create many EmailLogs.
+     * @example
+     * // Create many EmailLogs
+     * const emailLog = await prisma.emailLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EmailLogCreateManyArgs>(args?: SelectSubset<T, EmailLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EmailLogs and returns the data saved in the database.
+     * @param {EmailLogCreateManyAndReturnArgs} args - Arguments to create many EmailLogs.
+     * @example
+     * // Create many EmailLogs
+     * const emailLog = await prisma.emailLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EmailLogs and only return the `id`
+     * const emailLogWithIdOnly = await prisma.emailLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EmailLogCreateManyAndReturnArgs>(args?: SelectSubset<T, EmailLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EmailLog.
+     * @param {EmailLogDeleteArgs} args - Arguments to delete one EmailLog.
+     * @example
+     * // Delete one EmailLog
+     * const EmailLog = await prisma.emailLog.delete({
+     *   where: {
+     *     // ... filter to delete one EmailLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EmailLogDeleteArgs>(args: SelectSubset<T, EmailLogDeleteArgs<ExtArgs>>): Prisma__EmailLogClient<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EmailLog.
+     * @param {EmailLogUpdateArgs} args - Arguments to update one EmailLog.
+     * @example
+     * // Update one EmailLog
+     * const emailLog = await prisma.emailLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EmailLogUpdateArgs>(args: SelectSubset<T, EmailLogUpdateArgs<ExtArgs>>): Prisma__EmailLogClient<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EmailLogs.
+     * @param {EmailLogDeleteManyArgs} args - Arguments to filter EmailLogs to delete.
+     * @example
+     * // Delete a few EmailLogs
+     * const { count } = await prisma.emailLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EmailLogDeleteManyArgs>(args?: SelectSubset<T, EmailLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EmailLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EmailLogs
+     * const emailLog = await prisma.emailLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EmailLogUpdateManyArgs>(args: SelectSubset<T, EmailLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EmailLogs and returns the data updated in the database.
+     * @param {EmailLogUpdateManyAndReturnArgs} args - Arguments to update many EmailLogs.
+     * @example
+     * // Update many EmailLogs
+     * const emailLog = await prisma.emailLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EmailLogs and only return the `id`
+     * const emailLogWithIdOnly = await prisma.emailLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EmailLogUpdateManyAndReturnArgs>(args: SelectSubset<T, EmailLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EmailLog.
+     * @param {EmailLogUpsertArgs} args - Arguments to update or create a EmailLog.
+     * @example
+     * // Update or create a EmailLog
+     * const emailLog = await prisma.emailLog.upsert({
+     *   create: {
+     *     // ... data to create a EmailLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EmailLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EmailLogUpsertArgs>(args: SelectSubset<T, EmailLogUpsertArgs<ExtArgs>>): Prisma__EmailLogClient<$Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EmailLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailLogCountArgs} args - Arguments to filter EmailLogs to count.
+     * @example
+     * // Count the number of EmailLogs
+     * const count = await prisma.emailLog.count({
+     *   where: {
+     *     // ... the filter for the EmailLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends EmailLogCountArgs>(
+      args?: Subset<T, EmailLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EmailLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EmailLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EmailLogAggregateArgs>(args: Subset<T, EmailLogAggregateArgs>): Prisma.PrismaPromise<GetEmailLogAggregateType<T>>
+
+    /**
+     * Group by EmailLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EmailLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EmailLogGroupByArgs['orderBy'] }
+        : { orderBy?: EmailLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EmailLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEmailLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EmailLog model
+   */
+  readonly fields: EmailLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EmailLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EmailLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EmailLog model
+   */
+  interface EmailLogFieldRefs {
+    readonly id: FieldRef<"EmailLog", 'String'>
+    readonly to: FieldRef<"EmailLog", 'String'>
+    readonly subject: FieldRef<"EmailLog", 'String'>
+    readonly template: FieldRef<"EmailLog", 'String'>
+    readonly locale: FieldRef<"EmailLog", 'String'>
+    readonly status: FieldRef<"EmailLog", 'EmailLogStatus'>
+    readonly providerMessageId: FieldRef<"EmailLog", 'String'>
+    readonly entityType: FieldRef<"EmailLog", 'String'>
+    readonly entityId: FieldRef<"EmailLog", 'String'>
+    readonly dedupeKey: FieldRef<"EmailLog", 'String'>
+    readonly errorMessage: FieldRef<"EmailLog", 'String'>
+    readonly metadata: FieldRef<"EmailLog", 'Json'>
+    readonly createdAt: FieldRef<"EmailLog", 'DateTime'>
+    readonly sentAt: FieldRef<"EmailLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EmailLog findUnique
+   */
+  export type EmailLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailLog to fetch.
+     */
+    where: EmailLogWhereUniqueInput
+  }
+
+  /**
+   * EmailLog findUniqueOrThrow
+   */
+  export type EmailLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailLog to fetch.
+     */
+    where: EmailLogWhereUniqueInput
+  }
+
+  /**
+   * EmailLog findFirst
+   */
+  export type EmailLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailLog to fetch.
+     */
+    where?: EmailLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailLogs to fetch.
+     */
+    orderBy?: EmailLogOrderByWithRelationInput | EmailLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EmailLogs.
+     */
+    cursor?: EmailLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmailLogs.
+     */
+    distinct?: EmailLogScalarFieldEnum | EmailLogScalarFieldEnum[]
+  }
+
+  /**
+   * EmailLog findFirstOrThrow
+   */
+  export type EmailLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailLog to fetch.
+     */
+    where?: EmailLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailLogs to fetch.
+     */
+    orderBy?: EmailLogOrderByWithRelationInput | EmailLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EmailLogs.
+     */
+    cursor?: EmailLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmailLogs.
+     */
+    distinct?: EmailLogScalarFieldEnum | EmailLogScalarFieldEnum[]
+  }
+
+  /**
+   * EmailLog findMany
+   */
+  export type EmailLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailLogs to fetch.
+     */
+    where?: EmailLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailLogs to fetch.
+     */
+    orderBy?: EmailLogOrderByWithRelationInput | EmailLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EmailLogs.
+     */
+    cursor?: EmailLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmailLogs.
+     */
+    distinct?: EmailLogScalarFieldEnum | EmailLogScalarFieldEnum[]
+  }
+
+  /**
+   * EmailLog create
+   */
+  export type EmailLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * The data needed to create a EmailLog.
+     */
+    data: XOR<EmailLogCreateInput, EmailLogUncheckedCreateInput>
+  }
+
+  /**
+   * EmailLog createMany
+   */
+  export type EmailLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EmailLogs.
+     */
+    data: EmailLogCreateManyInput | EmailLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EmailLog createManyAndReturn
+   */
+  export type EmailLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many EmailLogs.
+     */
+    data: EmailLogCreateManyInput | EmailLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EmailLog update
+   */
+  export type EmailLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * The data needed to update a EmailLog.
+     */
+    data: XOR<EmailLogUpdateInput, EmailLogUncheckedUpdateInput>
+    /**
+     * Choose, which EmailLog to update.
+     */
+    where: EmailLogWhereUniqueInput
+  }
+
+  /**
+   * EmailLog updateMany
+   */
+  export type EmailLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EmailLogs.
+     */
+    data: XOR<EmailLogUpdateManyMutationInput, EmailLogUncheckedUpdateManyInput>
+    /**
+     * Filter which EmailLogs to update
+     */
+    where?: EmailLogWhereInput
+    /**
+     * Limit how many EmailLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EmailLog updateManyAndReturn
+   */
+  export type EmailLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * The data used to update EmailLogs.
+     */
+    data: XOR<EmailLogUpdateManyMutationInput, EmailLogUncheckedUpdateManyInput>
+    /**
+     * Filter which EmailLogs to update
+     */
+    where?: EmailLogWhereInput
+    /**
+     * Limit how many EmailLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EmailLog upsert
+   */
+  export type EmailLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * The filter to search for the EmailLog to update in case it exists.
+     */
+    where: EmailLogWhereUniqueInput
+    /**
+     * In case the EmailLog found by the `where` argument doesn't exist, create a new EmailLog with this data.
+     */
+    create: XOR<EmailLogCreateInput, EmailLogUncheckedCreateInput>
+    /**
+     * In case the EmailLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EmailLogUpdateInput, EmailLogUncheckedUpdateInput>
+  }
+
+  /**
+   * EmailLog delete
+   */
+  export type EmailLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
+    /**
+     * Filter which EmailLog to delete.
+     */
+    where: EmailLogWhereUniqueInput
+  }
+
+  /**
+   * EmailLog deleteMany
+   */
+  export type EmailLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EmailLogs to delete
+     */
+    where?: EmailLogWhereInput
+    /**
+     * Limit how many EmailLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EmailLog without action
+   */
+  export type EmailLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailLog
+     */
+    select?: EmailLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailLog
+     */
+    omit?: EmailLogOmit<ExtArgs> | null
   }
 
 
@@ -44506,6 +45738,7 @@ export namespace Prisma {
     role: 'role',
     status: 'status',
     teacherApprovalState: 'teacherApprovalState',
+    locale: 'locale',
     tokenVersion: 'tokenVersion',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -44717,6 +45950,26 @@ export namespace Prisma {
   };
 
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+  export const EmailLogScalarFieldEnum: {
+    id: 'id',
+    to: 'to',
+    subject: 'subject',
+    template: 'template',
+    locale: 'locale',
+    status: 'status',
+    providerMessageId: 'providerMessageId',
+    entityType: 'entityType',
+    entityId: 'entityId',
+    dedupeKey: 'dedupeKey',
+    errorMessage: 'errorMessage',
+    metadata: 'metadata',
+    createdAt: 'createdAt',
+    sentAt: 'sentAt'
+  };
+
+  export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
 
 
   export const RefreshTokenScalarFieldEnum: {
@@ -45276,6 +46529,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'EmailLogStatus'
+   */
+  export type EnumEmailLogStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmailLogStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'EmailLogStatus[]'
+   */
+  export type ListEnumEmailLogStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmailLogStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'QuizContentScope'
    */
   export type EnumQuizContentScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuizContentScope'>
@@ -45556,6 +46823,7 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     status?: EnumStatusFilter<"User"> | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFilter<"User"> | $Enums.TeacherApprovalState
+    locale?: StringFilter<"User"> | string
     tokenVersion?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -45597,6 +46865,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -45641,6 +46910,7 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     status?: EnumStatusFilter<"User"> | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFilter<"User"> | $Enums.TeacherApprovalState
+    locale?: StringFilter<"User"> | string
     tokenVersion?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -45682,6 +46952,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -45704,6 +46975,7 @@ export namespace Prisma {
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     status?: EnumStatusWithAggregatesFilter<"User"> | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateWithAggregatesFilter<"User"> | $Enums.TeacherApprovalState
+    locale?: StringWithAggregatesFilter<"User"> | string
     tokenVersion?: IntWithAggregatesFilter<"User"> | number
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -46809,6 +48081,103 @@ export namespace Prisma {
     actorType?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     actorName?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     scopeTeacherId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+  }
+
+  export type EmailLogWhereInput = {
+    AND?: EmailLogWhereInput | EmailLogWhereInput[]
+    OR?: EmailLogWhereInput[]
+    NOT?: EmailLogWhereInput | EmailLogWhereInput[]
+    id?: StringFilter<"EmailLog"> | string
+    to?: StringFilter<"EmailLog"> | string
+    subject?: StringFilter<"EmailLog"> | string
+    template?: StringFilter<"EmailLog"> | string
+    locale?: StringFilter<"EmailLog"> | string
+    status?: EnumEmailLogStatusFilter<"EmailLog"> | $Enums.EmailLogStatus
+    providerMessageId?: StringNullableFilter<"EmailLog"> | string | null
+    entityType?: StringNullableFilter<"EmailLog"> | string | null
+    entityId?: StringNullableFilter<"EmailLog"> | string | null
+    dedupeKey?: StringNullableFilter<"EmailLog"> | string | null
+    errorMessage?: StringNullableFilter<"EmailLog"> | string | null
+    metadata?: JsonNullableFilter<"EmailLog">
+    createdAt?: DateTimeFilter<"EmailLog"> | Date | string
+    sentAt?: DateTimeNullableFilter<"EmailLog"> | Date | string | null
+  }
+
+  export type EmailLogOrderByWithRelationInput = {
+    id?: SortOrder
+    to?: SortOrder
+    subject?: SortOrder
+    template?: SortOrder
+    locale?: SortOrder
+    status?: SortOrder
+    providerMessageId?: SortOrderInput | SortOrder
+    entityType?: SortOrderInput | SortOrder
+    entityId?: SortOrderInput | SortOrder
+    dedupeKey?: SortOrderInput | SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+  }
+
+  export type EmailLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    dedupeKey?: string
+    AND?: EmailLogWhereInput | EmailLogWhereInput[]
+    OR?: EmailLogWhereInput[]
+    NOT?: EmailLogWhereInput | EmailLogWhereInput[]
+    to?: StringFilter<"EmailLog"> | string
+    subject?: StringFilter<"EmailLog"> | string
+    template?: StringFilter<"EmailLog"> | string
+    locale?: StringFilter<"EmailLog"> | string
+    status?: EnumEmailLogStatusFilter<"EmailLog"> | $Enums.EmailLogStatus
+    providerMessageId?: StringNullableFilter<"EmailLog"> | string | null
+    entityType?: StringNullableFilter<"EmailLog"> | string | null
+    entityId?: StringNullableFilter<"EmailLog"> | string | null
+    errorMessage?: StringNullableFilter<"EmailLog"> | string | null
+    metadata?: JsonNullableFilter<"EmailLog">
+    createdAt?: DateTimeFilter<"EmailLog"> | Date | string
+    sentAt?: DateTimeNullableFilter<"EmailLog"> | Date | string | null
+  }, "id" | "dedupeKey">
+
+  export type EmailLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    to?: SortOrder
+    subject?: SortOrder
+    template?: SortOrder
+    locale?: SortOrder
+    status?: SortOrder
+    providerMessageId?: SortOrderInput | SortOrder
+    entityType?: SortOrderInput | SortOrder
+    entityId?: SortOrderInput | SortOrder
+    dedupeKey?: SortOrderInput | SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    _count?: EmailLogCountOrderByAggregateInput
+    _max?: EmailLogMaxOrderByAggregateInput
+    _min?: EmailLogMinOrderByAggregateInput
+  }
+
+  export type EmailLogScalarWhereWithAggregatesInput = {
+    AND?: EmailLogScalarWhereWithAggregatesInput | EmailLogScalarWhereWithAggregatesInput[]
+    OR?: EmailLogScalarWhereWithAggregatesInput[]
+    NOT?: EmailLogScalarWhereWithAggregatesInput | EmailLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"EmailLog"> | string
+    to?: StringWithAggregatesFilter<"EmailLog"> | string
+    subject?: StringWithAggregatesFilter<"EmailLog"> | string
+    template?: StringWithAggregatesFilter<"EmailLog"> | string
+    locale?: StringWithAggregatesFilter<"EmailLog"> | string
+    status?: EnumEmailLogStatusWithAggregatesFilter<"EmailLog"> | $Enums.EmailLogStatus
+    providerMessageId?: StringNullableWithAggregatesFilter<"EmailLog"> | string | null
+    entityType?: StringNullableWithAggregatesFilter<"EmailLog"> | string | null
+    entityId?: StringNullableWithAggregatesFilter<"EmailLog"> | string | null
+    dedupeKey?: StringNullableWithAggregatesFilter<"EmailLog"> | string | null
+    errorMessage?: StringNullableWithAggregatesFilter<"EmailLog"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"EmailLog">
+    createdAt?: DateTimeWithAggregatesFilter<"EmailLog"> | Date | string
+    sentAt?: DateTimeNullableWithAggregatesFilter<"EmailLog"> | Date | string | null
   }
 
   export type RefreshTokenWhereInput = {
@@ -48484,6 +49853,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48525,6 +49895,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48566,6 +49937,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48607,6 +49979,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48648,6 +50021,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48662,6 +50036,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48676,6 +50051,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -49847,6 +51223,125 @@ export namespace Prisma {
     actorType?: NullableStringFieldUpdateOperationsInput | string | null
     actorName?: NullableStringFieldUpdateOperationsInput | string | null
     scopeTeacherId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type EmailLogCreateInput = {
+    id?: string
+    to: string
+    subject: string
+    template: string
+    locale: string
+    status: $Enums.EmailLogStatus
+    providerMessageId?: string | null
+    entityType?: string | null
+    entityId?: string | null
+    dedupeKey?: string | null
+    errorMessage?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    sentAt?: Date | string | null
+  }
+
+  export type EmailLogUncheckedCreateInput = {
+    id?: string
+    to: string
+    subject: string
+    template: string
+    locale: string
+    status: $Enums.EmailLogStatus
+    providerMessageId?: string | null
+    entityType?: string | null
+    entityId?: string | null
+    dedupeKey?: string | null
+    errorMessage?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    sentAt?: Date | string | null
+  }
+
+  export type EmailLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    template?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    status?: EnumEmailLogStatusFieldUpdateOperationsInput | $Enums.EmailLogStatus
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: NullableStringFieldUpdateOperationsInput | string | null
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    dedupeKey?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type EmailLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    template?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    status?: EnumEmailLogStatusFieldUpdateOperationsInput | $Enums.EmailLogStatus
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: NullableStringFieldUpdateOperationsInput | string | null
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    dedupeKey?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type EmailLogCreateManyInput = {
+    id?: string
+    to: string
+    subject: string
+    template: string
+    locale: string
+    status: $Enums.EmailLogStatus
+    providerMessageId?: string | null
+    entityType?: string | null
+    entityId?: string | null
+    dedupeKey?: string | null
+    errorMessage?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    sentAt?: Date | string | null
+  }
+
+  export type EmailLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    template?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    status?: EnumEmailLogStatusFieldUpdateOperationsInput | $Enums.EmailLogStatus
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: NullableStringFieldUpdateOperationsInput | string | null
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    dedupeKey?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type EmailLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    to?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    template?: StringFieldUpdateOperationsInput | string
+    locale?: StringFieldUpdateOperationsInput | string
+    status?: EnumEmailLogStatusFieldUpdateOperationsInput | $Enums.EmailLogStatus
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: NullableStringFieldUpdateOperationsInput | string | null
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    dedupeKey?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type RefreshTokenCreateInput = {
@@ -51990,6 +53485,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -52008,6 +53504,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -52022,6 +53519,7 @@ export namespace Prisma {
     role?: SortOrder
     status?: SortOrder
     teacherApprovalState?: SortOrder
+    locale?: SortOrder
     tokenVersion?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -53059,6 +54557,72 @@ export namespace Prisma {
     actorType?: SortOrder
     actorName?: SortOrder
     scopeTeacherId?: SortOrder
+  }
+
+  export type EnumEmailLogStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmailLogStatus | EnumEmailLogStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.EmailLogStatus[] | ListEnumEmailLogStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmailLogStatus[] | ListEnumEmailLogStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmailLogStatusFilter<$PrismaModel> | $Enums.EmailLogStatus
+  }
+
+  export type EmailLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    to?: SortOrder
+    subject?: SortOrder
+    template?: SortOrder
+    locale?: SortOrder
+    status?: SortOrder
+    providerMessageId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    dedupeKey?: SortOrder
+    errorMessage?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    sentAt?: SortOrder
+  }
+
+  export type EmailLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    to?: SortOrder
+    subject?: SortOrder
+    template?: SortOrder
+    locale?: SortOrder
+    status?: SortOrder
+    providerMessageId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    dedupeKey?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+    sentAt?: SortOrder
+  }
+
+  export type EmailLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    to?: SortOrder
+    subject?: SortOrder
+    template?: SortOrder
+    locale?: SortOrder
+    status?: SortOrder
+    providerMessageId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    dedupeKey?: SortOrder
+    errorMessage?: SortOrder
+    createdAt?: SortOrder
+    sentAt?: SortOrder
+  }
+
+  export type EnumEmailLogStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmailLogStatus | EnumEmailLogStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.EmailLogStatus[] | ListEnumEmailLogStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmailLogStatus[] | ListEnumEmailLogStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmailLogStatusWithAggregatesFilter<$PrismaModel> | $Enums.EmailLogStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEmailLogStatusFilter<$PrismaModel>
+    _max?: NestedEnumEmailLogStatusFilter<$PrismaModel>
   }
 
   export type RefreshTokenCountOrderByAggregateInput = {
@@ -56368,6 +57932,10 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogsInput, UserUpdateWithoutAuditLogsInput>, UserUncheckedUpdateWithoutAuditLogsInput>
   }
 
+  export type EnumEmailLogStatusFieldUpdateOperationsInput = {
+    set?: $Enums.EmailLogStatus
+  }
+
   export type UserCreateNestedOneWithoutRefreshTokensInput = {
     create?: XOR<UserCreateWithoutRefreshTokensInput, UserUncheckedCreateWithoutRefreshTokensInput>
     connectOrCreate?: UserCreateOrConnectWithoutRefreshTokensInput
@@ -57800,6 +59368,23 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumEmailLogStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmailLogStatus | EnumEmailLogStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.EmailLogStatus[] | ListEnumEmailLogStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmailLogStatus[] | ListEnumEmailLogStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmailLogStatusFilter<$PrismaModel> | $Enums.EmailLogStatus
+  }
+
+  export type NestedEnumEmailLogStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmailLogStatus | EnumEmailLogStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.EmailLogStatus[] | ListEnumEmailLogStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmailLogStatus[] | ListEnumEmailLogStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmailLogStatusWithAggregatesFilter<$PrismaModel> | $Enums.EmailLogStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEmailLogStatusFilter<$PrismaModel>
+    _max?: NestedEnumEmailLogStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumQuizContentScopeFilter<$PrismaModel = never> = {
@@ -60007,6 +61592,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60047,6 +61633,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60134,6 +61721,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60174,6 +61762,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60251,6 +61840,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60291,6 +61881,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60347,6 +61938,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60387,6 +61979,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60497,6 +62090,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60537,6 +62131,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60636,6 +62231,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60676,6 +62272,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60747,6 +62344,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -60787,6 +62385,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61102,6 +62701,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61142,6 +62742,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61705,6 +63306,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61745,6 +63347,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61801,6 +63404,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61841,6 +63445,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61922,6 +63527,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -61962,6 +63568,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62065,6 +63672,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62105,6 +63713,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62145,6 +63754,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62185,6 +63795,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62282,6 +63893,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62322,6 +63934,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62452,6 +64065,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62492,6 +64106,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62597,6 +64212,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62637,6 +64253,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62809,6 +64426,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62849,6 +64467,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62932,6 +64551,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62972,6 +64592,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63137,6 +64758,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63177,6 +64799,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63233,6 +64856,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63273,6 +64897,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63313,6 +64938,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63353,6 +64979,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63409,6 +65036,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63449,6 +65077,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63489,6 +65118,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63529,6 +65159,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63585,6 +65216,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63625,6 +65257,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63852,6 +65485,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63892,6 +65526,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64076,6 +65711,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64116,6 +65752,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64585,6 +66222,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64625,6 +66263,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64752,6 +66391,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64792,6 +66432,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64832,6 +66473,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64872,6 +66514,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64917,6 +66560,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64957,6 +66601,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65054,6 +66699,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65094,6 +66740,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65145,6 +66792,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65185,6 +66833,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65272,6 +66921,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65312,6 +66962,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65396,6 +67047,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65436,6 +67088,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65537,6 +67190,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65577,6 +67231,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65684,6 +67339,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65724,6 +67380,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65764,6 +67421,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65804,6 +67462,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65860,6 +67519,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65900,6 +67560,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65940,6 +67601,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65980,6 +67642,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66036,6 +67699,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66076,6 +67740,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66116,6 +67781,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66156,6 +67822,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66246,6 +67913,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66286,6 +67954,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66626,6 +68295,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66666,6 +68336,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66847,6 +68518,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66887,6 +68559,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67014,6 +68687,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67054,6 +68728,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67159,6 +68834,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67199,6 +68875,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67294,6 +68971,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67334,6 +69012,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67476,6 +69155,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67516,6 +69196,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67654,6 +69335,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67694,6 +69376,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67836,6 +69519,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67876,6 +69560,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68014,6 +69699,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68054,6 +69740,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68099,6 +69786,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68139,6 +69827,7 @@ export namespace Prisma {
     role?: $Enums.Role
     status?: $Enums.Status
     teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
     tokenVersion?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68195,6 +69884,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68235,6 +69925,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68286,6 +69977,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -68326,6 +70018,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
     tokenVersion?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

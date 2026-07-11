@@ -19,6 +19,7 @@ model User {
   // legacy rows; teachers move PENDING_REVIEW → APPROVED | REJECTED. The derived
   // "active teacher" (APPROVED + active subscription) is not stored here.
   teacherApprovalState        TeacherApprovalState         @default(NONE)
+  locale                      String                       @default("ar")
   tokenVersion                Int                          @default(0)
   createdAt                   DateTime                     @default(now())
   updatedAt                   DateTime                     @updatedAt
@@ -308,6 +309,29 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+model EmailLog {
+  id                String         @id @default(uuid())
+  to                String
+  subject           String
+  template          String
+  locale            String
+  status            EmailLogStatus
+  providerMessageId String?
+  entityType        String?
+  entityId          String?
+  dedupeKey         String?        @unique
+  errorMessage      String?
+  metadata          Json?
+  createdAt         DateTime       @default(now())
+  sentAt            DateTime?
+
+  @@index([template, createdAt])
+  @@index([status, createdAt])
+  @@index([locale, createdAt])
+  @@index([entityType, entityId])
+  @@map("email_logs")
+}
+
 model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
@@ -562,6 +586,14 @@ enum AttemptSubmissionReason {
 enum OtpType {
   EMAIL_VERIFICATION
   PASSWORD_RESET
+}
+
+enum EmailLogStatus {
+  QUEUED
+  SENT
+  FAILED
+  DRY_RUN
+  SKIPPED_DUPLICATE
 }
 
 enum EnrollmentStatus {

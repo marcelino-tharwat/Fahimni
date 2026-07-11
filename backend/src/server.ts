@@ -2,11 +2,13 @@ import http from "http";
 import { createApp } from "./app.js";
 import { env } from "./config/env.js";
 import { logger } from "./config/logger.js";
+import { getSafeEmailConfigSummary } from "./modules/email/email.provider.js";
 import { initializeSocket } from "./shared/services/socket.service.js";
 
 const port = env.PORT || 3000;
 
 logger.info("server_starting", { environment: env.NODE_ENV, port });
+logger.info("email_runtime_mode", getSafeEmailConfigSummary());
 
 const app = createApp();
 const server = http.createServer(app);

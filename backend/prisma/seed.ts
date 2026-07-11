@@ -518,7 +518,9 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
     await tx.chapter.deleteMany({
       where: { stage: { teacherId: { in: ids } } },
     });
-    await tx.studentProfile.deleteMany({ where: { userId: { in: ids } } });
+    await tx.studentProfile.deleteMany({
+      where: { OR: [{ userId: { in: ids } }, { stageId: { in: stageIds } }] },
+    });
     await tx.stage.deleteMany({ where: { teacherId: { in: ids } } });
     await tx.teacherProfile.deleteMany({ where: { userId: { in: ids } } });
 
@@ -1517,6 +1519,16 @@ async function seedAll(): Promise<void> {
       // teacher-math's confirmed earnings = pt-success-1 (150) + pt-success-2
       // (150) = 300. With TRANSFERRED=150 and held PENDING(50)+PROCESSING(30),
       // availableBalance = 300 - 150 - 80 = 70 (never manually edited/stored).
+      const mathWithdrawalIds = [
+        sid("twr-math-transferred"),
+        sid("twr-math-pending"),
+        sid("twr-math-processing"),
+        sid("twr-math-rejected"),
+        sid("twr-math-cancelled"),
+      ];
+      await tx.teacherWithdrawalRequest.deleteMany({
+        where: { id: { in: mathWithdrawalIds }, teacherId: sid("teacher-math") },
+      });
       await tx.teacherWithdrawalRequest.createMany({
         data: [
           {

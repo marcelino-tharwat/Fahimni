@@ -19,6 +19,7 @@ import type {
   ListTeacherRequestsQuery,
   RejectRequestInput,
 } from "./admin-teacher-requests.validation.js";
+import { sendTransactionalEmail } from "../email/transactional-email.helpers.js";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -320,6 +321,21 @@ export class AdminTeacherRequestsService {
     });
 
     const reviewerName = (await this.reviewerNames([reviewerId])).get(reviewerId) ?? null;
+    await sendTransactionalEmail({
+      to: updated.email,
+      template: "teacherRegistrationApproved",
+      locale: "ar",
+      data: {
+        teacherName: updated.fullName,
+        status: "APPROVED",
+        loginUrl: "/login",
+        freePlanNote: "Approved teachers can start on the free teacher plan.",
+      },
+      metadata: { requestId },
+      entityType: "TeacherRegistrationRequest",
+      entityId: requestId,
+      dedupeKey: `${requestId}:APPROVED:teacherRegistrationApproved`,
+    });
     return {
       request: this.toListItem(updated, reviewerName),
       accountProvisioning,
@@ -372,6 +388,22 @@ export class AdminTeacherRequestsService {
     });
 
     const reviewerName = (await this.reviewerNames([reviewerId])).get(reviewerId) ?? null;
+    await sendTransactionalEmail({
+      to: updated.email,
+      template: "teacherRegistrationRejected",
+      locale: "ar",
+      data: {
+        teacherName: updated.fullName,
+        referenceNumber: updated.publicReference,
+        rejectionReason: input.adminNotes,
+        rejectionMode: "FINAL_REJECTION",
+        statusUrl: `/teacher/register/status?ref=${encodeURIComponent(updated.publicReference)}`,
+      },
+      metadata: { requestId },
+      entityType: "TeacherRegistrationRequest",
+      entityId: requestId,
+      dedupeKey: `${requestId}:REJECTED:teacherRegistrationRejected`,
+    });
     return { request: this.toListItem(updated, reviewerName) };
   }
 }
