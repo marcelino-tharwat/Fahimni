@@ -56,6 +56,8 @@
   "planCodeDuplicate": "توجد خطة بنفس هذا الكود بالفعل",
   "freePlanMustBeFree": "يجب أن يكون سعر الخطة المجانية صفرًا",
   "planNotFound": "الخطة غير موجودة",
+  "stageNotFound": "المرحلة الدراسية غير موجودة",
+  "stageHasChapters": "لا يمكن حذف هذه المرحلة لوجود فصول مرتبطة بها. يرجى إزالة أو نقل الفصول أولاً.",
   "teacherRequestNotFound": "طلب المدرس غير موجود",
   "documentUnavailable": "المستند غير متاح",
   "requestNotPending": "يمكن معالجة الطلبات قيد الانتظار فقط",

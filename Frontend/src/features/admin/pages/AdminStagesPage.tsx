@@ -6,7 +6,7 @@ import { adminStagesApi, type AdminStage } from '@/features/admin/api/adminStage
 import { Button, Spinner } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 
 const ADMIN_STAGES_KEY = ['admin', 'stages'];
 
@@ -60,14 +60,14 @@ export function AdminStagesPage() {
       reset();
     },
     onError: (error) =>
-      dispatch(addToast({ type: 'error', message: (error as ApiError)?.message ?? t('status.error') })),
+      dispatch(addToast({ type: 'error', message: translateApiError(t, error) })),
   });
 
   const statusMutation = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => adminStagesApi.setStatus(id, isActive),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_STAGES_KEY }),
     onError: (error) =>
-      dispatch(addToast({ type: 'error', message: (error as ApiError)?.message ?? t('status.error') })),
+      dispatch(addToast({ type: 'error', message: translateApiError(t, error) })),
   });
 
   const stages = data?.data ?? [];

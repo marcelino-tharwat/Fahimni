@@ -12,7 +12,7 @@ import { AppHeader } from "@/shared/components/layout/AppHeader";
 import { useAppDispatch } from "@/shared/store/hooks";
 import { apiClient, type ApiError } from "@/shared/lib/api/client";
 import { translateApiError, translateFieldErrors } from "@/shared/lib/api/translateError";
-import { normalizeTextInput, normalizeOptionalTextInput } from "@/shared/lib/utils/textNormalization";
+import { normalizeTextInput, normalizeOptionalTextInput, isBlank } from "@/shared/lib/utils/textNormalization";
 import { login as loginThunk, register as registerThunk, googleLogin as googleLoginThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
 import type { PublicStage } from "@/features/student/types/student";
 import { ProofUpload } from "@/features/teacher-request/components/ProofUpload";
@@ -173,7 +173,7 @@ function LoginForm() {
         navigate(dashboardPathByRole[res.user.role]);
       }
     } catch (err) {
-      setError(err ? String(err) : t("auth:errGeneric"));
+      setError(translateApiError(t, err));
     } finally {
       inFlightRef.current = false;
       setLoading(false);
@@ -206,6 +206,7 @@ function LoginForm() {
         error={errors.password?.message}
         registration={register("password", {
           required: t("auth:errPasswordRequired"),
+          validate: (v) => !isBlank(v) || t("auth:errPasswordRequired"),
         })}
       />
       <div className="text-right">
