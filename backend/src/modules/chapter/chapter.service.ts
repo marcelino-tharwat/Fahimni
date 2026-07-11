@@ -8,6 +8,8 @@ import type { ChapterResponseDTO, StudentChapterResponseDTO } from "./chapter.ty
 import type { CreateChapterInput, UpdateChapterInput } from "./chapter.validation.js";
 
 const filesService = new FilesService();
+const TEACHER_SUBJECT_MISMATCH_MESSAGE =
+  "لا يمكن للمدرس إضافة محتوى في تخصص مختلف عن تخصصه";
 
 function toDTO(
   chapter: Record<string, unknown>,
@@ -37,6 +39,29 @@ export class ChapterService {
 
     if (!stage) {
       throw new AppError("Stage not found or inactive", 404);
+    }
+
+    const teacher = await prisma.user.findFirst({
+      where: {
+        id: teacherId,
+        role: "OPERATION",
+        status: "ACTIVE",
+        teacherApprovalState: "APPROVED",
+      },
+      select: {
+        id: true,
+        teacherProfile: { select: { subject: true } },
+      },
+    });
+
+    if (!teacher) {
+      throw new AppError("Teacher not approved", 403, "TEACHER_NOT_APPROVED");
+    }
+
+    const teacherSubject = teacher.teacherProfile?.subject?.trim();
+    const requestedSubject = input.subject?.trim();
+    if (requestedSubject && teacherSubject && requestedSubject !== teacherSubject) {
+      throw new AppError(TEACHER_SUBJECT_MISMATCH_MESSAGE, 403, "TEACHER_SUBJECT_MISMATCH");
     }
 
     const chapter = await prisma.chapter.create({
