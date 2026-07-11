@@ -9,8 +9,14 @@ import { Card, StatCard, Spinner, EmptyState } from '@/shared/components/ui';
 import { useAdminStats } from '@/features/admin/hooks/useAdminStats';
 import type { AdminStats } from '@/features/admin/types/stats';
 
-const nf = (n: number) => n.toLocaleString('ar-EG');
-const money = (n: number, currency: string) => `${nf(Math.round(n))} ${currency}`;
+const WARNING_MAP: Record<string, string> = {
+  'إيرادات الكورسات المؤكدة تحتسب فقط مدفوعات Paymob الناجحة؛ الاشتراكات المجانية أو عبر الأكواد غير محتسبة.': 'adminDashboard.reliabilityWarning1',
+  'إيراد اشتراكات المدرسين يحتسب فقط مدفوعات الاشتراك الناجحة؛ الباقة المجانية لا تولّد أي إيراد.': 'adminDashboard.reliabilityWarning2',
+  'المدفوعات المعلقة والفاشلة غير محتسبة في الإيرادات وتظهر في مقاييس المعلق/الفاشل فقط.': 'adminDashboard.reliabilityWarning3',
+  'المبالغ المستردة والإلغاءات غير محتسبة في الإيرادات.': 'adminDashboard.reliabilityWarning4',
+  'إيراد اشتراكات المدرسين محسوب من مدفوعات الاشتراك المؤكدة (القيمة التقديرية غير مستخدمة).': 'adminDashboard.reliabilityWarning5',
+  'ترتيب المدرسين حسب الإيراد يعتمد على إيرادات الكورسات المملوكة للمدرس فقط؛ مدفوعات اشتراكات المدرسين تُعد إيراداً للمنصة وليست إيراداً للمدرس.': 'adminDashboard.reliabilityWarning6',
+};
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="font-cairo text-lg font-bold text-text-primary">{children}</h2>;
@@ -89,7 +95,7 @@ function TopTeachersTable<T extends { teacherId: string; fullName: string }>({
 }
 
 export function AdminDashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data, isLoading, isError, refetch, isFetching } = useAdminStats();
 
   const header = (
@@ -137,6 +143,9 @@ export function AdminDashboardPage() {
 
   const s: AdminStats = data;
   const { currency } = s.finance;
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
+  const nf = (n: number) => n.toLocaleString(locale);
+  const money = (n: number, c: string) => `${nf(Math.round(n))} ${c}`;
 
   return (
     <div className="flex flex-col gap-8" aria-busy={isFetching}>
@@ -194,7 +203,7 @@ export function AdminDashboardPage() {
             </div>
             <ul className="list-disc space-y-1 ps-6 font-cairo text-xs text-amber-800">
               {s.finance.reliabilityWarnings.map((w, i) => (
-                <li key={i}>{w}</li>
+                <li key={i}>{t(WARNING_MAP[w] ?? w)}</li>
               ))}
             </ul>
           </Card>

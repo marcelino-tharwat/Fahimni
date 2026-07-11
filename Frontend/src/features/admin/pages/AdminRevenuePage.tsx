@@ -1,8 +1,18 @@
 import { Link } from 'react-router-dom';
 import { Loader2, AlertTriangle, Wallet, BookOpen, CreditCard, CalendarDays, Users, Crown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Card } from '@/shared/components/ui';
 import { useRevenueSummary, useRevenueByTeacher, useRevenueByChapter } from '@/features/admin/hooks/useAdminRevenue';
 import type { RevenueByChapterRow, RevenueByTeacherRow, RevenueSummary } from '@/features/admin/types/revenue';
+
+const WARNING_MAP: Record<string, string> = {
+  'إيرادات الكورسات المؤكدة تحتسب فقط مدفوعات Paymob الناجحة؛ الاشتراكات المجانية أو عبر الأكواد غير محتسبة.': 'adminDashboard.reliabilityWarning1',
+  'إيراد اشتراكات المدرسين يحتسب فقط مدفوعات الاشتراك الناجحة؛ الباقة المجانية لا تولّد أي إيراد.': 'adminDashboard.reliabilityWarning2',
+  'المدفوعات المعلقة والفاشلة غير محتسبة في الإيرادات وتظهر في مقاييس المعلق/الفاشل فقط.': 'adminDashboard.reliabilityWarning3',
+  'المبالغ المستردة والإلغاءات غير محتسبة في الإيرادات.': 'adminDashboard.reliabilityWarning4',
+  'إيراد اشتراكات المدرسين محسوب من مدفوعات الاشتراك المؤكدة (القيمة التقديرية غير مستخدمة).': 'adminDashboard.reliabilityWarning5',
+  'ترتيب المدرسين حسب الإيراد يعتمد على إيرادات الكورسات المملوكة للمدرس فقط؛ مدفوعات اشتراكات المدرسين تُعد إيراداً للمنصة وليست إيراداً للمدرس.': 'adminDashboard.reliabilityWarning6',
+};
 
 function MoneyCard({
   testid, icon: Icon, label, value, currency, locale,
@@ -90,12 +100,15 @@ export function AdminRevenuePage() {
           </div>
 
           {s.reliabilityWarnings.length > 0 && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4" data-testid="reliability-warnings">
-              <p className="mb-1 font-cairo text-sm font-semibold text-amber-800">{t('adminRevenue.reliabilityTitle')}</p>
-              <ul className="list-disc space-y-1 pe-5 font-cairo text-xs text-amber-700">
-                {s.reliabilityWarnings.map((w, i) => <li key={i}>{w}</li>)}
+            <Card className="border-amber-200 bg-amber-50" data-testid="reliability-warnings">
+              <div className="mb-2 flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <span className="font-cairo text-sm font-semibold text-amber-800">{t('adminRevenue.reliabilityTitle')}</span>
+              </div>
+              <ul className="list-disc space-y-1 ps-6 font-cairo text-xs text-amber-800">
+                {s.reliabilityWarnings.map((w, i) => <li key={i}>{t(WARNING_MAP[w] ?? w)}</li>)}
               </ul>
-            </div>
+            </Card>
           )}
         </>
       )}
