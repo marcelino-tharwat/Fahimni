@@ -2,8 +2,9 @@ import { useState, useRef, useCallback } from 'react';
 import { Outlet, NavLink, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  LogOut, GraduationCap, LayoutDashboard, FolderOpen, ClipboardList,
-  PenSquare, Brain, Users, Ticket, CreditCard, Wallet, User,
+  LogOut, GraduationCap, LayoutDashboard, Building2, Ticket,
+  Users, ClipboardCheck, CreditCard, Wallet, TrendingUp, Receipt,
+  ScrollText, Banknote,
 } from 'lucide-react';
 import { AppHeader } from './AppHeader';
 import { useDirection } from '@/shared/hooks/useDirection';
@@ -13,7 +14,7 @@ import { cn } from '@/shared/lib/utils/cn';
 
 const COLLAPSED_WIDTH = 64;
 
-export function TeacherPlansLayout() {
+export function AdminPlansLayout() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const direction = useDirection();
@@ -21,16 +22,19 @@ export function TeacherPlansLayout() {
   const asideRef = useRef<HTMLElement>(null);
 
   const items = [
-    { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/teacher/dashboard' },
-    { label: t('nav.contentManagement'), icon: FolderOpen, path: '/teacher/content' },
-    { label: t('nav.quizzes'), icon: ClipboardList, path: '/teacher/quizzes', end: true },
-    { label: t('nav.essayGrading'), icon: PenSquare, path: '/teacher/essay-grading', end: true },
-    { label: t('nav.quizGenerator'), icon: Brain, path: '/teacher/quizzes/generator' },
-    { label: t('nav.students'), icon: Users, path: '/teacher/students' },
-    { label: t('nav.promoCodes'), icon: Ticket, path: '/teacher/promo-codes' },
-    { label: t('nav.plans'), icon: CreditCard, path: '/teacher/plans' },
-    { label: t('nav.wallet'), icon: Wallet, path: '/teacher/wallet' },
-    { label: t('nav.profile'), icon: User, path: '/teacher/profile' },
+    { label: t('nav.dashboard'), icon: LayoutDashboard, path: '/admin/dashboard' },
+    { label: t('nav.users'), icon: Users, path: '/admin/users' },
+    { label: t('nav.teachers'), icon: GraduationCap, path: '/admin/teachers' },
+    { label: t('nav.students'), icon: Users, path: '/admin/students' },
+    { label: t('nav.teacherRequests'), icon: ClipboardCheck, path: '/admin/teacher-requests' },
+    { label: t('nav.tenants'), icon: Building2, path: '/admin/tenants' },
+    { label: t('nav.promoCodes'), icon: Ticket, path: '/admin/promo-codes' },
+    { label: t('nav.plans'), icon: CreditCard, path: '/admin/plans' },
+    { label: t('nav.subscriptions'), icon: Wallet, path: '/admin/subscriptions' },
+    { label: t('nav.teacherWithdrawals'), icon: Banknote, path: '/admin/teacher-withdrawals' },
+    { label: t('nav.revenue'), icon: TrendingUp, path: '/admin/revenue' },
+    { label: t('nav.payments'), icon: Receipt, path: '/admin/payments' },
+    { label: t('nav.auditLogs'), icon: ScrollText, path: '/admin/audit-logs' },
   ];
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -86,11 +90,10 @@ export function TeacherPlansLayout() {
 
         {/* Nav */}
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3 scrollbar-hide">
-          {items.map(({ label, icon: Icon, path, end }) => (
+          {items.map(({ label, icon: Icon, path }) => (
             <NavLink
               key={path}
               to={path}
-              end={end}
               tabIndex={0}
               className={({ isActive }) =>
                 cn(

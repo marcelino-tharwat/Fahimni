@@ -772,11 +772,12 @@ export function AuthPage() {
 
   return (
     <GoogleOAuthProvider clientId={googleClientId || "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"}>
-      <AppHeader variant="auth" />
-      <div className="flex min-h-[calc(100vh-73px)] flex-col lg:flex-row">
-        {/* Form Panel */}
-        <main className="flex w-full items-center justify-center bg-gray-100 px-4 py-8 lg:w-3/5 lg:p-8">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-modal md:p-8">
+      <div className="flex h-screen flex-col">
+        <AppHeader variant="auth" />
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+          {/* Form Panel */}
+          <main className="flex min-h-0 w-full items-start justify-center overflow-y-auto bg-gray-100 px-4 py-8 lg:w-3/5 lg:p-8 scrollbar-hide">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-modal md:p-8">
           {/* Logo row */}
           <div className="mb-6 text-center">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-500 text-lg font-bold text-white">
@@ -811,7 +812,7 @@ export function AuthPage() {
       </main>
 
       {/* Hero Panel */}
-      <aside className="hidden w-full flex-col items-center justify-center bg-hero-gradient px-6 py-12 text-center lg:flex lg:w-2/5 lg:p-12">
+      <aside className="hidden min-h-0 w-full flex-col items-center justify-center bg-hero-gradient px-6 py-12 text-center lg:flex lg:w-2/5 lg:p-12">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-xl border border-cyan-500/30 bg-navy-800">
           <GraduationCap className="text-cyan-500" size={36} />
         </div>
@@ -854,7 +855,8 @@ export function AuthPage() {
           ))}
         </div>
       </aside>
-    </div>
+      </div>
+      </div>
     </GoogleOAuthProvider>
   );
 }

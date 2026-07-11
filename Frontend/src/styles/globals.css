@@ -32,6 +32,15 @@ body {
   min-height: 100dvh;
 }
 
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Print-protection fallback — if the JS beforeprint overlay fails in any
    browser, pure CSS hides protected content and shows a warning message. */
 @media print {
