@@ -80,6 +80,18 @@ export function useDeleteChapter() {
   });
 }
 
+export function useSetChapterVisibility() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, isVisible }: { id: string; isVisible: boolean }) =>
+      chaptersApi.setVisibility(id, isVisible),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['teacher', 'content-tree'] });
+      void queryClient.invalidateQueries({ queryKey: ['teacher', 'chapters'] });
+    },
+  });
+}
+
 export function useReorderChapters() {
   const queryClient = useQueryClient();
   return useMutation({

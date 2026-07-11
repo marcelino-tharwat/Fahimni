@@ -181,6 +181,8 @@ exports.Prisma.ChapterScalarFieldEnum = {
   sortOrder: 'sortOrder',
   price: 'price',
   imageUrl: 'imageUrl',
+  term: 'term',
+  isVisible: 'isVisible',
   teacherId: 'teacherId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -625,6 +627,11 @@ exports.TeacherApprovalState = exports.$Enums.TeacherApprovalState = {
   PENDING_REVIEW: 'PENDING_REVIEW',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED'
+};
+
+exports.AcademicTerm = exports.$Enums.AcademicTerm = {
+  FIRST_TERM: 'FIRST_TERM',
+  SECOND_TERM: 'SECOND_TERM'
 };
 
 exports.OtpType = exports.$Enums.OtpType = {

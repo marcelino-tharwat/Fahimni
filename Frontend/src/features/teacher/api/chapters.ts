@@ -39,7 +39,7 @@ export const chaptersApi = {
   ): Promise<Chapter> => {
     const { data } = await apiClient.post<ApiResponse<Chapter>>(
       `/stages/${stageId}/chapters`,
-      payload,
+      toChapterFormData(payload),
     );
     return data.data;
   },
@@ -50,7 +50,15 @@ export const chaptersApi = {
   ): Promise<Chapter> => {
     const { data } = await apiClient.put<ApiResponse<Chapter>>(
       `/chapters/${id}`,
-      payload,
+      toChapterFormData(payload),
+    );
+    return data.data;
+  },
+
+  setVisibility: async (id: string, isVisible: boolean): Promise<Chapter> => {
+    const { data } = await apiClient.patch<ApiResponse<Chapter>>(
+      `/chapters/${id}/visibility`,
+      { isVisible },
     );
     return data.data;
   },
@@ -70,3 +78,16 @@ export const chaptersApi = {
     return data.data;
   },
 };
+
+function toChapterFormData(payload: CreateChapterPayload | UpdateChapterPayload): FormData {
+  const formData = new FormData();
+  for (const [key, value] of Object.entries(payload)) {
+    if (value === undefined || value === null) continue;
+    if (key === 'image' && value instanceof File) {
+      formData.append('image', value);
+    } else if (key !== 'image') {
+      formData.append(key, String(value));
+    }
+  }
+  return formData;
+}

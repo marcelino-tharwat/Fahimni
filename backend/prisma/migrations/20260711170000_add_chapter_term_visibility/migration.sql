@@ -1,0 +1,10 @@
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'AcademicTerm') THEN
+    CREATE TYPE "AcademicTerm" AS ENUM ('FIRST_TERM', 'SECOND_TERM');
+  END IF;
+END $$;
+
+ALTER TABLE "chapters"
+  ADD COLUMN IF NOT EXISTS "term" "AcademicTerm" NOT NULL DEFAULT 'FIRST_TERM',
+  ADD COLUMN IF NOT EXISTS "isVisible" BOOLEAN NOT NULL DEFAULT true;
