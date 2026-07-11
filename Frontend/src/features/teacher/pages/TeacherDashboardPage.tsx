@@ -54,7 +54,7 @@ interface QuickActionConfig {
 }
 
 const QUICK_ACTIONS: QuickActionConfig[] = [
-  { labelKey: 'teacher:dashboardView.quickActions.newStage', icon: Layers, bg: 'bg-purple-50 hover:bg-purple-100/70', text: 'text-purple-700', iconColor: 'text-purple-500' },
+  { labelKey: 'teacher:dashboardView.quickActions.selectStage', icon: Layers, bg: 'bg-purple-50 hover:bg-purple-100/70', text: 'text-purple-700', iconColor: 'text-purple-500' },
   { labelKey: 'teacher:dashboardView.quickActions.newChapter', icon: BookCopy, bg: 'bg-blue-50 hover:bg-blue-100/70', text: 'text-blue-700', iconColor: 'text-blue-500' },
   { labelKey: 'teacher:dashboardView.quickActions.newLesson', icon: Video, bg: 'bg-emerald-50 hover:bg-emerald-100/70', text: 'text-emerald-700', iconColor: 'text-emerald-500' },
 ];
@@ -348,7 +348,7 @@ function DashboardEmpty({ onCreateStage }: { onCreateStage: () => void }) {
         </p>
         <Button onClick={onCreateStage} className="mt-2">
           <Plus size={18} />
-          {t('teacher:dashboardView.quickActions.newStage')}
+          {t('teacher:dashboardView.quickActions.selectStage')}
         </Button>
       </div>
     </Card>

@@ -77,13 +77,12 @@ async function main(): Promise<void> {
   // 7. Multi-teacher student exists
   const multiTeacherIds = (
     await prisma.$queryRaw<{ studentId: string; teacherCount: bigint }[]>`
-      SELECT e."studentId", COUNT(DISTINCT s."teacherId") AS "teacherCount"
+      SELECT e."studentId", COUNT(DISTINCT c."teacherId") AS "teacherCount"
       FROM enrollments e
       JOIN chapters c ON c.id = e."chapterId"
-      JOIN stages s ON s.id = c."stageId"
       WHERE e."studentId" = ANY(${studentIds}::text[])
       GROUP BY e."studentId"
-      HAVING COUNT(DISTINCT s."teacherId") >= 2
+      HAVING COUNT(DISTINCT c."teacherId") >= 2
     `
   );
   check("At least 1 multi-teacher student", multiTeacherIds.length >= 1, `${multiTeacherIds.length} found`);
@@ -168,8 +167,12 @@ async function main(): Promise<void> {
   check("No duplicate seed emails", uniqueEmails.length === emailSet.size);
 
   // 15. Stages/chapters/lessons exist
-  const stages = await prisma.stage.count({ where: { teacherId: { in: teachers.map((t) => t.id) } } });
-  check("Stages exist per teacher", stages >= 3, `${stages} stages`);
+  const stages = await prisma.stage.count({ where: { deletedAt: null, isActive: true } });
+  check("Platform stages exist", stages >= 2, `${stages} stages`);
+  const teacherOwnedStages = await prisma.stage.count({
+    where: { deletedAt: null, teacherId: { in: teachers.map((t) => t.id) } },
+  });
+  check("No seeded teacher-owned stages remain", teacherOwnedStages === 0, `${teacherOwnedStages} teacher-owned stages`);
   const chapters = await prisma.chapter.count();
   check("Chapters exist", chapters >= 6, `${chapters} chapters`);
   const lessons = await prisma.lesson.count();
@@ -218,6 +221,42 @@ async function main(): Promise<void> {
     invalidSubjects.length === 0,
     invalidSubjects.length > 0 ? `${invalidSubjects.length} invalid: ${invalidSubjects.map((i) => i.subject).join(", ")}` : "all valid",
   );
+
+  const seededChaptersWithTeacherSubjects = await prisma.chapter.findMany({
+    where: { deletedAt: null },
+    select: {
+      id: true,
+      stageId: true,
+      teacherId: true,
+      teacher: {
+        select: {
+          email: true,
+          teacherProfile: { select: { subject: true } },
+        },
+      },
+    },
+  });
+  const chaptersMissingOwnership = seededChaptersWithTeacherSubjects.filter(
+    (chapter) => !chapter.stageId || !chapter.teacherId || !chapter.teacher.teacherProfile?.subject,
+  );
+  check(
+    "Each seeded chapter has stageId, teacherId, and teacher subject",
+    chaptersMissingOwnership.length === 0,
+    `${chaptersMissingOwnership.length} missing ownership/subject`,
+  );
+
+  const physicsTeacherHasArabic = seededChaptersWithTeacherSubjects.some(
+    (chapter) =>
+      chapter.teacher.email === "teacher.physics@fahimni.local" &&
+      chapter.teacher.teacherProfile?.subject === "اللغة العربية",
+  );
+  const arabicTeacherHasPhysics = seededChaptersWithTeacherSubjects.some(
+    (chapter) =>
+      chapter.teacher.email === "teacher.arabic@fahimni.local" &&
+      chapter.teacher.teacherProfile?.subject === "الفيزياء",
+  );
+  check("Physics teacher has no Arabic content", !physicsTeacherHasArabic);
+  check("Arabic teacher has no Physics content", !arabicTeacherHasPhysics);
 
   // 16b. Teacher registration request subjects are from the controlled catalog
   const allRegRequests = await prisma.teacherRegistrationRequest.findMany({

@@ -62,8 +62,10 @@ export class AdminStagesService {
     const stage = await prisma.stage.create({
       data: {
         name: input.name,
+        description: input.description ?? null,
         sortOrder: input.sortOrder ?? 0,
         isActive: input.isActive ?? true,
+        teacherId: null,
       },
       select: stagePublicFields,
     });
@@ -92,8 +94,10 @@ export class AdminStagesService {
 
     const data: Record<string, unknown> = {};
     if (input.name !== undefined) data.name = input.name;
+    if (input.description !== undefined) data.description = input.description;
     if (input.sortOrder !== undefined) data.sortOrder = input.sortOrder;
     if (input.isActive !== undefined) data.isActive = input.isActive;
+    data.teacherId = null;
 
     const stage = await prisma.stage.update({
       where: { id },

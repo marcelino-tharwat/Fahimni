@@ -15,7 +15,6 @@ import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useContentTree } from '@/features/teacher/hooks/useContentTree';
-import { useDeleteStage } from '@/features/teacher/hooks/useStages';
 import { useDeleteChapter } from '@/features/teacher/hooks/useChapters';
 import { useDeleteLesson } from '@/features/teacher/hooks/useLessons';
 import { useReorderChapters } from '@/features/teacher/hooks/useChapters';
@@ -39,7 +38,6 @@ export function ContentTreePage() {
   const canReorder = user?.role === 'OPERATION';
 
   const { data: tree, isLoading, isError, refetch } = useContentTree();
-  const deleteStage = useDeleteStage();
   const deleteChapter = useDeleteChapter();
   const deleteLesson = useDeleteLesson();
   const reorderChapters = useReorderChapters();
@@ -261,7 +259,7 @@ export function ContentTreePage() {
 
   // ── Delete handler with reindex ─────────────────────────────────────
   const isDeleting =
-    deleteStage.isPending || deleteChapter.isPending || deleteLesson.isPending;
+    deleteChapter.isPending || deleteLesson.isPending;
   const isMutating = isSaving || isDeleting;
 
   const handleConfirmDelete = () =>
@@ -278,16 +276,6 @@ export function ContentTreePage() {
             : 'teacher:contentTree.editor.toast.lessonDeleted';
 
       try {
-        if (type === 'stage') {
-          await deleteStage.mutateAsync({ id, force });
-          await queryClient.refetchQueries({ queryKey: CONTENT_TREE_KEY });
-          dispatch(addToast({ type: 'success', message: t(toastKey) }));
-          setSelectedItem(null);
-          setDeleteTarget(null);
-          navigate('/teacher/content');
-          return;
-        }
-
         if (type === 'chapter') {
           await deleteChapter.mutateAsync({ id, force });
         } else {

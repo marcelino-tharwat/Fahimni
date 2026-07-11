@@ -53,7 +53,6 @@ import { TeacherBrandingPage } from '@/features/teacher/pages/TeacherBrandingPag
 import { ProfilePage } from '@/pages/ProfilePage';
 import { AllStagesPage } from '@/features/teacher/pages/AllStagesPage';
 import { StageDetailPage } from '@/features/teacher/pages/StageDetailPage';
-import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
 import { TeacherPlansPage } from '@/features/teacher/pages/TeacherPlansPage';
 import { EssayGradingHubPage } from '@/features/teacher/pages/EssayGradingHubPage';
 import { EssaySubmissionsPage } from '@/features/teacher/pages/EssaySubmissionsPage';
@@ -71,6 +70,7 @@ import { AdminUsersPage } from '@/features/admin/pages/AdminUsersPage';
 import { AdminTeachersPage } from '@/features/admin/pages/AdminTeachersPage';
 import { AdminTeacherDetailPage } from '@/features/admin/pages/AdminTeacherDetailPage';
 import { AdminStudentsPage } from '@/features/admin/pages/AdminStudentsPage';
+import { AdminStagesPage } from '@/features/admin/pages/AdminStagesPage';
 import { AdminTeacherRequestsPage } from '@/features/admin/pages/AdminTeacherRequestsPage';
 import { AdminTeacherRequestDetailPage } from '@/features/admin/pages/AdminTeacherRequestDetailPage';
 import { TenantsPage } from '@/features/admin/pages/TenantsPage';
@@ -177,7 +177,6 @@ const router = createBrowserRouter([
           {
             element: <TeacherStageLayout />,
             children: [
-              { path: '/teacher/content/new', element: <CreateStagePage /> },
               { path: '/teacher/content/:stageId', element: <StageDetailPage /> },
             ],
           },
@@ -217,6 +216,7 @@ const router = createBrowserRouter([
               { path: '/admin/teachers', element: <AdminTeachersPage /> },
               { path: '/admin/teachers/:teacherId', element: <AdminTeacherDetailPage /> },
               { path: '/admin/students', element: <AdminStudentsPage /> },
+              { path: '/admin/stages', element: <AdminStagesPage /> },
               { path: '/admin/teacher-requests', element: <AdminTeacherRequestsPage /> },
               { path: '/admin/teacher-requests/:requestId', element: <AdminTeacherRequestDetailPage /> },
               { path: '/admin/tenants', element: <TenantsPage /> },
