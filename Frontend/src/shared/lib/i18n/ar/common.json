@@ -358,6 +358,7 @@
       "bio": "نبذة",
       "documents": "المستندات",
       "noDocuments": "لا توجد مستندات مرفقة",
+      "noDocumentsDesc": "لم يرفق المتقدّم أي مستندات مع طلبه.",
       "openDocument": "فتح المستند",
       "opening": "جارٍ الفتح...",
       "documentUnavailable": "المستند غير متاح للعرض حاليًا",
@@ -388,7 +389,8 @@
       "editAllowed": "السماح بالتعديل وإعادة الإرسال",
       "editAllowedHint": "يمكن للمدرس تعديل البيانات وإعادة الإرسال",
       "finalRejection": "رفض نهائي",
-      "finalRejectionHint": "لا يمكن للمدرس إعادة التقديم"
+      "finalRejectionHint": "لا يمكن للمدرس إعادة التقديم",
+      "notProvided": "غير مُقدَّم"
     }
   },
   "adminTeacherWithdrawals": {
