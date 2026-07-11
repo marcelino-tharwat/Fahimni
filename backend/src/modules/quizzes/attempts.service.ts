@@ -1009,6 +1009,9 @@ export class AttemptsService {
           reviewUrl: `/student/quizzes/${attempt.quizId}/attempts/${attemptId}`,
         },
         metadata: { attemptId, quizId: attempt.quizId },
+        entityType: "QuizAttempt",
+        entityId: attemptId,
+        dedupeKey: `${attemptId}:GRADED:quizAttemptGraded`,
       });
     }
 
@@ -1162,6 +1165,9 @@ export class AttemptsService {
         reviewUrl: `/student/quizzes/${attempt.quizId}/attempts/${attemptId}`,
       },
       metadata: { attemptId, quizId: attempt.quizId },
+      entityType: "QuizAttempt",
+      entityId: attemptId,
+      dedupeKey: `${attemptId}:GRADED:quizAttemptGraded`,
     });
 
     return this.toSubmissionResponse(

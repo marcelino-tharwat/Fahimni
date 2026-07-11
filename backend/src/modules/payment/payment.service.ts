@@ -237,6 +237,9 @@ export class PaymentService {
             learningUrl: `/student/chapters/${receipt.chapter.id}`,
           },
           metadata: { transactionId: transaction.id },
+          entityType: "PaymentTransaction",
+          entityId: transaction.id,
+          dedupeKey: `${transaction.id}:SUCCESS:studentPaymentSuccess`,
         });
       }
     } else {

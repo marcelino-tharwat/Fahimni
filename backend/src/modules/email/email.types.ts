@@ -5,6 +5,7 @@ export type EmailTemplateName =
   | "teacherRegistrationApproved"
   | "teacherRegistrationRejected"
   | "teacherRegistrationResubmitted"
+  | "studentWelcome"
   | "teacherWithdrawalRequested"
   | "teacherWithdrawalStatusChanged"
   | "studentPaymentSuccess"
@@ -25,6 +26,9 @@ export interface SendEmailInput {
   data?: Record<string, unknown>;
   metadata?: Record<string, unknown>;
   critical?: boolean;
+  entityType?: string;
+  entityId?: string;
+  dedupeKey?: string;
 }
 
 export interface EmailProvider {
@@ -44,4 +48,5 @@ export interface EmailSendResult {
   template: EmailTemplateName;
   locale: EmailLocale;
   subject: string;
+  providerMessageId?: string;
 }

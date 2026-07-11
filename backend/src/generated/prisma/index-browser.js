@@ -298,6 +298,23 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   scopeTeacherId: 'scopeTeacherId'
 };
 
+exports.Prisma.EmailLogScalarFieldEnum = {
+  id: 'id',
+  to: 'to',
+  subject: 'subject',
+  template: 'template',
+  locale: 'locale',
+  status: 'status',
+  providerMessageId: 'providerMessageId',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  dedupeKey: 'dedupeKey',
+  errorMessage: 'errorMessage',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  sentAt: 'sentAt'
+};
+
 exports.Prisma.RefreshTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
@@ -629,6 +646,14 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   FAILED: 'FAILED'
 };
 
+exports.EmailLogStatus = exports.$Enums.EmailLogStatus = {
+  QUEUED: 'QUEUED',
+  SENT: 'SENT',
+  FAILED: 'FAILED',
+  DRY_RUN: 'DRY_RUN',
+  SKIPPED_DUPLICATE: 'SKIPPED_DUPLICATE'
+};
+
 exports.QuizContentScope = exports.$Enums.QuizContentScope = {
   CHAPTER: 'CHAPTER',
   SELECTED_LESSONS: 'SELECTED_LESSONS'
@@ -758,6 +783,7 @@ exports.Prisma.ModelName = {
   ContentChunk: 'ContentChunk',
   AiTutorUsage: 'AiTutorUsage',
   AuditLog: 'AuditLog',
+  EmailLog: 'EmailLog',
   RefreshToken: 'RefreshToken',
   Quiz: 'Quiz',
   QuizLesson: 'QuizLesson',

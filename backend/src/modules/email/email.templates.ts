@@ -143,6 +143,13 @@ export function renderEmailTemplate(
       : renderEmail(locale, "Your request was resubmitted", "Your request is pending review again", [`Reference number: ${ref}`, `Status: ${TEACHER_REQUEST_STATUS_LABELS.en.PENDING_REVIEW}`], "Track request", value(data, "statusUrl", "/teacher/register/status"));
   }
 
+  if (template === "studentWelcome") {
+    const studentName = value(data, "studentName", locale === "ar" ? "Ø·Ø§Ù„Ø¨Ù†Ø§" : "student");
+    return locale === "ar"
+      ? renderEmail(locale, "Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ ÙÙŠ ÙØ§Ù‡Ù…Ù†ÙŠ", "ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­", [`Ù…Ø±Ø­Ø¨Ø§Ù‹ ${studentName}.`, "ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ùƒ ÙˆÙŠÙ…ÙƒÙ†Ùƒ Ø§Ù„Ø¨Ø¯Ø¡ ÙÙŠ Ù…ØªØ§Ø¨Ø¹Ø© Ø¯Ø±ÙˆØ³Ùƒ."], "Ø§Ù„Ø°Ù‡Ø§Ø¨ Ù„Ù„ÙˆØ­Ø©", value(data, "dashboardUrl", "/student/dashboard"))
+      : renderEmail(locale, "Welcome to Fahimni", "Your account is ready", [`Welcome ${studentName}.`, "Your account was created successfully and you can start following your lessons."], "Go to dashboard", value(data, "dashboardUrl", "/student/dashboard"));
+  }
+
   if (template === "teacherWithdrawalRequested") {
     return locale === "ar"
       ? renderEmail(locale, "تم إنشاء طلب السحب", "طلب السحب قيد الانتظار", [`المبلغ: ${amount}`, `الحالة: ${WITHDRAWAL_STATUS_LABELS.ar.PENDING}`], "عرض السحوبات", value(data, "withdrawalsUrl", "/teacher/withdrawals"))

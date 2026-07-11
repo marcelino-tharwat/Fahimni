@@ -209,6 +209,20 @@ export class AuthService {
       data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
     });
 
+    await sendTransactionalEmail({
+      to: user.email,
+      template: "studentWelcome",
+      locale: input.locale,
+      data: {
+        studentName: user.fullName,
+        dashboardUrl: "/student/dashboard",
+      },
+      metadata: { userId: user.id },
+      entityType: "User",
+      entityId: user.id,
+      dedupeKey: `${user.id}:studentWelcome`,
+    });
+
     return { pending: false as const, user, accessToken, refreshToken };
   }
 
@@ -327,6 +341,9 @@ export class AuthService {
         statusUrl: `/teacher/register/status?ref=${encodeURIComponent(publicReference)}`,
       },
       metadata: { requestId: user.requestId },
+      entityType: "TeacherRegistrationRequest",
+      entityId: user.requestId,
+      dedupeKey: `${user.requestId}:teacherRegistrationSubmitted`,
     });
 
     // The public reference lets the teacher track their request status later
@@ -393,7 +410,9 @@ export class AuthService {
         expiresIn: "5 minutes",
         resetUrl: "/reset-password",
       },
-      metadata: { userId: user.id },
+      metadata: { userId: user.id, purpose: "passwordReset" },
+      entityType: "User",
+      entityId: user.id,
     });
 
     return { message: "OTP sent successfully" };

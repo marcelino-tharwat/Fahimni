@@ -332,6 +332,9 @@ export class AdminTeacherRequestsService {
         freePlanNote: "Approved teachers can start on the free teacher plan.",
       },
       metadata: { requestId },
+      entityType: "TeacherRegistrationRequest",
+      entityId: requestId,
+      dedupeKey: `${requestId}:APPROVED:teacherRegistrationApproved`,
     });
     return {
       request: this.toListItem(updated, reviewerName),
@@ -397,6 +400,9 @@ export class AdminTeacherRequestsService {
         statusUrl: `/teacher/register/status?ref=${encodeURIComponent(updated.publicReference)}`,
       },
       metadata: { requestId },
+      entityType: "TeacherRegistrationRequest",
+      entityId: requestId,
+      dedupeKey: `${requestId}:REJECTED:teacherRegistrationRejected`,
     });
     return { request: this.toListItem(updated, reviewerName) };
   }

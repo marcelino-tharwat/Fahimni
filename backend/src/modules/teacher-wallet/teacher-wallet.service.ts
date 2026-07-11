@@ -308,6 +308,9 @@ export class TeacherWalletService {
         withdrawalsUrl: "/teacher/withdrawals",
       },
       metadata: { withdrawalId: created.id },
+      entityType: "TeacherWithdrawalRequest",
+      entityId: created.id,
+      dedupeKey: `${created.id}:PENDING:teacherWithdrawalRequested`,
     });
 
     return this.toWithdrawalListItemDTO(created);

@@ -44,6 +44,18 @@ export function getEmailConfig(env: NodeJS.ProcessEnv = process.env): EmailRunti
   };
 }
 
+export function getSafeEmailConfigSummary(config: EmailRuntimeConfig = getEmailConfig()) {
+  return {
+    enabled: config.enabled,
+    dryRun: config.dryRun,
+    provider: config.provider,
+    hostConfigured: Boolean(config.smtpHost),
+    userConfigured: Boolean(config.smtpUser),
+    fromConfigured: Boolean(config.from),
+    clientUrlConfigured: Boolean(config.clientUrl),
+  };
+}
+
 export class SmtpEmailProvider implements EmailProvider {
   private transporter?: Transporter;
 
@@ -55,6 +67,9 @@ export class SmtpEmailProvider implements EmailProvider {
         host: this.config.smtpHost,
         port: this.config.smtpPort,
         secure: this.config.smtpSecure,
+        connectionTimeout: 60_000,
+        greetingTimeout: 60_000,
+        socketTimeout: 60_000,
         auth:
           this.config.smtpUser && this.config.smtpPass
             ? { user: this.config.smtpUser, pass: this.config.smtpPass }

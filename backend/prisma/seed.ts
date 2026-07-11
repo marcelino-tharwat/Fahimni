@@ -518,7 +518,9 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
     await tx.chapter.deleteMany({
       where: { stage: { teacherId: { in: ids } } },
     });
-    await tx.studentProfile.deleteMany({ where: { userId: { in: ids } } });
+    await tx.studentProfile.deleteMany({
+      where: { OR: [{ userId: { in: ids } }, { stageId: { in: stageIds } }] },
+    });
     await tx.stage.deleteMany({ where: { teacherId: { in: ids } } });
     await tx.teacherProfile.deleteMany({ where: { userId: { in: ids } } });
 

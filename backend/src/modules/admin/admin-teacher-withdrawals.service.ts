@@ -267,6 +267,9 @@ export class AdminTeacherWithdrawalsService {
         withdrawalsUrl: "/teacher/withdrawals",
       },
       metadata: { withdrawalId, fromStatus: row.status, toStatus: updated.status },
+      entityType: "TeacherWithdrawalRequest",
+      entityId: withdrawalId,
+      dedupeKey: `${withdrawalId}:${row.status}:${updated.status}:teacherWithdrawalStatusChanged`,
     });
     return this.toListItem(updated, reviewerName);
   }
