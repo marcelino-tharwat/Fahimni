@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { createChapterSchema, flattenZodErrors } from '@/features/teacher/validation';
 import { useCreateChapter } from '@/features/teacher/hooks/useChapters';
 import { useTeacherProfile } from '@/features/teacher/hooks/useTeacherProfile';
@@ -78,7 +78,7 @@ export function CreateChapterForm({
           dispatch(
             addToast({
               type: 'error',
-              message: (error as ApiError)?.message ?? t('contentTree.editor.toast.saveError'),
+              message: translateApiError(t, error),
             }),
           ),
       },

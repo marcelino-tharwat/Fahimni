@@ -227,8 +227,8 @@ describe('AdminUsersPage', () => {
     expect(await screen.findByText('Change Role')).toBeInTheDocument();
   });
 
-  it('18. errors render in modals', async () => {
-    const mockMutateAsync = vi.fn().mockRejectedValue({ message: 'Test error', code: 'TEST_CODE' });
+  it('18. errors render in modals, translated by the backend error code (never the raw message)', async () => {
+    const mockMutateAsync = vi.fn().mockRejectedValue({ message: 'Duplicate email or mobile number', code: 'DUPLICATE_EMAIL_OR_MOBILE' });
     m.useCreateUser.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
 
     renderAt();
@@ -247,9 +247,29 @@ describe('AdminUsersPage', () => {
     fireEvent.click(screen.getByText('Create'));
 
     await waitFor(() => {
-      const errorElements = screen.getAllByText(/Test error/);
+      const errorElements = screen.getAllByText(/validation:duplicateEmailOrMobile/);
       expect(errorElements.length).toBeGreaterThanOrEqual(1);
     });
+  });
+
+  it('18b. an unrecognized backend error code falls back to the safe generic message', async () => {
+    const mockMutateAsync = vi.fn().mockRejectedValue({ message: 'some raw unrecognized backend text', code: 'SOME_UNKNOWN_CODE' });
+    m.useCreateUser.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
+
+    renderAt();
+    fireEvent.click(screen.getByText('Create User'));
+    await screen.findByRole('dialog');
+
+    fireEvent.change(screen.getByLabelText('Full Name'), { target: { value: 'Test User' } });
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@test.com' } });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+
+    fireEvent.click(screen.getByText('Create'));
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/validation:genericError/).length).toBeGreaterThanOrEqual(1);
+    });
+    expect(screen.queryByText(/some raw unrecognized backend text/)).not.toBeInTheDocument();
   });
 
   it('19. create mutation is called with correct data', async () => {

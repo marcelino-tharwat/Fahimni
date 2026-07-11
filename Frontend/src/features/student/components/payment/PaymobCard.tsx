@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CreditCard, Loader2 } from 'lucide-react';
 import { paymentApi } from '@/features/student/api/payment';
+import { translateApiError } from '@/shared/lib/api/translateError';
 
 const PAYMENT_LOGOS = ['VISA', 'MC', 'MEEZA', 'VF Cash', 'FAWRY'];
 
@@ -38,11 +39,7 @@ export function PaymobCard({ price, chapterId }: PaymobCardProps) {
 
       window.location.href = iframeUrl;
     } catch (err: unknown) {
-      const message =
-        typeof err === 'object' && err !== null
-          ? ((err as { response?: { data?: { message?: string } } }).response?.data?.message ?? t('student:payment.paymob.error'))
-          : t('student:payment.paymob.error');
-      setError(message);
+      setError(translateApiError(t, err));
       setLoading(false);
     }
   };

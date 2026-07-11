@@ -19,7 +19,13 @@ const fileFilter = (
   if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new AppError("Only image files (JPEG, PNG, GIF, WebP) are allowed", 400));
+    cb(
+      new AppError(
+        "Only image files (JPEG, PNG, GIF, WebP) are allowed",
+        400,
+        "FILE_TYPE_INVALID",
+      ),
+    );
   }
 };
 
@@ -42,7 +48,7 @@ const pdfFileFilter = (
   if (file.mimetype === "application/pdf") {
     cb(null, true);
   } else {
-    cb(new AppError("Only PDF files are allowed", 400));
+    cb(new AppError("Only PDF files are allowed", 400, "FILE_TYPE_INVALID"));
   }
 };
 
@@ -74,7 +80,13 @@ const proofFileFilter = (
   if (PROOF_ALLOWED_TYPES.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new AppError("Only PDF, JPEG, PNG, and WebP files are allowed", 400));
+    cb(
+      new AppError(
+        "Only PDF, JPEG, PNG, and WebP files are allowed",
+        400,
+        "FILE_TYPE_INVALID",
+      ),
+    );
   }
 };
 

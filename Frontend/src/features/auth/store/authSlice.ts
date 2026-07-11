@@ -5,6 +5,7 @@ import {
   type PayloadAction,
 } from '@reduxjs/toolkit';
 import { apiClient, type ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { authApi } from '@/features/auth/api/auth';
 import {
   saveUser,
@@ -40,6 +41,17 @@ interface AuthState {
 /*  Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Lazily loads the i18n singleton so merely importing this slice — e.g. from
+ * a non-DOM unit test — never eagerly initializes it (mirrors the lazy
+ * `forceLogout` import pattern in client.ts). Safe to call from thunks
+ * (async); never called from reducers, which must stay synchronous.
+ */
+async function translateThunkError(error: unknown): Promise<string> {
+  const { default: i18n } = await import('@/shared/lib/i18n');
+  return translateApiError(i18n.t, error);
+}
+
 export const normalizeRole = (role: string): UserRole => {
   const r = role.toUpperCase();
   // Legacy/display alias — map any stray "TEACHER" back to the backend role.
@@ -72,8 +84,7 @@ export const login = createAsyncThunk<
     saveUser(data.data.user);
     return { user: data.data.user, accessState: data.data.accessState };
   } catch (err) {
-    const apiErr = err as ApiError;
-    return rejectWithValue(apiErr.message ?? 'حصل خطأ أثناء تسجيل الدخول.');
+    return rejectWithValue(await translateThunkError(err));
   }
 });
 
@@ -89,8 +100,7 @@ export const validateAuth = createAsyncThunk<
     }>('/v1/auth/me');
     return { user: data.data.user };
   } catch (err) {
-    const apiErr = err as ApiError;
-    return rejectWithValue(apiErr.message ?? 'Session expired');
+    return rejectWithValue(await translateThunkError(err));
   }
 });
 
@@ -116,10 +126,10 @@ export const initAuth = createAsyncThunk<
   }
 });
 
-export interface RegisterReject {
-  message: string;
-  fieldErrors?: Record<string, string[]>;
-}
+// The register thunk rejects with the raw `ApiError` (code + field errors)
+// so the UI layer can translate both the whole-error and per-field messages
+// itself, in the current UI language — see AuthPage.tsx's RegisterForm.
+export type RegisterReject = ApiError;
 
 export const googleLogin = createAsyncThunk<
   { user: User },
@@ -134,8 +144,7 @@ export const googleLogin = createAsyncThunk<
     saveUser(data.data.user);
     return { user: data.data.user };
   } catch (err) {
-    const apiErr = err as ApiError;
-    return rejectWithValue(apiErr.message ?? 'Google sign-in failed.');
+    return rejectWithValue(await translateThunkError(err));
   }
 });
 
@@ -152,11 +161,7 @@ export const register = createAsyncThunk<
     saveUser(data.data.user);
     return { user: data.data.user };
   } catch (err) {
-    const apiErr = err as ApiError;
-    return rejectWithValue({
-      message: apiErr.message ?? 'حصل خطأ أثناء إنشاء الحساب.',
-      fieldErrors: apiErr.errors,
-    });
+    return rejectWithValue(err as ApiError);
   }
 });
 
@@ -173,8 +178,7 @@ export const persistLocale = createAsyncThunk<
     saveUser(data.data.user);
     return { user: data.data.user };
   } catch (err) {
-    const apiErr = err as ApiError;
-    return rejectWithValue(apiErr.message ?? 'Locale update failed');
+    return rejectWithValue(await translateThunkError(err));
   }
 });
 
@@ -255,7 +259,7 @@ const authSlice = createSlice({
         state.accessState = action.payload.accessState ?? null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.error = action.payload ?? 'حصل خطأ غير متوقع.';
+        state.error = action.payload ?? null;
         if (!state.isAuthenticated) {
           state.status = 'failed';
         }
@@ -306,7 +310,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(googleLogin.rejected, (state, action) => {
-        state.error = action.payload ?? 'Google sign-in failed.';
+        state.error = action.payload ?? null;
         state.status = 'failed';
       });
 
@@ -323,9 +327,12 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.status = 'failed';
-        // `register` rejects with a `RegisterReject` object; store its message
-        // (field errors are read from the rejected payload via `unwrap()`).
-        state.error = action.payload?.message ?? 'حصل خطأ غير متوقع.';
+        // `register` rejects with the raw, untranslated `ApiError`; the form
+        // (AuthPage.tsx) reads it via `unwrap()` and translates the whole
+        // message + any per-field errors itself. This reducer only keeps a
+        // reference (no UI reads `state.error` for this flow), so it stays
+        // synchronous rather than lazily loading i18n here too.
+        state.error = action.payload?.message ?? null;
       });
   },
 });

@@ -15,6 +15,10 @@ export const paymentMessages = {
     en: "Student not found",
     ar: "الطالب غير موجود",
   },
+  courseNotAvailable: {
+    en: "This content is not currently available",
+    ar: "هذا المحتوى غير متاح حاليًا",
+  },
   checkoutSuccess: {
     en: "Checkout initiated successfully",
     ar: "تم بدء عملية الدفع بنجاح",

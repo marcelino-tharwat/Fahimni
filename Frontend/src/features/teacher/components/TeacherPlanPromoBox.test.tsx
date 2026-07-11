@@ -6,6 +6,13 @@ import { TeacherPlanPromoBox } from './TeacherPlanPromoBox';
 import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
 import type { TeacherPlan } from '@/features/teacher/types/teacherPlans';
 
+// t() always returns the key itself so assertions can target i18n keys
+// directly regardless of language — matches the convention used across this
+// session's test suites (no global i18n test harness is wired up).
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
+
 vi.mock('@/features/teacher/api/teacherPlans', () => ({
   teacherPlansApi: { previewPromo: vi.fn(), checkout: vi.fn() },
 }));
@@ -48,7 +55,7 @@ describe('TeacherPlanPromoBox', () => {
     fireEvent.change(screen.getByTestId('promo-code-input'), { target: { value: 'CRS20' } });
     fireEvent.click(screen.getByTestId('promo-apply-btn'));
 
-    expect(await screen.findByTestId('promo-error')).toHaveTextContent('رمز الخصم غير صالح لهذه العملية');
+    expect(await screen.findByTestId('promo-error')).toHaveTextContent('validation:promoScopeMismatch');
     expect(screen.queryByTestId('promo-preview')).not.toBeInTheDocument();
   });
 });
