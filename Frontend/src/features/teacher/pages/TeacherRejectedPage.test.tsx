@@ -49,6 +49,11 @@ function buildResponse(overrides: Partial<{
   publicReference: string | null;
   canEditAndResubmit: boolean;
   status: string;
+  fullName: string | null;
+  email: string | null;
+  mobile: string | null;
+  subject: string | null;
+  bio: string | null;
 }> = {}) {
   return {
     data: {
@@ -64,6 +69,11 @@ function buildResponse(overrides: Partial<{
           rejectionReason: overrides.rejectionReason ?? null,
           rejectionMode: overrides.rejectionMode ?? null,
           canEditAndResubmit: overrides.canEditAndResubmit ?? false,
+          fullName: overrides.fullName ?? 'أحمد محمد',
+          email: overrides.email ?? 'ahmed@test.com',
+          mobile: overrides.mobile ?? '01012345678',
+          subject: overrides.subject ?? 'الرياضيات',
+          bio: overrides.bio ?? 'مدرس رياضيات خبرة 5 سنوات',
         },
         message: 'نأسف، تم رفض طلبك.',
       },
@@ -118,7 +128,7 @@ describe('TeacherRejectedPage — rejection reason', () => {
 });
 
 describe('TeacherRejectedPage — rejection mode behavior', () => {
-  it('EDIT_ALLOWED shows the resubmit button', async () => {
+  it('EDIT_ALLOWED shows the edit button', async () => {
     mockGet.mockResolvedValue(buildResponse({ rejectionMode: 'EDIT_ALLOWED', canEditAndResubmit: true }));
     renderPage();
     expect(await screen.findByText('auth:editAndResubmit')).toBeInTheDocument();
@@ -138,33 +148,120 @@ describe('TeacherRejectedPage — rejection mode behavior', () => {
     expect(await screen.findByText('auth:finalRejectionMessage')).toBeInTheDocument();
   });
 
-  it('FINAL_REJECTION hides the resubmit button', async () => {
+  it('FINAL_REJECTION hides the edit button', async () => {
     mockGet.mockResolvedValue(buildResponse({ rejectionMode: 'FINAL_REJECTION', canEditAndResubmit: false }));
     renderPage();
     await waitFor(() => {
       expect(screen.queryByText('auth:editAndResubmit')).not.toBeInTheDocument();
     });
   });
+});
 
-  it('resubmit button is disabled while mutation is pending', async () => {
-    mockGet.mockResolvedValue(buildResponse({ rejectionMode: 'EDIT_ALLOWED', canEditAndResubmit: true }));
-    mockPost.mockReturnValue(new Promise(() => {})); // never resolves — stays pending
+describe('TeacherRejectedPage — edit form flow', () => {
+  it('clicking edit shows the form with all fields prefilled', async () => {
+    mockGet.mockResolvedValue(buildResponse({
+      rejectionMode: 'EDIT_ALLOWED', canEditAndResubmit: true,
+      fullName: 'أحمد محمد', email: 'ahmed@test.com', mobile: '01012345678', subject: 'الرياضيات', bio: 'مدرس رياضيات',
+    }));
     renderPage();
-    const btn = await screen.findByText('auth:editAndResubmit');
-    fireEvent.click(btn);
+    const editBtn = await screen.findByText('auth:editAndResubmit');
+    fireEvent.click(editBtn);
+
+    expect(await screen.findByText('auth:editRequestTitle')).toBeInTheDocument();
+
+    // Section headings
+    expect(screen.getByText('auth:personalInfo')).toBeInTheDocument();
+    expect(screen.getByText('auth:professionalInfo')).toBeInTheDocument();
+
+    // All fields prefilled — personal info
+    expect(screen.getByDisplayValue('أحمد محمد')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('ahmed@test.com')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('01012345678')).toBeInTheDocument();
+
+    // All fields prefilled — professional info
+    const select = screen.getByDisplayValue('الرياضيات');
+    expect(select).toBeInTheDocument();
+    expect(screen.getByDisplayValue('مدرس رياضيات')).toBeInTheDocument();
+  });
+
+  it('changing a field and submitting sends updated data to resubmit', async () => {
+    mockGet.mockResolvedValue(buildResponse({
+      rejectionMode: 'EDIT_ALLOWED', canEditAndResubmit: true,
+      fullName: 'أحمد محمد', email: 'ahmed@test.com', mobile: '01012345678', subject: 'الرياضيات', bio: 'مدرس رياضيات',
+    }));
+    mockPost.mockResolvedValue({ data: { data: { publicReference: 'TR-NEW', status: 'PENDING' } } });
+    renderPage();
+
+    const editBtn = await screen.findByText('auth:editAndResubmit');
+    fireEvent.click(editBtn);
+
+    const nameInput = screen.getByDisplayValue('أحمد محمد') as HTMLInputElement;
+    fireEvent.change(nameInput, { target: { value: 'أحمد محمد علي' } });
+
+    const emailInput = screen.getByDisplayValue('ahmed@test.com') as HTMLInputElement;
+    fireEvent.change(emailInput, { target: { value: 'ahmed.updated@test.com' } });
+
+    const submitBtn = screen.getByText('auth:sendEdits');
+    fireEvent.click(submitBtn);
+
     await waitFor(() => {
-      expect(screen.getByText('auth:resubmitting')).toBeInTheDocument();
+      expect(mockPost).toHaveBeenCalledWith('/teachers/registration-request/resubmit', {
+        fullName: 'أحمد محمد علي',
+        email: 'ahmed.updated@test.com',
+        mobile: '01012345678',
+        subject: 'الرياضيات',
+        bio: 'مدرس رياضيات',
+      });
     });
   });
 
-  it('resubmit navigates to pending-review on success', async () => {
+  it('cancel returns to the initial state', async () => {
+    mockGet.mockResolvedValue(buildResponse({ rejectionMode: 'EDIT_ALLOWED', canEditAndResubmit: true }));
+    renderPage();
+
+    const editBtn = await screen.findByText('auth:editAndResubmit');
+    fireEvent.click(editBtn);
+
+    expect(await screen.findByText('auth:editRequestTitle')).toBeInTheDocument();
+
+    const cancelBtn = screen.getByText('actions.cancel');
+    fireEvent.click(cancelBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByText('auth:editRequestTitle')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('auth:editAndResubmit')).toBeInTheDocument();
+  });
+
+  it('submit navigates to pending-review on success', async () => {
     mockGet.mockResolvedValue(buildResponse({ rejectionMode: 'EDIT_ALLOWED', canEditAndResubmit: true }));
     mockPost.mockResolvedValue({ data: { data: { publicReference: 'TR-NEW', status: 'PENDING' } } });
     renderPage();
-    const btn = await screen.findByText('auth:editAndResubmit');
-    fireEvent.click(btn);
+
+    const editBtn = await screen.findByText('auth:editAndResubmit');
+    fireEvent.click(editBtn);
+
+    const submitBtn = screen.getByText('auth:sendEdits');
+    fireEvent.click(submitBtn);
+
     await waitFor(() => {
       expect(navigateFn).toHaveBeenCalledWith('/teacher/pending-review');
+    });
+  });
+
+  it('submit button is disabled while mutation is pending', async () => {
+    mockGet.mockResolvedValue(buildResponse({ rejectionMode: 'EDIT_ALLOWED', canEditAndResubmit: true }));
+    mockPost.mockReturnValue(new Promise(() => {}));
+    renderPage();
+
+    const editBtn = await screen.findByText('auth:editAndResubmit');
+    fireEvent.click(editBtn);
+
+    const submitBtn = screen.getByText('auth:sendEdits');
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('auth:resubmitting')).toBeInTheDocument();
     });
   });
 });

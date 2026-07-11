@@ -204,7 +204,7 @@ async function main(): Promise<void> {
   // 16a. All teacher subjects are from the controlled catalog
   const VALID_SUBJECTS = [
     "اللغة العربية", "اللغة الإنجليزية", "الرياضيات", "الفيزياء", "الكيمياء",
-    "الأحياء", "الجيولوجيا", "التاريخ", "الجغرافيا", "الفلسفة", "التربية الإسلامية",
+    "الأحياء", "الجيولوجيا", "التاريخ", "الجغرافيا", "الفلسفة", "التربية الإسلامية", "العلوم",
   ];
   const teacherProfiles = await prisma.teacherProfile.findMany({
     where: { userId: { in: teachers.map((t) => t.id) } },

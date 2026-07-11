@@ -63,6 +63,9 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', initialFo
         return;
       }
       if (e.key === 'Tab') {
+        // Allow default Tab behavior inside textareas (insert tab character).
+        // Do NOT trap focus when the active element is a textarea.
+        if (document.activeElement?.tagName === 'TEXTAREA') return;
         const els = focusable();
         if (els.length === 0) {
           e.preventDefault();
@@ -92,9 +95,13 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', initialFo
 
   return createPortal(
     // Full-screen dark overlay; clicking it (outside the card) closes the modal.
+    // Uses onCloseRef to avoid passing a new function prop on every parent
+    // render (which would cause React to re-attach the event to the portal
+    // element on every keystroke, and could trigger focus loss from a
+    // controlled textarea inside the modal).
     <div
       className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4"
-      onClick={onClose}
+      onClick={() => onCloseRef.current()}
       role="presentation"
     >
       {/* Solid modal card, centered above the overlay. */}

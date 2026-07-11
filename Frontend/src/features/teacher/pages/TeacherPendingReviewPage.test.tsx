@@ -81,13 +81,13 @@ describe('TeacherPendingReviewPage', () => {
   it('renders the tracking reference label', async () => {
     mockGet.mockResolvedValue(BASE_RESPONSE);
     renderPage();
-    expect(await screen.findByText('auth:trackingReference')).toBeInTheDocument();
+    expect(await screen.findByText('auth:trackingReferenceLabel')).toBeInTheDocument();
   });
 
   it('copy button writes reference to clipboard', async () => {
     mockGet.mockResolvedValue(BASE_RESPONSE);
     renderPage();
-    const btn = await screen.findByTitle('auth:copyReference');
+    const btn = await screen.findByTitle('auth:copy');
     fireEvent.click(btn);
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith('TR-2026-ABCDEF');
@@ -97,10 +97,10 @@ describe('TeacherPendingReviewPage', () => {
   it('shows check icon after copy', async () => {
     mockGet.mockResolvedValue(BASE_RESPONSE);
     renderPage();
-    const btn = await screen.findByTitle('auth:copyReference');
+    const btn = await screen.findByTitle('auth:copy');
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(screen.getByTitle('auth:copyReference').querySelector('svg')).toBeInTheDocument();
+      expect(screen.getByTitle('auth:copy').querySelector('svg')).toBeInTheDocument();
     });
   });
 
@@ -118,7 +118,7 @@ describe('TeacherPendingReviewPage', () => {
     });
     renderPage();
     await waitFor(() => {
-      expect(screen.queryByText('auth:trackingReference')).not.toBeInTheDocument();
+      expect(screen.queryByText('auth:trackingReferenceLabel')).not.toBeInTheDocument();
     });
   });
 });

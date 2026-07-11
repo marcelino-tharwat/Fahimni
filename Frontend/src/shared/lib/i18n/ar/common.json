@@ -383,7 +383,12 @@
       "approvedTitle": "تم قبول الطلب",
       "approvedToast": "تم قبول الطلب",
       "rejectedToast": "تم رفض الطلب",
-      "actionError": "تعذّر تنفيذ الإجراء"
+      "actionError": "تعذّر تنفيذ الإجراء",
+      "rejectionMode": "نوع الرفض",
+      "editAllowed": "السماح بالتعديل وإعادة الإرسال",
+      "editAllowedHint": "يمكن للمدرس تعديل البيانات وإعادة الإرسال",
+      "finalRejection": "رفض نهائي",
+      "finalRejectionHint": "لا يمكن للمدرس إعادة التقديم"
     }
   },
   "adminTeacherWithdrawals": {

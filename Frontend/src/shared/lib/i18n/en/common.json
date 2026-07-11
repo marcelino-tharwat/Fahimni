@@ -384,7 +384,12 @@
       "approvedTitle": "Request approved",
       "approvedToast": "Request approved",
       "rejectedToast": "Request rejected",
-      "actionError": "Failed to perform the action"
+      "actionError": "Failed to perform the action",
+      "rejectionMode": "Rejection Type",
+      "editAllowed": "Allow edit and resubmit",
+      "editAllowedHint": "Teacher can edit data and resubmit",
+      "finalRejection": "Final Rejection",
+      "finalRejectionHint": "Teacher cannot reapply"
     }
   },
   "adminTeacherWithdrawals": {

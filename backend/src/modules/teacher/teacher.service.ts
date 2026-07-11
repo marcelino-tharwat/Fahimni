@@ -31,6 +31,11 @@ export interface ReviewStatusResponse {
     rejectionReason: string | null;
     rejectionMode: "EDIT_ALLOWED" | "FINAL_REJECTION" | null;
     canEditAndResubmit: boolean;
+    fullName: string | null;
+    email: string | null;
+    mobile: string | null;
+    subject: string | null;
+    bio: string | null;
   } | null;
   message: string;
 }
@@ -63,6 +68,11 @@ export class TeacherService {
         reviewedAt: true,
         adminNotes: true,
         rejectionMode: true,
+        fullName: true,
+        email: true,
+        mobile: true,
+        subject: true,
+        bio: true,
       },
     });
 
@@ -95,6 +105,11 @@ export class TeacherService {
             rejectionReason: request.adminNotes ?? null,
             rejectionMode: (rmStr === "EDIT_ALLOWED" ? "EDIT_ALLOWED" : rmStr === "FINAL_REJECTION" ? "FINAL_REJECTION" : null) as "EDIT_ALLOWED" | "FINAL_REJECTION" | null,
             canEditAndResubmit: request.status === "REJECTED" && isEditAllowed,
+            fullName: request.fullName,
+            email: request.email,
+            mobile: request.mobile,
+            subject: request.subject,
+            bio: request.bio,
           }
         : null,
       message: (messages[state] ?? messages.NONE) as string,
@@ -138,6 +153,7 @@ export class TeacherService {
           adminNotes: null,
           rejectionMode: null,
           ...(input.fullName ? { fullName: input.fullName } : {}),
+          ...(input.email ? { email: input.email } : {}),
           ...(input.mobile ? { mobile: input.mobile } : {}),
           ...(input.subject ? { subject: input.subject } : {}),
           ...(input.bio ? { bio: input.bio } : {}),

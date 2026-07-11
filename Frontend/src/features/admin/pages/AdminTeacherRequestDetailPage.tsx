@@ -98,7 +98,7 @@ export function AdminTeacherRequestDetailPage() {
   };
 
   return (
-    <div className="mx-auto flex max-w-[1000px] flex-col gap-5" dir="rtl">
+    <div className="mx-auto flex max-w-[1000px] flex-col gap-5">
       {backLink}
 
       {isLoading ? (

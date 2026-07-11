@@ -29,6 +29,7 @@ export const SUBJECT_CATALOG: SubjectCatalogEntry[] = [
   { code: "GEOGRAPHY", displayName: "الجغرافيا" },
   { code: "PHILOSOPHY", displayName: "الفلسفة" },
   { code: "ISLAMIC_EDUCATION", displayName: "التربية الإسلامية" },
+  { code: "SCIENCE", displayName: "العلوم" },
 ];
 
 /** Set of valid Arabic displayName values for fast lookup. */

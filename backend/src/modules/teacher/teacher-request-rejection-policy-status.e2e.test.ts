@@ -216,6 +216,38 @@ describe("Resubmit flow", () => {
   });
 });
 
+describe("Resubmit with updated fields", () => {
+  let uCookie: string;
+  beforeAll(async () => {
+    const u = await makeUser("OPERATION", undefined, { status: "INACTIVE", teacherApprovalState: "REJECTED" });
+    await linkedRequest(u.id, "REJECTED", u.email, { adminNotes: "update fields", rejectionMode: "EDIT_ALLOWED" });
+    uCookie = await login(u.email);
+  });
+
+  it("15. resubmit with updated email/name stores the new values", async () => {
+    const newEmail = `updated-${randomUUID().slice(0, 8)}@e2e.test`;
+    const newName = "Updated Name Resubmit";
+    const newMobile = `011${Math.floor(Math.random() * 1e8).toString().padStart(8, "0")}`;
+    const r = await http("POST", "/api/teachers/registration-request/resubmit", {
+      cookie: uCookie,
+      body: { fullName: newName, email: newEmail, mobile: newMobile, subject: "الرياضيات", bio: "updated bio" },
+    });
+    expect(r.status).toBe(200);
+    const row = await prisma.teacherRegistrationRequest.findFirst({
+      where: { email: newEmail },
+      orderBy: { createdAt: "desc" },
+      select: { fullName: true, email: true, mobile: true, subject: true, bio: true, status: true },
+    });
+    expect(row).not.toBeNull();
+    expect(row!.fullName).toBe(newName);
+    expect(row!.email).toBe(newEmail);
+    expect(row!.mobile).toBe(newMobile);
+    expect(row!.subject).toBe("الرياضيات");
+    expect(row!.bio).toBe("updated bio");
+    expect(row!.status).toBe("PENDING");
+  });
+});
+
 describe("Security — no data leakage", () => {
   it("12. teacher cannot see another teacher's request status", async () => {
     // A teacher should only be able to see their own data via /review-status
@@ -236,7 +268,19 @@ describe("Security — no data leakage", () => {
     expect(req!.publicReference).toBe(dbReq!.publicReference);
   });
 
-  it("13. no admin private data / storage paths / secrets exposed", async () => {
+  it("13. review-status returns teacher request data fields for edit form", async () => {
+    const r = await g("/api/teachers/review-status", rejectedEditCookie);
+    expect(r.status).toBe(200);
+    const req = dataOf(r).request as Record<string, unknown> | null;
+    expect(req).not.toBeNull();
+    expect(req!.fullName).toBeTruthy();
+    expect(req!.email).toBeTruthy();
+    expect(req!.mobile).toBeTruthy();
+    expect(req!.subject).toBeTruthy();
+    expect(req!.bio).toBeTruthy();
+  });
+
+  it("14. no admin private data / storage paths / secrets exposed", async () => {
     const r = await g("/api/teachers/review-status", rejectedEditCookie);
     const body = JSON.stringify(r.json);
     expect(body).not.toMatch(/reviewedBy|reviewedById|proofDocuments|"path"|password|tokenVersion|storage/i);

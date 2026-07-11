@@ -60,6 +60,7 @@ export type UpdateTeacherProfileInput = z.infer<
 
 export const resubmitRequestSchema = z.object({
   fullName: z.string().trim().min(3).max(100).optional(),
+  email: z.string().trim().email("Invalid email address").toLowerCase().optional(),
   mobile: z
     .string()
     .trim()
