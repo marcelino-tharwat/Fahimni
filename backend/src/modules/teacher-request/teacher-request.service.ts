@@ -114,7 +114,7 @@ export class TeacherRequestService {
           .upload(key, file.buffer, { contentType: file.mimetype });
 
         if (error) {
-          throw new AppError("Failed to upload proof documents", 500);
+          throw new AppError("Failed to upload proof documents", 500, "PROOF_UPLOAD_FAILED");
         }
 
         proofDocuments.push({
@@ -150,7 +150,7 @@ export class TeacherRequestService {
 
       throw uploadError instanceof AppError
         ? uploadError
-        : new AppError("Failed to upload proof documents", 500);
+        : new AppError("Failed to upload proof documents", 500, "PROOF_UPLOAD_FAILED");
     }
 
     // 6. Update request with proof document metadata

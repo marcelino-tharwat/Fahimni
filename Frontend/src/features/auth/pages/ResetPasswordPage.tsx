@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, GraduationCap } from "lucide-react";
 import { Card } from "@/shared/components/ui";
 import type { ApiError } from "@/shared/lib/api/client";
+import { translateApiError } from "@/shared/lib/api/translateError";
 import { useAppDispatch } from "@/shared/store/hooks";
 import { addToast } from "@/shared/store/slices/toastSlice";
 import { authApi } from "@/features/auth/api/auth";
@@ -146,8 +147,7 @@ export function ResetPasswordPage() {
       );
       navigate("/auth");
     } catch (e) {
-      const err = e as ApiError;
-      setResetError(err.message ?? t("auth:validation.required"));
+      setResetError(translateApiError(t, e));
     } finally {
       setResetLoading(false);
     }

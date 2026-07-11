@@ -6,6 +6,7 @@ import { Badge } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { adminPlansApi } from '@/features/admin/api/adminPlans';
 import { useAdminPromoCodes, useAdminPromoMutations } from '@/features/admin/hooks/useAdminPlatformPromoCodes';
 import type {
@@ -16,13 +17,9 @@ import type {
 
 type ScopeFilter = 'ALL' | PromoScope;
 
-function ScopeBadge({ scope }: { scope: PromoScope }) {
+function ScopeBadge() {
   const { t } = useTranslation();
-  return scope === 'TEACHER_PLAN' ? (
-    <span data-testid="scope-badge-teacher"><Badge variant="cyan">{t('adminPromoCodes.scopeTeacherPlansBadge')}</Badge></span>
-  ) : (
-    <span data-testid="scope-badge-course"><Badge variant="default">{t('adminPromoCodes.scopeCoursesBadge')}</Badge></span>
-  );
+  return <span data-testid="scope-badge-teacher"><Badge variant="cyan">{t('adminPromoCodes.scopeTeacherPlansBadge')}</Badge></span>;
 }
 
 function StatusBadge({ status }: { status: PlatformPromoCode['displayStatus'] }) {
@@ -43,7 +40,7 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { create } = useAdminPromoMutations();
-  const [scope, setScope] = useState<PromoScope>('COURSE_PURCHASE');
+  const scope: PromoScope = 'TEACHER_PLAN';
   const [code, setCode] = useState('');
   const [discountType, setDiscountType] = useState<'PERCENTAGE' | 'FIXED_AMOUNT'>('PERCENTAGE');
   const [discountValue, setDiscountValue] = useState('10');
@@ -64,11 +61,12 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
       discountType,
       discountValue: Number(discountValue),
       ...(maxUses ? { maxUses: Number(maxUses) } : {}),
-      ...(scope === 'TEACHER_PLAN' ? { applicablePlanIds: planIds, billingInterval } : {}),
+      applicablePlanIds: planIds,
+      billingInterval,
     };
     create.mutate(body, {
       onSuccess: () => { dispatch(addToast({ type: 'success', message: t('adminPromoCodes.createSuccess') })); onClose(); },
-      onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? t('adminPromoCodes.createError') })),
+      onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: translateApiError(t, e) })),
     });
   };
 
@@ -80,13 +78,9 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
           <button type="button" onClick={onClose} className="rounded-btn p-1.5 text-gray-500 hover:bg-gray-100"><X size={20} /></button>
         </div>
         <div className="flex flex-col gap-3">
-          <label className="font-cairo text-sm">{t('adminPromoCodes.createScope')}
-            <select data-testid="promo-scope-select" value={scope} onChange={(e) => setScope(e.target.value as PromoScope)}
-              className="mt-1 h-10 w-full rounded-input border border-border px-3 text-sm">
-              <option value="COURSE_PURCHASE">{t('adminPromoCodes.createScopeCourses')}</option>
-              <option value="TEACHER_PLAN">{t('adminPromoCodes.createScopeTeacherPlans')}</option>
-            </select>
-          </label>
+          <div className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 font-cairo text-sm text-cyan-800">
+            {t('adminPromoCodes.createScopeTeacherPlans')}
+          </div>
           <label className="font-cairo text-sm">{t('adminPromoCodes.createCodeLabel')}
             <input data-testid="promo-code-input" value={code} onChange={(e) => setCode(e.target.value)} placeholder={t('adminPromoCodes.createCodePlaceholder')}
               className="mt-1 h-10 w-full rounded-input border border-border px-3 text-sm" />
@@ -109,8 +103,7 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
               className="mt-1 h-10 w-full rounded-input border border-border px-3 text-sm" />
           </label>
 
-          {scope === 'TEACHER_PLAN' && (
-            <div className="flex flex-col gap-3 rounded-lg border border-cyan-200 bg-cyan-50/50 p-3" data-testid="teacher-plan-options">
+          <div className="flex flex-col gap-3 rounded-lg border border-cyan-200 bg-cyan-50/50 p-3" data-testid="teacher-plan-options">
               <label className="font-cairo text-sm">{t('adminPromoCodes.createBillingInterval')}
                 <select data-testid="promo-billing-select" value={billingInterval} onChange={(e) => setBillingInterval(e.target.value as 'MONTHLY' | 'YEARLY' | 'ALL')}
                   className="mt-1 h-10 w-full rounded-input border border-border px-3 text-sm">
@@ -136,8 +129,7 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
                   ))}
                 </div>
               </div>
-            </div>
-          )}
+          </div>
 
           <div className="mt-2 flex justify-end gap-2">
             <button type="button" onClick={onClose} className="rounded-btn border border-border px-4 py-2 font-cairo text-sm">{t('adminPromoCodes.createCancel')}</button>
@@ -165,7 +157,7 @@ export function AdminPromoCodesManagementPage() {
   const toggle = (p: PlatformPromoCode) =>
     changeStatus.mutate(
       { id: p.id, isActive: !p.isActive },
-      { onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? 'تعذّر التحديث' })) },
+      { onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: translateApiError(t, e) })) },
     );
 
   return (
@@ -182,11 +174,11 @@ export function AdminPromoCodesManagementPage() {
       </div>
 
       <div className="flex gap-2" role="tablist" data-testid="scope-filter">
-        {(['ALL', 'COURSE_PURCHASE', 'TEACHER_PLAN'] as ScopeFilter[]).map((s) => (
+        {(['ALL', 'TEACHER_PLAN'] as ScopeFilter[]).map((s) => (
           <button key={s} type="button" role="tab" aria-selected={scope === s}
             data-testid={`scope-filter-${s}`} onClick={() => setScope(s)}
             className={`rounded-full px-4 py-1.5 font-cairo text-sm ${scope === s ? 'bg-cyan-500 text-white' : 'bg-gray-100 text-text-secondary'}`}>
-            {s === 'ALL' ? t('adminPromoCodes.scopeAll') : s === 'COURSE_PURCHASE' ? t('adminPromoCodes.scopeCourses') : t('adminPromoCodes.scopeTeacherPlans')}
+            {s === 'ALL' ? t('adminPromoCodes.scopeAll') : t('adminPromoCodes.scopeTeacherPlans')}
           </button>
         ))}
       </div>
@@ -208,7 +200,7 @@ export function AdminPromoCodesManagementPage() {
                 {rows.map((p) => (
                   <tr key={p.id} className="border-b border-border/60" data-testid="promo-row">
                     <Td><span className="font-mono font-semibold">{p.code}</span></Td>
-                    <Td><ScopeBadge scope={p.scope} /></Td>
+                    <Td><ScopeBadge /></Td>
                     <Td>{p.discountType === 'PERCENTAGE' ? `${p.discountValue}%` : `${p.discountValue} ${p.currency}`}</Td>
                     <Td>{p.usedCount}{p.maxUses != null ? ` / ${p.maxUses}` : ''}</Td>
                     <Td><StatusBadge status={p.displayStatus} /></Td>

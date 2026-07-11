@@ -49,11 +49,9 @@ import { AiQuizPublishPage } from '@/features/teacher/pages/AiQuizPublishPage';
 import { QuizListPage } from '@/features/teacher/pages/QuizListPage';
 import { StudentEngagementPage } from '@/features/teacher/pages/StudentEngagementPage';
 import { StudentDetailPage } from '@/features/teacher/pages/StudentDetailPage';
-import { TeacherBrandingPage } from '@/features/teacher/pages/TeacherBrandingPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { AllStagesPage } from '@/features/teacher/pages/AllStagesPage';
 import { StageDetailPage } from '@/features/teacher/pages/StageDetailPage';
-import { CreateStagePage } from '@/features/teacher/pages/CreateStagePage';
 import { TeacherPlansPage } from '@/features/teacher/pages/TeacherPlansPage';
 import { EssayGradingHubPage } from '@/features/teacher/pages/EssayGradingHubPage';
 import { EssaySubmissionsPage } from '@/features/teacher/pages/EssaySubmissionsPage';
@@ -71,6 +69,7 @@ import { AdminUsersPage } from '@/features/admin/pages/AdminUsersPage';
 import { AdminTeachersPage } from '@/features/admin/pages/AdminTeachersPage';
 import { AdminTeacherDetailPage } from '@/features/admin/pages/AdminTeacherDetailPage';
 import { AdminStudentsPage } from '@/features/admin/pages/AdminStudentsPage';
+import { AdminStagesPage } from '@/features/admin/pages/AdminStagesPage';
 import { AdminTeacherRequestsPage } from '@/features/admin/pages/AdminTeacherRequestsPage';
 import { AdminTeacherRequestDetailPage } from '@/features/admin/pages/AdminTeacherRequestDetailPage';
 import { TenantsPage } from '@/features/admin/pages/TenantsPage';
@@ -168,7 +167,6 @@ const router = createBrowserRouter([
               { path: '/teacher/quizzes/generator/publish/:quizId', element: <AiQuizPublishPage /> },
               { path: '/teacher/students', element: <StudentEngagementPage /> },
               { path: '/teacher/students/:studentId', element: <StudentDetailPage /> },
-              { path: '/teacher/branding', element: <TeacherBrandingPage /> },
               { path: '/teacher/promo-codes', element: <AdminPromoCodesPage /> },
               { path: '/teacher/wallet', element: <TeacherWalletPage /> },
               { path: '/teacher/profile', element: <ProfilePage /> },
@@ -177,7 +175,6 @@ const router = createBrowserRouter([
           {
             element: <TeacherStageLayout />,
             children: [
-              { path: '/teacher/content/new', element: <CreateStagePage /> },
               { path: '/teacher/content/:stageId', element: <StageDetailPage /> },
             ],
           },
@@ -217,6 +214,7 @@ const router = createBrowserRouter([
               { path: '/admin/teachers', element: <AdminTeachersPage /> },
               { path: '/admin/teachers/:teacherId', element: <AdminTeacherDetailPage /> },
               { path: '/admin/students', element: <AdminStudentsPage /> },
+              { path: '/admin/stages', element: <AdminStagesPage /> },
               { path: '/admin/teacher-requests', element: <AdminTeacherRequestsPage /> },
               { path: '/admin/teacher-requests/:requestId', element: <AdminTeacherRequestDetailPage /> },
               { path: '/admin/tenants', element: <TenantsPage /> },

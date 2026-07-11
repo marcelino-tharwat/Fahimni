@@ -10,7 +10,9 @@ import {
 } from "lucide-react";
 import { AppHeader } from "@/shared/components/layout/AppHeader";
 import { useAppDispatch } from "@/shared/store/hooks";
-import { apiClient } from "@/shared/lib/api/client";
+import { apiClient, type ApiError } from "@/shared/lib/api/client";
+import { translateApiError, translateFieldErrors } from "@/shared/lib/api/translateError";
+import { normalizeTextInput, normalizeOptionalTextInput } from "@/shared/lib/utils/textNormalization";
 import { login as loginThunk, register as registerThunk, googleLogin as googleLoginThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
 import type { PublicStage } from "@/features/student/types/student";
 import { ProofUpload } from "@/features/teacher-request/components/ProofUpload";
@@ -124,7 +126,7 @@ function SubmitButton({ children, disabled }: { children: React.ReactNode; disab
 /* ------------------------------------------------------------------ */
 
 function LoginForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -134,10 +136,23 @@ function LoginForm() {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<{ email: string; password: string }>({
     defaultValues: { email: "", password: "" },
   });
+
+  // Field validation messages are resolved (translated) at the moment RHF
+  // actually runs the rule, not on every render — so a language switch after
+  // a failed submit leaves stale-language text in `errors` until the rules
+  // are re-run. Re-validate any already-invalid fields so the visible
+  // messages update immediately when the UI language changes.
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      void trigger();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
 
   const onSubmit = async (v: { email: string; password: string }) => {
     if (inFlightRef.current) {
@@ -224,7 +239,7 @@ type RegisterFormValues = {
 };
 
 function RegisterForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [accountType, setAccountType] = useState<AccountType>("student");
@@ -249,6 +264,7 @@ function RegisterForm() {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors },
     setValue,
     getValues,
@@ -256,6 +272,20 @@ function RegisterForm() {
   } = useForm<RegisterFormValues>({
     defaultValues: { fullName: "", email: "", mobile: "", password: "", confirmPassword: "", stageId: "", subject: "", bio: "" },
   });
+
+  // Same fix as LoginForm: re-run validation on any already-invalid fields so
+  // their messages switch language immediately, instead of staying frozen in
+  // whatever language was active during the last failed submit/blur. Server
+  // errors (duplicate email, etc.) aren't tied to a client-side rule, so
+  // re-triggering them would just clear them — leave those alone.
+  useEffect(() => {
+    const clientInvalidFields = (Object.keys(errors) as (keyof RegisterFormValues)[])
+      .filter((field) => errors[field]?.type !== "server");
+    if (clientInvalidFields.length > 0) {
+      void trigger(clientInvalidFields);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
 
   const isTeacher = accountType === "teacher";
 
@@ -274,14 +304,17 @@ function RegisterForm() {
         // session is established (the backend issues no tokens for a pending
         // teacher). Sent as multipart/form-data so proof documents ride along.
         const fd = new FormData();
-        fd.append('fullName', v.fullName);
-        fd.append('email', v.email);
-        fd.append('mobile', v.mobile);
+        fd.append('fullName', normalizeTextInput(v.fullName));
+        fd.append('email', v.email.trim());
+        fd.append('mobile', v.mobile.trim());
         fd.append('password', v.password);
         fd.append('confirmPassword', v.confirmPassword);
         fd.append('role', 'OPERATION');
-        if (v.subject) fd.append('subject', v.subject);
-        if (v.bio) fd.append('bio', v.bio);
+        fd.append('locale', i18n.language === 'en' ? 'en' : 'ar');
+        const normalizedSubject = normalizeOptionalTextInput(v.subject);
+        if (normalizedSubject) fd.append('subject', normalizedSubject);
+        const normalizedBio = normalizeOptionalTextInput(v.bio);
+        if (normalizedBio) fd.append('bio', normalizedBio);
         for (const pf of proofFiles) fd.append('proofDocuments', pf.file);
         // Must send as multipart so the proof files survive. The apiClient default
         // Content-Type is application/json, and axios silently JSON-serializes a
@@ -296,26 +329,23 @@ function RegisterForm() {
         setTeacherPending(true);
         return;
       }
-      const res = await dispatch(registerThunk({ fullName: v.fullName, email: v.email, mobile: v.mobile, password: v.password, stageId: v.stageId, role: 'STUDENT' })).unwrap();
+      const res = await dispatch(registerThunk({ fullName: normalizeTextInput(v.fullName), email: v.email.trim(), mobile: v.mobile.trim(), password: v.password, stageId: v.stageId, role: 'STUDENT', locale: i18n.language === 'en' ? 'en' : 'ar' })).unwrap();
       navigate(dashboardPathByRole[res.user.role]);
     } catch (err) {
-      const reject = err as { message?: string; fieldErrors?: Record<string, string[]> } | string;
-      const message = typeof reject === "string" ? reject : reject.message;
-      const fieldErrors = typeof reject === "object" ? reject.fieldErrors : undefined;
-
-      if (fieldErrors) {
-        const knownFields = new Set(["fullName", "email", "mobile", "password", "confirmPassword", "stageId", "subject", "bio"]);
-        let hasFieldError = false;
-        for (const [field, msgs] of Object.entries(fieldErrors)) {
-          if (knownFields.has(field) && msgs.length > 0) {
-            setFieldError(field as keyof RegisterFormValues, { message: msgs[0], type: "server" });
-            hasFieldError = true;
-          }
+      // Both paths land here as an `ApiError`-shaped object: the teacher path
+      // throws the raw client.ts error; the student path unwraps the
+      // register thunk's rejectValue, which is the same raw `ApiError`.
+      const apiErr = err as ApiError;
+      const knownFields = new Set(["fullName", "email", "mobile", "password", "confirmPassword", "stageId", "subject", "bio"]);
+      const fieldMessages = translateFieldErrors(t, apiErr);
+      let hasFieldError = false;
+      for (const [field, message] of Object.entries(fieldMessages)) {
+        if (knownFields.has(field)) {
+          setFieldError(field as keyof RegisterFormValues, { message, type: "server" });
+          hasFieldError = true;
         }
-        if (!hasFieldError) setError(message ?? t("auth:errGeneric"));
-      } else {
-        setError(message ?? t("auth:errGeneric"));
       }
+      if (!hasFieldError) setError(translateApiError(t, apiErr));
     } finally {
       inFlightRef.current = false;
       setLoading(false);
@@ -327,7 +357,7 @@ function RegisterForm() {
     return (
       <div className="flex flex-col gap-4 text-center" data-testid="teacher-pending-message">
         <p className="rounded-md bg-emerald-50 px-4 py-3 text-body font-medium text-emerald-700">
-          {t("auth:teacherPendingMessage", "تم إرسال طلبك للمراجعة من الإدارة")}
+          {t("auth:teacherPendingMessage", "تم استلام طلبك وهو قيد المراجعة، وسيتم إشعارك عند مراجعة الطلب.")}
         </p>
         {trackingReference && (
           <div
@@ -418,6 +448,10 @@ function RegisterForm() {
         registration={register("fullName", {
           required: t("auth:validation.required"),
           minLength: { value: 2, message: t("auth:errNameMin") },
+          // Tabs/spaces/newlines alone must not count as a valid name — RHF's
+          // built-in `required`/`minLength` only check the raw (untrimmed)
+          // length, so "\t\t" (length 2) would otherwise pass both.
+          validate: (v: string) => normalizeTextInput(v).length >= 2 || t("auth:errNameMin"),
         })}
       />
       <Field
@@ -547,6 +581,10 @@ function SubjectSelect({
     <div ref={ref} className="relative w-full">
       <button
         type="button"
+        role="combobox"
+        aria-label={t("auth:subject", "التخصص")}
+        aria-expanded={open}
+        aria-haspopup="listbox"
         onClick={() => !loading && setOpen((o) => !o)}
         disabled={loading}
         dir={isRtl ? "rtl" : "ltr"}
@@ -573,7 +611,11 @@ function SubjectSelect({
         <p className="mt-1.5 text-xs text-red-500">{error}</p>
       )}
       {open && !loading && (
-        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+        <div
+          role="listbox"
+          aria-label={t("auth:subject", "التخصص")}
+          className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg"
+        >
           {subjects.length === 0 ? (
             <p className="px-4 py-3 font-cairo text-sm text-gray-500">
               {t("auth:noStages")}
@@ -583,6 +625,8 @@ function SubjectSelect({
               <button
                 key={subject.code}
                 type="button"
+                role="option"
+                aria-selected={selected === subject.displayName}
                 onClick={() => {
                   setSelected(subject.displayName);
                   onChange(subject.displayName);
@@ -654,7 +698,7 @@ function StageSelect({
           {loading
             ? t("auth:loading")
             : selected
-              ? selected.name
+              ? selected.displayName ?? selected.name
               : t("auth:selectStage")}
         </span>
         <ChevronDown
@@ -688,7 +732,7 @@ function StageSelect({
                 <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
                   <GraduationCap size={16} />
                 </span>
-                <span className="flex-1">{stage.name}</span>
+                <span className="flex-1">{stage.displayName ?? stage.name}</span>
               </button>
             ))
           )}

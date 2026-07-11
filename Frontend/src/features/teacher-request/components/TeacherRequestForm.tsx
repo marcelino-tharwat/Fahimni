@@ -8,16 +8,17 @@ import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Card } from "@/shared/components/ui/Card";
 import { apiClient } from "@/shared/lib/api/client";
+import { translateApiError } from "@/shared/lib/api/translateError";
 import { useSubjects } from "@/features/subjects/useSubjects";
 import { ProofUpload } from "./ProofUpload";
 
 const teacherRequestSchema = z.object({
-  fullName: z.string().trim().min(2, "validation:fullNameMin"),
-  email: z.string().trim().email("validation:emailInvalid").toLowerCase(),
+  fullName: z.string().trim().min(2, "teacherRequest:validation.fullNameMin"),
+  email: z.string().trim().email("teacherRequest:validation.emailInvalid").toLowerCase(),
   mobile: z
     .string()
     .trim()
-    .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "validation:mobileInvalid"),
+    .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "teacherRequest:validation.mobileInvalid"),
   subject: z.string().trim().optional(),
   bio: z.string().trim().max(1000).optional(),
   consent: z.literal(true, { message: "teacherRequest:consentRequired" }),
@@ -90,8 +91,7 @@ export function TeacherRequestForm() {
 
         setSuccessData(data.data);
       } catch (err: unknown) {
-        const apiErr = err as { message?: string };
-        setSubmitError(apiErr.message ?? t("teacherRequest:submitError"));
+        setSubmitError(translateApiError(t, err));
       } finally {
         setSubmitting(false);
       }

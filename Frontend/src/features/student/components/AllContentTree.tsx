@@ -21,8 +21,10 @@ import { cn } from '@/shared/lib/utils/cn';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { useStudentTree } from '@/features/student/hooks/useStudentContent';
 import { useEnrollFree } from '@/features/student/hooks/useEnrollFree';
+import { useSubjects } from '@/features/subjects/useSubjects';
 import type {
   StudentChapterNode,
   StudentContentTreeItem,
@@ -52,7 +54,11 @@ export function AllContentTree() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { data, isLoading, isError, refetch, isFetching } = useStudentTree();
+  const { subjects } = useSubjects();
+  const [subject, setSubject] = useState('');
+  const { data, isLoading, isError, refetch, isFetching } = useStudentTree(true, {
+    subject: subject || undefined,
+  });
   const enrollFreeMutation = useEnrollFree();
 
   // `null` override means "not toggled yet — use the derived defaults below".
@@ -79,10 +85,7 @@ export function AllContentTree() {
         setEnrollTarget(null);
       },
       onError: (error) => {
-        // The apiClient interceptor rejects with a normalized ApiError-shaped
-        // object; read its message structurally (matches the rest of the app).
-        const message = (error as { message?: string }).message || t('student:content.enrollError');
-        dispatch(addToast({ type: 'error', message }));
+        dispatch(addToast({ type: 'error', message: translateApiError(t, error) }));
       },
     });
   };
@@ -142,6 +145,24 @@ export function AllContentTree() {
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2 rounded-card border border-gray-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
+        <label className="font-cairo text-sm font-semibold text-navy-800" htmlFor="student-subject-filter">
+          {t('student:content.subjectFilter', 'Subject')}
+        </label>
+        <select
+          id="student-subject-filter"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="min-h-[42px] rounded-lg border border-gray-300 bg-white px-3 font-cairo text-sm text-gray-700 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 sm:min-w-56"
+        >
+          <option value="">{t('student:content.allSubjects', 'All subjects')}</option>
+          {subjects.map((item) => (
+            <option key={item.code} value={item.displayName}>
+              {item.displayName}
+            </option>
+          ))}
+        </select>
+      </div>
       {data.map((item, stageIndex) => (
         <StageCard
           key={item.stage.id}
@@ -219,7 +240,7 @@ function StageCard({
           <StageIcon size={20} className="text-white" />
         </span>
         <span className="min-w-0 flex-1 truncate font-cairo text-base font-bold text-navy-900">
-          {t('student:content.stage', { order: toLocalNum(index + 1), name: item.stage.name })}
+          {t('student:content.stage', { order: toLocalNum(index + 1), name: item.stage.displayName ?? item.stage.name })}
         </span>
         <ChevronDown
           size={20}
@@ -293,6 +314,11 @@ function ChapterRow({
         {chapter.teacher && (
           <p className="truncate font-cairo text-xs text-cyan-600">{chapter.teacher.fullName}</p>
         )}
+        <span className="mt-1 inline-flex w-fit rounded-full border border-cyan-100 bg-cyan-50 px-2 py-0.5 font-cairo text-xs font-semibold text-cyan-700">
+          {chapter.term === 'SECOND_TERM'
+            ? t('student:content.secondTerm', 'Second Term')
+            : t('student:content.firstTerm', 'First Term')}
+        </span>
       </div>
     </>
   );
@@ -300,6 +326,13 @@ function ChapterRow({
   return (
     <div className="border-b border-gray-100 last:border-b-0">
       <div className="flex w-full items-center gap-3 px-2 py-3.5">
+        <div className="hidden h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-cyan-50 sm:block">
+          {chapter.imageUrl ? (
+            <img src={chapter.imageUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="h-full w-full bg-cyan-gradient" />
+          )}
+        </div>
         {/* Expand/collapse is available only when the content is accessible
             (free / purchased). Locked chapters aren't expandable, so their title
             is a plain, non-interactive region. */}

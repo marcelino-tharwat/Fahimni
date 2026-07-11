@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Layers, Plus } from 'lucide-react';
+import { AlertTriangle, Eye, EyeOff, Layers, Plus } from 'lucide-react';
 import type { ContentTreeChapter, ContentTreeLesson } from '@/features/teacher/types/contentTree';
+import { useSetChapterVisibility } from '@/features/teacher/hooks/useChapters';
 import { SortableItem } from '@/features/teacher/components/reorder/SortableItem';
 import { SortableList } from '@/features/teacher/components/reorder/SortableList';
 import { getLessonContainerId } from '@/features/teacher/components/reorder/helpers';
@@ -60,6 +61,7 @@ export function ContentTreePanel({
   isMutating,
 }: ContentTreePanelProps) {
   const { t } = useTranslation();
+  const setVisibility = useSetChapterVisibility();
 
   const displayChapters = chapterItems ?? chapters;
 
@@ -73,17 +75,8 @@ export function ContentTreePanel({
         </h2>
         <TreeNodeMenu
           nodeType="stage"
-          actions={['edit', 'delete']}
-          onAction={(action) =>
-            action === 'delete'
-              ? onRequestDelete({
-                  type: 'stage',
-                  id: stageId,
-                  name: stageName,
-                  childrenCount: chapters.length,
-                })
-              : onMenuAction({ type: 'stage', id: stageId }, action)
-          }
+          actions={['addChapter']}
+          onAction={(action) => onMenuAction({ type: 'stage', id: stageId }, action)}
         />
       </div>
 
@@ -168,6 +161,37 @@ export function ContentTreePanel({
                           }
                           dragHandle={dragProps}
                         />
+                        <div className="ms-8 flex flex-wrap items-center gap-2 pb-2">
+                          <span className="rounded-full border border-cyan-100 bg-cyan-50 px-2 py-0.5 font-cairo text-xs font-semibold text-cyan-700">
+                            {chapter.term === 'SECOND_TERM'
+                              ? t('teacher:contentTree.editor.secondTerm', 'Second Term')
+                              : t('teacher:contentTree.editor.firstTerm', 'First Term')}
+                          </span>
+                          <span
+                            className={
+                              chapter.isVisible
+                                ? 'rounded-full border border-success-500/30 bg-success-50 px-2 py-0.5 font-cairo text-xs font-semibold text-success-600'
+                                : 'rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 font-cairo text-xs font-semibold text-gray-600'
+                            }
+                          >
+                            {chapter.isVisible
+                              ? t('teacher:contentTree.visible', 'Visible')
+                              : t('teacher:contentTree.hidden', 'Hidden')}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={setVisibility.isPending}
+                            onClick={() =>
+                              setVisibility.mutate({ id: chapter.id, isVisible: !chapter.isVisible })
+                            }
+                            className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-white px-2 py-0.5 font-cairo text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+                          >
+                            {chapter.isVisible ? <EyeOff size={13} /> : <Eye size={13} />}
+                            {chapter.isVisible
+                              ? t('teacher:contentTree.hideChapter', 'Hide')
+                              : t('teacher:contentTree.showChapter', 'Show')}
+                          </button>
+                        </div>
                         {chapterExpanded && (
                           <SortableList
                             id={getLessonContainerId(chapter.id)}

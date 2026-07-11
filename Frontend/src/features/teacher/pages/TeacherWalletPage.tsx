@@ -14,7 +14,7 @@ import {
 import { Card, Badge, Button } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import {
   useTeacherWallet,
   useTeacherWithdrawals,
@@ -99,7 +99,7 @@ export function TeacherWalletPage() {
         dispatch(
           addToast({
             type: 'error',
-            message: (error as ApiError)?.message ?? t('wallet.withdrawals.cancelError'),
+            message: translateApiError(t, error),
           }),
         );
       },

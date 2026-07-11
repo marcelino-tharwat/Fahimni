@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isValidSubject, SUBJECT_CATALOG } from "../subjects/subjects.js";
+import { isBlank } from "../../shared/utils/textNormalization.js";
 
 const VALID_SUBJECT_NAMES = SUBJECT_CATALOG.map((s) => s.displayName) as [
   string,
@@ -43,10 +44,14 @@ export const registerSchema = z
       (v) => (v === "" ? undefined : v),
       z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
     ),
+    // Whitespace-only ("   ", "\n\t") normalizes away to "no bio" — a bare
+    // `v === ""` check would miss this, since `.trim()` only runs *after*
+    // preprocess and there's no `.min()` to catch the resulting empty string.
     bio: z.preprocess(
-      (v) => (v === "" ? undefined : v),
+      (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
       z.string().trim().max(1000).optional(),
     ),
+    locale: z.enum(["ar", "en"]).optional().default("ar"),
   })
   .refine(
     (data) => {
@@ -66,7 +71,13 @@ export const registerSchema = z
 
 export const loginSchema = z.object({
   email: z.string().trim().email(),
-  password: z.string().min(8),
+  // Never `.trim()` a password — whitespace is significant. A whitespace-only
+  // value of sufficient length would otherwise pass `.min(8)` unnoticed and
+  // just fail bcrypt comparison with a generic "invalid credentials" message;
+  // this refine rejects it explicitly and up front instead.
+  password: z.string().min(8).refine((v) => !isBlank(v), {
+    message: "Password cannot be blank",
+  }),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
@@ -94,11 +105,20 @@ export const resetPasswordSchema = z.object({
 });
 
 export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
+  // Never `.trim()` — same reasoning as loginSchema.password above.
+  currentPassword: z
+    .string()
+    .min(1, "Current password is required")
+    .refine((v) => !isBlank(v), { message: "Current password is required" }),
   newPassword: passwordSchema,
+});
+
+export const updateLocaleSchema = z.object({
+  locale: z.enum(["ar", "en"]),
 });
 
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type UpdateLocaleInput = z.infer<typeof updateLocaleSchema>;

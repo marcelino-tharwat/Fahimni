@@ -14,11 +14,12 @@ import type {
   VerifyOtpInput,
   ResetPasswordInput,
   ChangePasswordInput,
+  UpdateLocaleInput,
 } from "./auth.validation.js";
 import { AppError } from "../../shared/utils/AppError.js";
-import type { ApiError } from "../../shared/types/common.types.js";
 import { logger } from "../../config/logger.js";
 import { uploadProofDocuments } from "./proof-documents.js";
+import { normalizeLocale, sendTransactionalEmail } from "../email/transactional-email.helpers.js";
 
 export class AuthService {
   constructor(private readonly tokenService = new TokenService()) {}
@@ -53,9 +54,7 @@ export class AuthService {
     });
 
     if (!user) {
-      const error = new Error("Invalid email or password") as ApiError;
-      error.status = 401;
-      throw error;
+      throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
     }
 
     // Verify the password BEFORE surfacing any account-state detail, so
@@ -63,18 +62,12 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(input.password, user.password);
 
     if (!isPasswordValid) {
-      const error = new Error("Invalid email or password") as ApiError;
-      error.status = 401;
-      throw error;
+      throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
     }
 
     // BANNED users are always blocked — no exceptions.
     if (user.status === "BANNED") {
-      const error = new Error(
-        "Account is inactive. Contact support.",
-      ) as ApiError;
-      error.status = 403;
-      throw error;
+      throw new AppError("Account is inactive. Contact support.", 403, "ACCOUNT_INACTIVE");
     }
 
     // Teacher lifecycle gating — pending/rejected teachers are allowed to login
@@ -95,11 +88,7 @@ export class AuthService {
     }
 
     if (user.status === "INACTIVE") {
-      const error = new Error(
-        "Account is inactive. Contact support.",
-      ) as ApiError;
-      error.status = 403;
-      throw error;
+      throw new AppError("Account is inactive. Contact support.", 403, "ACCOUNT_INACTIVE");
     }
 
     const result = await this.generateSession(user.id);
@@ -133,9 +122,7 @@ export class AuthService {
     });
 
     if (existingMobile) {
-      const error = new Error("Mobile number already registered") as ApiError;
-      error.status = 409;
-      throw error;
+      throw new AppError("Mobile number already registered", 409, "DUPLICATE_MOBILE");
     }
 
     // Check email uniqueness (only when provided)
@@ -146,9 +133,7 @@ export class AuthService {
       });
 
       if (existingEmail) {
-        const error = new Error("Email already registered") as ApiError;
-        error.status = 409;
-        throw error;
+        throw new AppError("Email already registered", 409, "DUPLICATE_EMAIL");
       }
     }
 
@@ -172,12 +157,13 @@ export class AuthService {
           password: hashedPassword,
           role: Role.STUDENT,
           status: Status.ACTIVE,
+          locale: normalizeLocale(input.locale),
         },
         select: userPublicFields,
       });
 
       if (!input.stageId) {
-        throw new AppError("Stage is required for student registration", 400);
+        throw new AppError("Stage is required for student registration", 400, "REQUIRED");
       }
       await tx.studentProfile.create({
         data: { userId: created.id, stageId: input.stageId },
@@ -204,6 +190,20 @@ export class AuthService {
     expiresAt.setDate(expiresAt.getDate() + 7);
     await prisma.refreshToken.create({
       data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
+    });
+
+    await sendTransactionalEmail({
+      to: user.email,
+      template: "studentWelcome",
+      locale: input.locale,
+      data: {
+        studentName: user.fullName,
+        dashboardUrl: "/student/dashboard",
+      },
+      metadata: { userId: user.id },
+      entityType: "User",
+      entityId: user.id,
+      dedupeKey: `${user.id}:studentWelcome`,
     });
 
     return { pending: false as const, user, accessToken, refreshToken };
@@ -264,6 +264,7 @@ export class AuthService {
           role: Role.OPERATION,
           status: Status.INACTIVE,
           teacherApprovalState: "PENDING_REVIEW",
+          locale: normalizeLocale(input.locale),
         },
         select: userPublicFields,
       });
@@ -312,6 +313,22 @@ export class AuthService {
       }
     }
 
+    await sendTransactionalEmail({
+      to: input.email,
+      template: "teacherRegistrationSubmitted",
+      locale: input.locale,
+      data: {
+        teacherName: input.fullName,
+        referenceNumber: publicReference,
+        status: "PENDING_REVIEW",
+        statusUrl: `/teacher/register/status?ref=${encodeURIComponent(publicReference)}`,
+      },
+      metadata: { requestId: user.requestId },
+      entityType: "TeacherRegistrationRequest",
+      entityId: user.requestId,
+      dedupeKey: `${user.requestId}:teacherRegistrationSubmitted`,
+    });
+
     // The public reference lets the teacher track their request status later
     // (paired with their email/mobile on the public track endpoint).
     return { pending: true as const, user: user.created, trackingReference: publicReference };
@@ -321,13 +338,11 @@ export class AuthService {
     // 1. Find user by email
     const user = await prisma.user.findUnique({
       where: { email: input.email },
-      select: { id: true },
+      select: { id: true, locale: true },
     });
 
     if (!user) {
-      const error = new Error("User not found") as ApiError;
-      error.status = 404;
-      throw error;
+      throw new AppError("User not found", 404, "USER_NOT_FOUND");
     }
 
     // 2. Rate limit: max 3 OTP requests per phone per hour
@@ -341,11 +356,7 @@ export class AuthService {
     });
 
     if (recentOtpCount >= 3) {
-      const error = new Error(
-        "Too many OTP requests. Try again in an hour",
-      ) as ApiError;
-      error.status = 429;
-      throw error;
+      throw new AppError("Too many OTP requests. Try again in an hour", 429, "RATE_LIMITED");
     }
 
     // 3. Generate 6-digit OTP
@@ -367,6 +378,20 @@ export class AuthService {
     // 6. MVP: console.log — SMS/email integration in v2
     console.log(`[OTP] ${input.email}: ${otp}`);
 
+    await sendTransactionalEmail({
+      to: input.email,
+      template: "passwordReset",
+      locale: user.locale,
+      data: {
+        otp,
+        expiresIn: "5 minutes",
+        resetUrl: "/reset-password",
+      },
+      metadata: { userId: user.id, purpose: "passwordReset" },
+      entityType: "User",
+      entityId: user.id,
+    });
+
     return { message: "OTP sent successfully" };
   }
 
@@ -377,9 +402,7 @@ export class AuthService {
     });
 
     if (!user) {
-      const error = new Error("User not found") as ApiError;
-      error.status = 404;
-      throw error;
+      throw new AppError("User not found", 404, "USER_NOT_FOUND");
     }
 
     const storedOtp = await prisma.otp.findFirst({
@@ -394,16 +417,12 @@ export class AuthService {
     });
 
     if (!storedOtp) {
-      const error = new Error("OTP has expired") as ApiError;
-      error.status = 410;
-      throw error;
+      throw new AppError("OTP has expired", 410, "OTP_EXPIRED");
     }
 
     const isValid = await bcrypt.compare(input.otp, storedOtp.code);
     if (!isValid) {
-      const error = new Error("Invalid OTP code") as ApiError;
-      error.status = 400;
-      throw error;
+      throw new AppError("Invalid OTP code", 400, "OTP_INVALID");
     }
 
     await prisma.otp.update({
@@ -422,9 +441,7 @@ export class AuthService {
     });
 
     if (!user) {
-      const error = new Error("User not found") as ApiError;
-      error.status = 404;
-      throw error;
+      throw new AppError("User not found", 404, "USER_NOT_FOUND");
     }
 
     // 2. Find the verified, unused, non-expired PASSWORD_RESET OTP
@@ -440,9 +457,7 @@ export class AuthService {
     });
 
     if (!storedOtp) {
-      const error = new Error("Please verify your OTP first") as ApiError;
-      error.status = 400;
-      throw error;
+      throw new AppError("Please verify your OTP first", 400, "OTP_NOT_VERIFIED");
     }
 
     // 4. Atomic transaction: update password + mark OTP as used
@@ -471,10 +486,10 @@ export class AuthService {
         env.JWT_REFRESH_SECRET,
       ) as jwt.JwtPayload;
     } catch {
-      throw new AppError("Invalid refresh token", 401);
+      throw new AppError("Invalid refresh token", 401, "REFRESH_TOKEN_INVALID");
     }
     const userId = typeof payload.sub === "string" ? payload.sub : undefined;
-    if (!userId) throw new AppError("Invalid refresh token", 401);
+    if (!userId) throw new AppError("Invalid refresh token", 401, "REFRESH_TOKEN_INVALID");
 
     // 2. Extract and validate tokenVersion BEFORE any rotation.
     //    If another login has superseded this session, reject immediately.
@@ -489,16 +504,14 @@ export class AuthService {
       },
     });
     if (!user) {
-      throw new AppError("Invalid refresh token", 401);
+      throw new AppError("Invalid refresh token", 401, "REFRESH_TOKEN_INVALID");
     }
     if (payloadVersion !== undefined && user.tokenVersion !== payloadVersion) {
-      throw new AppError("Session superseded by new login", 401);
+      throw new AppError("Session superseded by new login", 401, "SESSION_SUPERSEDED");
     }
     // BANNED users are always blocked from refreshing.
     if (user.status === "BANNED") {
-      const error = new Error("Account is inactive. Contact support.") as ApiError;
-      error.status = 403;
-      throw error;
+      throw new AppError("Account is inactive. Contact support.", 403, "ACCOUNT_INACTIVE");
     }
 
     // INACTIVE teachers with PENDING_REVIEW or REJECTED approval state are
@@ -514,9 +527,7 @@ export class AuthService {
         (fullUser?.teacherApprovalState === "PENDING_REVIEW" ||
           fullUser?.teacherApprovalState === "REJECTED");
       if (!isRestrictedTeacher) {
-        const error = new Error("Account is inactive. Contact support.") as ApiError;
-        error.status = 403;
-        throw error;
+        throw new AppError("Account is inactive. Contact support.", 403, "ACCOUNT_INACTIVE");
       }
     }
 
@@ -535,7 +546,7 @@ export class AuthService {
       data: { token: newHash, expiresAt },
     });
     if (rotated.count !== 1) {
-      throw new AppError("Invalid refresh token", 401);
+      throw new AppError("Invalid refresh token", 401, "REFRESH_TOKEN_INVALID");
     }
 
     const newAccessToken = this.tokenService.generateAccessToken(userId, user.tokenVersion);
@@ -561,9 +572,7 @@ export class AuthService {
     });
 
     if (!user) {
-      const error = new Error("User not found") as ApiError;
-      error.status = 404;
-      throw error;
+      throw new AppError("User not found", 404, "USER_NOT_FOUND");
     }
 
     return user;
@@ -571,7 +580,7 @@ export class AuthService {
 
   public async googleAuth(credential: string) {
     if (!env.GOOGLE_CLIENT_ID) {
-      throw new AppError("Google sign-in is not configured", 501);
+      throw new AppError("Google sign-in is not configured", 501, "GOOGLE_AUTH_NOT_CONFIGURED");
     }
 
     // Verify the access token by calling Google's userinfo endpoint
@@ -582,7 +591,7 @@ export class AuthService {
       );
       userInfo = await response.json();
       if (!response.ok || !userInfo.email) {
-        throw new AppError("Invalid Google access token", 401);
+        throw new AppError("Invalid Google access token", 401, "GOOGLE_AUTH_FAILED");
       }
     } catch {
       // Fallback: try userinfo endpoint which requires a valid token
@@ -591,13 +600,13 @@ export class AuthService {
         { headers: { Authorization: `Bearer ${credential}` } },
       );
       if (!response.ok) {
-        throw new AppError("Invalid Google access token", 401);
+        throw new AppError("Invalid Google access token", 401, "GOOGLE_AUTH_FAILED");
       }
       userInfo = await response.json();
     }
 
     if (!userInfo.email) {
-      throw new AppError("Failed to get email from Google", 400);
+      throw new AppError("Failed to get email from Google", 400, "GOOGLE_AUTH_FAILED");
     }
 
     const email = userInfo.email.toLowerCase();
@@ -612,7 +621,7 @@ export class AuthService {
 
     if (existing) {
       if (existing.status === "INACTIVE" || existing.status === "BANNED") {
-        throw new AppError("Account is inactive. Contact support.", 403);
+        throw new AppError("Account is inactive. Contact support.", 403, "ACCOUNT_INACTIVE");
       }
       const result = await this.generateSession(existing.id);
       const user = await prisma.user.findUniqueOrThrow({
@@ -664,9 +673,7 @@ export class AuthService {
     });
 
     if (!user) {
-      const error = new Error("User not found") as ApiError;
-      error.status = 404;
-      throw error;
+      throw new AppError("User not found", 404, "USER_NOT_FOUND");
     }
 
     const isCurrentPasswordValid = await bcrypt.compare(
@@ -675,9 +682,7 @@ export class AuthService {
     );
 
     if (!isCurrentPasswordValid) {
-      const error = new Error("Current password is incorrect") as ApiError;
-      error.status = 401;
-      throw error;
+      throw new AppError("Current password is incorrect", 401, "CURRENT_PASSWORD_INVALID");
     }
 
     const hashedPassword = await bcrypt.hash(input.newPassword, 12);
@@ -688,5 +693,13 @@ export class AuthService {
     });
 
     return { message: "Password changed successfully" };
+  }
+
+  public async updateLocale(userId: string, input: UpdateLocaleInput) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { locale: input.locale },
+      select: userPublicFields,
+    });
   }
 }

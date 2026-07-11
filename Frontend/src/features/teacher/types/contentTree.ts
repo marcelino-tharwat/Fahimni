@@ -22,12 +22,16 @@ export interface ContentTreeChapter {
   name: string;
   sortOrder: number;
   lessonCount: number;
+  imageUrl?: string | null;
+  term: 'FIRST_TERM' | 'SECOND_TERM';
+  isVisible: boolean;
   lessons: ContentTreeLesson[];
 }
 
 export interface ContentTreeStage {
   id: string;
   name: string;
+  displayName?: string;
   sortOrder: number;
   chapterCount: number;
   chapters: ContentTreeChapter[];

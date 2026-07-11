@@ -24,6 +24,9 @@ export interface StudentProfile {
 export interface PublicStage {
   id: string;
   name: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
+  displayName?: string;
   sortOrder: number;
 }
 

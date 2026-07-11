@@ -12,6 +12,9 @@ export interface Chapter {
   description: string | null;
   sortOrder: number;
   price: number | null; // null = free chapter
+  imageUrl?: string | null;
+  term: 'FIRST_TERM' | 'SECOND_TERM';
+  isVisible: boolean;
   stageId: string;
   lessonsCount: number;
   createdAt: string;
@@ -23,6 +26,10 @@ export interface CreateChapterPayload {
   sortOrder: number; // required, >= 1
   description?: string; // optional, max 2000
   price?: number; // optional, >= 0 (omit/null = free)
+  subject?: string;
+  term: 'FIRST_TERM' | 'SECOND_TERM';
+  isVisible?: boolean;
+  image?: File | null;
 }
 
 export interface UpdateChapterPayload {
@@ -30,5 +37,9 @@ export interface UpdateChapterPayload {
   description?: string;
   sortOrder?: number;
   price?: number | null;
+  term?: 'FIRST_TERM' | 'SECOND_TERM';
+  isVisible?: boolean;
+  image?: File | null;
+  removeImage?: boolean;
   // at least one field required by the backend
 }

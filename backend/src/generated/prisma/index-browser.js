@@ -129,6 +129,7 @@ exports.Prisma.UserScalarFieldEnum = {
   role: 'role',
   status: 'status',
   teacherApprovalState: 'teacherApprovalState',
+  locale: 'locale',
   tokenVersion: 'tokenVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -160,7 +161,11 @@ exports.Prisma.TeacherProfileScalarFieldEnum = {
 exports.Prisma.StageScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  nameAr: 'nameAr',
+  nameEn: 'nameEn',
   description: 'description',
+  descriptionAr: 'descriptionAr',
+  descriptionEn: 'descriptionEn',
   sortOrder: 'sortOrder',
   teacherId: 'teacherId',
   isActive: 'isActive',
@@ -176,6 +181,8 @@ exports.Prisma.ChapterScalarFieldEnum = {
   sortOrder: 'sortOrder',
   price: 'price',
   imageUrl: 'imageUrl',
+  term: 'term',
+  isVisible: 'isVisible',
   teacherId: 'teacherId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -295,6 +302,23 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   actorType: 'actorType',
   actorName: 'actorName',
   scopeTeacherId: 'scopeTeacherId'
+};
+
+exports.Prisma.EmailLogScalarFieldEnum = {
+  id: 'id',
+  to: 'to',
+  subject: 'subject',
+  template: 'template',
+  locale: 'locale',
+  status: 'status',
+  providerMessageId: 'providerMessageId',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  dedupeKey: 'dedupeKey',
+  errorMessage: 'errorMessage',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  sentAt: 'sentAt'
 };
 
 exports.Prisma.RefreshTokenScalarFieldEnum = {
@@ -606,6 +630,11 @@ exports.TeacherApprovalState = exports.$Enums.TeacherApprovalState = {
   REJECTED: 'REJECTED'
 };
 
+exports.AcademicTerm = exports.$Enums.AcademicTerm = {
+  FIRST_TERM: 'FIRST_TERM',
+  SECOND_TERM: 'SECOND_TERM'
+};
+
 exports.OtpType = exports.$Enums.OtpType = {
   EMAIL_VERIFICATION: 'EMAIL_VERIFICATION',
   PASSWORD_RESET: 'PASSWORD_RESET'
@@ -627,6 +656,14 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   PENDING: 'PENDING',
   SUCCESS: 'SUCCESS',
   FAILED: 'FAILED'
+};
+
+exports.EmailLogStatus = exports.$Enums.EmailLogStatus = {
+  QUEUED: 'QUEUED',
+  SENT: 'SENT',
+  FAILED: 'FAILED',
+  DRY_RUN: 'DRY_RUN',
+  SKIPPED_DUPLICATE: 'SKIPPED_DUPLICATE'
 };
 
 exports.QuizContentScope = exports.$Enums.QuizContentScope = {
@@ -763,6 +800,7 @@ exports.Prisma.ModelName = {
   ContentChunk: 'ContentChunk',
   AiTutorUsage: 'AiTutorUsage',
   AuditLog: 'AuditLog',
+  EmailLog: 'EmailLog',
   RefreshToken: 'RefreshToken',
   Quiz: 'Quiz',
   QuizLesson: 'QuizLesson',

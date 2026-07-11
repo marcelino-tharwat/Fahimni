@@ -36,11 +36,12 @@ export const updateTeacherProfileSchema = z
       )
       .optional(),
     subject: z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
-    bio: z
-      .string()
-      .trim()
-      .max(500, "Bio must not exceed 500 characters")
-      .optional(),
+    // Whitespace-only ("   ", "\n\t") normalizes away to "no bio" instead of
+    // being persisted as a blank/whitespace string.
+    bio: z.preprocess(
+      (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+      z.string().trim().max(500, "Bio must not exceed 500 characters").optional(),
+    ),
     photoUrl: z.string().optional(),
     logoUrl: z.string().optional(),
     aiTutorDailyQueryLimit: z

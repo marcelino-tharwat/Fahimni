@@ -42,6 +42,7 @@ export interface StudentChapterNode {
   /** null means the chapter is free (no price). */
   price: number | null;
   imageUrl?: string | null;
+  term: 'FIRST_TERM' | 'SECOND_TERM';
   lessonCount: number;
   enrollmentStatus: EnrollmentStatus;
   teacher?: {
@@ -54,6 +55,7 @@ export interface StudentChapterNode {
 export interface StudentStageNode {
   id: string;
   name: string;
+  displayName?: string;
   sortOrder: number;
   chapterCount: number;
 }
@@ -74,6 +76,8 @@ export interface MyCourse {
   description?: string | null;
   sortOrder?: number;
   price: number | null;
+  imageUrl?: string | null;
+  term: 'FIRST_TERM' | 'SECOND_TERM';
   stageId: string;
   stageName: string;
   lessonCount: number;

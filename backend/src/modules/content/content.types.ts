@@ -1,6 +1,7 @@
 export interface StageNode {
   id: string;
   name: string;
+  displayName?: string;
   sortOrder: number;
   chapterCount: number;
 }
@@ -11,6 +12,8 @@ export interface ChapterNode {
   sortOrder: number;
   lessonCount: number;
   imageUrl: string | null;
+  term: "FIRST_TERM" | "SECOND_TERM";
+  isVisible: boolean;
 }
 
 export interface LessonNode {
@@ -63,6 +66,7 @@ export interface StudentChapterNode {
   sortOrder: number;
   price: number | null;
   imageUrl: string | null;
+  term: "FIRST_TERM" | "SECOND_TERM";
   lessonCount: number;
   enrollmentStatus: EnrollmentStatus;
   teacher: StudentTeacherNode;
@@ -83,6 +87,7 @@ export interface MyCourseResponse {
   sortOrder: number;
   price: number | null;
   imageUrl: string | null;
+  term: "FIRST_TERM" | "SECOND_TERM";
   stageId: string;
   stageName: string;
   lessonCount: number;

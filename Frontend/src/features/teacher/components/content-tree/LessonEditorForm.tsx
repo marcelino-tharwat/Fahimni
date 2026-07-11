@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Info } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { createLessonSchema, flattenZodErrors } from '@/features/teacher/validation';
 import { useUpdateLesson } from '@/features/teacher/hooks/useLessons';
 import { useQuizList } from '@/features/teacher/hooks/useQuizList';
@@ -118,8 +118,7 @@ export function LessonEditorForm({ lesson, onRequestDelete }: LessonEditorFormPr
           dispatch(
             addToast({
               type: 'error',
-              message:
-                (error as ApiError)?.message ?? t('contentTree.editor.toast.saveError'),
+              message: translateApiError(t, error),
             }),
           ),
       },

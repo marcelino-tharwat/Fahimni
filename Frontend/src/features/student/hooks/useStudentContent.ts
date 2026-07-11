@@ -12,10 +12,10 @@ export const STUDENT_MY_COURSES_KEY = ['student', 'content', 'my-courses'] as co
  * `enabled` lets callers fetch lazily (e.g. only when a surface is active); it
  * defaults to true so existing callers keep their current behavior.
  */
-export function useStudentTree(enabled = true) {
+export function useStudentTree(enabled = true, filters?: { subject?: string; term?: string }) {
   return useQuery({
-    queryKey: STUDENT_TREE_KEY,
-    queryFn: () => studentContentApi.getTree(),
+    queryKey: [...STUDENT_TREE_KEY, filters?.subject ?? 'ALL', filters?.term ?? 'ALL'],
+    queryFn: () => studentContentApi.getTree(filters),
     enabled,
   });
 }

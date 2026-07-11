@@ -11,6 +11,7 @@ import {
   createStageSchema,
   listStagesQuerySchema,
   reorderSchema as stageReorderSchema,
+  updateStageStatusSchema,
   updateStageSchema,
 } from "./admin-stages.validation.js";
 import { AdminTeachersController } from "./admin-teachers.controller.js";
@@ -139,6 +140,11 @@ router.get("/stages/:id", asyncHandler(stagesController.getById));
 router.patch(
   "/stages/:id",
   validateRequest(updateStageSchema, "body"),
+  asyncHandler(stagesController.update),
+);
+router.patch(
+  "/stages/:id/status",
+  validateRequest(updateStageStatusSchema, "body"),
   asyncHandler(stagesController.update),
 );
 router.delete("/stages/:id", asyncHandler(stagesController.delete));

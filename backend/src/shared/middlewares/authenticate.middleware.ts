@@ -23,6 +23,7 @@ export const authenticateMiddleware = asyncHandler(
         new AppError(
           "You are not logged in! Please log in to get access.",
           401,
+          "UNAUTHENTICATED",
         ),
       );
     }
@@ -33,10 +34,10 @@ export const authenticateMiddleware = asyncHandler(
     } catch (error) {
       const err = error as Error;
       if (err.name === "TokenExpiredError") {
-        return next(new AppError("Token expired", 401));
+        return next(new AppError("Token expired", 401, "TOKEN_EXPIRED"));
       }
       if (err.name === "JsonWebTokenError") {
-        return next(new AppError("Invalid token", 401));
+        return next(new AppError("Invalid token", 401, "TOKEN_INVALID"));
       }
       throw error;
     }
@@ -44,7 +45,7 @@ export const authenticateMiddleware = asyncHandler(
     const userId = decoded.sub ?? decoded.userId;
 
     if (!userId || typeof userId !== "string") {
-      return next(new AppError("Invalid token payload", 401));
+      return next(new AppError("Invalid token payload", 401, "TOKEN_INVALID"));
     }
 
     const user = await prisma.user.findUnique({
@@ -57,6 +58,7 @@ export const authenticateMiddleware = asyncHandler(
         new AppError(
           "The user belonging to this token does no longer exist.",
           401,
+          "UNAUTHENTICATED",
         ),
       );
     }
@@ -67,7 +69,11 @@ export const authenticateMiddleware = asyncHandler(
       // through in restricted mode (they can view their review-status page).
       if (user.status === "BANNED") {
         return next(
-          new AppError("Your account is inactive. Please contact support.", 401),
+          new AppError(
+            "Your account is inactive. Please contact support.",
+            401,
+            "ACCOUNT_INACTIVE",
+          ),
         );
       }
       // For INACTIVE users, check if this is a restricted teacher.
@@ -81,7 +87,11 @@ export const authenticateMiddleware = asyncHandler(
           fullUser?.teacherApprovalState === "REJECTED");
       if (!isRestrictedTeacher) {
         return next(
-          new AppError("Your account is inactive. Please contact support.", 401),
+          new AppError(
+            "Your account is inactive. Please contact support.",
+            401,
+            "ACCOUNT_INACTIVE",
+          ),
         );
       }
     }
@@ -93,7 +103,7 @@ export const authenticateMiddleware = asyncHandler(
       typeof decoded.ver === "number" ? decoded.ver : undefined;
     if (tokenVersion !== undefined && user.tokenVersion !== tokenVersion) {
       return next(
-        new AppError("Session superseded by new login", 401),
+        new AppError("Session superseded by new login", 401, "SESSION_SUPERSEDED"),
       );
     }
 

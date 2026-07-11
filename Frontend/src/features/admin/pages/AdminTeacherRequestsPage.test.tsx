@@ -13,6 +13,7 @@ import { TeacherRequestForm } from '@/features/teacher-request/components/Teache
 import * as hooks from '@/features/admin/hooks/useAdminTeacherRequests';
 import { adminTeacherRequestsApi } from '@/features/admin/api/adminTeacherRequests';
 import { useAdminStats } from '@/features/admin/hooks/useAdminStats';
+import { useSubjects } from '@/features/subjects/useSubjects';
 import type {
   AdminTeacherRequestListItem, AdminTeacherRequestDetail, Paginated,
 } from '@/features/admin/types/teacherRequests';
@@ -40,11 +41,13 @@ vi.mock('@/features/admin/api/adminTeacherRequests', () => ({
   adminTeacherRequestsApi: { getDocumentSignedUrl: vi.fn() },
 }));
 vi.mock('@/features/admin/hooks/useAdminStats', () => ({ useAdminStats: vi.fn() }));
+vi.mock('@/features/subjects/useSubjects', () => ({ useSubjects: vi.fn() }));
 vi.mock('@/shared/store/hooks', () => ({ useAppDispatch: () => vi.fn(), useAppSelector: () => undefined }));
 
 const m = hooks as unknown as Record<string, ReturnType<typeof vi.fn>>;
 const mApi = adminTeacherRequestsApi as unknown as { getDocumentSignedUrl: ReturnType<typeof vi.fn> };
 const mStats = useAdminStats as unknown as ReturnType<typeof vi.fn>;
+const mSubjects = useSubjects as unknown as ReturnType<typeof vi.fn>;
 
 function ok<T>(data: T) {
   return { data, isLoading: false, isError: false, isFetching: false, refetch: vi.fn() };
@@ -95,7 +98,13 @@ function renderDetail() {
   );
 }
 
-beforeEach(() => { vi.clearAllMocks(); primeList(); primeDetail(); (window.open as unknown) = vi.fn(); });
+beforeEach(() => {
+  vi.clearAllMocks();
+  primeList();
+  primeDetail();
+  mSubjects.mockReturnValue({ subjects: [], loading: false, error: null });
+  (window.open as unknown) = vi.fn();
+});
 afterEach(() => cleanup());
 
 describe('AdminTeacherRequestsPage (list)', () => {

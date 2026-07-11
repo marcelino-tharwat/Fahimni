@@ -7,14 +7,18 @@ import type { StageResponseDTO } from "./stage.types.js";
 
 const stageService = new StageService();
 
+function requestLocale(req: Request): "ar" | "en" {
+  return req.headers["accept-language"]?.startsWith("en") ? "en" : "ar";
+}
+
 export class StageController {
   /**
    * GET /stages/public — no auth required. Returns all active non-deleted stages
    * in sort order for the signup dropdown.
    */
   public listPublic = asyncHandler(
-    async (_req: Request, res: Response, _next: NextFunction) => {
-      const stages = await stageService.listPublic();
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const stages = await stageService.listPublic(requestLocale(req));
 
       res
         .status(200)
@@ -29,8 +33,8 @@ export class StageController {
    * GET /stages — teacher listing of all active stages (admin-managed).
    */
   public list = asyncHandler(
-    async (_req: Request, res: Response, _next: NextFunction) => {
-      const stages = await stageService.list();
+    async (req: Request, res: Response, _next: NextFunction) => {
+      const stages = await stageService.list(requestLocale(req));
 
       res
         .status(200)
@@ -51,7 +55,7 @@ export class StageController {
         return next(new AppError("Invalid stage ID", 400));
       }
 
-      const stage = await stageService.getById(id);
+      const stage = await stageService.getById(id, requestLocale(req));
 
       res
         .status(200)

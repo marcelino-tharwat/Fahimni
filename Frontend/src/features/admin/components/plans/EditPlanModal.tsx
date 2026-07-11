@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button } from '@/shared/components/ui';
+import { translateApiError } from '@/shared/lib/api/translateError';
+import { normalizeTextInput, normalizeOptionalTextInput, isBlank } from '@/shared/lib/utils/textNormalization';
 import { useUpdatePlan } from '@/features/admin/hooks/useAdminPlans';
 import type { AdminPlanListItem, UpdatePlanInput } from '@/features/admin/types/plans';
 
@@ -16,6 +18,7 @@ export function EditPlanModal({ isOpen, onClose, plan }: EditPlanModalProps) {
   const [form, setForm] = useState<UpdatePlanInput>({});
   const [featuresJson, setFeaturesJson] = useState('{}');
   const [limitsJson, setLimitsJson] = useState('{}');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (plan) {
@@ -40,7 +43,23 @@ export function EditPlanModal({ isOpen, onClose, plan }: EditPlanModalProps) {
   const handleSubmit = async () => {
     if (!plan) return;
 
-    const input: UpdatePlanInput = { ...form };
+    // Tabs/spaces/newlines alone must not count as a valid name/displayName —
+    // only validate fields that are present (both are optional on update).
+    const fieldErrors: Record<string, string> = {};
+    if (form.name !== undefined && isBlank(form.name)) fieldErrors.name = t('validation:required');
+    if (form.displayName !== undefined && isBlank(form.displayName)) fieldErrors.displayName = t('validation:required');
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
+
+    const input: UpdatePlanInput = {
+      ...form,
+      ...(form.name !== undefined ? { name: normalizeTextInput(form.name) } : {}),
+      ...(form.displayName !== undefined ? { displayName: normalizeTextInput(form.displayName) } : {}),
+      ...(form.description !== undefined ? { description: normalizeOptionalTextInput(form.description) ?? null } : {}),
+    };
     try {
       const f = JSON.parse(featuresJson);
       if (JSON.stringify(f) !== JSON.stringify(plan.features)) input.features = f;
@@ -50,7 +69,12 @@ export function EditPlanModal({ isOpen, onClose, plan }: EditPlanModalProps) {
       if (JSON.stringify(l) !== JSON.stringify(plan.limits)) input.limits = l;
     } catch { /* keep undefined */ }
 
-    await updateMutation.mutateAsync({ planId: plan.id, input });
+    try {
+      await updateMutation.mutateAsync({ planId: plan.id, input });
+    } catch {
+      // Surfaced reactively via `updateMutation.isError`/`error` below.
+      return;
+    }
     onClose();
   };
 
@@ -64,10 +88,12 @@ export function EditPlanModal({ isOpen, onClose, plan }: EditPlanModalProps) {
         <label className="flex flex-col gap-1 font-cairo text-sm">
           {t('adminPlansMutations.createModal.name')}
           <input value={form.name ?? ''} onChange={(e) => update('name', e.target.value)} className="h-10 rounded-btn border border-border bg-surface px-3 text-sm outline-none focus:border-accent" />
+          {errors.name && <span className="text-xs text-danger">{errors.name}</span>}
         </label>
         <label className="flex flex-col gap-1 font-cairo text-sm">
           {t('adminPlansMutations.createModal.displayName')}
           <input value={form.displayName ?? ''} onChange={(e) => update('displayName', e.target.value)} className="h-10 rounded-btn border border-border bg-surface px-3 text-sm outline-none focus:border-accent" />
+          {errors.displayName && <span className="text-xs text-danger">{errors.displayName}</span>}
         </label>
         <label className="flex flex-col gap-1 font-cairo text-sm">
           {t('adminPlansMutations.createModal.description')}
@@ -114,7 +140,7 @@ export function EditPlanModal({ isOpen, onClose, plan }: EditPlanModalProps) {
       </div>
       {updateMutation.isError && (
         <p className="mt-2 font-cairo text-sm text-danger">
-          {t('adminPlansMutations.editModal.error')}: {updateMutation.error?.message}
+          {t('adminPlansMutations.editModal.error')}: {translateApiError(t, updateMutation.error)}
         </p>
       )}
     </Modal>

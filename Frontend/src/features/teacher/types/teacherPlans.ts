@@ -92,7 +92,7 @@ export interface CheckoutInput {
 export interface CheckoutResponse {
   paymentId: string;
   orderId: string;
-  checkoutUrl: string;
+  checkoutUrl: string | null;
   amount: number;
   originalAmount?: number;
   discount?: number;

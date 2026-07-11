@@ -41,7 +41,7 @@ function findLessonInTree(
     for (const ch of item.chapters) {
       const found = ch.lessons.find((l) => l.id === lessonId);
       if (found) {
-        return { stageName: item.stage.name, chapterName: ch.chapter.name };
+        return { stageName: item.stage.displayName ?? item.stage.name, chapterName: ch.chapter.name };
       }
     }
   }

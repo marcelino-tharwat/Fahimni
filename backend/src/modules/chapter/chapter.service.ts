@@ -8,6 +8,8 @@ import type { ChapterResponseDTO, StudentChapterResponseDTO } from "./chapter.ty
 import type { CreateChapterInput, UpdateChapterInput } from "./chapter.validation.js";
 
 const filesService = new FilesService();
+const TEACHER_SUBJECT_MISMATCH_MESSAGE =
+  "لا يمكن للمدرس إضافة محتوى في تخصص مختلف عن تخصصه";
 
 function toDTO(
   chapter: Record<string, unknown>,
@@ -39,6 +41,29 @@ export class ChapterService {
       throw new AppError("Stage not found or inactive", 404);
     }
 
+    const teacher = await prisma.user.findFirst({
+      where: {
+        id: teacherId,
+        role: "OPERATION",
+        status: "ACTIVE",
+        teacherApprovalState: "APPROVED",
+      },
+      select: {
+        id: true,
+        teacherProfile: { select: { subject: true } },
+      },
+    });
+
+    if (!teacher) {
+      throw new AppError("Teacher not approved", 403, "TEACHER_NOT_APPROVED");
+    }
+
+    const teacherSubject = teacher.teacherProfile?.subject?.trim();
+    const requestedSubject = input.subject?.trim();
+    if (requestedSubject && teacherSubject && requestedSubject !== teacherSubject) {
+      throw new AppError(TEACHER_SUBJECT_MISMATCH_MESSAGE, 403, "TEACHER_SUBJECT_MISMATCH");
+    }
+
     const chapter = await prisma.chapter.create({
       data: {
         name: input.name,
@@ -46,6 +71,8 @@ export class ChapterService {
         sortOrder: input.sortOrder,
         price: input.price ?? null,
         imageUrl: imageUrl ?? null,
+        term: input.term,
+        isVisible: input.isVisible ?? true,
         teacherId,
         stageId,
       },
@@ -138,6 +165,7 @@ export class ChapterService {
         description: true,
         price: true,
         imageUrl: true,
+        term: true,
         stageId: true,
         stage: {
           select: { name: true },
@@ -155,6 +183,7 @@ export class ChapterService {
       description: chapter.description,
       price: chapter.price !== null ? Number(chapter.price) : null,
       imageUrl: chapter.imageUrl,
+      term: chapter.term,
       stageId: chapter.stageId,
       stageName: chapter.stage.name,
       lessonsCount: await this.countLessons(chapter.id),
@@ -175,7 +204,7 @@ export class ChapterService {
       throw new AppError("Chapter not found", 404);
     }
 
-    const data: Record<string, string | number | null> = {};
+    const data: Record<string, string | number | boolean | null> = {};
     if (input.name !== undefined) {
       data.name = input.name;
     }
@@ -190,6 +219,12 @@ export class ChapterService {
     }
     if (imageUrl !== undefined) {
       data.imageUrl = imageUrl;
+    }
+    if (input.term !== undefined) {
+      data.term = input.term;
+    }
+    if (input.isVisible !== undefined) {
+      data.isVisible = input.isVisible;
     }
 
     const chapter = await prisma.chapter.update({
@@ -374,6 +409,42 @@ export class ChapterService {
           await this.countLessons(ch.id),
         ),
       ),
+    );
+  }
+
+  public async setVisibility(
+    id: string,
+    teacherId: string,
+    isVisible: boolean,
+  ): Promise<ChapterResponseDTO> {
+    const existing = await prisma.chapter.findFirst({
+      where: { id, teacherId, deletedAt: null },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      throw new AppError("Chapter not found", 404);
+    }
+
+    const chapter = await prisma.chapter.update({
+      where: { id },
+      data: { isVisible },
+      select: { ...chapterPublicFields, price: true },
+    });
+
+    await auditLogService.record({
+      action: "CHAPTER_UPDATED",
+      resourceType: "CHAPTER",
+      resourceId: id,
+      actorId: teacherId,
+      actorType: "TEACHER",
+      scopeTeacherId: teacherId,
+      details: { isVisible },
+    });
+
+    return toDTO(
+      chapter as unknown as Record<string, unknown>,
+      await this.countLessons(id),
     );
   }
 }

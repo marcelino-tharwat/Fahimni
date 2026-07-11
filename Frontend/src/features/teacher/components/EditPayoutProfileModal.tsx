@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Modal, Button } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { createPayoutProfileSchema, flattenZodErrors } from '@/features/teacher/validation';
 import { useUpdatePayoutProfile } from '@/features/teacher/hooks/useTeacherWallet';
 import type { PayoutProfile, UpdatePayoutProfileInput } from '@/features/teacher/types/wallet';
@@ -62,7 +62,7 @@ export function EditPayoutProfileModal({
         dispatch(
           addToast({
             type: 'error',
-            message: (error as ApiError)?.message ?? t('wallet.payoutProfile.saveError'),
+            message: translateApiError(t, error),
           }),
         );
       },

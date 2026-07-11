@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { SUBJECT_CATALOG } from "../subjects/subjects.js";
+import { isBlank } from "../../shared/utils/textNormalization.js";
 
 const VALID_SUBJECT_NAMES = SUBJECT_CATALOG.map((s) => s.displayName) as [
   string,
@@ -26,11 +27,25 @@ const roleSchema = z.enum(["ADMIN", "STUDENT", "OPERATION"]);
 const statusSchema = z.enum(["ACTIVE", "INACTIVE", "BANNED"]);
 const teacherApprovalSchema = z.enum(["NONE", "PENDING_REVIEW", "APPROVED", "REJECTED"]);
 
+// Whitespace-only ("   ", "\n\t") normalizes away to "no bio" instead of
+// being persisted as a blank/whitespace string (bio has no `.min()`, so a
+// bare `.trim()` alone would let it through as `""`).
+const optionalBioField = z.preprocess(
+  (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+  z.string().trim().max(1000).optional(),
+);
+
 export const adminCreateUserSchema = z.object({
   fullName: z.string().trim().min(2, "Full name must be at least 2 characters").max(100),
   email: z.string().trim().email("Invalid email address").toLowerCase(),
   mobile: z.string().trim().regex(/^01[0-9]{9}$/, "Mobile must be a valid Egyptian number"),
-  password: z.string().min(8, "Password must be at least 8 characters").max(72),
+  // Never `.trim()` a password — whitespace is significant. This refine only
+  // rejects a whitespace-only value that would otherwise slip through `.min(8)`.
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(72)
+    .refine((v) => !isBlank(v), { message: "Password cannot be blank" }),
   role: roleSchema.default("STUDENT"),
   status: statusSchema.default("ACTIVE"),
   teacherApprovalState: teacherApprovalSchema.default("NONE"),
@@ -42,7 +57,7 @@ export const adminCreateUserSchema = z.object({
   teacherProfile: z
     .object({
       subject: z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
-      bio: z.string().trim().max(1000).optional(),
+      bio: optionalBioField,
     })
     .optional(),
 });
@@ -61,7 +76,7 @@ export const adminUpdateUserSchema = z
     teacherProfile: z
       .object({
         subject: z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
-        bio: z.string().trim().max(1000).optional(),
+        bio: optionalBioField,
         photoUrl: z.string().url().optional().nullable(),
         logoUrl: z.string().url().optional().nullable(),
       })

@@ -1,18 +1,23 @@
 import "dotenv/config";
 import { prisma } from "../src/config/database.js";
+import { SUBJECT_CATALOG } from "../src/modules/subjects/subjects.js";
 
-const DEMO_EMAIL_DOMAIN = "@fahimni.local";
-const DEMO_ORDER_PREFIX = "DEMO_";
-const DEMO_REF_PREFIX = "DEMO_";
+let failed = false;
 
-let failures = 0;
-function check(name: string, ok: boolean, detail = ""): void {
-  console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? ` — ${detail}` : ""}`);
-  if (!ok) failures++;
+function check(label: string, ok: boolean, detail = ""): void {
+  const status = ok ? "PASS" : "FAIL";
+  console.log(`${status} ${label}${detail ? ` - ${detail}` : ""}`);
+  if (!ok) failed = true;
+}
+
+function subject(code: string): string {
+  const entry = SUBJECT_CATALOG.find((item) => item.code === code);
+  if (!entry) throw new Error(`Missing subject catalog entry: ${code}`);
+  return entry.displayName;
 }
 
 async function main(): Promise<void> {
-  // 1. Admin exists
+// 1. Admin exists
   const admin = await prisma.user.findUnique({ where: { email: "admin" + DEMO_EMAIL_DOMAIN } });
   check("Admin user exists", !!admin, admin?.email ?? "not found");
   check("Admin has ADMIN role", admin?.role === "ADMIN");
@@ -445,8 +450,7 @@ async function main(): Promise<void> {
   await verifyTeacherWalletScenario();
 
   // Summary
-  console.log(`\n${failures === 0 ? "ALL CHECKS PASSED" : `${failures} CHECK(S) FAILED`}`);
-  if (failures > 0) process.exitCode = 1;
+  console.log(`\n${failed === 0 ? "ALL CHECKS PASSED" : `${failed} CHECK(S) FAILED`}`);
 }
 
 async function verifyQuizUnlockScenario(): Promise<void> {
@@ -700,9 +704,9 @@ async function verifyTeacherWalletScenario(): Promise<void> {
 }
 
 main()
-  .catch((e) => {
-    console.error("verify failed:", e instanceof Error ? e.message : e);
-    process.exit(1);
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();
