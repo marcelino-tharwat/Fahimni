@@ -54,7 +54,7 @@ function value(data: Record<string, unknown>, key: string, fallback = ""): strin
 
 function absUrl(pathOrUrl: string): string {
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
-  const base = getEmailConfig().appBaseUrl.replace(/\/$/, "");
+  const base = getEmailConfig().clientUrl.replace(/\/$/, "");
   return `${base}/${pathOrUrl.replace(/^\//, "")}`;
 }
 
@@ -141,6 +141,13 @@ export function renderEmailTemplate(
     return locale === "ar"
       ? renderEmail(locale, "تمت إعادة إرسال طلبك", "طلبك قيد المراجعة مرة أخرى", [`رقم المتابعة: ${ref}`, `الحالة: ${TEACHER_REQUEST_STATUS_LABELS.ar.PENDING_REVIEW}`], "متابعة الطلب", value(data, "statusUrl", "/teacher/register/status"))
       : renderEmail(locale, "Your request was resubmitted", "Your request is pending review again", [`Reference number: ${ref}`, `Status: ${TEACHER_REQUEST_STATUS_LABELS.en.PENDING_REVIEW}`], "Track request", value(data, "statusUrl", "/teacher/register/status"));
+  }
+
+  if (template === "studentWelcome") {
+    const studentName = value(data, "studentName", locale === "ar" ? "Ø·Ø§Ù„Ø¨Ù†Ø§" : "student");
+    return locale === "ar"
+      ? renderEmail(locale, "Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ ÙÙŠ ÙØ§Ù‡Ù…Ù†ÙŠ", "ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­", [`Ù…Ø±Ø­Ø¨Ø§Ù‹ ${studentName}.`, "ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ùƒ ÙˆÙŠÙ…ÙƒÙ†Ùƒ Ø§Ù„Ø¨Ø¯Ø¡ ÙÙŠ Ù…ØªØ§Ø¨Ø¹Ø© Ø¯Ø±ÙˆØ³Ùƒ."], "Ø§Ù„Ø°Ù‡Ø§Ø¨ Ù„Ù„ÙˆØ­Ø©", value(data, "dashboardUrl", "/student/dashboard"))
+      : renderEmail(locale, "Welcome to Fahimni", "Your account is ready", [`Welcome ${studentName}.`, "Your account was created successfully and you can start following your lessons."], "Go to dashboard", value(data, "dashboardUrl", "/student/dashboard"));
   }
 
   if (template === "teacherWithdrawalRequested") {

@@ -47,6 +47,7 @@ export const registerSchema = z
       (v) => (v === "" ? undefined : v),
       z.string().trim().max(1000).optional(),
     ),
+    locale: z.enum(["ar", "en"]).optional().default("ar"),
   })
   .refine(
     (data) => {
@@ -98,7 +99,12 @@ export const changePasswordSchema = z.object({
   newPassword: passwordSchema,
 });
 
+export const updateLocaleSchema = z.object({
+  locale: z.enum(["ar", "en"]),
+});
+
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type UpdateLocaleInput = z.infer<typeof updateLocaleSchema>;

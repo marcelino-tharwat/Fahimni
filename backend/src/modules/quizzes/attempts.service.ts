@@ -65,6 +65,7 @@ import { resolveStudentQuizSourceScopes } from "./quiz-scope.js";
 import type { QuizSourceScopeRow } from "./quiz-scope.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import type { QuestionType, AttemptSubmissionReason } from "../../generated/prisma/client.js";
+import { sendTransactionalEmail } from "../email/transactional-email.helpers.js";
 
 /** Full question data needed to enrich a submission/results response. */
 interface ResultQuestion {
@@ -990,6 +991,30 @@ export class AttemptsService {
       status,
     });
 
+    if (status === "GRADED") {
+      const student = await prisma.user.findUnique({
+        where: { id: studentId },
+        select: { fullName: true, email: true, locale: true },
+      });
+      await sendTransactionalEmail({
+        to: student?.email ?? null,
+        template: "quizAttemptGraded",
+        locale: student?.locale ?? null,
+        data: {
+          studentName: student?.fullName,
+          quizTitle: attempt.quiz.title,
+          score: `${outcome.score}/${outcome.totalPoints}`,
+          totalScore: outcome.totalPoints,
+          result: status,
+          reviewUrl: `/student/quizzes/${attempt.quizId}/attempts/${attemptId}`,
+        },
+        metadata: { attemptId, quizId: attempt.quizId },
+        entityType: "QuizAttempt",
+        entityId: attemptId,
+        dedupeKey: `${attemptId}:GRADED:quizAttemptGraded`,
+      });
+    }
+
     const full = this.toSubmissionResponse(
       attemptId,
       attempt.quizId,
@@ -1119,6 +1144,30 @@ export class AttemptsService {
       essayQuestionCount: input.grades.length,
       gradedCount: input.grades.length,
       gradingStatus: "GRADED",
+    });
+
+    const student = await prisma.quizAttempt.findUnique({
+      where: { id: attemptId },
+      select: {
+        student: { select: { fullName: true, email: true, locale: true } },
+      },
+    });
+    await sendTransactionalEmail({
+      to: student?.student.email ?? null,
+      template: "quizAttemptGraded",
+      locale: student?.student.locale ?? null,
+      data: {
+        studentName: student?.student.fullName,
+        quizTitle: attempt.quiz.title,
+        score: `${outcome.score}/${outcome.totalPoints}`,
+        totalScore: outcome.totalPoints,
+        result: "GRADED",
+        reviewUrl: `/student/quizzes/${attempt.quizId}/attempts/${attemptId}`,
+      },
+      metadata: { attemptId, quizId: attempt.quizId },
+      entityType: "QuizAttempt",
+      entityId: attemptId,
+      dedupeKey: `${attemptId}:GRADED:quizAttemptGraded`,
     });
 
     return this.toSubmissionResponse(

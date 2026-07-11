@@ -14,6 +14,7 @@ import type {
   ListAdminWithdrawalsQuery,
   UpdateWithdrawalStatusInput,
 } from "./admin-teacher-withdrawals.validation.js";
+import { sendTransactionalEmail } from "../email/transactional-email.helpers.js";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -31,7 +32,7 @@ const withdrawalSelect = {
   transferredAt: true,
   cancelledAt: true,
   reviewedById: true,
-  teacher: { select: { id: true, fullName: true, email: true } },
+  teacher: { select: { id: true, fullName: true, email: true, locale: true } },
 } as const;
 
 type WithdrawalRow = {
@@ -47,7 +48,7 @@ type WithdrawalRow = {
   transferredAt: Date | null;
   cancelledAt: Date | null;
   reviewedById: string | null;
-  teacher: { id: string; fullName: string; email: string };
+  teacher: { id: string; fullName: string; email: string; locale: string };
 };
 
 function toSnapshotDTO(value: Prisma.JsonValue): PayoutMethodSnapshotDTO | null {
@@ -253,6 +254,23 @@ export class AdminTeacherWithdrawalsService {
     });
 
     const reviewerName = (await this.reviewerNames([reviewerId])).get(reviewerId) ?? null;
+    await sendTransactionalEmail({
+      to: updated.teacher.email,
+      template: "teacherWithdrawalStatusChanged",
+      locale: updated.teacher.locale,
+      data: {
+        amount: `${updated.amount} ${updated.currency}`,
+        currency: updated.currency,
+        oldStatus: row.status,
+        newStatus: updated.status,
+        adminNote: input.adminNote,
+        withdrawalsUrl: "/teacher/withdrawals",
+      },
+      metadata: { withdrawalId, fromStatus: row.status, toStatus: updated.status },
+      entityType: "TeacherWithdrawalRequest",
+      entityId: withdrawalId,
+      dedupeKey: `${withdrawalId}:${row.status}:${updated.status}:teacherWithdrawalStatusChanged`,
+    });
     return this.toListItem(updated, reviewerName);
   }
 }

@@ -12,6 +12,7 @@ import type { PaymentStatusDTO } from "./payment.types.js";
 import { paymentMessages } from "./payment.i18n.js";
 import type { Lang } from "./payment.i18n.js";
 import { isTeacherVisibleForDiscovery } from "../teacher-access/teacher-access.service.js";
+import { sendTransactionalEmail } from "../email/transactional-email.helpers.js";
 
 export class PaymentService {
   private paymobService = new PaymobService();
@@ -210,6 +211,37 @@ export class PaymentService {
           paymobTransactionId: String(payload.id),
         },
       });
+
+      const receipt = await prisma.paymentTransaction.findUnique({
+        where: { id: transaction.id },
+        select: {
+          amount: true,
+          currency: true,
+          createdAt: true,
+          student: { select: { fullName: true, email: true, locale: true } },
+          chapter: { select: { id: true, name: true, teacher: { select: { fullName: true } } } },
+        },
+      });
+      if (receipt) {
+        await sendTransactionalEmail({
+          to: receipt.student.email,
+          template: "studentPaymentSuccess",
+          locale: receipt.student.locale,
+          data: {
+            studentName: receipt.student.fullName,
+            amount: `${receipt.amount} ${receipt.currency}`,
+            currency: receipt.currency,
+            contentTitle: receipt.chapter.name,
+            teacherName: receipt.chapter.teacher.fullName,
+            paymentDate: receipt.createdAt.toISOString(),
+            learningUrl: `/student/chapters/${receipt.chapter.id}`,
+          },
+          metadata: { transactionId: transaction.id },
+          entityType: "PaymentTransaction",
+          entityId: transaction.id,
+          dedupeKey: `${transaction.id}:SUCCESS:studentPaymentSuccess`,
+        });
+      }
     } else {
       await prisma.paymentTransaction.update({
         where: { id: transaction.id },

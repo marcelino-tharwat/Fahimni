@@ -13,6 +13,7 @@ import type {
   CreateWithdrawalInput,
   UpdatePayoutProfileInput,
 } from "./teacher-wallet.validation.js";
+import { sendTransactionalEmail } from "../email/transactional-email.helpers.js";
 
 const HELD_STATUSES = ["PENDING", "PROCESSING"] as const;
 const LATEST_WITHDRAWALS_LIMIT = 10;
@@ -289,6 +290,27 @@ export class TeacherWalletService {
       );
 
       return row;
+    });
+
+    const teacher = await prisma.user.findUnique({
+      where: { id: teacherId },
+      select: { email: true, locale: true },
+    });
+    await sendTransactionalEmail({
+      to: teacher?.email ?? null,
+      template: "teacherWithdrawalRequested",
+      locale: teacher?.locale ?? null,
+      data: {
+        amount: `${created.amount} ${created.currency}`,
+        currency: created.currency,
+        status: "PENDING",
+        payoutMethodSnapshot: created.payoutMethodSnapshot,
+        withdrawalsUrl: "/teacher/withdrawals",
+      },
+      metadata: { withdrawalId: created.id },
+      entityType: "TeacherWithdrawalRequest",
+      entityId: created.id,
+      dedupeKey: `${created.id}:PENDING:teacherWithdrawalRequested`,
     });
 
     return this.toWithdrawalListItemDTO(created);
