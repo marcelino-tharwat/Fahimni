@@ -122,7 +122,7 @@ export const reorderSchema = z
   );
 
 export const assignQuizSchema = z.object({
-  chapterId: z.string().min(1, "chapterId is required"),
+  chapterId: z.string().trim().min(1, "chapterId is required"),
 });
 
 export const publishQuizSchema = z.object({

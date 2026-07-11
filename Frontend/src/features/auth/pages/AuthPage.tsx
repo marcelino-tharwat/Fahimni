@@ -12,6 +12,7 @@ import { AppHeader } from "@/shared/components/layout/AppHeader";
 import { useAppDispatch } from "@/shared/store/hooks";
 import { apiClient, type ApiError } from "@/shared/lib/api/client";
 import { translateApiError, translateFieldErrors } from "@/shared/lib/api/translateError";
+import { normalizeTextInput, normalizeOptionalTextInput } from "@/shared/lib/utils/textNormalization";
 import { login as loginThunk, register as registerThunk, googleLogin as googleLoginThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
 import type { PublicStage } from "@/features/student/types/student";
 import { ProofUpload } from "@/features/teacher-request/components/ProofUpload";
@@ -303,15 +304,17 @@ function RegisterForm() {
         // session is established (the backend issues no tokens for a pending
         // teacher). Sent as multipart/form-data so proof documents ride along.
         const fd = new FormData();
-        fd.append('fullName', v.fullName);
-        fd.append('email', v.email);
-        fd.append('mobile', v.mobile);
+        fd.append('fullName', normalizeTextInput(v.fullName));
+        fd.append('email', v.email.trim());
+        fd.append('mobile', v.mobile.trim());
         fd.append('password', v.password);
         fd.append('confirmPassword', v.confirmPassword);
         fd.append('role', 'OPERATION');
         fd.append('locale', i18n.language === 'en' ? 'en' : 'ar');
-        if (v.subject) fd.append('subject', v.subject);
-        if (v.bio) fd.append('bio', v.bio);
+        const normalizedSubject = normalizeOptionalTextInput(v.subject);
+        if (normalizedSubject) fd.append('subject', normalizedSubject);
+        const normalizedBio = normalizeOptionalTextInput(v.bio);
+        if (normalizedBio) fd.append('bio', normalizedBio);
         for (const pf of proofFiles) fd.append('proofDocuments', pf.file);
         // Must send as multipart so the proof files survive. The apiClient default
         // Content-Type is application/json, and axios silently JSON-serializes a
@@ -326,7 +329,7 @@ function RegisterForm() {
         setTeacherPending(true);
         return;
       }
-      const res = await dispatch(registerThunk({ fullName: v.fullName, email: v.email, mobile: v.mobile, password: v.password, stageId: v.stageId, role: 'STUDENT', locale: i18n.language === 'en' ? 'en' : 'ar' })).unwrap();
+      const res = await dispatch(registerThunk({ fullName: normalizeTextInput(v.fullName), email: v.email.trim(), mobile: v.mobile.trim(), password: v.password, stageId: v.stageId, role: 'STUDENT', locale: i18n.language === 'en' ? 'en' : 'ar' })).unwrap();
       navigate(dashboardPathByRole[res.user.role]);
     } catch (err) {
       // Both paths land here as an `ApiError`-shaped object: the teacher path
@@ -445,6 +448,10 @@ function RegisterForm() {
         registration={register("fullName", {
           required: t("auth:validation.required"),
           minLength: { value: 2, message: t("auth:errNameMin") },
+          // Tabs/spaces/newlines alone must not count as a valid name — RHF's
+          // built-in `required`/`minLength` only check the raw (untrimmed)
+          // length, so "\t\t" (length 2) would otherwise pass both.
+          validate: (v: string) => normalizeTextInput(v).length >= 2 || t("auth:errNameMin"),
         })}
       />
       <Field

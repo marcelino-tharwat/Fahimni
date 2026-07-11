@@ -24,7 +24,12 @@ export const createChapterSchema = z.object({
     .int("Sort order must be an integer")
     .min(1, "Sort order must be at least 1"),
   price: z.coerce.number().min(0, "Price must be 0 or greater").optional().nullable(),
-  subject: z.string().trim().optional().nullable(),
+  // A whitespace-only subject ("   ", "\t") normalizes away to "no subject"
+  // rather than being persisted as a blank/whitespace string.
+  subject: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z.string().trim().optional().nullable(),
+  ),
   term: academicTermSchema,
   isVisible: formBooleanSchema.optional().default(true),
 });

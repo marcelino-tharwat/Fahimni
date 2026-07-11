@@ -38,6 +38,10 @@ describe('CreatePlanModal — admin form validation errors render in the current
     });
     renderModal();
 
+    const inputs = screen.getAllByRole('textbox');
+    fireEvent.change(inputs[0]!, { target: { value: 'BASIC' } });
+    fireEvent.change(inputs[1]!, { target: { value: 'Basic Plan' } });
+    fireEvent.change(inputs[2]!, { target: { value: 'Basic' } });
     fireEvent.click(screen.getByText('إنشاء'));
 
     const errorText = await screen.findByText(/توجد خطة بنفس هذا الكود بالفعل/);
@@ -55,6 +59,10 @@ describe('CreatePlanModal — admin form validation errors render in the current
     });
     renderModal();
 
+    const inputs = screen.getAllByRole('textbox');
+    fireEvent.change(inputs[0]!, { target: { value: 'BASIC' } });
+    fireEvent.change(inputs[1]!, { target: { value: 'Basic Plan' } });
+    fireEvent.change(inputs[2]!, { target: { value: 'Basic' } });
     fireEvent.click(screen.getByText('Create'));
 
     const errorText = await screen.findByText(/A plan with this code already exists/);
