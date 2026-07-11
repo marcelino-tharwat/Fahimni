@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, Tag } from 'lucide-react';
 import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import type { PromoPreviewResponse, TeacherPlan } from '@/features/teacher/types/teacherPlans';
 
 interface Props {
@@ -14,6 +16,7 @@ interface Props {
  * Cross-scope codes (course codes) are rejected server-side.
  */
 export function TeacherPlanPromoBox({ plans }: Props) {
+  const { t } = useTranslation();
   const paidPlans = plans.filter((p) => p.monthlyPrice > 0);
   const [planId, setPlanId] = useState('');
   const [billingInterval, setBillingInterval] = useState<'MONTHLY' | 'YEARLY'>('MONTHLY');
@@ -31,8 +34,7 @@ export function TeacherPlanPromoBox({ plans }: Props) {
       const res = await teacherPlansApi.previewPromo({ planId, billingInterval, promoCode: code.trim() });
       setPreview(res);
     } catch (err: unknown) {
-      const e = err as { message?: string };
-      setError(e.message ?? 'رمز الخصم غير صالح');
+      setError(translateApiError(t, err));
     } finally {
       setLoading(false);
     }
@@ -45,8 +47,7 @@ export function TeacherPlanPromoBox({ plans }: Props) {
       const res = await teacherPlansApi.checkout({ planId, billingInterval, promoCode: code.trim() });
       if (res.checkoutUrl) window.location.assign(res.checkoutUrl);
     } catch (err: unknown) {
-      const e = err as { message?: string };
-      setError(e.message ?? 'تعذّر بدء الدفع');
+      setError(translateApiError(t, err));
       setLoading(false);
     }
   };

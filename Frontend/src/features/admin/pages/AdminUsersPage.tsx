@@ -25,6 +25,7 @@ import {
 import { AdminUserModals, type ModalMode } from '@/features/admin/components/users/AdminUserModals';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import type {
   AdminUserListItem,
   AdminUsersQuery,
@@ -160,12 +161,7 @@ export function AdminUsersPage() {
       }
       closeModal();
     } catch (err) {
-      const message = (err as { message?: string; code?: string })?.message ?? t('common.error', 'An error occurred');
-      if ((err as { code?: string })?.code) {
-        setSubmitError(`${message} (${(err as { code: string }).code})`);
-      } else {
-        setSubmitError(message);
-      }
+      setSubmitError(translateApiError(t, err));
     }
   }, [modalMode, selectedId, createMutation, updateMutation, statusMutation, roleMutation, closeModal, t, dispatch]);
 

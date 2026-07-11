@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, Loader2, AlertTriangle } from 'lucide-react';
 import { Card } from '@/shared/components/ui';
 import { teacherPlansApi } from '@/features/teacher/api/teacherPlans';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { TeacherPlansCurrentPlanCard } from './TeacherPlansCurrentPlanCard';
 import { TeacherPlanPromoBox } from '@/features/teacher/components/TeacherPlanPromoBox';
 import type { TeacherPlan, SubscriptionMeResponse } from '@/features/teacher/types/teacherPlans';
@@ -73,7 +74,7 @@ export function TeacherPlansPage() {
       ) {
         setPaymentUnavailable(true);
       } else {
-        setErrorField(e.message ?? t('plans.checkoutError', 'حدث خطأ أثناء بدء عملية الدفع'));
+        setErrorField(translateApiError(t, err));
       }
       setSubscribing(null);
     }

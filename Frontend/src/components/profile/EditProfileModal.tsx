@@ -4,7 +4,7 @@ import { X, ChevronDown, BookOpen } from 'lucide-react';
 import { useUpdateTeacherProfile } from '@/features/teacher/hooks/useTeacherProfile';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import { useAppDispatch } from '@/shared/store/hooks';
-import { getApiErrorMessage } from '@/shared/lib/api/errors';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { useSubjects } from '@/features/subjects/useSubjects';
 import type { TeacherProfile } from '@/features/teacher/types/teacher';
 
@@ -38,7 +38,7 @@ export function EditProfileModal({ profile, onClose }: EditProfileModalProps) {
         onError: (error) => {
           dispatch(addToast({
             type: 'error',
-            message: getApiErrorMessage(error, tc('status.error')),
+            message: translateApiError(tc, error),
           }));
         },
       },

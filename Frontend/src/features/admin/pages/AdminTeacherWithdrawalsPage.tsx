@@ -4,7 +4,7 @@ import { Search, AlertCircle, Banknote, Eye } from 'lucide-react';
 import { Spinner, Badge, EmptyState, Modal, Button } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { Pagination } from '../components/promo-codes';
 import {
   useAdminTeacherWithdrawals,
@@ -72,7 +72,7 @@ function DetailDrawer({
           dispatch(
             addToast({
               type: 'error',
-              message: (error as ApiError)?.message ?? t('adminTeacherWithdrawals.detail.updateError', 'تعذّر تحديث حالة الطلب'),
+              message: translateApiError(t, error),
             }),
           );
         },

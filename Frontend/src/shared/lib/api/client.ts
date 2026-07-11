@@ -29,6 +29,16 @@ export const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// So the backend can localize validation/business error messages to match
+// whatever language the UI is currently rendering in. Imported lazily (like
+// `forceLogout` below) so merely importing this module — e.g. from a
+// non-DOM unit test — never eagerly initializes the i18n singleton.
+apiClient.interceptors.request.use(async (config) => {
+  const { default: i18n } = await import("@/shared/lib/i18n");
+  config.headers.set("Accept-Language", i18n.language ?? "en");
+  return config;
+});
+
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (value: unknown) => void; reject: (reason?: unknown) => void }> = [];
 
@@ -52,12 +62,11 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableConfig | undefined;
 
-    // 403 — structured rejection without redirect or logout
+    // 403 — structured rejection without redirect or logout. The message is
+    // translated by the caller via `translateApiError` (code-driven), not
+    // hardcoded here, so it renders in whatever language the UI is in.
     if (error.response?.status === 403) {
-      const normalized = normalizeError(error);
-      normalized.message =
-        "ليس لديك صلاحية للوصول إلى هذا المحتوى";
-      return Promise.reject(normalized);
+      return Promise.reject(normalizeError(error));
     }
 
     if (
@@ -102,10 +111,18 @@ apiClient.interceptors.response.use(
   }
 );
 
+/** A single field-level validation error, keyed by a stable, translatable code. */
+export interface ApiFieldError {
+  field: string;
+  code: string;
+  message: string;
+}
+
 export interface ApiError {
   statusCode: number;
-  message: string;
-  errors?: Record<string, string[]>;
+  /** Raw backend message — a fallback only; prefer translating by `code`. */
+  message?: string;
+  errors?: ApiFieldError[];
   code?: string;
   reason?: string;
   details?: string;
@@ -116,7 +133,7 @@ export interface ApiError {
 function normalizeError(error: AxiosError): ApiError {
   const data = error.response?.data as {
     message?: string | string[];
-    errors?: Record<string, string[]>;
+    errors?: ApiFieldError[];
     code?: string;
     reason?: string;
     details?: string;
@@ -124,7 +141,7 @@ function normalizeError(error: AxiosError): ApiError {
     attemptId?: string;
   } | undefined;
   const raw = data?.message;
-  const message = Array.isArray(raw) ? raw[0] : (raw ?? "حصل خطأ، حاول تاني.");
+  const message = Array.isArray(raw) ? raw[0] : raw;
   return {
     statusCode: error.response?.status ?? 0,
     message,

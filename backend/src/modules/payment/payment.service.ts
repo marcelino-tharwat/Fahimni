@@ -40,7 +40,7 @@ export class PaymentService {
     const visible = await isTeacherVisibleForDiscovery(chapterId);
     if (!visible) {
       throw new AppError(
-        "هذا المحتوى غير متاح حاليًا",
+        paymentMessages.courseNotAvailable[lang],
         403,
         "COURSE_NOT_AVAILABLE",
       );

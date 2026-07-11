@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { createStageUpdateSchema, flattenZodErrors } from '@/features/teacher/validation';
 import { useCreateStage } from '@/features/teacher/hooks/useStages';
 import { EditorHeader } from '@/features/teacher/components/content-tree/EditorHeader';
@@ -54,7 +54,7 @@ export function CreateStagePage() {
           dispatch(
             addToast({
               type: 'error',
-              message: (error as ApiError)?.message ?? t('contentTree.editor.toast.saveError'),
+              message: translateApiError(t, error),
             }),
           ),
       },

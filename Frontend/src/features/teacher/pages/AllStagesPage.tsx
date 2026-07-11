@@ -22,7 +22,7 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { Button, Card, Skeleton } from '@/shared/components/ui';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { useQueryClient } from '@tanstack/react-query';
 import { useStages, useReorderStages, useDeleteStage } from '@/features/teacher/hooks/useStages';
 import type { StageResponseDTO } from '@/features/teacher/types/stage';
@@ -144,7 +144,7 @@ export function AllStagesPage() {
       dispatch(
         addToast({
           type: 'error',
-          message: (err as ApiError)?.message ?? t('teacher:stages.reorderError', 'Failed to save order'),
+          message: translateApiError(t, err),
         }),
       );
     } finally {
@@ -183,7 +183,7 @@ export function AllStagesPage() {
       dispatch(
         addToast({
           type: 'error',
-          message: (err as ApiError)?.message ?? t('teacher:stages.deleteError', 'Failed to delete stage'),
+          message: translateApiError(t, err),
         }),
       );
     } finally {
