@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2, AlertTriangle, Search, CheckCircle, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/shared/hooks/useDirection';
 import { Badge } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
@@ -23,14 +25,6 @@ import type {
 } from '@/features/admin/types/subscriptions';
 
 type TabKey = 'entitlements' | 'subscriptions' | 'payments' | 'requests' | 'ai-usage';
-
-const TABS: { key: TabKey; label: string }[] = [
-  { key: 'entitlements', label: 'الاستحقاقات الحالية' },
-  { key: 'subscriptions', label: 'الاشتراكات المدفوعة' },
-  { key: 'payments', label: 'مدفوعات الاشتراكات' },
-  { key: 'requests', label: 'طلبات الاشتراك اليدوية' },
-  { key: 'ai-usage', label: 'استخدام الذكاء الاصطناعي' },
-];
 
 const LIMIT = 20;
 
@@ -71,6 +65,7 @@ function StateWrap({
   isEmpty: boolean;
   children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16" role="status">
@@ -82,24 +77,25 @@ function StateWrap({
     return (
       <div className="flex flex-col items-center gap-2 py-16 text-center">
         <AlertTriangle className="h-8 w-8 text-danger" />
-        <p className="font-cairo text-sm text-text-secondary">تعذّر تحميل البيانات</p>
+        <p className="font-cairo text-sm text-text-secondary">{t('adminSubscriptions.errorLoading')}</p>
       </div>
     );
   }
   if (isEmpty) {
-    return <p className="py-16 text-center font-cairo text-sm text-text-muted">لا توجد بيانات</p>;
+    return <p className="py-16 text-center font-cairo text-sm text-text-muted">{t('adminSubscriptions.empty')}</p>;
   }
   return <>{children}</>;
 }
 
 function SearchBar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { t } = useTranslation();
   return (
     <div className="relative max-w-xs">
       <Search size={16} className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-3 text-text-muted" />
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="بحث بالاسم أو البريد"
+        placeholder={t('adminSubscriptions.searchPlaceholder')}
         data-testid="subscriptions-search"
         className="h-10 w-full rounded-input border border-border bg-surface ps-3 pe-9 font-cairo text-sm outline-none focus:border-accent"
       />
@@ -116,6 +112,7 @@ function Pager({
   totalPages: number;
   onChange: (p: number) => void;
 }) {
+  const { t } = useTranslation();
   if (totalPages <= 1) return null;
   return (
     <div className="mt-4 flex items-center justify-center gap-3">
@@ -125,7 +122,7 @@ function Pager({
         onClick={() => onChange(page - 1)}
         className="rounded-btn border border-border px-3 py-1 font-cairo text-sm disabled:opacity-40"
       >
-        السابق
+        {t('adminSubscriptions.prev')}
       </button>
       <span className="font-cairo text-sm text-text-secondary">
         {page} / {totalPages}
@@ -136,7 +133,7 @@ function Pager({
         onClick={() => onChange(page + 1)}
         className="rounded-btn border border-border px-3 py-1 font-cairo text-sm disabled:opacity-40"
       >
-        التالي
+        {t('adminSubscriptions.next')}
       </button>
     </div>
   );
@@ -152,6 +149,7 @@ function Td({ children }: { children: React.ReactNode }) {
 // ── Tab: entitlements ────────────────────────────────────────────────────────
 function EntitlementsTab({ q }: { q: string }) {
   const [page, setPage] = useState(1);
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useAdminEntitlements({ q, page, limit: LIMIT });
   const rows = (data?.data ?? []) as TeacherEntitlementRow[];
   return (
@@ -160,8 +158,8 @@ function EntitlementsTab({ q }: { q: string }) {
         <table className="w-full" data-testid="entitlements-table">
           <thead className="border-b border-border">
             <tr>
-              <Th>المدرس</Th><Th>الاستحقاق</Th><Th>الباقة</Th>
-              <Th>مدفوعات ناجحة</Th><Th>مدفوعات فاشلة</Th><Th>الإيراد المؤكد</Th>
+              <Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.colEntitlement')}</Th><Th>{t('adminSubscriptions.colPlan')}</Th>
+              <Th>{t('adminSubscriptions.colSuccessfulPayments')}</Th><Th>{t('adminSubscriptions.colFailedPayments')}</Th><Th>{t('adminSubscriptions.colConfirmedRevenue')}</Th>
             </tr>
           </thead>
           <tbody>
@@ -170,9 +168,9 @@ function EntitlementsTab({ q }: { q: string }) {
                 <Td><TeacherLink teacher={r.teacher} /></Td>
                 <Td>
                   {r.entitlementSource === 'ACTIVE_SUBSCRIPTION' ? (
-                    <span data-testid="entitlement-badge-paid"><Badge variant="success">مدفوع</Badge></span>
+                    <span data-testid="entitlement-badge-paid"><Badge variant="success">{t('adminSubscriptions.entitlementPaid')}</Badge></span>
                   ) : (
-                    <span data-testid="entitlement-badge-free"><Badge variant="default">مجاني</Badge></span>
+                    <span data-testid="entitlement-badge-free"><Badge variant="default">{t('adminSubscriptions.entitlementFree')}</Badge></span>
                   )}
                 </Td>
                 <Td><PlanBadge code={r.currentPlan.code} displayName={r.currentPlan.displayName} /></Td>
@@ -192,6 +190,8 @@ function EntitlementsTab({ q }: { q: string }) {
 // ── Tab: subscriptions ───────────────────────────────────────────────────────
 function SubscriptionsTab({ q }: { q: string }) {
   const [page, setPage] = useState(1);
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
   const { data, isLoading, isError } = useAdminSubscriptionsList({ q, page, limit: LIMIT });
   const rows = (data?.data ?? []) as AdminSubscriptionListItem[];
   return (
@@ -199,7 +199,7 @@ function SubscriptionsTab({ q }: { q: string }) {
       <div className="overflow-x-auto">
         <table className="w-full" data-testid="subscriptions-table">
           <thead className="border-b border-border">
-            <tr><Th>المدرس</Th><Th>الباقة</Th><Th>الحالة</Th><Th>الفترة</Th><Th>نهاية الدورة</Th></tr>
+            <tr><Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.colPlan')}</Th><Th>{t('adminSubscriptions.colStatus')}</Th><Th>{t('adminSubscriptions.colInterval')}</Th><Th>{t('adminSubscriptions.colPeriodEnd')}</Th></tr>
           </thead>
           <tbody>
             {rows.map((s) => (
@@ -208,7 +208,7 @@ function SubscriptionsTab({ q }: { q: string }) {
                 <Td><PlanBadge code={s.plan.code} displayName={s.plan.displayName} /></Td>
                 <Td><Badge variant={s.status === 'ACTIVE' ? 'success' : 'warning'}>{s.status}</Badge></Td>
                 <Td>{s.billingInterval}</Td>
-                <Td>{new Date(s.currentPeriodEnd).toLocaleDateString('ar-EG')}</Td>
+                <Td>{new Date(s.currentPeriodEnd).toLocaleDateString(locale)}</Td>
               </tr>
             ))}
           </tbody>
@@ -222,6 +222,8 @@ function SubscriptionsTab({ q }: { q: string }) {
 // ── Tab: payments ────────────────────────────────────────────────────────────
 function PaymentsTab({ q }: { q: string }) {
   const [page, setPage] = useState(1);
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
   const { data, isLoading, isError } = useAdminPayments({ q, page, limit: LIMIT });
   const rows = (data?.data ?? []) as AdminPaymentDTO[];
   return (
@@ -229,7 +231,7 @@ function PaymentsTab({ q }: { q: string }) {
       <div className="overflow-x-auto">
         <table className="w-full" data-testid="payments-table">
           <thead className="border-b border-border">
-            <tr><Th>المدرس</Th><Th>الباقة</Th><Th>المبلغ</Th><Th>الحالة</Th><Th>المزود</Th><Th>التاريخ</Th></tr>
+            <tr><Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.colPlan')}</Th><Th>{t('adminSubscriptions.colAmount')}</Th><Th>{t('adminSubscriptions.colStatus')}</Th><Th>{t('adminSubscriptions.colProvider')}</Th><Th>{t('adminSubscriptions.colDate')}</Th></tr>
           </thead>
           <tbody>
             {rows.map((p) => (
@@ -239,7 +241,7 @@ function PaymentsTab({ q }: { q: string }) {
                 <Td>{p.amount} {p.currency}</Td>
                 <Td><PaymentStatusBadge status={p.status} /></Td>
                 <Td>{p.provider}</Td>
-                <Td>{new Date(p.createdAt).toLocaleDateString('ar-EG')}</Td>
+                <Td>{new Date(p.createdAt).toLocaleDateString(locale)}</Td>
               </tr>
             ))}
           </tbody>
@@ -253,6 +255,7 @@ function PaymentsTab({ q }: { q: string }) {
 // ── Tab: manual requests ─────────────────────────────────────────────────────
 function RequestsTab({ q }: { q: string }) {
   const [page, setPage] = useState(1);
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { data, isLoading, isError } = useAdminSubscriptionRequests({ q, page, limit: LIMIT });
   const { approve, reject } = useReviewSubscriptionRequest();
@@ -262,18 +265,18 @@ function RequestsTab({ q }: { q: string }) {
     approve.mutate(
       { requestId: id },
       {
-        onSuccess: () => dispatch(addToast({ type: 'success', message: 'تمت الموافقة على الطلب' })),
-        onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? 'تعذّر تنفيذ الإجراء' })),
+        onSuccess: () => dispatch(addToast({ type: 'success', message: t('adminSubscriptions.approveSuccess') })),
+        onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? t('adminSubscriptions.actionError') })),
       },
     );
   const onReject = (id: string) => {
-    const reason = window.prompt('سبب الرفض');
+    const reason = window.prompt(t('adminSubscriptions.rejectPrompt'));
     if (!reason || !reason.trim()) return;
     reject.mutate(
       { requestId: id, adminNotes: reason.trim() },
       {
-        onSuccess: () => dispatch(addToast({ type: 'success', message: 'تم رفض الطلب' })),
-        onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? 'تعذّر تنفيذ الإجراء' })),
+        onSuccess: () => dispatch(addToast({ type: 'success', message: t('adminSubscriptions.rejectSuccess') })),
+        onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? t('adminSubscriptions.actionError') })),
       },
     );
   };
@@ -283,7 +286,7 @@ function RequestsTab({ q }: { q: string }) {
       <div className="overflow-x-auto">
         <table className="w-full" data-testid="requests-table">
           <thead className="border-b border-border">
-            <tr><Th>المدرس</Th><Th>الباقة</Th><Th>الفترة</Th><Th>الحالة</Th><Th>إجراءات</Th></tr>
+            <tr><Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.colPlan')}</Th><Th>{t('adminSubscriptions.colInterval')}</Th><Th>{t('adminSubscriptions.colStatus')}</Th><Th>{t('adminSubscriptions.colActions')}</Th></tr>
           </thead>
           <tbody>
             {rows.map((r) => (
@@ -306,7 +309,7 @@ function RequestsTab({ q }: { q: string }) {
                         disabled={approve.isPending}
                         className="inline-flex items-center gap-1 rounded-btn bg-success px-3 py-1 font-cairo text-xs font-semibold text-white disabled:opacity-50"
                       >
-                        <CheckCircle size={14} /> قبول
+                        <CheckCircle size={14} /> {t('adminSubscriptions.approve')}
                       </button>
                       <button
                         type="button"
@@ -315,7 +318,7 @@ function RequestsTab({ q }: { q: string }) {
                         disabled={reject.isPending}
                         className="inline-flex items-center gap-1 rounded-btn border border-danger px-3 py-1 font-cairo text-xs font-semibold text-danger disabled:opacity-50"
                       >
-                        <XCircle size={14} /> رفض
+                        <XCircle size={14} /> {t('adminSubscriptions.reject')}
                       </button>
                     </div>
                   ) : (
@@ -335,6 +338,7 @@ function RequestsTab({ q }: { q: string }) {
 // ── Tab: AI usage ────────────────────────────────────────────────────────────
 function AiUsageTab({ q }: { q: string }) {
   const [page, setPage] = useState(1);
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useAdminAiUsage({ q, page, limit: LIMIT });
   const rows = (data?.data ?? []) as AiUsageRow[];
   return (
@@ -342,10 +346,10 @@ function AiUsageTab({ q }: { q: string }) {
       {data && (
         <div className="mb-4 flex flex-wrap gap-4 font-cairo text-sm">
           <span className="rounded-lg bg-surface px-3 py-1.5">
-            إجمالي العمليات: <strong>{data.totals.totalEvents}</strong>
+            {t('adminSubscriptions.aiTotalEvents')}: <strong>{data.totals.totalEvents}</strong>
           </span>
           <span className="rounded-lg bg-surface px-3 py-1.5">
-            إجمالي الوحدات: <strong>{data.totals.totalUnits}</strong>
+            {t('adminSubscriptions.aiTotalUnits')}: <strong>{data.totals.totalUnits}</strong>
           </span>
         </div>
       )}
@@ -353,8 +357,8 @@ function AiUsageTab({ q }: { q: string }) {
         <table className="w-full" data-testid="ai-usage-table">
           <thead className="border-b border-border">
             <tr>
-              <Th>المدرس</Th><Th>العمليات</Th><Th>الوحدات</Th><Th>هذا الشهر</Th>
-              <Th>توليد اختبارات</Th><Th>تصحيح مقالات</Th>
+              <Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.aiTotalEvents')}</Th><Th>{t('adminSubscriptions.aiTotalUnits')}</Th><Th>{t('adminSubscriptions.colThisMonth')}</Th>
+              <Th>{t('adminSubscriptions.colQuizGeneration')}</Th><Th>{t('adminSubscriptions.colEssayGrading')}</Th>
             </tr>
           </thead>
           <tbody>
@@ -379,13 +383,23 @@ function AiUsageTab({ q }: { q: string }) {
 export function AdminSubscriptionsPage() {
   const [tab, setTab] = useState<TabKey>('entitlements');
   const [q, setQ] = useState('');
+  const { t } = useTranslation();
+  const dir = useDirection();
+
+  const TABS: { key: TabKey; label: string }[] = [
+    { key: 'entitlements', label: t('adminSubscriptions.tabEntitlements') },
+    { key: 'subscriptions', label: t('adminSubscriptions.tabSubscriptions') },
+    { key: 'payments', label: t('adminSubscriptions.tabPayments') },
+    { key: 'requests', label: t('adminSubscriptions.tabRequests') },
+    { key: 'ai-usage', label: t('adminSubscriptions.tabAiUsage') },
+  ];
 
   return (
-    <div className="mx-auto flex max-w-[1200px] flex-col gap-5" dir="rtl" data-testid="admin-subscriptions-page">
+    <div className="mx-auto flex max-w-[1200px] flex-col gap-5" dir={dir} data-testid="admin-subscriptions-page">
       <div>
-        <h1 className="font-cairo text-2xl font-bold text-navy-900">الاشتراكات</h1>
+        <h1 className="font-cairo text-2xl font-bold text-navy-900">{t('adminSubscriptions.title')}</h1>
         <p className="mt-1 font-cairo text-sm text-text-secondary">
-          مراجعة استحقاقات المدرسين والاشتراكات والمدفوعات والطلبات اليدوية واستخدام الذكاء الاصطناعي
+          {t('adminSubscriptions.subtitle')}
         </p>
       </div>
 

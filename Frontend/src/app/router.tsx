@@ -9,6 +9,7 @@ import { TeacherStageLayout } from '@/shared/components/layout/TeacherStageLayou
 import { TeacherPlansLayout } from '@/shared/components/layout/TeacherPlansLayout';
 import { LessonLayout } from '@/shared/components/layout/LessonLayout';
 import { AdminLayout } from '@/shared/components/layout/AdminLayout';
+import { AdminPlansLayout } from '@/shared/components/layout/AdminPlansLayout';
 import { AuthGuard } from '@/shared/components/guards/AuthGuard';
 import { GuestGuard } from '@/shared/components/guards/GuestGuard';
 import { RoleGuard } from '@/shared/components/guards/RoleGuard';
@@ -221,12 +222,17 @@ const router = createBrowserRouter([
               { path: '/admin/tenants', element: <TenantsPage /> },
               { path: '/admin/tenants/:tenantId', element: <TenantDetailsPage /> },
               { path: '/admin/promo-codes', element: <AdminPromoCodesManagementPage /> },
-              { path: '/admin/plans', element: <AdminPlansPage /> },
               { path: '/admin/subscriptions', element: <AdminSubscriptionsPage /> },
               { path: '/admin/teacher-withdrawals', element: <AdminTeacherWithdrawalsPage /> },
               { path: '/admin/revenue', element: <AdminRevenuePage /> },
               { path: '/admin/payments', element: <AdminPaymentsPage /> },
               { path: '/admin/audit-logs', element: <AdminAuditLogsPage /> },
+            ],
+          },
+          {
+            element: <AdminPlansLayout />,
+            children: [
+              { path: '/admin/plans', element: <AdminPlansPage /> },
             ],
           },
         ],

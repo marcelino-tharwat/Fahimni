@@ -44,7 +44,7 @@ function SidebarContent({ items, onNavigate }: { items: SidebarItem[]; onNavigat
         </Link>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3 scrollbar-hide">
         {items.map(({ label, icon: Icon, path, end }) => (
           <NavLink
             key={path}
@@ -67,7 +67,7 @@ function SidebarContent({ items, onNavigate }: { items: SidebarItem[]; onNavigat
       </nav>
 
       {/* Log Out, visually separated at the bottom of the sidebar. */}
-      <div className="border-t border-white/10 p-3">
+      <div className="shrink-0 border-t border-white/10 p-3">
         <button
           type="button"
           onClick={handleLogout}
