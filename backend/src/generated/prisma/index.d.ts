@@ -253,6 +253,14 @@ export const PromoBillingScope: {
 export type PromoBillingScope = (typeof PromoBillingScope)[keyof typeof PromoBillingScope]
 
 
+export const AcademicTerm: {
+  FIRST_TERM: 'FIRST_TERM',
+  SECOND_TERM: 'SECOND_TERM'
+};
+
+export type AcademicTerm = (typeof AcademicTerm)[keyof typeof AcademicTerm]
+
+
 export const Role: {
   ADMIN: 'ADMIN',
   STUDENT: 'STUDENT',
@@ -470,6 +478,10 @@ export const PromoDiscountType: typeof $Enums.PromoDiscountType
 export type PromoBillingScope = $Enums.PromoBillingScope
 
 export const PromoBillingScope: typeof $Enums.PromoBillingScope
+
+export type AcademicTerm = $Enums.AcademicTerm
+
+export const AcademicTerm: typeof $Enums.AcademicTerm
 
 export type Role = $Enums.Role
 
@@ -10370,6 +10382,8 @@ export namespace Prisma {
     sortOrder: number | null
     price: Decimal | null
     imageUrl: string | null
+    term: $Enums.AcademicTerm | null
+    isVisible: boolean | null
     teacherId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -10384,6 +10398,8 @@ export namespace Prisma {
     sortOrder: number | null
     price: Decimal | null
     imageUrl: string | null
+    term: $Enums.AcademicTerm | null
+    isVisible: boolean | null
     teacherId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -10398,6 +10414,8 @@ export namespace Prisma {
     sortOrder: number
     price: number
     imageUrl: number
+    term: number
+    isVisible: number
     teacherId: number
     createdAt: number
     updatedAt: number
@@ -10424,6 +10442,8 @@ export namespace Prisma {
     sortOrder?: true
     price?: true
     imageUrl?: true
+    term?: true
+    isVisible?: true
     teacherId?: true
     createdAt?: true
     updatedAt?: true
@@ -10438,6 +10458,8 @@ export namespace Prisma {
     sortOrder?: true
     price?: true
     imageUrl?: true
+    term?: true
+    isVisible?: true
     teacherId?: true
     createdAt?: true
     updatedAt?: true
@@ -10452,6 +10474,8 @@ export namespace Prisma {
     sortOrder?: true
     price?: true
     imageUrl?: true
+    term?: true
+    isVisible?: true
     teacherId?: true
     createdAt?: true
     updatedAt?: true
@@ -10553,6 +10577,8 @@ export namespace Prisma {
     sortOrder: number
     price: Decimal | null
     imageUrl: string | null
+    term: $Enums.AcademicTerm
+    isVisible: boolean
     teacherId: string
     createdAt: Date
     updatedAt: Date
@@ -10586,6 +10612,8 @@ export namespace Prisma {
     sortOrder?: boolean
     price?: boolean
     imageUrl?: boolean
+    term?: boolean
+    isVisible?: boolean
     teacherId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -10608,6 +10636,8 @@ export namespace Prisma {
     sortOrder?: boolean
     price?: boolean
     imageUrl?: boolean
+    term?: boolean
+    isVisible?: boolean
     teacherId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -10624,6 +10654,8 @@ export namespace Prisma {
     sortOrder?: boolean
     price?: boolean
     imageUrl?: boolean
+    term?: boolean
+    isVisible?: boolean
     teacherId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -10640,6 +10672,8 @@ export namespace Prisma {
     sortOrder?: boolean
     price?: boolean
     imageUrl?: boolean
+    term?: boolean
+    isVisible?: boolean
     teacherId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -10647,7 +10681,7 @@ export namespace Prisma {
     stageId?: boolean
   }
 
-  export type ChapterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "price" | "imageUrl" | "teacherId" | "createdAt" | "updatedAt" | "deletedAt" | "stageId", ExtArgs["result"]["chapter"]>
+  export type ChapterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "price" | "imageUrl" | "term" | "isVisible" | "teacherId" | "createdAt" | "updatedAt" | "deletedAt" | "stageId", ExtArgs["result"]["chapter"]>
   export type ChapterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     stage?: boolean | StageDefaultArgs<ExtArgs>
     teacher?: boolean | UserDefaultArgs<ExtArgs>
@@ -10685,6 +10719,8 @@ export namespace Prisma {
       sortOrder: number
       price: Prisma.Decimal | null
       imageUrl: string | null
+      term: $Enums.AcademicTerm
+      isVisible: boolean
       teacherId: string
       createdAt: Date
       updatedAt: Date
@@ -11126,6 +11162,8 @@ export namespace Prisma {
     readonly sortOrder: FieldRef<"Chapter", 'Int'>
     readonly price: FieldRef<"Chapter", 'Decimal'>
     readonly imageUrl: FieldRef<"Chapter", 'String'>
+    readonly term: FieldRef<"Chapter", 'AcademicTerm'>
+    readonly isVisible: FieldRef<"Chapter", 'Boolean'>
     readonly teacherId: FieldRef<"Chapter", 'String'>
     readonly createdAt: FieldRef<"Chapter", 'DateTime'>
     readonly updatedAt: FieldRef<"Chapter", 'DateTime'>
@@ -45854,6 +45892,8 @@ export namespace Prisma {
     sortOrder: 'sortOrder',
     price: 'price',
     imageUrl: 'imageUrl',
+    term: 'term',
+    isVisible: 'isVisible',
     teacherId: 'teacherId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -46497,6 +46537,20 @@ export namespace Prisma {
    * Reference to a field of type 'Decimal[]'
    */
   export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'AcademicTerm'
+   */
+  export type EnumAcademicTermFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AcademicTerm'>
+    
+
+
+  /**
+   * Reference to a field of type 'AcademicTerm[]'
+   */
+  export type ListEnumAcademicTermFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AcademicTerm[]'>
     
 
 
@@ -47300,6 +47354,8 @@ export namespace Prisma {
     sortOrder?: IntFilter<"Chapter"> | number
     price?: DecimalNullableFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
     imageUrl?: StringNullableFilter<"Chapter"> | string | null
+    term?: EnumAcademicTermFilter<"Chapter"> | $Enums.AcademicTerm
+    isVisible?: BoolFilter<"Chapter"> | boolean
     teacherId?: StringFilter<"Chapter"> | string
     createdAt?: DateTimeFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeFilter<"Chapter"> | Date | string
@@ -47321,6 +47377,8 @@ export namespace Prisma {
     sortOrder?: SortOrder
     price?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
+    term?: SortOrder
+    isVisible?: SortOrder
     teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -47345,6 +47403,8 @@ export namespace Prisma {
     sortOrder?: IntFilter<"Chapter"> | number
     price?: DecimalNullableFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
     imageUrl?: StringNullableFilter<"Chapter"> | string | null
+    term?: EnumAcademicTermFilter<"Chapter"> | $Enums.AcademicTerm
+    isVisible?: BoolFilter<"Chapter"> | boolean
     teacherId?: StringFilter<"Chapter"> | string
     createdAt?: DateTimeFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeFilter<"Chapter"> | Date | string
@@ -47366,6 +47426,8 @@ export namespace Prisma {
     sortOrder?: SortOrder
     price?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
+    term?: SortOrder
+    isVisible?: SortOrder
     teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -47388,6 +47450,8 @@ export namespace Prisma {
     sortOrder?: IntWithAggregatesFilter<"Chapter"> | number
     price?: DecimalNullableWithAggregatesFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
     imageUrl?: StringNullableWithAggregatesFilter<"Chapter"> | string | null
+    term?: EnumAcademicTermWithAggregatesFilter<"Chapter"> | $Enums.AcademicTerm
+    isVisible?: BoolWithAggregatesFilter<"Chapter"> | boolean
     teacherId?: StringWithAggregatesFilter<"Chapter"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Chapter"> | Date | string
@@ -50417,6 +50481,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -50436,6 +50502,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -50455,6 +50523,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -50474,6 +50544,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50493,6 +50565,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -50507,6 +50581,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -50519,6 +50595,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53956,6 +54034,13 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
+  export type EnumAcademicTermFilter<$PrismaModel = never> = {
+    equals?: $Enums.AcademicTerm | EnumAcademicTermFieldRefInput<$PrismaModel>
+    in?: $Enums.AcademicTerm[] | ListEnumAcademicTermFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AcademicTerm[] | ListEnumAcademicTermFieldRefInput<$PrismaModel>
+    not?: NestedEnumAcademicTermFilter<$PrismaModel> | $Enums.AcademicTerm
+  }
+
   export type LessonListRelationFilter = {
     every?: LessonWhereInput
     some?: LessonWhereInput
@@ -53973,6 +54058,8 @@ export namespace Prisma {
     sortOrder?: SortOrder
     price?: SortOrder
     imageUrl?: SortOrder
+    term?: SortOrder
+    isVisible?: SortOrder
     teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -53992,6 +54079,8 @@ export namespace Prisma {
     sortOrder?: SortOrder
     price?: SortOrder
     imageUrl?: SortOrder
+    term?: SortOrder
+    isVisible?: SortOrder
     teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54006,6 +54095,8 @@ export namespace Prisma {
     sortOrder?: SortOrder
     price?: SortOrder
     imageUrl?: SortOrder
+    term?: SortOrder
+    isVisible?: SortOrder
     teacherId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54032,6 +54123,16 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+
+  export type EnumAcademicTermWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AcademicTerm | EnumAcademicTermFieldRefInput<$PrismaModel>
+    in?: $Enums.AcademicTerm[] | ListEnumAcademicTermFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AcademicTerm[] | ListEnumAcademicTermFieldRefInput<$PrismaModel>
+    not?: NestedEnumAcademicTermWithAggregatesFilter<$PrismaModel> | $Enums.AcademicTerm
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAcademicTermFilter<$PrismaModel>
+    _max?: NestedEnumAcademicTermFilter<$PrismaModel>
   }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -57446,6 +57547,10 @@ export namespace Prisma {
     divide?: Decimal | DecimalJsLike | number | string
   }
 
+  export type EnumAcademicTermFieldUpdateOperationsInput = {
+    set?: $Enums.AcademicTerm
+  }
+
   export type StageUpdateOneRequiredWithoutChaptersNestedInput = {
     create?: XOR<StageCreateWithoutChaptersInput, StageUncheckedCreateWithoutChaptersInput>
     connectOrCreate?: StageCreateOrConnectWithoutChaptersInput
@@ -59340,6 +59445,13 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
+  export type NestedEnumAcademicTermFilter<$PrismaModel = never> = {
+    equals?: $Enums.AcademicTerm | EnumAcademicTermFieldRefInput<$PrismaModel>
+    in?: $Enums.AcademicTerm[] | ListEnumAcademicTermFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AcademicTerm[] | ListEnumAcademicTermFieldRefInput<$PrismaModel>
+    not?: NestedEnumAcademicTermFilter<$PrismaModel> | $Enums.AcademicTerm
+  }
+
   export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
@@ -59354,6 +59466,16 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAcademicTermWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AcademicTerm | EnumAcademicTermFieldRefInput<$PrismaModel>
+    in?: $Enums.AcademicTerm[] | ListEnumAcademicTermFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AcademicTerm[] | ListEnumAcademicTermFieldRefInput<$PrismaModel>
+    not?: NestedEnumAcademicTermWithAggregatesFilter<$PrismaModel> | $Enums.AcademicTerm
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAcademicTermFilter<$PrismaModel>
+    _max?: NestedEnumAcademicTermFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -60376,6 +60498,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -60394,6 +60518,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -61306,6 +61432,8 @@ export namespace Prisma {
     sortOrder?: IntFilter<"Chapter"> | number
     price?: DecimalNullableFilter<"Chapter"> | Decimal | DecimalJsLike | number | string | null
     imageUrl?: StringNullableFilter<"Chapter"> | string | null
+    term?: EnumAcademicTermFilter<"Chapter"> | $Enums.AcademicTerm
+    isVisible?: BoolFilter<"Chapter"> | boolean
     teacherId?: StringFilter<"Chapter"> | string
     createdAt?: DateTimeFilter<"Chapter"> | Date | string
     updatedAt?: DateTimeFilter<"Chapter"> | Date | string
@@ -62162,6 +62290,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -62180,6 +62310,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63124,6 +63256,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -63142,6 +63276,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63333,6 +63469,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63351,6 +63489,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63644,6 +63784,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -63662,6 +63804,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63783,6 +63927,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63801,6 +63947,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63999,6 +64147,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -64017,6 +64167,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64144,6 +64296,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -64162,6 +64316,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65602,6 +65758,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -65620,6 +65778,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65822,6 +65982,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -65840,6 +66002,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66805,6 +66969,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -66823,6 +66989,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67043,6 +67211,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -67061,6 +67231,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70374,6 +70546,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -71007,6 +71181,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71025,6 +71201,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71043,6 +71221,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71467,6 +71647,8 @@ export namespace Prisma {
     sortOrder: number
     price?: Decimal | DecimalJsLike | number | string | null
     imageUrl?: string | null
+    term?: $Enums.AcademicTerm
+    isVisible?: boolean
     teacherId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71487,6 +71669,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71505,6 +71689,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71523,6 +71709,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    term?: EnumAcademicTermFieldUpdateOperationsInput | $Enums.AcademicTerm
+    isVisible?: BoolFieldUpdateOperationsInput | boolean
     teacherId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

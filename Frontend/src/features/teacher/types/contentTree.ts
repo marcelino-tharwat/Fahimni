@@ -22,6 +22,9 @@ export interface ContentTreeChapter {
   name: string;
   sortOrder: number;
   lessonCount: number;
+  imageUrl?: string | null;
+  term: 'FIRST_TERM' | 'SECOND_TERM';
+  isVisible: boolean;
   lessons: ContentTreeLesson[];
 }
 

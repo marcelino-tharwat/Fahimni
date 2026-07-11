@@ -105,6 +105,8 @@ export function createChapterSchema(t: TFunction) {
       .min(0, t("contentValidation.priceMin"))
       .optional()
       .nullable(),
+    term: z.enum(["FIRST_TERM", "SECOND_TERM"]),
+    isVisible: z.boolean().optional(),
   });
 }
 

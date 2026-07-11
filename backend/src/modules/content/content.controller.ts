@@ -126,6 +126,8 @@ export class ContentController {
             sortOrder: chapter.sortOrder,
             lessonCount: chapter.lessons.length,
             imageUrl: chapter.imageUrl ?? null,
+            term: chapter.term,
+            isVisible: chapter.isVisible,
           },
           lessons: chapter.lessons.map((lesson) => ({
             id: lesson.id,
@@ -142,6 +144,14 @@ export class ContentController {
   getStudentTree = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const studentId = req.user!.id;
+      const subjectFilter =
+        typeof req.query.subject === "string" && req.query.subject.trim().length > 0
+          ? req.query.subject.trim()
+          : undefined;
+      const termFilter =
+        req.query.term === "FIRST_TERM" || req.query.term === "SECOND_TERM"
+          ? req.query.term
+          : undefined;
 
       const studentProfile = await prisma.studentProfile.findUnique({
         where: { userId: studentId },
@@ -163,10 +173,15 @@ export class ContentController {
           chapters: {
             where: {
               deletedAt: null,
+              isVisible: true,
+              ...(termFilter ? { term: termFilter } : {}),
               teacher: {
                 role: "OPERATION",
                 status: "ACTIVE",
                 teacherApprovalState: "APPROVED",
+                ...(subjectFilter
+                  ? { teacherProfile: { subject: subjectFilter } }
+                  : {}),
               },
             },
             orderBy: { sortOrder: "asc" },
@@ -239,6 +254,7 @@ export class ContentController {
                 sortOrder: chapter.sortOrder,
                 price,
                 imageUrl: chapter.imageUrl ?? null,
+                term: chapter.term,
                 lessonCount: activeLessons.length,
                 enrollmentStatus,
                 teacher: {
@@ -342,6 +358,7 @@ export class ContentController {
           sortOrder: chapter.sortOrder,
           price: chapter.price ? Number(chapter.price) : null,
           imageUrl: chapter.imageUrl ?? null,
+          term: chapter.term,
           stageId: chapter.stageId,
           stageName: chapter.stage.name,
           lessonCount: totalLessons,

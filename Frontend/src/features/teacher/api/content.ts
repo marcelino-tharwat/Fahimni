@@ -10,9 +10,17 @@ import type { ContentTreeStage } from '@/features/teacher/types/contentTree';
  * hence the `Array.isArray` guard in `getContentTree`.
  */
 interface RawContentTreeNode {
-  stage: { id: string; name: string; sortOrder: number; chapterCount: number };
+  stage: { id: string; name: string; displayName?: string; sortOrder: number; chapterCount: number };
   chapters: {
-    chapter: { id: string; name: string; sortOrder: number; lessonCount: number };
+    chapter: {
+      id: string;
+      name: string;
+      sortOrder: number;
+      lessonCount: number;
+      imageUrl?: string | null;
+      term: 'FIRST_TERM' | 'SECOND_TERM';
+      isVisible: boolean;
+    };
     lessons: { id: string; title: string; sortOrder: number }[];
   }[];
 }
