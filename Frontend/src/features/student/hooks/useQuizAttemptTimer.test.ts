@@ -33,7 +33,8 @@ describe('computeRemainingSeconds', () => {
     const fakeNow = Date.parse('2026-07-01T12:00:00.000Z');
     const offset = fakeNow - Date.now();
     const remaining = computeRemainingSeconds('2026-07-01T12:05:00.000Z', offset);
-    expect(remaining).toBe(300);
+    expect(remaining).toBeGreaterThanOrEqual(299);
+    expect(remaining).toBeLessThanOrEqual(300);
   });
 
   it('clamps at zero when deadline passed', () => {

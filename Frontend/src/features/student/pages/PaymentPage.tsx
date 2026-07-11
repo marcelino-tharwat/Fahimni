@@ -43,7 +43,7 @@ function findChapter(tree: StudentContentTreeItem[], chapterId: string): Chapter
         description: found.chapter.description,
         price: found.chapter.price,
         lessonCount: found.chapter.lessonCount,
-        stageName: item.stage.name,
+        stageName: item.stage.displayName ?? item.stage.name,
         enrollmentStatus: found.chapter.enrollmentStatus,
         firstLessonId: found.lessons[0]?.id ?? null,
       };

@@ -11,6 +11,8 @@ import type { Prisma } from "../src/generated/prisma/client.js";
 
 const BCRYPT_ROUNDS = 12;
 const DEFAULT_PASSWORD = process.env.SEED_DEFAULT_PASSWORD ?? "Fahimni@123456";
+const ADMIN_PASSWORD_SOURCE = process.env.ADMIN_PASSWORD ? "env:ADMIN_PASSWORD" : "fallback";
+const ADMIN_SEED_PASSWORD = process.env.ADMIN_PASSWORD ?? "Fahimni@123456";
 const DEMO_EMAIL_DOMAIN = "@fahimni.local";
 const DEMO_ORDER_PREFIX = "DEMO_";
 const DEMO_REF_PREFIX = "DEMO_";
@@ -28,9 +30,9 @@ const daysFromNow = (d: number) =>
 
 const ADMIN = {
   id: sid("admin"),
-  email: "admin" + DEMO_EMAIL_DOMAIN,
-  fullName: "مدير المنصة — حساب تجريبي",
-  mobile: "01000000001",
+  email: process.env.ADMIN_EMAIL ?? "admin" + DEMO_EMAIL_DOMAIN,
+  fullName: process.env.ADMIN_FULL_NAME ?? "مدير المنصة",
+  mobile: process.env.ADMIN_MOBILE ?? "01000000001",
   role: "ADMIN" as const,
 };
 
@@ -112,7 +114,7 @@ const TEACHERS = [
 const STUDENTS = [
   {
     id: sid("student-active1"),
-    email: "student.active1" + DEMO_EMAIL_DOMAIN,
+    email: "student.stage1" + DEMO_EMAIL_DOMAIN,
     fullName: "طالب نشط ١",
     mobile: "01000000101",
     role: "STUDENT" as const,
@@ -120,7 +122,7 @@ const STUDENTS = [
   },
   {
     id: sid("student-active2"),
-    email: "student.active2" + DEMO_EMAIL_DOMAIN,
+    email: "student.stage2" + DEMO_EMAIL_DOMAIN,
     fullName: "طالب نشط ٢",
     mobile: "01000000102",
     role: "STUDENT" as const,
@@ -199,6 +201,22 @@ type StageDef = {
   sortOrder: number;
   teacherIdx: number;
 };
+
+function stageEnglishName(stageId: string): string {
+  if (stageId === sid("stage-math")) return "First Secondary";
+  if (stageId === sid("stage-physics")) return "Second Secondary";
+  if (stageId === sid("stage-chemistry")) return "Third Secondary";
+  if (stageId === sid("stage-banned")) return "Hidden Banned Teacher Stage";
+  if (stageId === sid("stage-inactive")) return "Hidden Inactive Teacher Stage";
+  if (stageId === sid("stage-approved-free")) return "Approved Free Teacher Stage";
+  return "Platform Stage";
+}
+
+function stageEnglishDescription(stageId: string): string {
+  if (stageId === sid("stage-math")) return "Clean platform-owned first secondary stage for local testing.";
+  if (stageId === sid("stage-physics")) return "Clean platform-owned second secondary stage for local testing.";
+  return "Platform-owned local testing stage.";
+}
 
 type ChapterDef = {
   id: string;
@@ -508,6 +526,27 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
     });
 
     const stageIds = STAGES.map((s) => s.id);
+    const stageLessons = await tx.lesson.findMany({
+      where: { chapter: { stageId: { in: stageIds } } },
+      select: { id: true },
+    });
+    const stageLessonIds = stageLessons.map((lesson) => lesson.id);
+    if (stageLessonIds.length > 0) {
+      const materials = await tx.lessonMaterial.findMany({
+        where: { lessonId: { in: stageLessonIds } },
+        select: { id: true },
+      });
+      const materialIds = materials.map((material) => material.id);
+      await tx.$executeRaw`DELETE FROM content_chunks WHERE "lessonId" = ANY(${stageLessonIds}::text[])`;
+      if (materialIds.length > 0) {
+        await tx.lessonMaterialDownload.deleteMany({
+          where: { materialId: { in: materialIds } },
+        });
+      }
+      await tx.lessonMaterial.deleteMany({
+        where: { lessonId: { in: stageLessonIds } },
+      });
+    }
     await tx.paymentTransaction.deleteMany({
       where: { chapter: { stageId: { in: stageIds } } },
     });
@@ -541,6 +580,7 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
 async function seedAll(): Promise<void> {
   const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, BCRYPT_ROUNDS);
   const demoPasswordHash = passwordHash;
+  const adminPasswordHash = await bcrypt.hash(ADMIN_SEED_PASSWORD, BCRYPT_ROUNDS);
 
   await prisma.$transaction(
     async (tx) => {
@@ -583,13 +623,13 @@ async function seedAll(): Promise<void> {
       // 2. Create Admin
       await tx.user.upsert({
         where: { email: ADMIN.email },
-        update: { status: "ACTIVE", fullName: ADMIN.fullName },
+        update: { status: "ACTIVE", fullName: ADMIN.fullName, password: adminPasswordHash },
         create: {
           id: ADMIN.id,
           email: ADMIN.email,
           fullName: ADMIN.fullName,
           mobile: ADMIN.mobile,
-          password: demoPasswordHash,
+          password: adminPasswordHash,
           role: ADMIN.role,
           status: "ACTIVE",
         },
@@ -788,7 +828,11 @@ async function seedAll(): Promise<void> {
           where: { id: st.id },
           update: {
             name: st.name,
+            nameAr: st.name,
+            nameEn: stageEnglishName(st.id),
             description: st.description,
+            descriptionAr: st.description,
+            descriptionEn: stageEnglishDescription(st.id),
             sortOrder: st.sortOrder,
             teacherId: null,
             isActive: true,
@@ -796,7 +840,11 @@ async function seedAll(): Promise<void> {
           create: {
             id: st.id,
             name: st.name,
+            nameAr: st.name,
+            nameEn: stageEnglishName(st.id),
             description: st.description,
+            descriptionAr: st.description,
+            descriptionEn: stageEnglishDescription(st.id),
             sortOrder: st.sortOrder,
             teacherId: null,
             isActive: true,
@@ -1758,26 +1806,7 @@ async function seedAll(): Promise<void> {
         },
       });
 
-      // 17b. Platform (scope-separated) discount promo codes. COURSE_PURCHASE codes
-      // apply only to student course checkout; TEACHER_PLAN codes only to teacher
-      // subscription checkout (optionally restricted to plans/interval). Idempotent.
-      await tx.platformPromoCode.upsert({
-        where: { code: "DEMOCOURSE20" },
-        update: { isActive: true, expiresAt: daysFromNow(365) },
-        create: {
-          id: sid("pp-course-20"),
-          code: "DEMOCOURSE20",
-          scope: "COURSE_PURCHASE",
-          discountType: "PERCENTAGE",
-          discountValue: 20,
-          currency: "EGP",
-          isActive: true,
-          maxUses: 100,
-          perUserLimit: 1,
-          expiresAt: daysFromNow(365),
-          createdById: ADMIN.id,
-        },
-      });
+      // 17b. Admin-managed platform discount promo codes are TEACHER_PLAN-only.
       await tx.platformPromoCode.upsert({
         where: { code: "DEMOPLANPRO50" },
         update: { isActive: true, applicablePlanIds: [planProId], billingInterval: "MONTHLY" },
@@ -2235,6 +2264,11 @@ async function main(): Promise<void> {
   await seedQuizUnlockScenario();
 
   await logSeedCounts();
+
+  logger.info("seed_admin_login", {
+    email: ADMIN.email,
+    passwordSource: ADMIN_PASSWORD_SOURCE,
+  });
 
   logger.info("seed_completed", { status: "success" });
 }

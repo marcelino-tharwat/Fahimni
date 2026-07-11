@@ -73,7 +73,7 @@ export function AllStagesPage() {
               onClick={() => navigate(`/teacher/content/${stage.id}`)}
               className="rounded-card border border-gray-100 bg-white p-4 text-start shadow-card transition hover:-translate-y-0.5 hover:shadow-md"
             >
-              <h2 className="font-cairo text-base font-bold text-navy-900">{stage.name}</h2>
+              <h2 className="font-cairo text-base font-bold text-navy-900">{stage.displayName ?? stage.name}</h2>
               {stage.description && (
                 <p className="mt-1 line-clamp-2 font-cairo text-sm text-gray-500">{stage.description}</p>
               )}

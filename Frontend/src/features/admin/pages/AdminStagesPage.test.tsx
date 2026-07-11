@@ -41,7 +41,13 @@ describe('AdminStagesPage', () => {
         {
           id: 'stage-1',
           name: 'Stage 1',
+          nameAr: 'Stage 1',
+          nameEn: 'Stage 1 EN',
+          displayName: 'Stage 1',
           description: 'First stage',
+          descriptionAr: 'First stage',
+          descriptionEn: 'First stage EN',
+          displayDescription: 'First stage',
           sortOrder: 1,
           teacherId: null,
           isActive: true,
@@ -56,7 +62,7 @@ describe('AdminStagesPage', () => {
 
     renderPage();
 
-    expect(await screen.findByText('Stage 1')).toBeInTheDocument();
+    expect((await screen.findAllByText('Stage 1')).length).toBeGreaterThan(0);
     expect(screen.getByText('Platform')).toBeInTheDocument();
     expect(screen.getByText('New stage')).toBeInTheDocument();
   });

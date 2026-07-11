@@ -21,6 +21,17 @@ import { loadChapterProgressionContext } from "../progression/progression-contex
 import { quizVisibilityService } from "../quizzes/quiz-visibility.service.js";
 import { buildStudentMaterialsForLesson } from "../materials/materials.service.js";
 
+function localizedStageName(
+  stage: { name: string; nameAr?: string | null; nameEn?: string | null },
+  locale = "ar",
+): string {
+  return (locale.toLowerCase().startsWith("en") ? stage.nameEn : stage.nameAr) ?? stage.name;
+}
+
+function requestLocale(req: Request): "ar" | "en" {
+  return req.headers["accept-language"]?.startsWith("en") ? "en" : "ar";
+}
+
 export class ContentController {
   getTree = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -104,6 +115,7 @@ export class ContentController {
         stage: {
           id: stage.id,
           name: stage.name,
+          displayName: localizedStageName(stage, requestLocale(req)),
           sortOrder: stage.sortOrder,
           chapterCount: stage.chapters.length,
         },
@@ -190,6 +202,7 @@ export class ContentController {
           stage: {
             id: stage.id,
             name: stage.name,
+            displayName: localizedStageName(stage, requestLocale(req)),
             sortOrder: stage.sortOrder,
             chapterCount: stage.chapters.length,
           },

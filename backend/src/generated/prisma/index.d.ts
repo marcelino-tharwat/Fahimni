@@ -9086,7 +9086,11 @@ export namespace Prisma {
   export type StageMinAggregateOutputType = {
     id: string | null
     name: string | null
+    nameAr: string | null
+    nameEn: string | null
     description: string | null
+    descriptionAr: string | null
+    descriptionEn: string | null
     sortOrder: number | null
     teacherId: string | null
     isActive: boolean | null
@@ -9098,7 +9102,11 @@ export namespace Prisma {
   export type StageMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    nameAr: string | null
+    nameEn: string | null
     description: string | null
+    descriptionAr: string | null
+    descriptionEn: string | null
     sortOrder: number | null
     teacherId: string | null
     isActive: boolean | null
@@ -9110,7 +9118,11 @@ export namespace Prisma {
   export type StageCountAggregateOutputType = {
     id: number
     name: number
+    nameAr: number
+    nameEn: number
     description: number
+    descriptionAr: number
+    descriptionEn: number
     sortOrder: number
     teacherId: number
     isActive: number
@@ -9132,7 +9144,11 @@ export namespace Prisma {
   export type StageMinAggregateInputType = {
     id?: true
     name?: true
+    nameAr?: true
+    nameEn?: true
     description?: true
+    descriptionAr?: true
+    descriptionEn?: true
     sortOrder?: true
     teacherId?: true
     isActive?: true
@@ -9144,7 +9160,11 @@ export namespace Prisma {
   export type StageMaxAggregateInputType = {
     id?: true
     name?: true
+    nameAr?: true
+    nameEn?: true
     description?: true
+    descriptionAr?: true
+    descriptionEn?: true
     sortOrder?: true
     teacherId?: true
     isActive?: true
@@ -9156,7 +9176,11 @@ export namespace Prisma {
   export type StageCountAggregateInputType = {
     id?: true
     name?: true
+    nameAr?: true
+    nameEn?: true
     description?: true
+    descriptionAr?: true
+    descriptionEn?: true
     sortOrder?: true
     teacherId?: true
     isActive?: true
@@ -9255,7 +9279,11 @@ export namespace Prisma {
   export type StageGroupByOutputType = {
     id: string
     name: string
+    nameAr: string | null
+    nameEn: string | null
     description: string | null
+    descriptionAr: string | null
+    descriptionEn: string | null
     sortOrder: number
     teacherId: string | null
     isActive: boolean
@@ -9286,7 +9314,11 @@ export namespace Prisma {
   export type StageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    nameAr?: boolean
+    nameEn?: boolean
     description?: boolean
+    descriptionAr?: boolean
+    descriptionEn?: boolean
     sortOrder?: boolean
     teacherId?: boolean
     isActive?: boolean
@@ -9302,7 +9334,11 @@ export namespace Prisma {
   export type StageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    nameAr?: boolean
+    nameEn?: boolean
     description?: boolean
+    descriptionAr?: boolean
+    descriptionEn?: boolean
     sortOrder?: boolean
     teacherId?: boolean
     isActive?: boolean
@@ -9315,7 +9351,11 @@ export namespace Prisma {
   export type StageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    nameAr?: boolean
+    nameEn?: boolean
     description?: boolean
+    descriptionAr?: boolean
+    descriptionEn?: boolean
     sortOrder?: boolean
     teacherId?: boolean
     isActive?: boolean
@@ -9328,7 +9368,11 @@ export namespace Prisma {
   export type StageSelectScalar = {
     id?: boolean
     name?: boolean
+    nameAr?: boolean
+    nameEn?: boolean
     description?: boolean
+    descriptionAr?: boolean
+    descriptionEn?: boolean
     sortOrder?: boolean
     teacherId?: boolean
     isActive?: boolean
@@ -9337,7 +9381,7 @@ export namespace Prisma {
     deletedAt?: boolean
   }
 
-  export type StageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "sortOrder" | "teacherId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stage"]>
+  export type StageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "nameAr" | "nameEn" | "description" | "descriptionAr" | "descriptionEn" | "sortOrder" | "teacherId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stage"]>
   export type StageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapters?: boolean | Stage$chaptersArgs<ExtArgs>
     studentProfiles?: boolean | Stage$studentProfilesArgs<ExtArgs>
@@ -9361,7 +9405,11 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      nameAr: string | null
+      nameEn: string | null
       description: string | null
+      descriptionAr: string | null
+      descriptionEn: string | null
       sortOrder: number
       teacherId: string | null
       isActive: boolean
@@ -9796,7 +9844,11 @@ export namespace Prisma {
   interface StageFieldRefs {
     readonly id: FieldRef<"Stage", 'String'>
     readonly name: FieldRef<"Stage", 'String'>
+    readonly nameAr: FieldRef<"Stage", 'String'>
+    readonly nameEn: FieldRef<"Stage", 'String'>
     readonly description: FieldRef<"Stage", 'String'>
+    readonly descriptionAr: FieldRef<"Stage", 'String'>
+    readonly descriptionEn: FieldRef<"Stage", 'String'>
     readonly sortOrder: FieldRef<"Stage", 'Int'>
     readonly teacherId: FieldRef<"Stage", 'String'>
     readonly isActive: FieldRef<"Stage", 'Boolean'>
@@ -45779,7 +45831,11 @@ export namespace Prisma {
   export const StageScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    nameAr: 'nameAr',
+    nameEn: 'nameEn',
     description: 'description',
+    descriptionAr: 'descriptionAr',
+    descriptionEn: 'descriptionEn',
     sortOrder: 'sortOrder',
     teacherId: 'teacherId',
     isActive: 'isActive',
@@ -47137,7 +47193,11 @@ export namespace Prisma {
     NOT?: StageWhereInput | StageWhereInput[]
     id?: StringFilter<"Stage"> | string
     name?: StringFilter<"Stage"> | string
+    nameAr?: StringNullableFilter<"Stage"> | string | null
+    nameEn?: StringNullableFilter<"Stage"> | string | null
     description?: StringNullableFilter<"Stage"> | string | null
+    descriptionAr?: StringNullableFilter<"Stage"> | string | null
+    descriptionEn?: StringNullableFilter<"Stage"> | string | null
     sortOrder?: IntFilter<"Stage"> | number
     teacherId?: StringNullableFilter<"Stage"> | string | null
     isActive?: BoolFilter<"Stage"> | boolean
@@ -47152,7 +47212,11 @@ export namespace Prisma {
   export type StageOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    nameAr?: SortOrderInput | SortOrder
+    nameEn?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
+    descriptionAr?: SortOrderInput | SortOrder
+    descriptionEn?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
     teacherId?: SortOrderInput | SortOrder
     isActive?: SortOrder
@@ -47170,7 +47234,11 @@ export namespace Prisma {
     OR?: StageWhereInput[]
     NOT?: StageWhereInput | StageWhereInput[]
     name?: StringFilter<"Stage"> | string
+    nameAr?: StringNullableFilter<"Stage"> | string | null
+    nameEn?: StringNullableFilter<"Stage"> | string | null
     description?: StringNullableFilter<"Stage"> | string | null
+    descriptionAr?: StringNullableFilter<"Stage"> | string | null
+    descriptionEn?: StringNullableFilter<"Stage"> | string | null
     sortOrder?: IntFilter<"Stage"> | number
     teacherId?: StringNullableFilter<"Stage"> | string | null
     isActive?: BoolFilter<"Stage"> | boolean
@@ -47185,7 +47253,11 @@ export namespace Prisma {
   export type StageOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    nameAr?: SortOrderInput | SortOrder
+    nameEn?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
+    descriptionAr?: SortOrderInput | SortOrder
+    descriptionEn?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
     teacherId?: SortOrderInput | SortOrder
     isActive?: SortOrder
@@ -47205,7 +47277,11 @@ export namespace Prisma {
     NOT?: StageScalarWhereWithAggregatesInput | StageScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Stage"> | string
     name?: StringWithAggregatesFilter<"Stage"> | string
+    nameAr?: StringNullableWithAggregatesFilter<"Stage"> | string | null
+    nameEn?: StringNullableWithAggregatesFilter<"Stage"> | string | null
     description?: StringNullableWithAggregatesFilter<"Stage"> | string | null
+    descriptionAr?: StringNullableWithAggregatesFilter<"Stage"> | string | null
+    descriptionEn?: StringNullableWithAggregatesFilter<"Stage"> | string | null
     sortOrder?: IntWithAggregatesFilter<"Stage"> | number
     teacherId?: StringNullableWithAggregatesFilter<"Stage"> | string | null
     isActive?: BoolWithAggregatesFilter<"Stage"> | boolean
@@ -50218,7 +50294,11 @@ export namespace Prisma {
   export type StageCreateInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     isActive?: boolean
     createdAt?: Date | string
@@ -50232,7 +50312,11 @@ export namespace Prisma {
   export type StageUncheckedCreateInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     teacherId?: string | null
     isActive?: boolean
@@ -50246,7 +50330,11 @@ export namespace Prisma {
   export type StageUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50260,7 +50348,11 @@ export namespace Prisma {
   export type StageUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -50274,7 +50366,11 @@ export namespace Prisma {
   export type StageCreateManyInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     teacherId?: string | null
     isActive?: boolean
@@ -50286,7 +50382,11 @@ export namespace Prisma {
   export type StageUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50297,7 +50397,11 @@ export namespace Prisma {
   export type StageUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -53780,7 +53884,11 @@ export namespace Prisma {
   export type StageCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    nameAr?: SortOrder
+    nameEn?: SortOrder
     description?: SortOrder
+    descriptionAr?: SortOrder
+    descriptionEn?: SortOrder
     sortOrder?: SortOrder
     teacherId?: SortOrder
     isActive?: SortOrder
@@ -53796,7 +53904,11 @@ export namespace Prisma {
   export type StageMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    nameAr?: SortOrder
+    nameEn?: SortOrder
     description?: SortOrder
+    descriptionAr?: SortOrder
+    descriptionEn?: SortOrder
     sortOrder?: SortOrder
     teacherId?: SortOrder
     isActive?: SortOrder
@@ -53808,7 +53920,11 @@ export namespace Prisma {
   export type StageMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    nameAr?: SortOrder
+    nameEn?: SortOrder
     description?: SortOrder
+    descriptionAr?: SortOrder
+    descriptionEn?: SortOrder
     sortOrder?: SortOrder
     teacherId?: SortOrder
     isActive?: SortOrder
@@ -60212,7 +60328,11 @@ export namespace Prisma {
   export type StageCreateWithoutTeacherInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     isActive?: boolean
     createdAt?: Date | string
@@ -60225,7 +60345,11 @@ export namespace Prisma {
   export type StageUncheckedCreateWithoutTeacherInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     isActive?: boolean
     createdAt?: Date | string
@@ -61143,7 +61267,11 @@ export namespace Prisma {
     NOT?: StageScalarWhereInput | StageScalarWhereInput[]
     id?: StringFilter<"Stage"> | string
     name?: StringFilter<"Stage"> | string
+    nameAr?: StringNullableFilter<"Stage"> | string | null
+    nameEn?: StringNullableFilter<"Stage"> | string | null
     description?: StringNullableFilter<"Stage"> | string | null
+    descriptionAr?: StringNullableFilter<"Stage"> | string | null
+    descriptionEn?: StringNullableFilter<"Stage"> | string | null
     sortOrder?: IntFilter<"Stage"> | number
     teacherId?: StringNullableFilter<"Stage"> | string | null
     isActive?: BoolFilter<"Stage"> | boolean
@@ -61673,7 +61801,11 @@ export namespace Prisma {
   export type StageCreateWithoutStudentProfilesInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     isActive?: boolean
     createdAt?: Date | string
@@ -61686,7 +61818,11 @@ export namespace Prisma {
   export type StageUncheckedCreateWithoutStudentProfilesInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     teacherId?: string | null
     isActive?: boolean
@@ -61808,7 +61944,11 @@ export namespace Prisma {
   export type StageUpdateWithoutStudentProfilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61821,7 +61961,11 @@ export namespace Prisma {
   export type StageUncheckedUpdateWithoutStudentProfilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -62307,7 +62451,11 @@ export namespace Prisma {
   export type StageCreateWithoutChaptersInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     isActive?: boolean
     createdAt?: Date | string
@@ -62320,7 +62468,11 @@ export namespace Prisma {
   export type StageUncheckedCreateWithoutChaptersInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     teacherId?: string | null
     isActive?: boolean
@@ -62658,7 +62810,11 @@ export namespace Prisma {
   export type StageUpdateWithoutChaptersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62671,7 +62827,11 @@ export namespace Prisma {
   export type StageUncheckedUpdateWithoutChaptersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -70195,7 +70355,11 @@ export namespace Prisma {
   export type StageCreateManyTeacherInput = {
     id?: string
     name: string
+    nameAr?: string | null
+    nameEn?: string | null
     description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
     sortOrder: number
     isActive?: boolean
     createdAt?: Date | string
@@ -70790,7 +70954,11 @@ export namespace Prisma {
   export type StageUpdateWithoutTeacherInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70803,7 +70971,11 @@ export namespace Prisma {
   export type StageUncheckedUpdateWithoutTeacherInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70816,7 +70988,11 @@ export namespace Prisma {
   export type StageUncheckedUpdateManyWithoutTeacherInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -28,6 +28,7 @@ export interface ContentTreeChapter {
 export interface ContentTreeStage {
   id: string;
   name: string;
+  displayName?: string;
   sortOrder: number;
   chapterCount: number;
   chapters: ContentTreeChapter[];

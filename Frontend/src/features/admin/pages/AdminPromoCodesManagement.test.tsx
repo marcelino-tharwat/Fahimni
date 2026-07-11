@@ -15,7 +15,7 @@ vi.mock('@/features/admin/api/adminPlans', () => ({ adminPlansApi: { list: vi.fn
 
 const page = <T,>(rows: T[]) => ({ data: rows, meta: { page: 1, limit: 50, total: rows.length, totalPages: 1 } });
 const promo = (over: Record<string, unknown>) => ({
-  id: 'p1', code: 'SUMMER20', scope: 'COURSE_PURCHASE', discountType: 'PERCENTAGE', discountValue: 20,
+  id: 'p1', code: 'SUMMER20', scope: 'TEACHER_PLAN', discountType: 'PERCENTAGE', discountValue: 20,
   currency: 'EGP', startsAt: null, expiresAt: null, isActive: true, maxUses: 100, usedCount: 5,
   perUserLimit: 1, applicablePlanIds: [], billingInterval: 'ALL', displayStatus: 'ACTIVE',
   createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z', ...over,
@@ -51,9 +51,7 @@ describe('AdminPromoCodesManagementPage', () => {
     renderPage();
     expect(screen.getByTestId('admin-promo-codes-page')).toBeInTheDocument();
     expect(screen.getByTestId('promo-codes-table')).toBeInTheDocument();
-    // Scope badges for both scopes render.
-    expect(screen.getByTestId('scope-badge-course')).toBeInTheDocument();
-    expect(screen.getByTestId('scope-badge-teacher')).toBeInTheDocument();
+    expect(screen.getAllByTestId('scope-badge-teacher')).toHaveLength(2);
   });
 
   it('2. scope filter is present and clickable', () => {
@@ -64,18 +62,17 @@ describe('AdminPromoCodesManagementPage', () => {
     expect(hooks.useAdminPromoCodes).toHaveBeenCalledWith(expect.objectContaining({ scope: 'TEACHER_PLAN' }));
   });
 
-  it('3. create modal renders (course scope by default, no teacher-plan options)', () => {
+  it('3. create modal renders teacher-plan options by default', () => {
     renderPage();
     fireEvent.click(screen.getByTestId('create-promo-btn'));
     expect(screen.getByTestId('create-promo-modal')).toBeInTheDocument();
     expect(screen.getByTestId('promo-code-input')).toBeInTheDocument();
-    expect(screen.queryByTestId('teacher-plan-options')).not.toBeInTheDocument();
+    expect(screen.getByTestId('teacher-plan-options')).toBeInTheDocument();
   });
 
-  it('4, 5 & 6. switching scope to TEACHER_PLAN reveals plan selector + billing interval', async () => {
+  it('4, 5 & 6. teacher-plan modal shows plan selector + billing interval', async () => {
     renderPage();
     fireEvent.click(screen.getByTestId('create-promo-btn'));
-    fireEvent.change(screen.getByTestId('promo-scope-select'), { target: { value: 'TEACHER_PLAN' } });
     expect(screen.getByTestId('teacher-plan-options')).toBeInTheDocument();
     expect(screen.getByTestId('promo-billing-select')).toBeInTheDocument();
     // Plan selector populates from the plans API.

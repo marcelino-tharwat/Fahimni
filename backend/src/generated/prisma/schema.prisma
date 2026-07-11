@@ -91,7 +91,11 @@ model TeacherProfile {
 model Stage {
   id              String           @id @default(uuid())
   name            String
+  nameAr          String?
+  nameEn          String?
   description     String?
+  descriptionAr   String?
+  descriptionEn   String?
   sortOrder       Int
   teacherId       String?
   isActive        Boolean          @default(true)

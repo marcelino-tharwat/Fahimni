@@ -1,6 +1,7 @@
 export interface StageNode {
   id: string;
   name: string;
+  displayName?: string;
   sortOrder: number;
   chapterCount: number;
 }

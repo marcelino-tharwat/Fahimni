@@ -60,14 +60,14 @@ function toDTO(row: PromoRow): AdminPromoCodeDTO {
 
 /**
  * Admin Promo Codes management (ADMIN-only) over the scope-separated
- * PlatformPromoCode model. Course and teacher-plan codes are managed together
- * here (filtered by `scope`) but can never be cross-used at checkout.
+ * PlatformPromoCode model. Admin management is intentionally limited to
+ * TEACHER_PLAN codes; student/course promo flows use their own legacy module.
  */
 export class AdminPromoCodesService {
   async list(query: ListPromoCodesQuery): Promise<Paginated<AdminPromoCodeDTO>> {
     const { page, limit, scope, q, isActive } = query;
     const where: Prisma.PlatformPromoCodeWhereInput = {
-      ...(scope ? { scope } : {}),
+      scope: scope ?? "TEACHER_PLAN",
       ...(isActive !== undefined ? { isActive } : {}),
       ...(q ? { code: { contains: q, mode: "insensitive" } } : {}),
     };

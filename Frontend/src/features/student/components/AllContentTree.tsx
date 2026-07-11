@@ -219,7 +219,7 @@ function StageCard({
           <StageIcon size={20} className="text-white" />
         </span>
         <span className="min-w-0 flex-1 truncate font-cairo text-base font-bold text-navy-900">
-          {t('student:content.stage', { order: toLocalNum(index + 1), name: item.stage.name })}
+          {t('student:content.stage', { order: toLocalNum(index + 1), name: item.stage.displayName ?? item.stage.name })}
         </span>
         <ChevronDown
           size={20}
