@@ -54,6 +54,7 @@ export interface StudentChapterNode {
 export interface StudentStageNode {
   id: string;
   name: string;
+  displayName?: string;
   sortOrder: number;
   chapterCount: number;
 }

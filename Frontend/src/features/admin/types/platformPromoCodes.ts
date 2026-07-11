@@ -9,7 +9,7 @@ export interface Paginated<T> {
   meta: PaginationMeta;
 }
 
-export type PromoScope = 'COURSE_PURCHASE' | 'TEACHER_PLAN';
+export type PromoScope = 'TEACHER_PLAN';
 export type PromoDiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 export type PromoBillingScope = 'MONTHLY' | 'YEARLY' | 'ALL';
 export type PromoDisplayStatus = 'ACTIVE' | 'INACTIVE' | 'EXPIRED';

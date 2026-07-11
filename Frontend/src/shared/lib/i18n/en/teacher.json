@@ -694,7 +694,7 @@
   },
   "settings": {
     "pageTitle": "Account Settings",
-    "pageSubtitle": "Update your personal information and academy branding",
+    "pageSubtitle": "Update your personal information and profile details",
     "unsavedChanges": "Unsaved changes",
     "saved": "Changes saved successfully",
     "validation": {
@@ -731,7 +731,7 @@
         "English - Secondary"
       ],
       "bio": "Bio",
-      "bioPlaceholder": "Write a bio about yourself and your experience... it will appear to students on the academy page"
+      "bioPlaceholder": "Write a bio about yourself and your experience... it will appear to students on your teacher profile"
     },
     "support": {
       "title": "Support settings",
@@ -752,13 +752,13 @@
       "errorTooShort": "Number must be 10 digits"
     },
     "branding": {
-      "title": "Academy Branding",
-      "logoLabel": "Academy Logo",
+      "title": "Profile Branding",
+      "logoLabel": "Profile Logo",
       "uploadText": "Click to upload the logo or drag it here",
       "uploadHint": "PNG, JPG (max 2MB)",
       "previewLabel": "This is how the logo will appear to students",
       "previewTitle": "Logo Preview",
-      "academyName": "Teacher Academy",
+      "academyName": "Teacher Profile",
       "navPreview": "Navigation bar preview",
       "applyBtn": "Apply Branding"
     }

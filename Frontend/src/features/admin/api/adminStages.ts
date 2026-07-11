@@ -4,7 +4,13 @@ import type { ApiResponse } from '@/shared/types';
 export interface AdminStage {
   id: string;
   name: string;
+  nameAr: string | null;
+  nameEn: string | null;
+  displayName?: string;
   description: string | null;
+  descriptionAr: string | null;
+  descriptionEn: string | null;
+  displayDescription?: string | null;
   sortOrder: number;
   teacherId: string | null;
   isActive: boolean;
@@ -27,14 +33,28 @@ export const adminStagesApi = {
     return data.data;
   },
 
-  create: async (payload: { name: string; description?: string | null; sortOrder?: number; isActive?: boolean }) => {
+  create: async (payload: {
+    nameAr: string;
+    nameEn: string;
+    descriptionAr?: string | null;
+    descriptionEn?: string | null;
+    sortOrder?: number;
+    isActive?: boolean;
+  }) => {
     const { data } = await apiClient.post<ApiResponse<AdminStage>>('/admin/stages', payload);
     return data.data;
   },
 
   update: async (
     id: string,
-    payload: { name?: string; description?: string | null; sortOrder?: number; isActive?: boolean },
+    payload: {
+      nameAr?: string;
+      nameEn?: string;
+      descriptionAr?: string | null;
+      descriptionEn?: string | null;
+      sortOrder?: number;
+      isActive?: boolean;
+    },
   ) => {
     const { data } = await apiClient.patch<ApiResponse<AdminStage>>(`/admin/stages/${id}`, payload);
     return data.data;

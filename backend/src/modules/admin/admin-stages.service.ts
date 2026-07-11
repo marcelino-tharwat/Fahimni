@@ -5,6 +5,16 @@ import { stagePublicFields } from "../stage/stage.types.js";
 import type { StageResponseDTO } from "../stage/stage.types.js";
 import type { ListStagesQuery, CreateStageInput, UpdateStageInput } from "./admin-stages.validation.js";
 
+function toLocalizedStage<T extends { name: string; nameAr: string | null; nameEn: string | null; description?: string | null; descriptionAr?: string | null; descriptionEn?: string | null }>(
+  stage: T,
+): T & { displayName: string; displayDescription: string | null } {
+  return {
+    ...stage,
+    displayName: stage.nameAr ?? stage.nameEn ?? stage.name,
+    displayDescription: stage.descriptionAr ?? stage.descriptionEn ?? stage.description ?? null,
+  };
+}
+
 function attachCounts<T extends { id: string }>(
   stage: T,
 ): Promise<T & { chapterCount: number; lessonCount: number }> {
@@ -38,7 +48,7 @@ export class AdminStagesService {
       }),
     ]);
 
-    const data = await Promise.all(stages.map((s) => attachCounts(s)));
+    const data = await Promise.all(stages.map((s) => attachCounts(toLocalizedStage(s))));
     return {
       data: data as unknown as StageResponseDTO[],
       meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
@@ -55,14 +65,18 @@ export class AdminStagesService {
       throw new AppError("Stage not found", 404);
     }
 
-    return attachCounts(stage) as unknown as StageResponseDTO;
+    return attachCounts(toLocalizedStage(stage)) as unknown as StageResponseDTO;
   }
 
   async create(input: CreateStageInput, adminId: string): Promise<StageResponseDTO> {
     const stage = await prisma.stage.create({
       data: {
-        name: input.name,
-        description: input.description ?? null,
+        name: input.name ?? input.nameAr,
+        nameAr: input.nameAr,
+        nameEn: input.nameEn,
+        description: input.description ?? input.descriptionAr ?? null,
+        descriptionAr: input.descriptionAr ?? input.description ?? null,
+        descriptionEn: input.descriptionEn ?? input.description ?? null,
         sortOrder: input.sortOrder ?? 0,
         isActive: input.isActive ?? true,
         teacherId: null,
@@ -80,7 +94,7 @@ export class AdminStagesService {
       details: { name: stage.name },
     });
 
-    return attachCounts(stage) as unknown as StageResponseDTO;
+    return attachCounts(toLocalizedStage(stage)) as unknown as StageResponseDTO;
   }
 
   async update(id: string, input: UpdateStageInput, adminId: string): Promise<StageResponseDTO> {
@@ -94,7 +108,12 @@ export class AdminStagesService {
 
     const data: Record<string, unknown> = {};
     if (input.name !== undefined) data.name = input.name;
+    if (input.nameAr !== undefined) data.nameAr = input.nameAr;
+    if (input.nameEn !== undefined) data.nameEn = input.nameEn;
+    if (input.name === undefined && input.nameAr !== undefined) data.name = input.nameAr;
     if (input.description !== undefined) data.description = input.description;
+    if (input.descriptionAr !== undefined) data.descriptionAr = input.descriptionAr;
+    if (input.descriptionEn !== undefined) data.descriptionEn = input.descriptionEn;
     if (input.sortOrder !== undefined) data.sortOrder = input.sortOrder;
     if (input.isActive !== undefined) data.isActive = input.isActive;
     data.teacherId = null;
@@ -112,10 +131,10 @@ export class AdminStagesService {
       actorId: adminId,
       actorType: "ADMIN",
       scopeTeacherId: null,
-      details: { name: stage.name },
+      details: { name: stage.name, nameAr: stage.nameAr, nameEn: stage.nameEn },
     });
 
-    return attachCounts(stage) as unknown as StageResponseDTO;
+    return attachCounts(toLocalizedStage(stage)) as unknown as StageResponseDTO;
   }
 
   async delete(id: string, adminId: string): Promise<void> {
@@ -191,7 +210,7 @@ export class AdminStagesService {
         orderBy: { sortOrder: "asc" },
       });
     }).then((stages) =>
-      Promise.all(stages.map((s) => attachCounts(s))) as unknown as Promise<StageResponseDTO[]>
+      Promise.all(stages.map((s) => attachCounts(toLocalizedStage(s)))) as unknown as Promise<StageResponseDTO[]>
     );
   }
 }

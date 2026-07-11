@@ -161,7 +161,11 @@ exports.Prisma.TeacherProfileScalarFieldEnum = {
 exports.Prisma.StageScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  nameAr: 'nameAr',
+  nameEn: 'nameEn',
   description: 'description',
+  descriptionAr: 'descriptionAr',
+  descriptionEn: 'descriptionEn',
   sortOrder: 'sortOrder',
   teacherId: 'teacherId',
   isActive: 'isActive',

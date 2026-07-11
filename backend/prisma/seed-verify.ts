@@ -4,6 +4,7 @@ import { prisma } from "../src/config/database.js";
 const DEMO_EMAIL_DOMAIN = "@fahimni.local";
 const DEMO_ORDER_PREFIX = "DEMO_";
 const DEMO_REF_PREFIX = "DEMO_";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin" + DEMO_EMAIL_DOMAIN;
 
 let failures = 0;
 function check(name: string, ok: boolean, detail = ""): void {
@@ -13,7 +14,7 @@ function check(name: string, ok: boolean, detail = ""): void {
 
 async function main(): Promise<void> {
   // 1. Admin exists
-  const admin = await prisma.user.findUnique({ where: { email: "admin" + DEMO_EMAIL_DOMAIN } });
+  const admin = await prisma.user.findUnique({ where: { email: ADMIN_EMAIL } });
   check("Admin user exists", !!admin, admin?.email ?? "not found");
   check("Admin has ADMIN role", admin?.role === "ADMIN");
   check("Admin has ACTIVE status", admin?.status === "ACTIVE");
@@ -29,6 +30,11 @@ async function main(): Promise<void> {
     where: { email: { endsWith: DEMO_EMAIL_DOMAIN }, role: "STUDENT" },
   });
   check("At least 5 students", students.length >= 5, `${students.length} found`);
+  const mainDemoStudents = await prisma.user.findMany({
+    where: { email: { in: ["student.stage1" + DEMO_EMAIL_DOMAIN, "student.stage2" + DEMO_EMAIL_DOMAIN] }, role: "STUDENT" },
+    select: { email: true },
+  });
+  check("Main demo students exist", mainDemoStudents.length === 2, mainDemoStudents.map((s) => s.email).join(", "));
   const studentIds = students.map((s) => s.id);
 
   // 4. All seed accounts have ACTIVE status — EXCEPT accounts deliberately left
@@ -169,6 +175,15 @@ async function main(): Promise<void> {
   // 15. Stages/chapters/lessons exist
   const stages = await prisma.stage.count({ where: { deletedAt: null, isActive: true } });
   check("Platform stages exist", stages >= 2, `${stages} stages`);
+  const localizedStages = await prisma.stage.count({
+    where: {
+      deletedAt: null,
+      isActive: true,
+      nameAr: { not: null },
+      nameEn: { not: null },
+    },
+  });
+  check("Localized platform stages exist", localizedStages >= 2, `${localizedStages} localized stages`);
   const teacherOwnedStages = await prisma.stage.count({
     where: { deletedAt: null, teacherId: { in: teachers.map((t) => t.id) } },
   });
@@ -432,14 +447,14 @@ async function main(): Promise<void> {
   const promos = await prisma.promoCode.count({ where: { code: { startsWith: "DEMO" } } });
   check("Promo codes exist", promos >= 3, `${promos} found`);
 
-  // 22a. Scope-separated platform promo codes exist (COURSE_PURCHASE + TEACHER_PLAN)
+  // 22a. Admin-managed platform promo codes are teacher-plan only.
   const coursePromos = await prisma.platformPromoCode.count({
     where: { code: { startsWith: "DEMO" }, scope: "COURSE_PURCHASE" },
   });
   const planPromos = await prisma.platformPromoCode.count({
     where: { code: { startsWith: "DEMO" }, scope: "TEACHER_PLAN" },
   });
-  check("COURSE_PURCHASE platform promo exists", coursePromos >= 1, `${coursePromos} found`);
+  check("No COURSE_PURCHASE platform promo remains", coursePromos === 0, `${coursePromos} found`);
   check("TEACHER_PLAN platform promo exists", planPromos >= 1, `${planPromos} found`);
 
   // 22b. Audit logs exist and cover the key admin actions.

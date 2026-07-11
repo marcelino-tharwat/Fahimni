@@ -1,4 +1,5 @@
 import type { BillingInterval } from "../../generated/prisma/index.js";
+import { randomUUID } from "node:crypto";
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../config/database.js";
 import { env } from "../../config/env.js";
@@ -19,7 +20,7 @@ export interface CheckoutInput {
 export interface CheckoutResult {
   paymentId: string;
   orderId: string;
-  checkoutUrl: string;
+  checkoutUrl: string | null;
   /** Final (discounted) amount charged — this is the Paymob amount. */
   amount: number;
   /** List price before any promo discount. */
@@ -30,7 +31,7 @@ export interface CheckoutResult {
   promoCode: string | null;
   currency: string;
   billingInterval: BillingInterval;
-  status: "PENDING";
+  status: "PENDING" | "SUCCESS";
 }
 
 export interface PendingPaymentDTO {
@@ -53,6 +54,51 @@ function addInterval(start: Date, interval: BillingInterval): Date {
     end.setUTCMonth(end.getUTCMonth() + 1);
   }
   return end;
+}
+
+async function upsertActiveSubscription(
+  tx: Prisma.TransactionClient,
+  teacherId: string,
+  planId: string,
+  billingInterval: BillingInterval,
+): Promise<string> {
+  const now = new Date();
+  const periodEnd = addInterval(now, billingInterval);
+  const existing = await tx.teacherSubscription.findFirst({
+    where: {
+      teacherId,
+      status: { in: ["TRIALING", "ACTIVE", "PAST_DUE"] },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (existing) {
+    const updated = await tx.teacherSubscription.update({
+      where: { id: existing.id },
+      data: {
+        planId,
+        status: "ACTIVE",
+        billingInterval,
+        currentPeriodStart: now,
+        currentPeriodEnd: periodEnd,
+        cancelledAt: null,
+      },
+    });
+    return updated.id;
+  }
+
+  const created = await tx.teacherSubscription.create({
+    data: {
+      teacherId,
+      planId,
+      status: "ACTIVE",
+      billingInterval,
+      startedAt: now,
+      currentPeriodStart: now,
+      currentPeriodEnd: periodEnd,
+    },
+  });
+  return created.id;
 }
 
 /**
@@ -153,6 +199,72 @@ export class TeacherSubscriptionPaymentService {
         getTeacherPlanMessage("PAYMENT_PENDING_EXISTS", locale),
         409,
       );
+    }
+
+    if (finalAmount <= 0 && appliedPromoId && appliedPricing) {
+      const providerOrderId = `PROMO-${randomUUID()}`;
+      const payment = await prisma.$transaction(async (tx) => {
+        const subscriptionId = await upsertActiveSubscription(
+          tx,
+          teacherId,
+          input.planId,
+          input.billingInterval,
+        );
+        const created = await tx.teacherSubscriptionPayment.create({
+          data: {
+            teacherId,
+            planId: input.planId,
+            subscriptionId,
+            provider: "PROMO",
+            providerOrderId,
+            providerTransactionId: providerOrderId,
+            amount: 0,
+            currency: plan.currency,
+            billingInterval: input.billingInterval,
+            status: "SUCCESS",
+            checkoutUrl: null,
+            rawCallback: {
+              source: "PROMO_CODE",
+              promoCode: appliedPromoCode,
+              discount,
+              originalAmount,
+            },
+          },
+        });
+        const used = await platformPromoService.recordRedemption(tx, appliedPromoId, teacherId, appliedPricing);
+        if (!used) {
+          throw new AppError("تم استنفاد رمز الخصم", 400, "PROMO_LIMIT_REACHED");
+        }
+        return created;
+      });
+
+      await auditLogService.record({
+        action: "PAYMENT_COMPLETED",
+        resourceType: "TEACHER_SUBSCRIPTION_PAYMENT",
+        resourceId: payment.id,
+        actorId: teacherId,
+        actorType: "SYSTEM",
+        scopeTeacherId: teacherId,
+        details: {
+          planId: input.planId,
+          amount: 0,
+          billingInterval: input.billingInterval,
+          promoCode: appliedPromoCode,
+        },
+      });
+
+      return {
+        paymentId: payment.id,
+        orderId: providerOrderId,
+        checkoutUrl: null,
+        amount: 0,
+        originalAmount,
+        discount,
+        promoCode: appliedPromoCode,
+        currency: plan.currency,
+        billingInterval: input.billingInterval,
+        status: "SUCCESS",
+      };
     }
 
     const teacher = await prisma.user.findUnique({
@@ -311,46 +423,13 @@ export class TeacherSubscriptionPaymentService {
     }
 
     if (payload.success === true) {
-      const now = new Date();
-      const periodEnd = addInterval(now, payment.billingInterval);
-
       await prisma.$transaction(async (tx) => {
-        const existing = await tx.teacherSubscription.findFirst({
-          where: {
-            teacherId: payment.teacherId,
-            status: { in: ["TRIALING", "ACTIVE", "PAST_DUE"] },
-          },
-          orderBy: { createdAt: "desc" },
-        });
-
-        let subscriptionId: string;
-        if (existing) {
-          const updated = await tx.teacherSubscription.update({
-            where: { id: existing.id },
-            data: {
-              planId: payment.planId,
-              status: "ACTIVE",
-              billingInterval: payment.billingInterval,
-              currentPeriodStart: now,
-              currentPeriodEnd: periodEnd,
-              cancelledAt: null,
-            },
-          });
-          subscriptionId = updated.id;
-        } else {
-          const created = await tx.teacherSubscription.create({
-            data: {
-              teacherId: payment.teacherId,
-              planId: payment.planId,
-              status: "ACTIVE",
-              billingInterval: payment.billingInterval,
-              startedAt: now,
-              currentPeriodStart: now,
-              currentPeriodEnd: periodEnd,
-            },
-          });
-          subscriptionId = created.id;
-        }
+        const subscriptionId = await upsertActiveSubscription(
+          tx,
+          payment.teacherId,
+          payment.planId,
+          payment.billingInterval,
+        );
 
         await tx.teacherSubscriptionPayment.update({
           where: { id: payment.id },

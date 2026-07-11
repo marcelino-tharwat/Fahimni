@@ -665,7 +665,7 @@ function StageSelect({
           {loading
             ? t("auth:loading")
             : selected
-              ? selected.name
+              ? selected.displayName ?? selected.name
               : t("auth:selectStage")}
         </span>
         <ChevronDown
@@ -699,7 +699,7 @@ function StageSelect({
                 <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
                   <GraduationCap size={16} />
                 </span>
-                <span className="flex-1">{stage.name}</span>
+                <span className="flex-1">{stage.displayName ?? stage.name}</span>
               </button>
             ))
           )}

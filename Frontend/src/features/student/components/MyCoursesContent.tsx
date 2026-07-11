@@ -41,7 +41,7 @@ function collectLockedChapters(
   for (const item of tree) {
     for (const ch of item.chapters) {
       if (ch.chapter.enrollmentStatus === 'locked') {
-        out.push({ chapter: ch.chapter, stageName: item.stage.name });
+        out.push({ chapter: ch.chapter, stageName: item.stage.displayName ?? item.stage.name });
       }
     }
   }
