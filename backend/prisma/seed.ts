@@ -513,15 +513,15 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
     });
 
     await tx.lesson.deleteMany({
-      where: { chapter: { stage: { teacherId: { in: ids } } } },
+      where: { chapter: { stageId: { in: stageIds } } },
     });
     await tx.chapter.deleteMany({
-      where: { stage: { teacherId: { in: ids } } },
+      where: { stageId: { in: stageIds } },
     });
     await tx.studentProfile.deleteMany({
       where: { OR: [{ userId: { in: ids } }, { stageId: { in: stageIds } }] },
     });
-    await tx.stage.deleteMany({ where: { teacherId: { in: ids } } });
+    await tx.stage.deleteMany({ where: { id: { in: stageIds } } });
     await tx.teacherProfile.deleteMany({ where: { userId: { in: ids } } });
 
     await tx.auditLog.deleteMany({
@@ -790,13 +790,16 @@ async function seedAll(): Promise<void> {
             name: st.name,
             description: st.description,
             sortOrder: st.sortOrder,
+            teacherId: null,
+            isActive: true,
           },
           create: {
             id: st.id,
             name: st.name,
             description: st.description,
             sortOrder: st.sortOrder,
-            teacherId: TEACHERS[st.teacherIdx]!.id,
+            teacherId: null,
+            isActive: true,
           },
         });
       }

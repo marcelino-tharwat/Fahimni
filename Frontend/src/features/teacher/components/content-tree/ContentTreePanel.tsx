@@ -73,17 +73,8 @@ export function ContentTreePanel({
         </h2>
         <TreeNodeMenu
           nodeType="stage"
-          actions={['edit', 'delete']}
-          onAction={(action) =>
-            action === 'delete'
-              ? onRequestDelete({
-                  type: 'stage',
-                  id: stageId,
-                  name: stageName,
-                  childrenCount: chapters.length,
-                })
-              : onMenuAction({ type: 'stage', id: stageId }, action)
-          }
+          actions={['addChapter']}
+          onAction={(action) => onMenuAction({ type: 'stage', id: stageId }, action)}
         />
       </div>
 

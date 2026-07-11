@@ -53,6 +53,7 @@ interface LabeledInputProps {
   dir?: 'ltr' | 'rtl';
   inputMode?: 'numeric' | 'text';
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export function LabeledInput({
@@ -69,6 +70,7 @@ export function LabeledInput({
   dir,
   inputMode,
   placeholder,
+  disabled,
 }: LabeledInputProps) {
   return (
     <div>
@@ -82,8 +84,9 @@ export function LabeledInput({
           dir={dir}
           inputMode={inputMode}
           placeholder={placeholder}
+          disabled={disabled}
           aria-invalid={Boolean(error)}
-          className={cn(fieldClasses(Boolean(error)), trailing && 'pe-14')}
+          className={cn(fieldClasses(Boolean(error)), trailing && 'pe-14', disabled && 'cursor-not-allowed bg-gray-50 text-gray-500')}
         />
         {trailing && (
           <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-4">

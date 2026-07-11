@@ -5,6 +5,7 @@ import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
 import { createChapterSchema, flattenZodErrors } from '@/features/teacher/validation';
 import { useCreateChapter } from '@/features/teacher/hooks/useChapters';
+import { useTeacherProfile } from '@/features/teacher/hooks/useTeacherProfile';
 import { EditorHeader } from './EditorHeader';
 import { FormActions, LabeledInput, LabeledTextarea } from './EditorFields';
 import type { NodeRef } from './types';
@@ -24,6 +25,7 @@ export function CreateChapterForm({
   const { t } = useTranslation('teacher');
   const dispatch = useAppDispatch();
   const createChapter = useCreateChapter();
+  const { data: teacherProfile } = useTeacherProfile();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -61,6 +63,7 @@ export function CreateChapterForm({
           name: parsed.data.name,
           description: description.trim() || undefined,
           price: priceValue ?? undefined,
+          subject: teacherProfile?.subject ?? undefined,
           sortOrder: nextSortOrder,
         },
       },
@@ -112,6 +115,13 @@ export function CreateChapterForm({
             clearError('description');
           }}
           error={errors.description}
+        />
+        <LabeledInput
+          label={t('contentTree.editor.subject', 'Subject')}
+          value={teacherProfile?.subject ?? t('contentTree.editor.subjectLockedEmpty', 'Your approved subject')}
+          onChange={() => {}}
+          disabled
+          helperText={t('contentTree.editor.subjectLocked', 'Subject is locked to your approved teacher profile.')}
         />
         <LabeledInput
           label={t('contentTree.editor.price')}

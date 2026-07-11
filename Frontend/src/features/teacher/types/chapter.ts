@@ -23,6 +23,7 @@ export interface CreateChapterPayload {
   sortOrder: number; // required, >= 1
   description?: string; // optional, max 2000
   price?: number; // optional, >= 0 (omit/null = free)
+  subject?: string;
 }
 
 export interface UpdateChapterPayload {
