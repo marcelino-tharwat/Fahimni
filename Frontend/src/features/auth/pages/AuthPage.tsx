@@ -328,7 +328,7 @@ function RegisterForm() {
     return (
       <div className="flex flex-col gap-4 text-center" data-testid="teacher-pending-message">
         <p className="rounded-md bg-emerald-50 px-4 py-3 text-body font-medium text-emerald-700">
-          {t("auth:teacherPendingMessage", "تم إرسال طلبك للمراجعة من الإدارة")}
+          {t("auth:teacherPendingMessage", "تم استلام طلبك وهو قيد المراجعة، وسيتم إشعارك عند مراجعة الطلب.")}
         </p>
         {trackingReference && (
           <div

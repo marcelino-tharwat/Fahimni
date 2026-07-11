@@ -1,5 +1,5 @@
 import { EmailService } from "../src/modules/email/email.service.js";
-import { getEmailConfig, getSafeEmailConfigSummary } from "../src/modules/email/email.provider.js";
+import { getEmailConfig, getSafeEmailConfigSummary, SmtpEmailProvider } from "../src/modules/email/email.provider.js";
 
 function argValue(name: string): string | undefined {
   const prefix = `--${name}=`;
@@ -15,9 +15,32 @@ async function main(): Promise<void> {
   }
 
   const config = getEmailConfig();
-  console.info("[email-smoke] config", getSafeEmailConfigSummary(config));
+  const provider = new SmtpEmailProvider(config);
+  console.info("[email-smoke] mode", getSafeEmailConfigSummary(config));
+  console.info("[email-smoke] transport", provider.getSafeTransportSummary());
 
-  const result = await new EmailService(undefined, config).sendEmail({
+  let verifyResult = "skipped";
+  let verifyError: unknown;
+  if (config.enabled && !config.dryRun) {
+    try {
+      await provider.verify();
+      verifyResult = "ok";
+    } catch (error) {
+      verifyResult = "failed";
+      verifyError = error;
+    }
+  }
+  console.info("[email-smoke] verify", {
+    result: verifyResult,
+    ...(verifyError instanceof Error ? { errorName: verifyError.name, message: verifyError.message } : {}),
+  });
+
+  if (verifyError) {
+    console.info("[email-smoke] send", { result: "skipped", reason: "verify_failed", messageId: null });
+    throw verifyError;
+  }
+
+  const result = await new EmailService(provider, config).sendEmail({
     to,
     template: "passwordReset",
     locale: "en",
@@ -30,12 +53,12 @@ async function main(): Promise<void> {
     metadata: { source: "email-smoke" },
   });
 
-  console.info("[email-smoke] result", {
+  console.info("[email-smoke] send", {
     sent: result.sent,
     skipped: result.skipped,
     dryRun: result.dryRun,
     template: result.template,
-    ...(result.providerMessageId ? { providerMessageId: result.providerMessageId } : {}),
+    messageId: result.providerMessageId ?? null,
   });
   process.exit(0);
 }

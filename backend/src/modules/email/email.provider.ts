@@ -1,6 +1,13 @@
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 import type { EmailProvider } from "./email.types.js";
+
+const SMTP_TIMEOUT_MS = 60_000;
+
+type GmailSmtpOptions = SMTPTransport.Options & {
+  family: 4;
+};
 
 function boolFromEnv(value: string | undefined, fallback: boolean): boolean {
   if (value === undefined || value === "") return fallback;
@@ -12,6 +19,10 @@ function numberFromEnv(value: string | undefined, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function stringFromEnv(value: string | undefined): string {
+  return value?.trim() ?? "";
+}
+
 export interface EmailRuntimeConfig {
   enabled: boolean;
   provider: "smtp";
@@ -19,6 +30,8 @@ export interface EmailRuntimeConfig {
   smtpHost: string;
   smtpPort: number;
   smtpSecure: boolean;
+  smtpRequireTls: boolean;
+  smtpFamily: 4;
   smtpUser: string;
   smtpPass: string;
   from: string;
@@ -33,14 +46,16 @@ export function getEmailConfig(env: NodeJS.ProcessEnv = process.env): EmailRunti
     enabled: boolFromEnv(env.EMAIL_ENABLED, false),
     provider: "smtp",
     dryRun: boolFromEnv(env.EMAIL_DRY_RUN, true),
-    smtpHost: env.EMAIL_HOST ?? "",
+    smtpHost: stringFromEnv(env.EMAIL_HOST),
     smtpPort,
     smtpSecure: smtpPort === 465,
-    smtpUser: env.EMAIL_USER ?? "",
-    smtpPass: env.EMAIL_PASS ?? "",
-    from: env.EMAIL_FROM ?? "",
-    clientUrl: env.CLIENT_URL ?? "http://localhost:5173",
-    adminEmail: env.ADMIN_EMAIL ?? "",
+    smtpRequireTls: smtpPort === 587,
+    smtpFamily: 4,
+    smtpUser: stringFromEnv(env.EMAIL_USER),
+    smtpPass: stringFromEnv(env.EMAIL_PASS),
+    from: stringFromEnv(env.EMAIL_FROM),
+    clientUrl: stringFromEnv(env.CLIENT_URL) || "http://localhost:5173",
+    adminEmail: stringFromEnv(env.ADMIN_EMAIL),
   };
 }
 
@@ -50,6 +65,10 @@ export function getSafeEmailConfigSummary(config: EmailRuntimeConfig = getEmailC
     dryRun: config.dryRun,
     provider: config.provider,
     hostConfigured: Boolean(config.smtpHost),
+    port: config.smtpPort,
+    secure: config.smtpSecure,
+    requireTLS: config.smtpRequireTls,
+    family: config.smtpFamily,
     userConfigured: Boolean(config.smtpUser),
     fromConfigured: Boolean(config.from),
     clientUrlConfigured: Boolean(config.clientUrl),
@@ -61,21 +80,44 @@ export class SmtpEmailProvider implements EmailProvider {
 
   constructor(private readonly config: EmailRuntimeConfig) {}
 
-  async send(input: Parameters<EmailProvider["send"]>[0]): Promise<unknown> {
+  getSafeTransportSummary() {
+    return {
+      hostConfigured: Boolean(this.config.smtpHost),
+      port: this.config.smtpPort,
+      secure: this.config.smtpSecure,
+      requireTLS: this.config.smtpRequireTls,
+      family: this.config.smtpFamily,
+      userConfigured: Boolean(this.config.smtpUser),
+      fromConfigured: Boolean(this.config.from),
+    };
+  }
+
+  private getTransporter(): Transporter {
     if (!this.transporter) {
-      this.transporter = nodemailer.createTransport({
+      const options: GmailSmtpOptions = {
         host: this.config.smtpHost,
         port: this.config.smtpPort,
         secure: this.config.smtpSecure,
-        connectionTimeout: 60_000,
-        greetingTimeout: 60_000,
-        socketTimeout: 60_000,
+        requireTLS: this.config.smtpRequireTls,
+        family: this.config.smtpFamily,
+        connectionTimeout: SMTP_TIMEOUT_MS,
+        greetingTimeout: SMTP_TIMEOUT_MS,
+        socketTimeout: SMTP_TIMEOUT_MS,
         auth:
           this.config.smtpUser && this.config.smtpPass
             ? { user: this.config.smtpUser, pass: this.config.smtpPass }
             : undefined,
-      });
+      };
+      this.transporter = nodemailer.createTransport(options);
     }
-    return this.transporter.sendMail(input);
+    return this.transporter;
+  }
+
+  async verify(): Promise<boolean> {
+    return this.getTransporter().verify();
+  }
+
+  async send(input: Parameters<EmailProvider["send"]>[0]): Promise<unknown> {
+    return this.getTransporter().sendMail(input);
   }
 }
