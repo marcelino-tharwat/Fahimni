@@ -69,6 +69,9 @@ export function classifyZodIssue(issue: ZodIssue): string {
       return "INVALID_CHOICE";
     case "custom":
       if (field.toLowerCase() === "confirmpassword") return "PASSWORD_MISMATCH";
+      // A blank-password refine (whitespace-only) reads the same as "you
+      // didn't actually provide one" — reuse the REQUIRED code/message.
+      if (isPasswordField(field)) return "REQUIRED";
       return "INVALID_VALUE";
     default:
       return "INVALID_VALUE";

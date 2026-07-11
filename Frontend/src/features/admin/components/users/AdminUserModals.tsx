@@ -6,6 +6,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { Spinner } from '@/shared/components/ui/Spinner';
 import { Input } from '@/shared/components/ui/Input';
 import { cn } from '@/shared/lib/utils/cn';
+import { normalizeTextInput, isBlank } from '@/shared/lib/utils/textNormalization';
 import type { AdminUserIdentity, UserRole, UserStatus } from '@/features/admin/types/users';
 
 export type ModalMode =
@@ -155,8 +156,18 @@ function CreateUserModal({
   const [role, setRole] = useState<UserRole>('STUDENT');
   const [status, setStatus] = useState<UserStatus>('ACTIVE');
 
+  const canSubmit = !isBlank(fullName) && !isBlank(email) && !isBlank(password);
+
   const handleSubmit = async () => {
-    await onSubmit({ fullName, email, mobile, password, role, status });
+    if (!canSubmit) return;
+    await onSubmit({
+      fullName: normalizeTextInput(fullName),
+      email: email.trim(),
+      mobile: mobile.trim(),
+      password,
+      role,
+      status,
+    });
   };
 
   return (
@@ -200,7 +211,7 @@ function CreateUserModal({
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             {t('common.cancel', 'Cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !fullName || !email || !password}>
+          <Button onClick={handleSubmit} disabled={isSubmitting || !canSubmit}>
             {isSubmitting ? <Spinner /> : t('adminUsers.create', 'Create')}
           </Button>
         </div>
@@ -223,11 +234,19 @@ function EditUserModal({
   const [email, setEmail] = useState(user.email ?? '');
   const [mobile, setMobile] = useState(user.mobile);
 
+  // Required fields must validate after trimming — tabs/spaces/newlines alone
+  // must not be accepted as a real full name or email.
+  const canSubmit = !isBlank(fullName) && !isBlank(email);
+
   const handleSubmit = async () => {
+    if (!canSubmit) return;
+    const trimmedFullName = normalizeTextInput(fullName);
+    const trimmedEmail = email.trim();
+    const trimmedMobile = mobile.trim();
     const data: Record<string, unknown> = {};
-    if (fullName !== user.fullName) data.fullName = fullName;
-    if (email !== user.email) data.email = email;
-    if (mobile !== user.mobile) data.mobile = mobile;
+    if (trimmedFullName !== user.fullName) data.fullName = trimmedFullName;
+    if (trimmedEmail !== user.email) data.email = trimmedEmail;
+    if (trimmedMobile !== user.mobile) data.mobile = trimmedMobile;
     await onSubmit(data);
   };
 
@@ -251,7 +270,7 @@ function EditUserModal({
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             {t('common.cancel', 'Cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+          <Button onClick={handleSubmit} disabled={isSubmitting || !canSubmit}>
             {isSubmitting ? <Spinner /> : t('adminUsers.save', 'Save')}
           </Button>
         </div>
@@ -274,7 +293,8 @@ function BanUserModal({
   const [reason, setReason] = useState('');
 
   const handleSubmit = async () => {
-    const data: Record<string, unknown> = { status: 'BANNED', reason };
+    if (isBlank(reason)) return;
+    const data: Record<string, unknown> = { status: 'BANNED', reason: normalizeTextInput(reason) };
     await onSubmit(data);
   };
 
@@ -314,7 +334,7 @@ function BanUserModal({
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             {t('common.cancel', 'Cancel')}
           </Button>
-          <Button variant="danger" onClick={handleSubmit} disabled={isSubmitting || isSelf || !reason}>
+          <Button variant="danger" onClick={handleSubmit} disabled={isSubmitting || isSelf || isBlank(reason)}>
             {isSubmitting ? <Spinner /> : t('adminUsers.ban', 'Ban')}
           </Button>
         </div>
@@ -394,7 +414,8 @@ function ResetPasswordModal({
   const [reason, setReason] = useState('');
 
   const handleSubmit = async () => {
-    await onSubmit({ newPassword, confirmPassword, forceLogout, reason });
+    // Passwords are intentionally never trimmed — only the reason is.
+    await onSubmit({ newPassword, confirmPassword, forceLogout, reason: normalizeTextInput(reason) });
   };
 
   const passwordValid = newPassword.length >= 8 && /[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) && /[0-9]/.test(newPassword) && /[^A-Za-z0-9]/.test(newPassword);
@@ -503,7 +524,7 @@ function ChangeRoleModal({
 
   const handleSubmit = async () => {
     const data: Record<string, unknown> = { role: newRole };
-    if (reason.trim()) data.reason = reason;
+    if (!isBlank(reason)) data.reason = normalizeTextInput(reason);
     await onSubmit(data);
   };
 

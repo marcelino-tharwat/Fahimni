@@ -17,10 +17,10 @@ const PROOF_MAX_SIZE = 10 * 1024 * 1024;
 const PROOF_MAX_COUNT = 5;
 
 export const proofFileSchema = z.object({
-  originalName: z.string().min(1),
+  originalName: z.string().trim().min(1),
   mimeType: z.enum(ALLOWED_PROOF_MIME_TYPES),
   size: z.number().int().positive().max(PROOF_MAX_SIZE),
-  path: z.string().min(1),
+  path: z.string().trim().min(1),
 });
 
 export const createTeacherRequestSchema = z.object({
@@ -44,11 +44,12 @@ export const createTeacherRequestSchema = z.object({
   subject: z
     .enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" })
     .optional(),
-  bio: z
-    .string()
-    .trim()
-    .max(1000, "Bio must not exceed 1000 characters")
-    .optional(),
+  // Whitespace-only ("   ", "\n\t") normalizes away to "no bio" instead of
+  // being persisted as a blank/whitespace string.
+  bio: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z.string().trim().max(1000, "Bio must not exceed 1000 characters").optional(),
+  ),
 });
 
 export type CreateTeacherRequestInput = z.infer<typeof createTeacherRequestSchema>;
