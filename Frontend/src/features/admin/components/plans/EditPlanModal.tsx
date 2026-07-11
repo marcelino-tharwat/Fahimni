@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button } from '@/shared/components/ui';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { useUpdatePlan } from '@/features/admin/hooks/useAdminPlans';
 import type { AdminPlanListItem, UpdatePlanInput } from '@/features/admin/types/plans';
 
@@ -50,7 +51,12 @@ export function EditPlanModal({ isOpen, onClose, plan }: EditPlanModalProps) {
       if (JSON.stringify(l) !== JSON.stringify(plan.limits)) input.limits = l;
     } catch { /* keep undefined */ }
 
-    await updateMutation.mutateAsync({ planId: plan.id, input });
+    try {
+      await updateMutation.mutateAsync({ planId: plan.id, input });
+    } catch {
+      // Surfaced reactively via `updateMutation.isError`/`error` below.
+      return;
+    }
     onClose();
   };
 
@@ -114,7 +120,7 @@ export function EditPlanModal({ isOpen, onClose, plan }: EditPlanModalProps) {
       </div>
       {updateMutation.isError && (
         <p className="mt-2 font-cairo text-sm text-danger">
-          {t('adminPlansMutations.editModal.error')}: {updateMutation.error?.message}
+          {t('adminPlansMutations.editModal.error')}: {translateApiError(t, updateMutation.error)}
         </p>
       )}
     </Modal>

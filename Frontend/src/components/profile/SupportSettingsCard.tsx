@@ -7,7 +7,7 @@ import { useUpdateTeacherProfile } from '@/features/teacher/hooks/useTeacherProf
 import { addToast } from '@/shared/store/slices/toastSlice';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { normalizeMobile } from '@/features/teacher/validation';
-import { getApiErrorMessage } from '@/shared/lib/api/errors';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { cn } from '@/shared/lib/utils/cn';
 import { SkeletonBlock } from './SkeletonBlock';
 import type { TeacherProfile } from '@/features/teacher/types/teacher';
@@ -104,7 +104,7 @@ export function SupportSettingsCard({ profile, isLoading }: SupportSettingsCardP
         onError: (err) => {
           dispatch(addToast({
             type: 'error',
-            message: getApiErrorMessage(err, t('settings.support.saveError')),
+            message: translateApiError(t, err),
           }));
         },
       },

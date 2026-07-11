@@ -6,6 +6,7 @@ import {
   teacherRequestTrackApi,
   type TrackRequestResult,
 } from '@/features/teacher-request/api/teacherRequestTrack';
+import { translateApiError } from '@/shared/lib/api/translateError';
 
 /**
  * Public page where a teacher checks their registration request status using the
@@ -35,8 +36,7 @@ export function TeacherRequestTrackPage() {
       });
       setResult(res);
     } catch (err: unknown) {
-      const e2 = err as { message?: string };
-      setError(e2.message ?? t('track.notFound', 'لم يتم العثور على طلب مطابق'));
+      setError(translateApiError(t, err));
     } finally {
       setLoading(false);
     }

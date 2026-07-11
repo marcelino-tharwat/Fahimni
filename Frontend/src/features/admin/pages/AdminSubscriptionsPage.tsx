@@ -7,6 +7,7 @@ import { Badge } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import {
   useAdminEntitlements,
   useAdminSubscriptionsList,
@@ -266,7 +267,7 @@ function RequestsTab({ q }: { q: string }) {
       { requestId: id },
       {
         onSuccess: () => dispatch(addToast({ type: 'success', message: t('adminSubscriptions.approveSuccess') })),
-        onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? t('adminSubscriptions.actionError') })),
+        onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: translateApiError(t, e) })),
       },
     );
   const onReject = (id: string) => {
@@ -276,7 +277,7 @@ function RequestsTab({ q }: { q: string }) {
       { requestId: id, adminNotes: reason.trim() },
       {
         onSuccess: () => dispatch(addToast({ type: 'success', message: t('adminSubscriptions.rejectSuccess') })),
-        onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? t('adminSubscriptions.actionError') })),
+        onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: translateApiError(t, e) })),
       },
     );
   };

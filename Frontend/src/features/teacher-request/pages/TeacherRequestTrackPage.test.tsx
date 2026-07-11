@@ -6,8 +6,11 @@ import { MemoryRouter } from 'react-router-dom';
 import { TeacherRequestTrackPage } from './TeacherRequestTrackPage';
 import { teacherRequestTrackApi } from '@/features/teacher-request/api/teacherRequestTrack';
 
+// t() always returns the key itself (ignoring any fallback default string
+// argument) so assertions can target i18n keys directly regardless of
+// language — matches the convention used across this session's test suites.
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (_k: string, d?: string) => d ?? _k }),
+  useTranslation: () => ({ t: (key: string) => key }),
 }));
 vi.mock('@/features/teacher-request/api/teacherRequestTrack', () => ({
   teacherRequestTrackApi: { track: vi.fn() },
@@ -45,11 +48,23 @@ describe('TeacherRequestTrackPage', () => {
   });
 
   it('shows an error message when the lookup fails', async () => {
-    mApi.track.mockRejectedValue({ message: 'No matching request found' });
+    // A stable backend code — translated to the matching i18n key, never the
+    // raw (possibly wrong-language) backend `message` string.
+    mApi.track.mockRejectedValue({ code: 'TEACHER_REQUEST_NOT_FOUND', message: 'No matching request found' });
     renderPage();
     fill('TR-2026-999999', 'nobody@example.com');
     fireEvent.click(screen.getByTestId('track-submit'));
-    expect(await screen.findByTestId('track-error')).toHaveTextContent('No matching request found');
+    expect(await screen.findByTestId('track-error')).toHaveTextContent('validation:teacherRequestNotFound');
+  });
+
+  it('shows the safe localized fallback when the backend error has no known code', async () => {
+    mApi.track.mockRejectedValue({ message: 'some unrecognized raw backend text' });
+    renderPage();
+    fill('TR-2026-999998', 'nobody@example.com');
+    fireEvent.click(screen.getByTestId('track-submit'));
+    const el = await screen.findByTestId('track-error');
+    expect(el).toHaveTextContent('validation:genericError');
+    expect(el).not.toHaveTextContent('some unrecognized raw backend text');
   });
 
   it('keeps the submit button disabled until both fields are filled', () => {

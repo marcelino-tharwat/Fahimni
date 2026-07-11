@@ -12,7 +12,7 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { useQueryClient } from '@tanstack/react-query';
 import { useContentTree } from '@/features/teacher/hooks/useContentTree';
 import { useDeleteChapter } from '@/features/teacher/hooks/useChapters';
@@ -328,8 +328,7 @@ export function ContentTreePage() {
         dispatch(
           addToast({
             type: 'error',
-            message:
-              (error as ApiError)?.message ?? t('teacher:contentTree.editor.toast.deleteError'),
+            message: translateApiError(t, error),
           }),
         );
       }

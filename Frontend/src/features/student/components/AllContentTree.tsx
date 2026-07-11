@@ -21,6 +21,7 @@ import { cn } from '@/shared/lib/utils/cn';
 import { toLocalNum } from '@/shared/lib/utils/toLocalNum';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { useStudentTree } from '@/features/student/hooks/useStudentContent';
 import { useEnrollFree } from '@/features/student/hooks/useEnrollFree';
 import { useSubjects } from '@/features/subjects/useSubjects';
@@ -84,10 +85,7 @@ export function AllContentTree() {
         setEnrollTarget(null);
       },
       onError: (error) => {
-        // The apiClient interceptor rejects with a normalized ApiError-shaped
-        // object; read its message structurally (matches the rest of the app).
-        const message = (error as { message?: string }).message || t('student:content.enrollError');
-        dispatch(addToast({ type: 'error', message }));
+        dispatch(addToast({ type: 'error', message: translateApiError(t, error) }));
       },
     });
   };

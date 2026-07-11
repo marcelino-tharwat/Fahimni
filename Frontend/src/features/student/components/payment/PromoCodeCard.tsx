@@ -46,26 +46,20 @@ function reasonToState(reason?: string): PromoState {
   }
 }
 
-/** Best-effort mapping of a redeem error to an error state. */
+/** Maps a redeem error's stable backend code to an error state. */
 function redeemErrorToState(error: unknown): PromoState {
-  const apiError = error as { code?: string; message?: string };
-  if (apiError.code === 'CHAPTER_NOT_FOUND') return 'error-chapter-not-found';
-
-  const message = extractApiMessage(error).toLowerCase();
-  if (message.includes('used')) return 'error-used';
-  if (message.includes('expired')) return 'error-expired';
-  if (message.includes('chapter')) return 'error-chapter-not-found';
-  return 'error-invalid';
-}
-
-function extractApiMessage(error: unknown): string {
-  if (typeof error === 'object' && error !== null) {
-    const response = (error as { response?: { data?: { message?: unknown } } }).response;
-    if (typeof response?.data?.message === 'string') return response.data.message;
-    const message = (error as { message?: unknown }).message;
-    if (typeof message === 'string') return message;
+  const apiError = error as { code?: string };
+  switch (apiError.code) {
+    case 'CHAPTER_NOT_FOUND':
+      return 'error-chapter-not-found';
+    case 'CODE_ALREADY_USED':
+      return 'error-used';
+    case 'CODE_NOT_FOR_THIS_CHAPTER':
+      return 'error-not-for-chapter';
+    case 'INVALID_CODE':
+    default:
+      return 'error-invalid';
   }
-  return '';
 }
 
 /**

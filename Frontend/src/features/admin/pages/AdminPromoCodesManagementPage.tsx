@@ -6,6 +6,7 @@ import { Badge } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { adminPlansApi } from '@/features/admin/api/adminPlans';
 import { useAdminPromoCodes, useAdminPromoMutations } from '@/features/admin/hooks/useAdminPlatformPromoCodes';
 import type {
@@ -65,7 +66,7 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
     };
     create.mutate(body, {
       onSuccess: () => { dispatch(addToast({ type: 'success', message: t('adminPromoCodes.createSuccess') })); onClose(); },
-      onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? t('adminPromoCodes.createError') })),
+      onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: translateApiError(t, e) })),
     });
   };
 
@@ -156,7 +157,7 @@ export function AdminPromoCodesManagementPage() {
   const toggle = (p: PlatformPromoCode) =>
     changeStatus.mutate(
       { id: p.id, isActive: !p.isActive },
-      { onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: e.message ?? 'تعذّر التحديث' })) },
+      { onError: (e: ApiError) => dispatch(addToast({ type: 'error', message: translateApiError(t, e) })) },
     );
 
   return (

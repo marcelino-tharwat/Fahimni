@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Button } from '@/shared/components/ui';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { useCreatePlan } from '@/features/admin/hooks/useAdminPlans';
 import type { CreatePlanInput } from '@/features/admin/types/plans';
 
@@ -42,13 +43,18 @@ export function CreatePlanModal({ isOpen, onClose }: CreatePlanModalProps) {
       limits = JSON.parse(limitsJson);
     } catch { limits = {}; }
 
-    await createMutation.mutateAsync({
-      ...form,
-      monthlyPrice: Number(form.monthlyPrice),
-      sortOrder: form.sortOrder != null ? Number(form.sortOrder) : undefined,
-      features,
-      limits,
-    });
+    try {
+      await createMutation.mutateAsync({
+        ...form,
+        monthlyPrice: Number(form.monthlyPrice),
+        sortOrder: form.sortOrder != null ? Number(form.sortOrder) : undefined,
+        features,
+        limits,
+      });
+    } catch {
+      // Surfaced reactively via `createMutation.isError`/`error` below.
+      return;
+    }
     onClose();
     setForm({ code: '', name: '', displayName: '', description: '', monthlyPrice: 0, yearlyPrice: null, currency: 'EGP', isActive: true, isRecommended: false, sortOrder: 0, features: {}, limits: {} });
     setFeaturesJson('{}');
@@ -121,7 +127,7 @@ export function CreatePlanModal({ isOpen, onClose }: CreatePlanModalProps) {
       </div>
       {createMutation.isError && (
         <p className="mt-2 font-cairo text-sm text-danger">
-          {t('adminPlansMutations.createModal.error')}: {createMutation.error?.message}
+          {t('adminPlansMutations.createModal.error')}: {translateApiError(t, createMutation.error)}
         </p>
       )}
     </Modal>

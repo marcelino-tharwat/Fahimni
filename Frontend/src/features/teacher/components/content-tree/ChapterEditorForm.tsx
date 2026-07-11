@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
-import type { ApiError } from '@/shared/lib/api/client';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { createChapterSchema, flattenZodErrors } from '@/features/teacher/validation';
 import { useUpdateChapter } from '@/features/teacher/hooks/useChapters';
 import type { Chapter } from '@/features/teacher/types/chapter';
@@ -82,8 +82,7 @@ export function ChapterEditorForm({ chapter, onRequestDelete }: ChapterEditorFor
           dispatch(
             addToast({
               type: 'error',
-              message:
-                (error as ApiError)?.message ?? t('contentTree.editor.toast.saveError'),
+              message: translateApiError(t, error),
             }),
           ),
       },

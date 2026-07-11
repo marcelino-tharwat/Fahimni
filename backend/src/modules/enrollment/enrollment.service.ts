@@ -28,7 +28,7 @@ export class EnrollmentService {
     });
 
     if (!chapter || chapter.deletedAt) {
-      throw new AppError("Chapter not found", 404);
+      throw new AppError("Chapter not found", 404, "CHAPTER_NOT_FOUND");
     }
 
     const visible = await isTeacherVisibleForDiscovery(data.chapterId);
@@ -48,7 +48,7 @@ export class EnrollmentService {
     });
 
     if (existing) {
-      throw new AppError("You are already enrolled in this chapter", 409);
+      throw new AppError("You are already enrolled in this chapter", 409, "ALREADY_ENROLLED");
     }
 
     const enrollment = await prisma.enrollment.create({
@@ -212,11 +212,11 @@ export class EnrollmentService {
     });
 
     if (!existing) {
-      throw new AppError("Enrollment not found", 404);
+      throw new AppError("Enrollment not found", 404, "ENROLLMENT_NOT_FOUND");
     }
 
     if (existing.status !== "ACTIVE") {
-      throw new AppError("Enrollment is already deactivated", 400);
+      throw new AppError("Enrollment is already deactivated", 400, "ENROLLMENT_ALREADY_DEACTIVATED");
     }
 
     const enrollment = await prisma.enrollment.update({
