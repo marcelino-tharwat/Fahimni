@@ -264,7 +264,8 @@
     },
     "quickActions": {
       "title": "Quick Actions",
-      "newStage": "New Stage",
+      "newStage": "Select Stage",
+      "selectStage": "Select Stage",
       "newChapter": "New Chapter",
       "newLesson": "New Lesson"
     },
@@ -292,8 +293,8 @@
       }
     },
     "empty": {
-      "title": "Welcome! Start by creating a new stage",
-      "description": "Your academy is empty for now. Create your first stage to start building content."
+      "title": "Welcome! Select a platform stage",
+      "description": "Stages are managed by admins. Choose an active stage to start building chapters and lessons."
     },
     "error": {
       "title": "Something went wrong",
@@ -561,10 +562,10 @@
   },
   "stages": {
     "title": "All Stages",
-    "subtitle": "Manage your academy content structure",
-    "newStage": "New Stage",
+    "subtitle": "Choose a platform stage to manage your chapters and lessons",
+    "newStage": "Select Stage",
     "searchPlaceholder": "Find a stage...",
-    "empty": "No stages yet. Create your first stage to get started.",
+    "empty": "No active platform stages are available yet.",
     "columns": {
       "stageName": "Stage Name",
       "chapters": "Chapters",

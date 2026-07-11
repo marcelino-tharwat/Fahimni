@@ -39,6 +39,7 @@ export class ChapterController {
           description: input.description ?? null,
           sortOrder: isNaN(sortOrder) ? 1 : sortOrder,
           price: input.price ?? null,
+          subject: input.subject ?? null,
         },
         stageId,
         req.user!.id,

@@ -17,6 +17,7 @@ export const createChapterSchema = z.object({
     .int("Sort order must be an integer")
     .min(1, "Sort order must be at least 1"),
   price: z.number().min(0, "Price must be 0 or greater").optional().nullable(),
+  subject: z.string().trim().optional().nullable(),
 });
 
 export const updateChapterSchema = z

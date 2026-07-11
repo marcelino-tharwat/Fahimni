@@ -18,6 +18,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../src/config/database.js";
 import { TF_OPTIONS, TF_TRUE } from "../src/modules/quizzes/quiz-generation.mapping.js";
+import { SUBJECT_CATALOG } from "../src/modules/subjects/subjects.js";
 
 const DEMO_EMAIL_DOMAIN = "@fahimni.local";
 const PW_HASH_ROUNDS = 12;
@@ -179,6 +180,19 @@ export async function seedQuizUnlockScenario(): Promise<void> {
     update: { status: "ACTIVE", teacherApprovalState: "APPROVED" },
   });
   const teacherId = teacher.id;
+  const mathSubject = SUBJECT_CATALOG.find((subject) => subject.code === "MATH")?.displayName ?? "الرياضيات";
+
+  await prisma.teacherProfile.upsert({
+    where: { userId: teacherId },
+    create: {
+      userId: teacherId,
+      subject: mathSubject,
+      bio: "Quiz unlock scenario teacher",
+    },
+    update: {
+      subject: mathSubject,
+    },
+  });
 
   await prisma.stage.upsert({
     where: { id: QUIZ_UNLOCK_IDS.stage },
@@ -186,9 +200,9 @@ export async function seedQuizUnlockScenario(): Promise<void> {
       id: QUIZ_UNLOCK_IDS.stage,
       name: "مرحلة تجربة فتح الاختبارات",
       sortOrder: 8000,
-      teacherId,
+      teacherId: null,
     },
-    update: { teacherId, deletedAt: null },
+    update: { teacherId: null, deletedAt: null },
   });
 
   await prisma.chapter.upsert({
