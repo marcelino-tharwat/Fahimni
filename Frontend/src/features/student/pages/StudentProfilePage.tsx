@@ -31,6 +31,7 @@ import {
 import { cn } from '@/shared/lib/utils/cn';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import { translateApiError } from '@/shared/lib/api/translateError';
+import { isBlank, normalizeTextInput } from '@/shared/lib/utils/textNormalization';
 
 function CircularProgress({ percent, size = 40 }: { percent: number; size?: number }) {
   const strokeWidth = 4;
@@ -344,10 +345,13 @@ function ProfileInfoCard({ student }: { student: StudentProfileIdentity }) {
     setIsEditing(true);
   };
 
+  const nameInvalid = isBlank(form.name);
+
   const handleSave = () => {
+    if (nameInvalid) return;
     updateProfile.mutate(
       {
-        fullName: form.name.trim(),
+        fullName: normalizeTextInput(form.name),
         email: form.email.trim().toLowerCase(),
       },
       {
@@ -408,7 +412,7 @@ function ProfileInfoCard({ student }: { student: StudentProfileIdentity }) {
           <button
             type="button"
             onClick={handleSave}
-            disabled={updateProfile.isPending}
+            disabled={updateProfile.isPending || nameInvalid}
             className="flex-1 rounded-btn bg-cyan-500 px-4 py-2 font-cairo font-bold text-navy-900 transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             {t('common:actions.save')}

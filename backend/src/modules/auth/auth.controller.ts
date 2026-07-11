@@ -27,12 +27,7 @@ export class AuthController {
       const parsed = loginSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const result = await authService.loginUser(parsed.data);
@@ -65,12 +60,7 @@ export class AuthController {
       const parsed = registerSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       // Proof documents (teacher registration) arrive as multipart files; absent
@@ -115,12 +105,7 @@ export class AuthController {
       const parsed = forgotPasswordSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const response = await authService.forgotPassword(parsed.data);
@@ -139,12 +124,7 @@ export class AuthController {
       const parsed = verifyOtpSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const response = await authService.verifyOtp(parsed.data);
@@ -163,12 +143,7 @@ export class AuthController {
       const parsed = resetPasswordSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const response = await authService.resetPassword(parsed.data);
@@ -280,12 +255,7 @@ export class AuthController {
       const parsed = changePasswordSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const response = await authService.changePassword(
@@ -307,12 +277,7 @@ export class AuthController {
       const parsed = updateLocaleSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const user = await authService.updateLocale(req.user!.id, parsed.data);

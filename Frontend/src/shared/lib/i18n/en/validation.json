@@ -56,6 +56,8 @@
   "planCodeDuplicate": "A plan with this code already exists",
   "freePlanMustBeFree": "The FREE plan must have a price of 0",
   "planNotFound": "Plan not found",
+  "stageNotFound": "Stage not found",
+  "stageHasChapters": "Cannot delete this stage because it has linked chapters. Please remove or reassign them first.",
   "teacherRequestNotFound": "Teacher request not found",
   "documentUnavailable": "Document is not available",
   "requestNotPending": "Only a pending request can be processed",

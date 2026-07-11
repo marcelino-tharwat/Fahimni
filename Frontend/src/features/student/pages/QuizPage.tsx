@@ -30,6 +30,8 @@ import {
 } from '@/features/student/lib/quizAccessErrors';
 import type { PageStatus, QuizQuestion, QuizMeta } from '@/shared/types';
 import type { ApiError } from '@/shared/lib/api/client';
+import { isBlank } from '@/shared/lib/utils/textNormalization';
+import { translateApiError } from '@/shared/lib/api/translateError';
 import { ProtectedContent } from '@/shared/components/content-protection';
 
 type AutoSubmitState = 'idle' | 'submitting' | 'retrying';
@@ -76,10 +78,7 @@ export function QuizPage() {
   answersRef.current = answers;
 
   const answeredCount = useMemo(
-    () => questions.filter((q) => {
-      const val = answers[q.id];
-      return val !== undefined && val !== '';
-    }).length,
+    () => questions.filter((q) => !isBlank(answers[q.id])).length,
     [answers, questions],
   );
 
@@ -87,7 +86,7 @@ export function QuizPage() {
 
   const unansweredIds = useMemo(
     () => questions
-      .filter((q) => !answers[q.id] || answers[q.id] === '')
+      .filter((q) => isBlank(answers[q.id]))
       .map((q) => q.id),
     [answers, questions],
   );
@@ -193,7 +192,7 @@ export function QuizPage() {
         finalizeInFlightRef.current = false;
         dispatch(addToast({
           type: 'error',
-          message: t('common:error', { defaultValue: 'حدث خطأ، حاول مرة أخرى' }),
+          message: translateApiError(t, apiErr),
         }));
       }
     },
@@ -288,7 +287,7 @@ export function QuizPage() {
 
   const handleOpenModal = useCallback(() => {
     if (inputsLocked) return;
-    const unanswered = questions.filter((q) => !answers[q.id] || answers[q.id] === '');
+    const unanswered = questions.filter((q) => isBlank(answers[q.id]));
     if (unanswered.length > 0) {
       const errorIds = new Set(unanswered.map((q) => q.id));
       setValidationErrors(errorIds);

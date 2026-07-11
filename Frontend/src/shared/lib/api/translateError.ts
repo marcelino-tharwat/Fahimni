@@ -80,6 +80,10 @@ const CODE_TO_VALIDATION_KEY: Record<string, string> = {
   FREE_PLAN_MUST_BE_FREE: "validation:freePlanMustBeFree",
   PLAN_NOT_FOUND: "validation:planNotFound",
 
+  // Admin — stages
+  STAGE_NOT_FOUND: "validation:stageNotFound",
+  STAGE_HAS_CHAPTERS: "validation:stageHasChapters",
+
   // Admin — teacher requests
   TEACHER_REQUEST_NOT_FOUND: "validation:teacherRequestNotFound",
   DOCUMENT_UNAVAILABLE: "validation:documentUnavailable",
