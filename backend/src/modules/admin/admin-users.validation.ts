@@ -1,4 +1,10 @@
 import { z } from "zod";
+import { SUBJECT_CATALOG } from "../subjects/subjects.js";
+
+const VALID_SUBJECT_NAMES = SUBJECT_CATALOG.map((s) => s.displayName) as [
+  string,
+  ...string[],
+];
 
 export const listUsersQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -35,7 +41,7 @@ export const adminCreateUserSchema = z.object({
     .optional(),
   teacherProfile: z
     .object({
-      subject: z.string().trim().max(200).optional(),
+      subject: z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
       bio: z.string().trim().max(1000).optional(),
     })
     .optional(),
@@ -54,7 +60,7 @@ export const adminUpdateUserSchema = z
       .optional(),
     teacherProfile: z
       .object({
-        subject: z.string().trim().max(200).optional(),
+        subject: z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
         bio: z.string().trim().max(1000).optional(),
         photoUrl: z.string().url().optional().nullable(),
         logoUrl: z.string().url().optional().nullable(),

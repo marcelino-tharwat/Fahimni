@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import {
-  GraduationCap, User, Mail, Phone, Lock, Eye, EyeOff, Check, Loader2, ChevronDown,
+  GraduationCap, User, Mail, Phone, Lock, Eye, EyeOff, Check, Loader2, ChevronDown, BookOpen,
   type LucideIcon,
 } from "lucide-react";
 import { AppHeader } from "@/shared/components/layout/AppHeader";
@@ -14,6 +14,7 @@ import { apiClient } from "@/shared/lib/api/client";
 import { login as loginThunk, register as registerThunk, googleLogin as googleLoginThunk, dashboardPathByRole } from "@/features/auth/store/authSlice";
 import type { PublicStage } from "@/features/student/types/student";
 import { ProofUpload } from "@/features/teacher-request/components/ProofUpload";
+import { useSubjects } from "@/features/subjects/useSubjects";
 
 /* ------------------------------------------------------------------ */
 /*  Field                                                              */
@@ -235,6 +236,7 @@ function RegisterForm() {
   const [proofFiles, setProofFiles] = useState<{ id: string; file: File }[]>([]);
   const [stages, setStages] = useState<PublicStage[]>([]);
   const [stagesLoading, setStagesLoading] = useState(true);
+  const { subjects, loading: subjectsLoading } = useSubjects();
   const inFlightRef = useRef(false);
 
   useEffect(() => {
@@ -471,14 +473,12 @@ function RegisterForm() {
 
       {isTeacher ? (
         <>
-          <Field
-            icon={User}
-            placeholder={t("auth:subject", "التخصص")}
+          <input type="hidden" {...register("subject", { required: t("auth:validation.required") })} />
+          <SubjectSelect
+            subjects={subjects}
+            loading={subjectsLoading}
             error={errors.subject?.message}
-            registration={register("subject", {
-              required: t("auth:validation.required"),
-              minLength: { value: 2, message: t("auth:errNameMin") },
-            })}
+            onChange={(name) => setValue("subject", name, { shouldValidate: true })}
           />
           <Field
             icon={User}
@@ -509,6 +509,99 @@ function RegisterForm() {
       </p>
       <SubmitButton disabled={loading}>{t("auth:registerButton")}</SubmitButton>
     </form>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Subject Select                                                      */
+/* ------------------------------------------------------------------ */
+
+function SubjectSelect({
+  subjects,
+  loading,
+  error,
+  onChange,
+}: {
+  subjects: { code: string; displayName: string; isActive: boolean }[];
+  loading: boolean;
+  error?: string;
+  onChange: (displayName: string) => void;
+}) {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === 'ar';
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative w-full">
+      <button
+        type="button"
+        onClick={() => !loading && setOpen((o) => !o)}
+        disabled={loading}
+        dir={isRtl ? "rtl" : "ltr"}
+        className={`relative flex w-full items-center rounded-input border bg-gray-50 py-3 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 ${
+          isRtl ? "pr-11 pl-4" : "pl-11 pr-4"
+        } ${error ? "border-red-400" : "border-gray-300"} ${loading ? "cursor-not-allowed opacity-60" : ""}`}
+      >
+        <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
+          <BookOpen size={18} />
+        </span>
+        <span className={`flex-1 font-cairo text-body ${isRtl ? "text-right" : "text-left"} ${selected ? "text-navy-900" : "text-gray-400"}`}>
+          {loading
+            ? t("auth:loading")
+            : selected
+              ? selected
+              : t("auth:subject", "التخصص")}
+        </span>
+        <ChevronDown
+          size={18}
+          className={`shrink-0 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {error && (
+        <p className="mt-1.5 text-xs text-red-500">{error}</p>
+      )}
+      {open && !loading && (
+        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+          {subjects.length === 0 ? (
+            <p className="px-4 py-3 font-cairo text-sm text-gray-500">
+              {t("auth:noStages")}
+            </p>
+          ) : (
+            subjects.map((subject) => (
+              <button
+                key={subject.code}
+                type="button"
+                onClick={() => {
+                  setSelected(subject.displayName);
+                  onChange(subject.displayName);
+                  setOpen(false);
+                }}
+                className={`relative flex w-full items-center py-2.5 font-cairo text-body transition hover:bg-gray-50 ${
+                  isRtl ? "pr-11 pl-4 text-right" : "pl-11 pr-4 text-left"
+                } ${selected === subject.displayName ? "bg-cyan-50 font-semibold text-cyan-700" : "text-navy-900"}`}
+              >
+                <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
+                  <BookOpen size={16} />
+                </span>
+                <span className="flex-1">{subject.displayName}</span>
+              </button>
+            ))
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -679,11 +772,12 @@ export function AuthPage() {
 
   return (
     <GoogleOAuthProvider clientId={googleClientId || "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"}>
-      <AppHeader variant="auth" />
-      <div className="flex min-h-[calc(100vh-73px)] flex-col lg:flex-row">
-        {/* Form Panel */}
-        <main className="flex w-full items-center justify-center bg-gray-100 px-4 py-8 lg:w-3/5 lg:p-8">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-modal md:p-8">
+      <div className="flex h-screen flex-col">
+        <AppHeader variant="auth" />
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+          {/* Form Panel */}
+          <main className="flex min-h-0 w-full items-start justify-center overflow-y-auto bg-gray-100 px-4 py-8 lg:w-3/5 lg:p-8 scrollbar-hide">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-modal md:p-8">
           {/* Logo row */}
           <div className="mb-6 text-center">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-500 text-lg font-bold text-white">
@@ -718,7 +812,7 @@ export function AuthPage() {
       </main>
 
       {/* Hero Panel */}
-      <aside className="hidden w-full flex-col items-center justify-center bg-hero-gradient px-6 py-12 text-center lg:flex lg:w-2/5 lg:p-12">
+      <aside className="hidden min-h-0 w-full flex-col items-center justify-center bg-hero-gradient px-6 py-12 text-center lg:flex lg:w-2/5 lg:p-12">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-xl border border-cyan-500/30 bg-navy-800">
           <GraduationCap className="text-cyan-500" size={36} />
         </div>
@@ -761,7 +855,8 @@ export function AuthPage() {
           ))}
         </div>
       </aside>
-    </div>
+      </div>
+      </div>
     </GoogleOAuthProvider>
   );
 }

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
+import { X, ChevronDown, BookOpen } from 'lucide-react';
 import { useUpdateTeacherProfile } from '@/features/teacher/hooks/useTeacherProfile';
 import { addToast } from '@/shared/store/slices/toastSlice';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { getApiErrorMessage } from '@/shared/lib/api/errors';
+import { useSubjects } from '@/features/subjects/useSubjects';
 import type { TeacherProfile } from '@/features/teacher/types/teacher';
 
 interface EditProfileModalProps {
@@ -13,18 +14,22 @@ interface EditProfileModalProps {
 }
 
 export function EditProfileModal({ profile, onClose }: EditProfileModalProps) {
-  const { t } = useTranslation('profile');
+  const { t, i18n } = useTranslation('profile');
   const { t: tc } = useTranslation();
   const dispatch = useAppDispatch();
   const { mutate: updateProfile, isPending } = useUpdateTeacherProfile();
+  const { subjects, loading: subjectsLoading } = useSubjects();
+  const isRtl = i18n.language === 'ar';
 
   const [name, setName] = useState(profile.user.fullName);
   const [bio, setBio] = useState(profile.bio ?? '');
   const [phone, setPhone] = useState(profile.user.mobile);
+  const [subject, setSubject] = useState(profile.subject ?? '');
+  const [subjectOpen, setSubjectOpen] = useState(false);
 
   const handleSubmit = () => {
     updateProfile(
-      { fullName: name, bio, mobile: phone },
+      { fullName: name, bio, mobile: phone, subject: subject || undefined },
       {
         onSuccess: () => {
           dispatch(addToast({ type: 'success', message: tc('status.success') }));
@@ -95,6 +100,48 @@ export function EditProfileModal({ profile, onClose }: EditProfileModalProps) {
               placeholder={t('editModal.phonePlaceholder')}
               className="w-full rounded-input border border-gray-300 px-3 py-2 font-cairo text-body text-navy-900 outline-none transition-colors focus:border-cyan-500"
             />
+          </div>
+
+          <div>
+            <label className="mb-1 block font-cairo text-small font-medium text-gray-700">
+              {t('editModal.subjectLabel', 'المادة')}
+            </label>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => !subjectsLoading && setSubjectOpen((o) => !o)}
+                disabled={subjectsLoading}
+                dir={isRtl ? "rtl" : "ltr"}
+                className={`flex w-full items-center rounded-input border border-gray-300 px-3 py-2 font-cairo text-body text-navy-900 outline-none transition-colors focus:border-cyan-500 ${
+                  subjectsLoading ? "cursor-not-allowed opacity-60" : ""
+                }`}
+              >
+                <span className="flex-1 text-left">
+                  {subject || t('editModal.subjectPlaceholder', 'اختر المادة')}
+                </span>
+                <ChevronDown size={16} className={`shrink-0 text-gray-400 transition-transform ${subjectOpen ? "rotate-180" : ""}`} />
+              </button>
+              {subjectOpen && !subjectsLoading && (
+                <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+                  {subjects.map((s) => (
+                    <button
+                      key={s.code}
+                      type="button"
+                      onClick={() => {
+                        setSubject(s.displayName);
+                        setSubjectOpen(false);
+                      }}
+                      className={`flex w-full items-center gap-2 px-3 py-2 font-cairo text-body transition hover:bg-gray-50 ${
+                        subject === s.displayName ? "bg-cyan-50 font-semibold text-cyan-700" : "text-navy-900"
+                      }`}
+                    >
+                      <BookOpen size={14} className="shrink-0 text-gray-400" />
+                      <span>{s.displayName}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

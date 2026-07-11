@@ -1,4 +1,10 @@
 import { z } from "zod";
+import { SUBJECT_CATALOG } from "../subjects/subjects.js";
+
+const VALID_SUBJECT_NAMES = SUBJECT_CATALOG.map((s) => s.displayName) as [
+  string,
+  ...string[],
+];
 
 const ALLOWED_PROOF_MIME_TYPES = [
   "application/pdf",
@@ -36,9 +42,7 @@ export const createTeacherRequestSchema = z.object({
       "Mobile must be a valid Egyptian number",
     ),
   subject: z
-    .string()
-    .trim()
-    .max(200, "Subject must not exceed 200 characters")
+    .enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" })
     .optional(),
   bio: z
     .string()

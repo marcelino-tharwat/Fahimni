@@ -36,3 +36,12 @@ export const updatePayoutProfileSchema = z
   });
 
 export type UpdatePayoutProfileInput = z.infer<typeof updatePayoutProfileSchema>;
+
+export const createWithdrawalSchema = z.object({
+  amount: z
+    .number({ message: "Amount must be a number" })
+    .positive("Amount must be greater than zero"),
+  teacherNote: z.string().trim().max(500, "Note must not exceed 500 characters").optional(),
+});
+
+export type CreateWithdrawalInput = z.infer<typeof createWithdrawalSchema>;

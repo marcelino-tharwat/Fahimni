@@ -1611,6 +1611,20 @@ async function seedAll(): Promise<void> {
             requestedAt: daysAgo(20),
             cancelledAt: daysAgo(19),
           },
+          {
+            // Teacher-cancelled-while-PENDING demo. CANCELLED releases the held
+            // amount (excluded from both heldWithdrawals and
+            // completedWithdrawals), so this does not affect the availableBalance
+            // math documented above.
+            id: sid("twr-math-cancelled"),
+            teacherId: sid("teacher-math"),
+            amount: 40,
+            currency: "EGP",
+            status: "CANCELLED",
+            teacherNote: "غيّرت رأيي",
+            requestedAt: daysAgo(8),
+            cancelledAt: daysAgo(8),
+          },
         ],
         skipDuplicates: true,
       });

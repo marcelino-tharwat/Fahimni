@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Loader2, AlertTriangle, X } from 'lucide-react';
 import { Badge } from '@/shared/components/ui';
 import { useCoursePayments, useSubscriptionPayments } from '@/features/admin/hooks/useAdminRevenue';
@@ -33,33 +34,35 @@ type DrawerRow =
   | { kind: 'subscription'; row: SubscriptionPaymentDTO };
 
 function PaymentDrawer({ entry, onClose }: { entry: DrawerRow; onClose: () => void }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
   const { row } = entry;
   return (
     <div className="fixed inset-0 z-50 flex justify-start bg-black/40" onClick={onClose} data-testid="payment-drawer">
-      <div className="h-full w-full max-w-md overflow-y-auto bg-white p-6 shadow-modal" dir="rtl" onClick={(e) => e.stopPropagation()}>
+      <div className="h-full w-full max-w-md overflow-y-auto bg-white p-6 shadow-modal" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-cairo text-lg font-bold text-navy-900">تفاصيل الدفعة</h3>
+          <h3 className="font-cairo text-lg font-bold text-navy-900">{t('adminPayments.drawerTitle')}</h3>
           <button type="button" onClick={onClose} className="rounded-btn p-1.5 text-gray-500 hover:bg-gray-100"><X size={20} /></button>
         </div>
         <dl className="flex flex-col gap-3 font-cairo text-sm">
-          <Row label="الحالة"><StatusBadge status={row.status} /></Row>
-          <Row label="المبلغ">{row.amount.toLocaleString('ar-EG')} {row.currency}</Row>
+          <Row label={t('adminPayments.drawerStatus')}><StatusBadge status={row.status} /></Row>
+          <Row label={t('adminPayments.drawerAmount')}>{row.amount.toLocaleString(locale)} {row.currency}</Row>
           {entry.kind === 'course' ? (
             <>
-              <Row label="الطالب">{entry.row.student.fullName}</Row>
-              <Row label="الفصل">{entry.row.chapter.name}</Row>
-              <Row label="المدرس">{entry.row.teacher?.fullName ?? '—'}</Row>
+              <Row label={t('adminPayments.drawerStudent')}>{entry.row.student.fullName}</Row>
+              <Row label={t('adminPayments.drawerChapter')}>{entry.row.chapter.name}</Row>
+              <Row label={t('adminPayments.drawerTeacher')}>{entry.row.teacher?.fullName ?? '—'}</Row>
             </>
           ) : (
             <>
-              <Row label="المدرس">{entry.row.teacher.fullName}</Row>
-              <Row label="الباقة">{entry.row.plan.displayName}</Row>
-              <Row label="المزود">{entry.row.provider}</Row>
-              <Row label="الفترة">{entry.row.billingInterval}</Row>
+              <Row label={t('adminPayments.drawerTeacher')}>{entry.row.teacher.fullName}</Row>
+              <Row label={t('adminPayments.drawerPlan')}>{entry.row.plan.displayName}</Row>
+              <Row label={t('adminPayments.drawerProvider')}>{entry.row.provider}</Row>
+              <Row label={t('adminPayments.drawerInterval')}>{entry.row.billingInterval}</Row>
             </>
           )}
-          <Row label="تاريخ الإنشاء">{new Date(row.createdAt).toLocaleString('ar-EG')}</Row>
-          <Row label="تاريخ الدفع">{row.paidAt ? new Date(row.paidAt).toLocaleString('ar-EG') : '—'}</Row>
+          <Row label={t('adminPayments.drawerCreatedAt')}>{new Date(row.createdAt).toLocaleString(locale)}</Row>
+          <Row label={t('adminPayments.drawerPaidAt')}>{row.paidAt ? new Date(row.paidAt).toLocaleString(locale) : '—'}</Row>
         </dl>
       </div>
     </div>
@@ -75,12 +78,13 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 }
 
 function Filters({ query, onChange }: { query: PaymentsQuery; onChange: (q: PaymentsQuery) => void }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-wrap items-end gap-3" data-testid="payment-filters">
       <input
         value={query.q ?? ''}
         onChange={(e) => onChange({ ...query, q: e.target.value || undefined, page: 1 })}
-        placeholder="بحث بالاسم أو البريد"
+        placeholder={t('adminPayments.filterSearch')}
         data-testid="filter-search"
         className="h-10 rounded-input border border-border bg-surface px-3 font-cairo text-sm outline-none focus:border-accent"
       />
@@ -90,10 +94,10 @@ function Filters({ query, onChange }: { query: PaymentsQuery; onChange: (q: Paym
         data-testid="filter-status"
         className="h-10 rounded-input border border-border bg-surface px-3 font-cairo text-sm outline-none focus:border-accent"
       >
-        <option value="">كل الحالات</option>
-        <option value="SUCCESS">ناجحة</option>
-        <option value="PENDING">معلقة</option>
-        <option value="FAILED">فاشلة</option>
+        <option value="">{t('adminPayments.filterAllStatuses')}</option>
+        <option value="SUCCESS">{t('adminPayments.filterSuccess')}</option>
+        <option value="PENDING">{t('adminPayments.filterPending')}</option>
+        <option value="FAILED">{t('adminPayments.filterFailed')}</option>
       </select>
       <input
         type="date"
@@ -114,13 +118,16 @@ function Filters({ query, onChange }: { query: PaymentsQuery; onChange: (q: Paym
 }
 
 function StateWrap({ isLoading, isError, isEmpty, children }: { isLoading: boolean; isError: boolean; isEmpty: boolean; children: React.ReactNode }) {
+  const { t } = useTranslation();
   if (isLoading) return <div className="flex items-center justify-center py-16" role="status"><Loader2 className="h-6 w-6 animate-spin text-accent" /></div>;
-  if (isError) return <div className="flex flex-col items-center gap-2 py-16 text-center"><AlertTriangle className="h-8 w-8 text-danger" /><p className="font-cairo text-sm text-text-secondary">تعذّر تحميل المدفوعات</p></div>;
-  if (isEmpty) return <p className="py-16 text-center font-cairo text-sm text-text-muted">لا توجد مدفوعات</p>;
+  if (isError) return <div className="flex flex-col items-center gap-2 py-16 text-center"><AlertTriangle className="h-8 w-8 text-danger" /><p className="font-cairo text-sm text-text-secondary">{t('adminPayments.errorLoading')}</p></div>;
+  if (isEmpty) return <p className="py-16 text-center font-cairo text-sm text-text-muted">{t('adminPayments.empty')}</p>;
   return <>{children}</>;
 }
 
 function CourseTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
   const [query, setQuery] = useState<PaymentsQuery>({ page: 1, limit: 20 });
   const { data, isLoading, isError } = useCoursePayments(query);
   const rows = (data?.data ?? []) as CoursePaymentDTO[];
@@ -131,7 +138,7 @@ function CourseTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
         <div className="overflow-x-auto">
           <table className="w-full" data-testid="course-payments-table">
             <thead className="border-b border-border">
-              <tr><Th>الطالب</Th><Th>الفصل</Th><Th>المدرس</Th><Th>المبلغ</Th><Th>الحالة</Th><Th>التاريخ</Th></tr>
+              <tr><Th>{t('adminPayments.colStudent')}</Th><Th>{t('adminPayments.colChapter')}</Th><Th>{t('adminPayments.colTeacher')}</Th><Th>{t('adminPayments.colAmount')}</Th><Th>{t('adminPayments.colStatus')}</Th><Th>{t('adminPayments.colDate')}</Th></tr>
             </thead>
             <tbody>
               {rows.map((p) => (
@@ -141,9 +148,9 @@ function CourseTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
                   <Td>{p.teacher ? (
                     <Link to={`/admin/teachers/${p.teacher.id}`} data-testid="teacher-link" className="text-accent hover:underline" onClick={(e) => e.stopPropagation()}>{p.teacher.fullName}</Link>
                   ) : '—'}</Td>
-                  <Td>{p.amount.toLocaleString('ar-EG')} {p.currency}</Td>
+                  <Td>{p.amount.toLocaleString(locale)} {p.currency}</Td>
                   <Td><StatusBadge status={p.status} /></Td>
-                  <Td>{new Date(p.createdAt).toLocaleDateString('ar-EG')}</Td>
+                  <Td>{new Date(p.createdAt).toLocaleDateString(locale)}</Td>
                 </tr>
               ))}
             </tbody>
@@ -155,6 +162,8 @@ function CourseTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
 }
 
 function SubscriptionTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en-US';
   const [query, setQuery] = useState<PaymentsQuery>({ page: 1, limit: 20 });
   const { data, isLoading, isError } = useSubscriptionPayments(query);
   const rows = (data?.data ?? []) as SubscriptionPaymentDTO[];
@@ -165,7 +174,7 @@ function SubscriptionTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
         <div className="overflow-x-auto">
           <table className="w-full" data-testid="subscription-payments-table">
             <thead className="border-b border-border">
-              <tr><Th>المدرس</Th><Th>الباقة</Th><Th>المبلغ</Th><Th>الحالة</Th><Th>المزود</Th><Th>التاريخ</Th></tr>
+              <tr><Th>{t('adminPayments.colTeacher')}</Th><Th>{t('adminPayments.colPlan')}</Th><Th>{t('adminPayments.colAmount')}</Th><Th>{t('adminPayments.colStatus')}</Th><Th>{t('adminPayments.colProvider')}</Th><Th>{t('adminPayments.colDate')}</Th></tr>
             </thead>
             <tbody>
               {rows.map((p) => (
@@ -174,10 +183,10 @@ function SubscriptionTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
                     <Link to={`/admin/teachers/${p.teacher.id}`} data-testid="teacher-link" className="text-accent hover:underline" onClick={(e) => e.stopPropagation()}>{p.teacher.fullName}</Link>
                   </Td>
                   <Td>{p.plan.displayName}</Td>
-                  <Td>{p.amount.toLocaleString('ar-EG')} {p.currency}</Td>
+                  <Td>{p.amount.toLocaleString(locale)} {p.currency}</Td>
                   <Td><StatusBadge status={p.status} /></Td>
                   <Td>{p.provider}</Td>
-                  <Td>{new Date(p.createdAt).toLocaleDateString('ar-EG')}</Td>
+                  <Td>{new Date(p.createdAt).toLocaleDateString(locale)}</Td>
                 </tr>
               ))}
             </tbody>
@@ -189,19 +198,20 @@ function SubscriptionTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
 }
 
 export function AdminPaymentsPage() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<TabKey>('course');
   const [drawer, setDrawer] = useState<DrawerRow | null>(null);
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: 'course', label: 'مدفوعات الكورسات' },
-    { key: 'subscriptions', label: 'مدفوعات الاشتراكات' },
+    { key: 'course', label: t('adminPayments.tabCourse') },
+    { key: 'subscriptions', label: t('adminPayments.tabSubscriptions') },
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1200px] flex-col gap-5" dir="rtl" data-testid="admin-payments-page">
+    <div className="mx-auto flex max-w-[1200px] flex-col gap-5" data-testid="admin-payments-page">
       <div>
-        <h1 className="font-cairo text-2xl font-bold text-navy-900">المدفوعات</h1>
-        <p className="mt-1 font-cairo text-sm text-text-secondary">مدفوعات الكورسات واشتراكات المدرسين (بيانات آمنة فقط)</p>
+        <h1 className="font-cairo text-2xl font-bold text-navy-900">{t('adminPayments.title')}</h1>
+        <p className="mt-1 font-cairo text-sm text-text-secondary">{t('adminPayments.subtitle')}</p>
       </div>
 
       <div role="tablist" className="flex flex-wrap gap-2 border-b border-border">
