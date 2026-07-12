@@ -20,6 +20,7 @@ model User {
   // "active teacher" (APPROVED + active subscription) is not stored here.
   teacherApprovalState        TeacherApprovalState         @default(NONE)
   locale                      String                       @default("ar")
+  emailVerified               Boolean                      @default(false)
   tokenVersion                Int                          @default(0)
   createdAt                   DateTime                     @default(now())
   updatedAt                   DateTime                     @updatedAt

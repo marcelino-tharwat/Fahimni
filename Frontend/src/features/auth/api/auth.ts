@@ -33,6 +33,18 @@ export const authApi = {
       .then((res) => res.data);
   },
 
+  verifyEmail(token: string): Promise<{ message: string }> {
+    return apiClient
+      .post<{ message: string }>("/v1/auth/verify-email", { token })
+      .then((res) => res.data);
+  },
+
+  resendVerification(email: string): Promise<{ message: string }> {
+    return apiClient
+      .post<{ message: string }>("/v1/auth/resend-verification", { email })
+      .then((res) => res.data);
+  },
+
   getMe(): Promise<{ message: string; data: { user: User } }> {
     return apiClient
       .get<{ message: string; data: { user: User } }>("/v1/auth/me")

@@ -446,7 +446,7 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
     // progress owned by seed students — e2e tests may create progress for non-seed
     // students against seed-owned lessons, which would block lesson deletion below).
     const ownedLessonIds = await tx.lesson.findMany({
-      where: { chapter: { stage: { teacherId: { in: ids } } } },
+      where: { chapter: { OR: [{ stage: { teacherId: { in: ids } } }, { teacherId: { in: ids } }] } },
       select: { id: true },
     });
     const olIds = ownedLessonIds.map((l) => l.id);
@@ -525,10 +525,10 @@ async function cleanupSeedOwnedRecords(): Promise<void> {
     });
 
     await tx.lesson.deleteMany({
-      where: { chapter: { stage: { teacherId: { in: ids } } } },
+      where: { chapter: { OR: [{ stage: { teacherId: { in: ids } } }, { teacherId: { in: ids } }] } },
     });
     await tx.chapter.deleteMany({
-      where: { stage: { teacherId: { in: ids } } },
+      where: { OR: [{ stage: { teacherId: { in: ids } } }, { teacherId: { in: ids } }] },
     });
     // Also delete student profiles referencing seed stages (e2e may create profiles
     // for non-seed students referencing our stages, blocking stage deletion).

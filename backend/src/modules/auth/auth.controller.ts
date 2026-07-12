@@ -6,6 +6,8 @@ import {
   verifyOtpSchema,
   changePasswordSchema,
   updateLocaleSchema,
+  verifyEmailSchema,
+  resendVerificationSchema,
 } from "./auth.validation.js";
 import { AuthService } from "./auth.service.js";
 import { loginSchema } from "./auth.validation.js";
@@ -82,12 +84,13 @@ export class AuthController {
         return;
       }
 
-      setAuthCookies(res, result.accessToken, result.refreshToken);
-
+      // Student registration is unverified and issues no session either — the
+      // student must click the emailed verification link before logging in.
       res.status(201).json({
-        message: "Registration successful",
+        message: "Registration successful. Please verify your email.",
         data: {
           user: result.user,
+          emailVerificationRequired: result.emailVerificationRequired,
         },
       });
     } catch (error) {
@@ -128,6 +131,44 @@ export class AuthController {
       }
 
       const response = await authService.verifyOtp(parsed.data);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public verifyEmail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = verifyEmailSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        throw parsed.error;
+      }
+
+      const response = await authService.verifyEmail(parsed.data);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public resendVerification = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = resendVerificationSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        throw parsed.error;
+      }
+
+      const response = await authService.resendVerificationEmail(parsed.data);
       res.status(200).json(response);
     } catch (error) {
       next(error);

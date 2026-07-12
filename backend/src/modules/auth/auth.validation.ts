@@ -117,8 +117,18 @@ export const updateLocaleSchema = z.object({
   locale: z.enum(["ar", "en"]),
 });
 
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
+export const resendVerificationSchema = z.object({
+  email: z.string().trim().email("Invalid email").toLowerCase(),
+});
+
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type UpdateLocaleInput = z.infer<typeof updateLocaleSchema>;
+export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
+export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>;

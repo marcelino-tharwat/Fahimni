@@ -17,6 +17,7 @@ export interface User {
   status: UserStatus;
   teacherApprovalState?: TeacherApprovalState;
   locale?: 'ar' | 'en';
+  emailVerified?: boolean;
   createdAt: string;
   updatedAt?: string;
 }
