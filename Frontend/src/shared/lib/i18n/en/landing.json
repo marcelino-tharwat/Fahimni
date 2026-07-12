@@ -38,7 +38,7 @@
     "ctaTrial": "Try a Free Lesson"
   },
   "chapters": {
-    "title": "Explore Chapters",
+    "title": "Explore Subjects",
     "subtitle": "Pick your stage and start your journey to excellence",
     "lessons": "Lessons",
     "quizzes": "Quizzes",
@@ -78,11 +78,26 @@
   "faq": {
     "title": "Frequently Asked Questions",
     "items": [
-      { "q": "How do I subscribe to a chapter?", "a": "Pick the chapter you want, pay by card, Vodafone Cash, or a discount code, and start right away." },
-      { "q": "Can I watch the lessons more than once?", "a": "Yes! Once you subscribe to a chapter, access is for life. Watch the lessons as many times as you like." },
-      { "q": "What is the smart assistant?", "a": "An AI chatbot that answers your questions directly from the lesson content — available 24 hours a day." },
-      { "q": "What payment methods are available?", "a": "Bank cards, Vodafone Cash, Fawry, and discount codes." },
-      { "q": "Who do I contact if I have a problem?", "a": "You can reach us via WhatsApp anytime." }
+      {
+        "q": "How do I subscribe to a chapter?",
+        "a": "Pick the chapter you want, pay by card, Vodafone Cash, or a discount code, and start right away."
+      },
+      {
+        "q": "Can I watch the lessons more than once?",
+        "a": "Yes! Once you subscribe to a chapter, access is for life. Watch the lessons as many times as you like."
+      },
+      {
+        "q": "What is the smart assistant?",
+        "a": "An AI chatbot that answers your questions directly from the lesson content — available 24 hours a day."
+      },
+      {
+        "q": "What payment methods are available?",
+        "a": "Bank cards, Vodafone Cash, Fawry, and discount codes."
+      },
+      {
+        "q": "Who do I contact if I have a problem?",
+        "a": "You can reach us via WhatsApp anytime."
+      }
     ]
   },
   "cta": {
@@ -94,7 +109,11 @@
     "academyName": "Mr. Ahmed's Chemistry Academy",
     "platformDesc": "A smart learning platform that helps teachers manage their content and students",
     "curriculum": "Curriculum Content",
-    "curriculumLinks": ["Acids and Bases", "Electrochemistry", "Organic Chemistry"],
+    "curriculumLinks": [
+      "Acids and Bases",
+      "Electrochemistry",
+      "Organic Chemistry"
+    ],
     "importantLinks": "Important Links",
     "contactUs": "Contact Us",
     "faqLink": "FAQ",
