@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, ChevronDown, Globe, LogOut, GraduationCap, Languages } from 'lucide-react';
+import { Menu, ChevronDown, Globe, LogOut, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { logoutUser, persistLocale } from '@/features/auth/store/authSlice';
@@ -38,7 +38,7 @@ const pageTitleByPath: Record<string, string> = {
 function Brand({ className, asLink }: { className?: string; asLink?: boolean }) {
   const content = (
     <>
-      <GraduationCap size={24} className="text-accent" />
+      <img src="/images/2.png" alt="Fahimni" className="h-14 w-14 object-contain" />
       <span className="font-cairo text-lg font-bold text-text-primary">Fahimni</span>
     </>
   );

@@ -1,5 +1,5 @@
 import { NavLink, Link } from 'react-router-dom';
-import { LogOut, GraduationCap, type LucideIcon } from 'lucide-react';
+import { LogOut, type LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { setSidebarOpen } from '@/shared/store/slices/uiSlice';
 import { logoutUser } from '@/features/auth/store/authSlice';
@@ -39,7 +39,7 @@ function SidebarContent({ items, onNavigate }: { items: SidebarItem[]; onNavigat
           onClick={onNavigate}
           className="inline-flex items-center gap-2 font-cairo text-xl font-bold text-cyan-500 transition-opacity hover:opacity-80"
         >
-          <GraduationCap size={24} />
+          <img src="/images/2.png" alt="Fahimni" className="h-14 w-14 object-contain" />
           {t('appName')}
         </Link>
       </div>
