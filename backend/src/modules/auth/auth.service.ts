@@ -90,10 +90,13 @@ export class AuthService {
       throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
     }
 
-    // ADMIN accounts are exempt from the email-verification gate regardless of
-    // the stored emailVerified value — role-based, not a one-time seed default,
-    // so an admin created any other way later is still never blocked here.
-    if (user.role !== "ADMIN" && !user.emailVerified) {
+    // ADMIN and OPERATION (teacher) accounts are exempt from the email-verification
+    // gate regardless of the stored emailVerified value — role-based, not a
+    // one-time registration-time default, so an account created any other way
+    // later is still never blocked here. Teachers are gated on admin-approval
+    // status instead (teacherApprovalState, checked below); only students go
+    // through the email-verification flow.
+    if (user.role !== "ADMIN" && user.role !== "OPERATION" && !user.emailVerified) {
       throw new AppError("Please verify your email before logging in.", 403, "EMAIL_NOT_VERIFIED");
     }
 
@@ -287,11 +290,13 @@ export class AuthService {
           status: Status.INACTIVE,
           teacherApprovalState: "PENDING_REVIEW",
           locale: normalizeLocale(input.locale),
-          // Self-registered (the teacher entered their own email) — requires
-          // verification exactly like a student. Admin-created teacher accounts
-          // (AdminUsersService.createUser) are a separate, trusted path and are
-          // exempt (emailVerified: true there).
-          emailVerified: false,
+          // Teachers require admin approval instead of email verification — the
+          // login guard excludes OPERATION from the emailVerified check entirely
+          // (same pattern as ADMIN), so this value is never actually enforced for
+          // this role. Still set explicitly to true (not left to infer from the
+          // schema default) so the stored data isn't misleading to a future reader
+          // and stays consistent with admin-created teacher accounts.
+          emailVerified: true,
         },
         select: userPublicFields,
       });
@@ -339,24 +344,6 @@ export class AuthService {
         });
       }
     }
-
-    const verificationToken = await this.generateEmailVerificationToken(user.created.id);
-
-    console.log(`[EmailVerification] ${input.email}: /verify-email?token=${verificationToken}`);
-
-    await sendTransactionalEmail({
-      to: input.email,
-      template: "emailVerification",
-      locale: input.locale,
-      data: {
-        studentName: input.fullName,
-        token: verificationToken,
-      },
-      metadata: { userId: user.created.id },
-      entityType: "User",
-      entityId: user.created.id,
-      dedupeKey: `${user.created.id}:emailVerification:register`,
-    });
 
     await sendTransactionalEmail({
       to: input.email,
