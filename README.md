@@ -159,6 +159,15 @@ Database command meanings:
 | `npx prisma migrate status` | Reports applied/pending/failed/drift | none (read-only) | yes |
 | `npm run db:seed` | Upserts local dev fixtures (refuses non-local DB) | inserts/updates fixture rows | yes (idempotent) |
 | `npm run db:seed:verify` | Read-only assertions on seeded data | none | yes |
+| `npm run db:reset-seed` | **Drops and recreates** the local dev DB (`prisma migrate reset --force`), then reseeds | destroys all current data, then reapplies migrations + fixtures | yes, but destructive each time |
+
+To fully reset your local dev database back to a clean, fully-seeded state (e.g. after pulling schema changes, or if your local data has drifted), from `backend/`:
+
+```bash
+npm run db:reset-seed
+```
+
+This is equivalent to `npx prisma migrate reset --force && npm run db:seed` — the `reset` step already re-runs the seed automatically (via the `prisma.seed` config in `package.json`), and the explicit `db:seed` afterward is a redundant safety net in case that ever changes. Only run this against your **local** `DATABASE_URL` — it refuses non-local hosts (see `assertLocalDatabase` in the seed script) but there's no substitute for checking `.env` first.
 
 ---
 
@@ -376,6 +385,7 @@ then `npm run db:generate` from `backend/` before `npm run dev`.
 | `npx prisma migrate deploy` | backend | Apply committed migrations | new/existing DB upgrade | schema (data preserved) |
 | `npm run db:migrate` (`prisma migrate dev`) | backend | **Author** a new migration | creating migrations only | schema + may prompt reset |
 | `npm run db:seed` | backend | Seed local fixtures (idempotent, local-only) | local data | inserts/updates fixtures |
+| `npm run db:reset-seed` | backend | **Drop + recreate** local DB, then reseed | full local reset | destroys then reseeds |
 | `npm run db:seed:verify` | backend | Read-only seed checks | after seeding | none |
 | `npm run test:e2e:story48` | backend | Quiz E2E (needs TEST DB + Gemini) | E2E | writes to **test** DB only |
 | `npm run test:e2e:story53` | backend | Promo redemption E2E (needs TEST DB) | E2E | writes to **test** DB only |

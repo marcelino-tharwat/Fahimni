@@ -304,6 +304,10 @@ export class AdminUsersService {
           role: input.role,
           status: input.status,
           teacherApprovalState: input.teacherApprovalState,
+          // Admin-created accounts (any role) are a trusted path, not a
+          // self-submitted email — always pre-verified, set explicitly rather
+          // than relying on the schema default.
+          emailVerified: true,
         },
         select: mutationUserSelect,
       });

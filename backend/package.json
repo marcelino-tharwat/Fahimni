@@ -12,6 +12,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
+    "db:reset-seed": "prisma migrate reset --force && npm run db:seed",
     "db:seed:secondary": "tsx prisma/seed.ts",
     "db:seed:verify": "tsx prisma/seed-verify.ts",
     "email:smoke": "tsx scripts/email-smoke.ts",

@@ -15,6 +15,8 @@ import type {
   ResetPasswordInput,
   ChangePasswordInput,
   UpdateLocaleInput,
+  VerifyEmailInput,
+  ResendVerificationInput,
 } from "./auth.validation.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { logger } from "../../config/logger.js";
@@ -48,6 +50,29 @@ export class AuthService {
     });
   }
 
+  /**
+   * Issues a raw email-verification token and stores only its SHA-256 hash
+   * (as `Otp.code`, type EMAIL_VERIFICATION). Unlike the password-reset OTP
+   * (bcrypt-hashed, looked up by email+code together), this token arrives as
+   * a bare link with no known owner, so it must be looked up directly by
+   * hash — SHA-256 is deterministic and indexable, bcrypt is not.
+   */
+  private async generateEmailVerificationToken(userId: string): Promise<string> {
+    const token = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    await prisma.otp.create({
+      data: {
+        code: hashedToken,
+        type: OtpType.EMAIL_VERIFICATION,
+        userId,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    });
+
+    return token;
+  }
+
   public async loginUser(input: LoginInput) {
     const user = await prisma.user.findUnique({
       where: { email: input.email },
@@ -63,6 +88,13 @@ export class AuthService {
 
     if (!isPasswordValid) {
       throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
+    }
+
+    // ADMIN accounts are exempt from the email-verification gate regardless of
+    // the stored emailVerified value — role-based, not a one-time seed default,
+    // so an admin created any other way later is still never blocked here.
+    if (user.role !== "ADMIN" && !user.emailVerified) {
+      throw new AppError("Please verify your email before logging in.", 403, "EMAIL_NOT_VERIFIED");
     }
 
     // BANNED users are always blocked — no exceptions.
@@ -147,7 +179,9 @@ export class AuthService {
       return this.registerTeacherPending(input, hashedPassword, files);
     }
 
-    // Student registration (unchanged): active account + StudentProfile + tokens.
+    // Student registration: account starts unverified and with NO session —
+    // the student must click the emailed verification link before they can
+    // log in (see loginUser's emailVerified gate).
     const user = await prisma.$transaction(async (tx) => {
       const created = await tx.user.create({
         data: {
@@ -158,6 +192,7 @@ export class AuthService {
           role: Role.STUDENT,
           status: Status.ACTIVE,
           locale: normalizeLocale(input.locale),
+          emailVerified: false,
         },
         select: userPublicFields,
       });
@@ -172,41 +207,28 @@ export class AuthService {
       return created;
     });
 
-    // Token version starts at 0 (schema default) for a brand-new user.
-    const { tokenVersion } = await prisma.user.findUniqueOrThrow({
-      where: { id: user.id },
-      select: { tokenVersion: true },
-    });
+    const token = await this.generateEmailVerificationToken(user.id);
 
-    const accessToken = this.tokenService.generateRegisterToken(
-      user.id,
-      user.role,
-      tokenVersion,
-    );
-
-    const refreshToken = this.tokenService.generateRefreshToken(user.id, tokenVersion);
-
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-    await prisma.refreshToken.create({
-      data: { token: hashRefreshToken(refreshToken), userId: user.id, expiresAt },
-    });
+    // Dev convenience: EMAIL_DRY_RUN is true by default locally/in CI, so the
+    // real email never renders — mirrors the existing `[OTP] ...` console.log
+    // used to manually test the password-reset flow (forgotPassword, below).
+    console.log(`[EmailVerification] ${user.email}: /verify-email?token=${token}`);
 
     await sendTransactionalEmail({
       to: user.email,
-      template: "studentWelcome",
+      template: "emailVerification",
       locale: input.locale,
       data: {
         studentName: user.fullName,
-        dashboardUrl: "/student/dashboard",
+        token,
       },
       metadata: { userId: user.id },
       entityType: "User",
       entityId: user.id,
-      dedupeKey: `${user.id}:studentWelcome`,
+      dedupeKey: `${user.id}:emailVerification:register`,
     });
 
-    return { pending: false as const, user, accessToken, refreshToken };
+    return { pending: false as const, emailVerificationRequired: true as const, user };
   }
 
   /** TR-YYYY-NNNNNN public reference with retry-on-collision (unique column is the guard). */
@@ -265,6 +287,11 @@ export class AuthService {
           status: Status.INACTIVE,
           teacherApprovalState: "PENDING_REVIEW",
           locale: normalizeLocale(input.locale),
+          // Self-registered (the teacher entered their own email) — requires
+          // verification exactly like a student. Admin-created teacher accounts
+          // (AdminUsersService.createUser) are a separate, trusted path and are
+          // exempt (emailVerified: true there).
+          emailVerified: false,
         },
         select: userPublicFields,
       });
@@ -312,6 +339,24 @@ export class AuthService {
         });
       }
     }
+
+    const verificationToken = await this.generateEmailVerificationToken(user.created.id);
+
+    console.log(`[EmailVerification] ${input.email}: /verify-email?token=${verificationToken}`);
+
+    await sendTransactionalEmail({
+      to: input.email,
+      template: "emailVerification",
+      locale: input.locale,
+      data: {
+        studentName: input.fullName,
+        token: verificationToken,
+      },
+      metadata: { userId: user.created.id },
+      entityType: "User",
+      entityId: user.created.id,
+      dedupeKey: `${user.created.id}:emailVerification:register`,
+    });
 
     await sendTransactionalEmail({
       to: input.email,
@@ -431,6 +476,85 @@ export class AuthService {
     });
 
     return { message: "OTP verified successfully" };
+  }
+
+  public async verifyEmail(input: VerifyEmailInput) {
+    const hashedToken = crypto.createHash("sha256").update(input.token).digest("hex");
+
+    const storedToken = await prisma.otp.findFirst({
+      where: {
+        code: hashedToken,
+        type: OtpType.EMAIL_VERIFICATION,
+        usedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (!storedToken) {
+      throw new AppError("Invalid or expired verification link", 410, "VERIFICATION_TOKEN_EXPIRED");
+    }
+
+    await prisma.$transaction([
+      prisma.otp.update({
+        where: { id: storedToken.id },
+        data: { usedAt: new Date() },
+      }),
+      prisma.user.update({
+        where: { id: storedToken.userId },
+        data: { emailVerified: true },
+      }),
+    ]);
+
+    return { message: "Email verified successfully" };
+  }
+
+  public async resendVerificationEmail(input: ResendVerificationInput) {
+    const user = await prisma.user.findUnique({
+      where: { email: input.email },
+      select: { id: true, fullName: true, email: true, locale: true, emailVerified: true },
+    });
+
+    if (!user) {
+      throw new AppError("User not found", 404, "USER_NOT_FOUND");
+    }
+
+    if (user.emailVerified) {
+      return { message: "Email is already verified" };
+    }
+
+    // Same DB-row-count rate-limit pattern as forgotPassword's OTP throttle,
+    // scaled down to the ticket's "max 1 email per 60 seconds" requirement.
+    const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+    const recentCount = await prisma.otp.count({
+      where: {
+        userId: user.id,
+        type: OtpType.EMAIL_VERIFICATION,
+        createdAt: { gte: oneMinuteAgo },
+      },
+    });
+
+    if (recentCount >= 1) {
+      throw new AppError("Please wait before requesting another email.", 429, "RATE_LIMITED");
+    }
+
+    const token = await this.generateEmailVerificationToken(user.id);
+
+    console.log(`[EmailVerification] ${user.email}: /verify-email?token=${token}`);
+
+    await sendTransactionalEmail({
+      to: user.email!,
+      template: "emailVerification",
+      locale: user.locale,
+      data: {
+        studentName: user.fullName,
+        token,
+      },
+      metadata: { userId: user.id },
+      entityType: "User",
+      entityId: user.id,
+    });
+
+    return { message: "Verification email sent" };
   }
 
   public async resetPassword(input: ResetPasswordInput) {
@@ -651,6 +775,8 @@ export class AuthService {
           password: hashedPassword,
           role: Role.STUDENT,
           status: Status.ACTIVE,
+          // Google already verified this address.
+          emailVerified: true,
         },
         select: userPublicFields,
       });

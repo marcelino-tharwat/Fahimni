@@ -130,6 +130,7 @@ exports.Prisma.UserScalarFieldEnum = {
   status: 'status',
   teacherApprovalState: 'teacherApprovalState',
   locale: 'locale',
+  emailVerified: 'emailVerified',
   tokenVersion: 'tokenVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

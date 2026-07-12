@@ -52,7 +52,7 @@ async function createUser() {
   mobileSeq += 1;
   const email = `auth-${id.slice(0, 8)}@e2e.test`;
   await prisma.user.create({
-    data: { id, email, fullName: "Auth User", mobile: `015${String((Date.now() + mobileSeq) % 1_000_000_000).padStart(9, "0")}`, password: pwHash, role: "STUDENT", status: "ACTIVE" },
+    data: { id, email, fullName: "Auth User", mobile: `015${String((Date.now() + mobileSeq) % 1_000_000_000).padStart(9, "0")}`, password: pwHash, role: "STUDENT", status: "ACTIVE", emailVerified: true },
   });
   owned.userIds.push(id);
   return { id, email };

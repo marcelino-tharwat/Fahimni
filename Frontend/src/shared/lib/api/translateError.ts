@@ -27,6 +27,8 @@ const CODE_TO_VALIDATION_KEY: Record<string, string> = {
   INVALID_CREDENTIALS: "validation:invalidCredentials",
   CURRENT_PASSWORD_INVALID: "validation:currentPasswordInvalid",
   ACCOUNT_INACTIVE: "validation:accountInactive",
+  EMAIL_NOT_VERIFIED: "validation:emailNotVerified",
+  VERIFICATION_TOKEN_EXPIRED: "validation:verificationTokenExpired",
   SESSION_SUPERSEDED: "validation:sessionSuperseded",
   TOKEN_EXPIRED: "validation:tokenExpired",
   TOKEN_INVALID: "validation:tokenInvalid",

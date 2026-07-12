@@ -91,10 +91,11 @@ async function upsertPublishedQuiz(
       text: `${title} — سؤال`,
       options: [...TF_OPTIONS],
       correctAnswer: TF_TRUE,
+      explanation: `شرح سؤال — ${title}.`,
       points: 1,
       sortOrder: 1,
     },
-    update: { quizId: id, options: [...TF_OPTIONS], correctAnswer: TF_TRUE },
+    update: { quizId: id, options: [...TF_OPTIONS], correctAnswer: TF_TRUE, explanation: `شرح سؤال — ${title}.` },
   });
   await prisma.quizLesson.deleteMany({ where: { quizId: id } });
   for (const lessonId of lessonIds) {
@@ -113,8 +114,9 @@ async function upsertStudent(email: string, stageId: string): Promise<string> {
       password: pwHash,
       role: "STUDENT",
       status: "ACTIVE",
+      emailVerified: true,
     },
-    update: { status: "ACTIVE" },
+    update: { status: "ACTIVE", emailVerified: true },
   });
   await prisma.studentProfile.upsert({
     where: { userId: u.id },
@@ -176,8 +178,9 @@ export async function seedQuizUnlockScenario(): Promise<void> {
       role: "OPERATION",
       status: "ACTIVE",
       teacherApprovalState: "APPROVED",
+      emailVerified: true,
     },
-    update: { status: "ACTIVE", teacherApprovalState: "APPROVED" },
+    update: { status: "ACTIVE", teacherApprovalState: "APPROVED", emailVerified: true },
   });
   const teacherId = teacher.id;
   const mathSubject = SUBJECT_CATALOG.find((subject) => subject.code === "MATH")?.displayName ?? "الرياضيات";

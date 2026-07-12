@@ -173,6 +173,10 @@ function LoginForm() {
         navigate(dashboardPathByRole[res.user.role]);
       }
     } catch (err) {
+      if ((err as ApiError)?.code === 'EMAIL_NOT_VERIFIED') {
+        navigate('/verify-email-pending', { state: { email: v.email } });
+        return;
+      }
       setError(translateApiError(t, err));
     } finally {
       inFlightRef.current = false;
@@ -331,6 +335,10 @@ function RegisterForm() {
         return;
       }
       const res = await dispatch(registerThunk({ fullName: normalizeTextInput(v.fullName), email: v.email.trim(), mobile: v.mobile.trim(), password: v.password, stageId: v.stageId, role: 'STUDENT', locale: i18n.language === 'en' ? 'en' : 'ar' })).unwrap();
+      if (res.emailVerificationRequired) {
+        navigate('/verify-email-pending', { state: { email: v.email.trim() } });
+        return;
+      }
       navigate(dashboardPathByRole[res.user.role]);
     } catch (err) {
       // Both paths land here as an `ApiError`-shaped object: the teacher path

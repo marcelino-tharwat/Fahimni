@@ -26,6 +26,12 @@ router.post('/reset-password', controller.resetPassword);
 // POST /api/v1/auth/verify-otp
 router.post('/verify-otp', controller.verifyOtp);
 
+// POST /api/v1/auth/verify-email
+router.post('/verify-email', controller.verifyEmail);
+
+// POST /api/v1/auth/resend-verification
+router.post('/resend-verification', controller.resendVerification);
+
 // POST /api/v1/auth/refresh
 router.post('/refresh', controller.refresh);
 
