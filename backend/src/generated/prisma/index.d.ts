@@ -376,6 +376,14 @@ export const TeacherRequestStatus: {
 export type TeacherRequestStatus = (typeof TeacherRequestStatus)[keyof typeof TeacherRequestStatus]
 
 
+export const RejectionMode: {
+  EDIT_ALLOWED: 'EDIT_ALLOWED',
+  FINAL_REJECTION: 'FINAL_REJECTION'
+};
+
+export type RejectionMode = (typeof RejectionMode)[keyof typeof RejectionMode]
+
+
 export const TeacherApprovalState: {
   NONE: 'NONE',
   PENDING_REVIEW: 'PENDING_REVIEW',
@@ -534,6 +542,10 @@ export const NotificationType: typeof $Enums.NotificationType
 export type TeacherRequestStatus = $Enums.TeacherRequestStatus
 
 export const TeacherRequestStatus: typeof $Enums.TeacherRequestStatus
+
+export type RejectionMode = $Enums.RejectionMode
+
+export const RejectionMode: typeof $Enums.RejectionMode
 
 export type TeacherApprovalState = $Enums.TeacherApprovalState
 
@@ -34978,6 +34990,7 @@ export namespace Prisma {
     bio: string | null
     status: $Enums.TeacherRequestStatus | null
     adminNotes: string | null
+    rejectionMode: $Enums.RejectionMode | null
     reviewedById: string | null
     reviewedAt: Date | null
     userId: string | null
@@ -34995,6 +35008,7 @@ export namespace Prisma {
     bio: string | null
     status: $Enums.TeacherRequestStatus | null
     adminNotes: string | null
+    rejectionMode: $Enums.RejectionMode | null
     reviewedById: string | null
     reviewedAt: Date | null
     userId: string | null
@@ -35013,6 +35027,7 @@ export namespace Prisma {
     status: number
     proofDocuments: number
     adminNotes: number
+    rejectionMode: number
     reviewedById: number
     reviewedAt: number
     userId: number
@@ -35032,6 +35047,7 @@ export namespace Prisma {
     bio?: true
     status?: true
     adminNotes?: true
+    rejectionMode?: true
     reviewedById?: true
     reviewedAt?: true
     userId?: true
@@ -35049,6 +35065,7 @@ export namespace Prisma {
     bio?: true
     status?: true
     adminNotes?: true
+    rejectionMode?: true
     reviewedById?: true
     reviewedAt?: true
     userId?: true
@@ -35067,6 +35084,7 @@ export namespace Prisma {
     status?: true
     proofDocuments?: true
     adminNotes?: true
+    rejectionMode?: true
     reviewedById?: true
     reviewedAt?: true
     userId?: true
@@ -35158,6 +35176,7 @@ export namespace Prisma {
     status: $Enums.TeacherRequestStatus
     proofDocuments: JsonValue
     adminNotes: string | null
+    rejectionMode: $Enums.RejectionMode | null
     reviewedById: string | null
     reviewedAt: Date | null
     userId: string | null
@@ -35193,6 +35212,7 @@ export namespace Prisma {
     status?: boolean
     proofDocuments?: boolean
     adminNotes?: boolean
+    rejectionMode?: boolean
     reviewedById?: boolean
     reviewedAt?: boolean
     userId?: boolean
@@ -35212,6 +35232,7 @@ export namespace Prisma {
     status?: boolean
     proofDocuments?: boolean
     adminNotes?: boolean
+    rejectionMode?: boolean
     reviewedById?: boolean
     reviewedAt?: boolean
     userId?: boolean
@@ -35231,6 +35252,7 @@ export namespace Prisma {
     status?: boolean
     proofDocuments?: boolean
     adminNotes?: boolean
+    rejectionMode?: boolean
     reviewedById?: boolean
     reviewedAt?: boolean
     userId?: boolean
@@ -35250,6 +35272,7 @@ export namespace Prisma {
     status?: boolean
     proofDocuments?: boolean
     adminNotes?: boolean
+    rejectionMode?: boolean
     reviewedById?: boolean
     reviewedAt?: boolean
     userId?: boolean
@@ -35257,7 +35280,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type TeacherRegistrationRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "publicReference" | "fullName" | "email" | "mobile" | "subject" | "bio" | "status" | "proofDocuments" | "adminNotes" | "reviewedById" | "reviewedAt" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherRegistrationRequest"]>
+  export type TeacherRegistrationRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "publicReference" | "fullName" | "email" | "mobile" | "subject" | "bio" | "status" | "proofDocuments" | "adminNotes" | "rejectionMode" | "reviewedById" | "reviewedAt" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["teacherRegistrationRequest"]>
   export type TeacherRegistrationRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | TeacherRegistrationRequest$userArgs<ExtArgs>
   }
@@ -35287,6 +35310,10 @@ export namespace Prisma {
        */
       proofDocuments: Prisma.JsonValue
       adminNotes: string | null
+      /**
+       * EDIT_ALLOWED | FINAL_REJECTION — only set when status = REJECTED
+       */
+      rejectionMode: $Enums.RejectionMode | null
       reviewedById: string | null
       reviewedAt: Date | null
       userId: string | null
@@ -35726,6 +35753,7 @@ export namespace Prisma {
     readonly status: FieldRef<"TeacherRegistrationRequest", 'TeacherRequestStatus'>
     readonly proofDocuments: FieldRef<"TeacherRegistrationRequest", 'Json'>
     readonly adminNotes: FieldRef<"TeacherRegistrationRequest", 'String'>
+    readonly rejectionMode: FieldRef<"TeacherRegistrationRequest", 'RejectionMode'>
     readonly reviewedById: FieldRef<"TeacherRegistrationRequest", 'String'>
     readonly reviewedAt: FieldRef<"TeacherRegistrationRequest", 'DateTime'>
     readonly userId: FieldRef<"TeacherRegistrationRequest", 'String'>
@@ -46232,6 +46260,7 @@ export namespace Prisma {
     status: 'status',
     proofDocuments: 'proofDocuments',
     adminNotes: 'adminNotes',
+    rejectionMode: 'rejectionMode',
     reviewedById: 'reviewedById',
     reviewedAt: 'reviewedAt',
     userId: 'userId',
@@ -46817,6 +46846,20 @@ export namespace Prisma {
    * Reference to a field of type 'TeacherRequestStatus[]'
    */
   export type ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeacherRequestStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'RejectionMode'
+   */
+  export type EnumRejectionModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RejectionMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'RejectionMode[]'
+   */
+  export type ListEnumRejectionModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RejectionMode[]'>
     
 
 
@@ -49145,6 +49188,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusFilter<"TeacherRegistrationRequest"> | $Enums.TeacherRequestStatus
     proofDocuments?: JsonFilter<"TeacherRegistrationRequest">
     adminNotes?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    rejectionMode?: EnumRejectionModeNullableFilter<"TeacherRegistrationRequest"> | $Enums.RejectionMode | null
     reviewedById?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
     reviewedAt?: DateTimeNullableFilter<"TeacherRegistrationRequest"> | Date | string | null
     userId?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
@@ -49164,6 +49208,7 @@ export namespace Prisma {
     status?: SortOrder
     proofDocuments?: SortOrder
     adminNotes?: SortOrderInput | SortOrder
+    rejectionMode?: SortOrderInput | SortOrder
     reviewedById?: SortOrderInput | SortOrder
     reviewedAt?: SortOrderInput | SortOrder
     userId?: SortOrderInput | SortOrder
@@ -49187,6 +49232,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusFilter<"TeacherRegistrationRequest"> | $Enums.TeacherRequestStatus
     proofDocuments?: JsonFilter<"TeacherRegistrationRequest">
     adminNotes?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
+    rejectionMode?: EnumRejectionModeNullableFilter<"TeacherRegistrationRequest"> | $Enums.RejectionMode | null
     reviewedById?: StringNullableFilter<"TeacherRegistrationRequest"> | string | null
     reviewedAt?: DateTimeNullableFilter<"TeacherRegistrationRequest"> | Date | string | null
     createdAt?: DateTimeFilter<"TeacherRegistrationRequest"> | Date | string
@@ -49205,6 +49251,7 @@ export namespace Prisma {
     status?: SortOrder
     proofDocuments?: SortOrder
     adminNotes?: SortOrderInput | SortOrder
+    rejectionMode?: SortOrderInput | SortOrder
     reviewedById?: SortOrderInput | SortOrder
     reviewedAt?: SortOrderInput | SortOrder
     userId?: SortOrderInput | SortOrder
@@ -49229,6 +49276,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusWithAggregatesFilter<"TeacherRegistrationRequest"> | $Enums.TeacherRequestStatus
     proofDocuments?: JsonWithAggregatesFilter<"TeacherRegistrationRequest">
     adminNotes?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
+    rejectionMode?: EnumRejectionModeNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | $Enums.RejectionMode | null
     reviewedById?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
     reviewedAt?: DateTimeNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | Date | string | null
     userId?: StringNullableWithAggregatesFilter<"TeacherRegistrationRequest"> | string | null
@@ -52425,6 +52473,7 @@ export namespace Prisma {
     status?: $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: string | null
+    rejectionMode?: $Enums.RejectionMode | null
     reviewedById?: string | null
     reviewedAt?: Date | string | null
     createdAt?: Date | string
@@ -52443,6 +52492,7 @@ export namespace Prisma {
     status?: $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: string | null
+    rejectionMode?: $Enums.RejectionMode | null
     reviewedById?: string | null
     reviewedAt?: Date | string | null
     userId?: string | null
@@ -52461,6 +52511,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionMode?: NullableEnumRejectionModeFieldUpdateOperationsInput | $Enums.RejectionMode | null
     reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52479,6 +52530,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionMode?: NullableEnumRejectionModeFieldUpdateOperationsInput | $Enums.RejectionMode | null
     reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52497,6 +52549,7 @@ export namespace Prisma {
     status?: $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: string | null
+    rejectionMode?: $Enums.RejectionMode | null
     reviewedById?: string | null
     reviewedAt?: Date | string | null
     userId?: string | null
@@ -52515,6 +52568,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionMode?: NullableEnumRejectionModeFieldUpdateOperationsInput | $Enums.RejectionMode | null
     reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52532,6 +52586,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionMode?: NullableEnumRejectionModeFieldUpdateOperationsInput | $Enums.RejectionMode | null
     reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55583,6 +55638,13 @@ export namespace Prisma {
     not?: NestedEnumTeacherRequestStatusFilter<$PrismaModel> | $Enums.TeacherRequestStatus
   }
 
+  export type EnumRejectionModeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.RejectionMode | EnumRejectionModeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.RejectionMode[] | ListEnumRejectionModeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.RejectionMode[] | ListEnumRejectionModeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumRejectionModeNullableFilter<$PrismaModel> | $Enums.RejectionMode | null
+  }
+
   export type TeacherRegistrationRequestCountOrderByAggregateInput = {
     id?: SortOrder
     publicReference?: SortOrder
@@ -55594,6 +55656,7 @@ export namespace Prisma {
     status?: SortOrder
     proofDocuments?: SortOrder
     adminNotes?: SortOrder
+    rejectionMode?: SortOrder
     reviewedById?: SortOrder
     reviewedAt?: SortOrder
     userId?: SortOrder
@@ -55611,6 +55674,7 @@ export namespace Prisma {
     bio?: SortOrder
     status?: SortOrder
     adminNotes?: SortOrder
+    rejectionMode?: SortOrder
     reviewedById?: SortOrder
     reviewedAt?: SortOrder
     userId?: SortOrder
@@ -55628,6 +55692,7 @@ export namespace Prisma {
     bio?: SortOrder
     status?: SortOrder
     adminNotes?: SortOrder
+    rejectionMode?: SortOrder
     reviewedById?: SortOrder
     reviewedAt?: SortOrder
     userId?: SortOrder
@@ -55643,6 +55708,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTeacherRequestStatusFilter<$PrismaModel>
     _max?: NestedEnumTeacherRequestStatusFilter<$PrismaModel>
+  }
+
+  export type EnumRejectionModeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RejectionMode | EnumRejectionModeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.RejectionMode[] | ListEnumRejectionModeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.RejectionMode[] | ListEnumRejectionModeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumRejectionModeNullableWithAggregatesFilter<$PrismaModel> | $Enums.RejectionMode | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumRejectionModeNullableFilter<$PrismaModel>
+    _max?: NestedEnumRejectionModeNullableFilter<$PrismaModel>
   }
 
   export type AiMessageListRelationFilter = {
@@ -58673,6 +58748,10 @@ export namespace Prisma {
     set?: $Enums.TeacherRequestStatus
   }
 
+  export type NullableEnumRejectionModeFieldUpdateOperationsInput = {
+    set?: $Enums.RejectionMode | null
+  }
+
   export type UserUpdateOneWithoutTeacherRegistrationRequestNestedInput = {
     create?: XOR<UserCreateWithoutTeacherRegistrationRequestInput, UserUncheckedCreateWithoutTeacherRegistrationRequestInput>
     connectOrCreate?: UserCreateOrConnectWithoutTeacherRegistrationRequestInput
@@ -59875,6 +59954,13 @@ export namespace Prisma {
     not?: NestedEnumTeacherRequestStatusFilter<$PrismaModel> | $Enums.TeacherRequestStatus
   }
 
+  export type NestedEnumRejectionModeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.RejectionMode | EnumRejectionModeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.RejectionMode[] | ListEnumRejectionModeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.RejectionMode[] | ListEnumRejectionModeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumRejectionModeNullableFilter<$PrismaModel> | $Enums.RejectionMode | null
+  }
+
   export type NestedEnumTeacherRequestStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.TeacherRequestStatus | EnumTeacherRequestStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TeacherRequestStatus[] | ListEnumTeacherRequestStatusFieldRefInput<$PrismaModel>
@@ -59883,6 +59969,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTeacherRequestStatusFilter<$PrismaModel>
     _max?: NestedEnumTeacherRequestStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRejectionModeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RejectionMode | EnumRejectionModeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.RejectionMode[] | ListEnumRejectionModeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.RejectionMode[] | ListEnumRejectionModeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumRejectionModeNullableWithAggregatesFilter<$PrismaModel> | $Enums.RejectionMode | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumRejectionModeNullableFilter<$PrismaModel>
+    _max?: NestedEnumRejectionModeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumAiMessageRoleFilter<$PrismaModel = never> = {
@@ -60049,6 +60145,7 @@ export namespace Prisma {
     status?: $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: string | null
+    rejectionMode?: $Enums.RejectionMode | null
     reviewedById?: string | null
     reviewedAt?: Date | string | null
     createdAt?: Date | string
@@ -60066,6 +60163,7 @@ export namespace Prisma {
     status?: $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: string | null
+    rejectionMode?: $Enums.RejectionMode | null
     reviewedById?: string | null
     reviewedAt?: Date | string | null
     createdAt?: Date | string
@@ -61033,6 +61131,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionMode?: NullableEnumRejectionModeFieldUpdateOperationsInput | $Enums.RejectionMode | null
     reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61050,6 +61149,7 @@ export namespace Prisma {
     status?: EnumTeacherRequestStatusFieldUpdateOperationsInput | $Enums.TeacherRequestStatus
     proofDocuments?: JsonNullValueInput | InputJsonValue
     adminNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    rejectionMode?: NullableEnumRejectionModeFieldUpdateOperationsInput | $Enums.RejectionMode | null
     reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

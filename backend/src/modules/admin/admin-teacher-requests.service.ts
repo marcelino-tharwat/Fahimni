@@ -10,6 +10,7 @@ import type {
   ApproveResponse,
   Paginated,
   RejectResponse,
+  RejectionMode,
   SafeDocumentRef,
   SignedUrlResponse,
   TeacherRequestStatus,
@@ -58,6 +59,7 @@ type RequestRow = {
   subject: string | null;
   bio: string | null;
   adminNotes: string | null;
+  rejectionMode: string | null;
   reviewedById: string | null;
   reviewedAt: Date | null;
   userId: string | null;
@@ -74,6 +76,7 @@ const requestSelect = {
   subject: true,
   bio: true,
   adminNotes: true,
+  rejectionMode: true,
   reviewedById: true,
   reviewedAt: true,
   userId: true,
@@ -355,7 +358,8 @@ export class AdminTeacherRequestsService {
     }
 
     const updated = await prisma.$transaction(async (tx) => {
-      // Block the linked teacher account (if any): REJECTED + INACTIVE.
+      // Block the linked teacher account (if any): REJECTED + INACTIVE but keep
+      // them able to login for review-status page.
       if (row.userId) {
         await tx.user.update({
           where: { id: row.userId },
@@ -370,6 +374,7 @@ export class AdminTeacherRequestsService {
           reviewedById: reviewerId,
           reviewedAt: new Date(),
           adminNotes: input.adminNotes,
+          rejectionMode: input.rejectionMode,
         },
         select: requestSelect,
       });
@@ -380,7 +385,11 @@ export class AdminTeacherRequestsService {
           resourceId: requestId,
           actorId: reviewerId,
           actorType: "ADMIN",
-          details: { publicReference: req.publicReference, ...(row.userId ? { teacherUserId: row.userId } : {}) },
+          details: {
+            publicReference: req.publicReference,
+            rejectionMode: input.rejectionMode,
+            ...(row.userId ? { teacherUserId: row.userId } : {}),
+          },
         },
         tx,
       );
@@ -396,7 +405,7 @@ export class AdminTeacherRequestsService {
         teacherName: updated.fullName,
         referenceNumber: updated.publicReference,
         rejectionReason: input.adminNotes,
-        rejectionMode: "FINAL_REJECTION",
+        rejectionMode: input.rejectionMode,
         statusUrl: `/teacher/register/status?ref=${encodeURIComponent(updated.publicReference)}`,
       },
       metadata: { requestId },
@@ -404,7 +413,7 @@ export class AdminTeacherRequestsService {
       entityId: requestId,
       dedupeKey: `${requestId}:REJECTED:teacherRegistrationRejected`,
     });
-    return { request: this.toListItem(updated, reviewerName) };
+    return { request: this.toListItem(updated, reviewerName), rejectionMode: updated.rejectionMode as RejectResponse["rejectionMode"] };
   }
 }
 

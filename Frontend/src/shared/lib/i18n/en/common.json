@@ -359,6 +359,7 @@
       "bio": "Bio",
       "documents": "Documents",
       "noDocuments": "No documents attached",
+      "noDocumentsDesc": "The applicant has not attached any documents with their request.",
       "openDocument": "Open document",
       "opening": "Opening...",
       "documentUnavailable": "Document is not available to view right now",
@@ -384,7 +385,13 @@
       "approvedTitle": "Request approved",
       "approvedToast": "Request approved",
       "rejectedToast": "Request rejected",
-      "actionError": "Failed to perform the action"
+      "actionError": "Failed to perform the action",
+      "rejectionMode": "Rejection Type",
+      "editAllowed": "Allow edit and resubmit",
+      "editAllowedHint": "Teacher can edit data and resubmit",
+      "finalRejection": "Final Rejection",
+      "finalRejectionHint": "Teacher cannot reapply",
+      "notProvided": "Not Provided"
     }
   },
   "adminTeacherWithdrawals": {

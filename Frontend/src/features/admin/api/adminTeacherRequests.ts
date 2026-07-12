@@ -53,9 +53,9 @@ export const adminTeacherRequestsApi = {
 
   reject: async (
     requestId: string,
-    body: { adminNotes: string },
-  ): Promise<{ request: AdminTeacherRequestListItem }> => {
-    const { data } = await apiClient.patch<ApiResponse<{ request: AdminTeacherRequestListItem }>>(
+    body: { adminNotes: string; rejectionMode: 'EDIT_ALLOWED' | 'FINAL_REJECTION' },
+  ): Promise<{ request: AdminTeacherRequestListItem; rejectionMode: string | null }> => {
+    const { data } = await apiClient.patch<ApiResponse<{ request: AdminTeacherRequestListItem; rejectionMode: string | null }>>(
       `/admin/teacher-requests/${requestId}/reject`,
       body,
     );

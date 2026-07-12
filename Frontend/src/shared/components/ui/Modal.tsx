@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils/cn';
@@ -9,6 +9,7 @@ interface ModalProps {
   title?: string;
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg';
+  initialFocusRef?: RefObject<HTMLElement | null>;
 }
 
 const sizeClasses: Record<NonNullable<ModalProps['size']>, string> = {
@@ -20,7 +21,7 @@ const sizeClasses: Record<NonNullable<ModalProps['size']>, string> = {
 const FOCUSABLE =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, size = 'md', initialFocusRef }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
   // Kept up to date every render without being a dependency of the effect
@@ -48,7 +49,13 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         (el) => !el.hasAttribute('disabled'),
       );
 
-    (focusable()[0] ?? dialogRef.current)?.focus();
+    // If the caller provided an initialFocusRef, focus that element.
+    // Otherwise focus the first focusable element (close button).
+    if (initialFocusRef?.current) {
+      initialFocusRef.current.focus();
+    } else {
+      (focusable()[0] ?? dialogRef.current)?.focus();
+    }
 
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
@@ -56,6 +63,9 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         return;
       }
       if (e.key === 'Tab') {
+        // Allow default Tab behavior inside textareas (insert tab character).
+        // Do NOT trap focus when the active element is a textarea.
+        if (document.activeElement?.tagName === 'TEXTAREA') return;
         const els = focusable();
         if (els.length === 0) {
           e.preventDefault();
@@ -85,9 +95,13 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
 
   return createPortal(
     // Full-screen dark overlay; clicking it (outside the card) closes the modal.
+    // Uses onCloseRef to avoid passing a new function prop on every parent
+    // render (which would cause React to re-attach the event to the portal
+    // element on every keystroke, and could trigger focus loss from a
+    // controlled textarea inside the modal).
     <div
       className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4"
-      onClick={onClose}
+      onClick={() => onCloseRef.current()}
       role="presentation"
     >
       {/* Solid modal card, centered above the overlay. */}

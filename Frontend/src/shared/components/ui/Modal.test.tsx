@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
@@ -63,5 +63,20 @@ describe('Modal — focus stability while typing', () => {
     );
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('initialFocusRef focuses a custom element instead of the close button', () => {
+    function Host() {
+      const ref = useRef<HTMLTextAreaElement>(null);
+      const [open, setOpen] = useState(true);
+      return (
+        <Modal isOpen={open} onClose={() => setOpen(false)} title="Test" initialFocusRef={ref}>
+          <textarea ref={ref} aria-label="custom" />
+        </Modal>
+      );
+    }
+    render(<Host />);
+    const textarea = screen.getByLabelText('custom');
+    expect(textarea).toHaveFocus();
   });
 });
