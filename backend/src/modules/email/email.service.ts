@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Prisma } from "../../generated/prisma/index.js";
 import { prisma } from "../../config/database.js";
 import { logger } from "../../config/logger.js";
-import { getEmailConfig, SmtpEmailProvider, type EmailRuntimeConfig } from "./email.provider.js";
+import { getEmailConfig, createEmailProvider, type EmailRuntimeConfig } from "./email.provider.js";
 import { resolveEmailLocale } from "./email.locale.js";
 import { renderEmailTemplate } from "./email.templates.js";
 import type { EmailProvider, EmailSendResult, SendEmailInput } from "./email.types.js";
@@ -100,7 +100,7 @@ export class EmailService {
     logStore: EmailLogStore | undefined = process.env.NODE_ENV === "test" ? undefined : new PrismaEmailLogStore(),
   ) {
     this.config = config;
-    this.provider = provider ?? new SmtpEmailProvider(config);
+    this.provider = provider ?? createEmailProvider(config);
     this.logStore = logStore;
   }
 
@@ -235,6 +235,7 @@ export class EmailService {
         locale,
         provider: this.config.provider,
       });
+      const unsubscribeAddress = this.config.replyTo || this.config.adminEmail;
       const response = await withTimeout(
         this.provider.send({
           to: parsedTo.data,
@@ -242,6 +243,8 @@ export class EmailService {
           subject: rendered.subject,
           html: rendered.html,
           text: rendered.text,
+          ...(this.config.replyTo ? { replyTo: this.config.replyTo } : {}),
+          ...(unsubscribeAddress ? { headers: { "List-Unsubscribe": `<mailto:${unsubscribeAddress}>` } } : {}),
         }),
         SMTP_SEND_TIMEOUT_MS,
       );

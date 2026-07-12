@@ -5,6 +5,7 @@ import { useUpdateTeacherProfile } from '@/features/teacher/hooks/useTeacherProf
 import { addToast } from '@/shared/store/slices/toastSlice';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { translateApiError } from '@/shared/lib/api/translateError';
+import { isBlank, normalizeTextInput, normalizeOptionalTextInput } from '@/shared/lib/utils/textNormalization';
 import { useSubjects } from '@/features/subjects/useSubjects';
 import type { TeacherProfile } from '@/features/teacher/types/teacher';
 
@@ -27,9 +28,18 @@ export function EditProfileModal({ profile, onClose }: EditProfileModalProps) {
   const [subject, setSubject] = useState(profile.subject ?? '');
   const [subjectOpen, setSubjectOpen] = useState(false);
 
+  const nameInvalid = isBlank(name);
+  const phoneInvalid = isBlank(phone);
+
   const handleSubmit = () => {
+    if (nameInvalid || phoneInvalid) return;
     updateProfile(
-      { fullName: name, bio, mobile: phone, subject: subject || undefined },
+      {
+        fullName: normalizeTextInput(name),
+        bio: normalizeOptionalTextInput(bio) ?? '',
+        mobile: normalizeTextInput(phone),
+        subject: subject || undefined,
+      },
       {
         onSuccess: () => {
           dispatch(addToast({ type: 'success', message: tc('status.success') }));
@@ -156,7 +166,7 @@ export function EditProfileModal({ profile, onClose }: EditProfileModalProps) {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={isPending}
+            disabled={isPending || nameInvalid || phoneInvalid}
             className="rounded-btn bg-cyan-500 px-6 py-2 font-cairo text-body font-semibold text-navy-950 transition-colors hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isPending ? t('editModal.saving') : tc('actions.save')}

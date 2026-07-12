@@ -27,6 +27,8 @@ const CODE_TO_VALIDATION_KEY: Record<string, string> = {
   INVALID_CREDENTIALS: "validation:invalidCredentials",
   CURRENT_PASSWORD_INVALID: "validation:currentPasswordInvalid",
   ACCOUNT_INACTIVE: "validation:accountInactive",
+  EMAIL_NOT_VERIFIED: "validation:emailNotVerified",
+  VERIFICATION_TOKEN_EXPIRED: "validation:verificationTokenExpired",
   SESSION_SUPERSEDED: "validation:sessionSuperseded",
   TOKEN_EXPIRED: "validation:tokenExpired",
   TOKEN_INVALID: "validation:tokenInvalid",
@@ -79,6 +81,10 @@ const CODE_TO_VALIDATION_KEY: Record<string, string> = {
   PLAN_CODE_DUPLICATE: "validation:planCodeDuplicate",
   FREE_PLAN_MUST_BE_FREE: "validation:freePlanMustBeFree",
   PLAN_NOT_FOUND: "validation:planNotFound",
+
+  // Admin — stages
+  STAGE_NOT_FOUND: "validation:stageNotFound",
+  STAGE_HAS_CHAPTERS: "validation:stageHasChapters",
 
   // Admin — teacher requests
   TEACHER_REQUEST_NOT_FOUND: "validation:teacherRequestNotFound",

@@ -62,7 +62,7 @@ export class AdminStagesService {
     });
 
     if (!stage) {
-      throw new AppError("Stage not found", 404);
+      throw new AppError("Stage not found", 404, "STAGE_NOT_FOUND");
     }
 
     return attachCounts(toLocalizedStage(stage)) as unknown as StageResponseDTO;
@@ -103,7 +103,7 @@ export class AdminStagesService {
     });
 
     if (!existing) {
-      throw new AppError("Stage not found", 404);
+      throw new AppError("Stage not found", 404, "STAGE_NOT_FOUND");
     }
 
     const data: Record<string, unknown> = {};
@@ -143,7 +143,7 @@ export class AdminStagesService {
     });
 
     if (!existing) {
-      throw new AppError("Stage not found", 404);
+      throw new AppError("Stage not found", 404, "STAGE_NOT_FOUND");
     }
 
     const chapterCount = await prisma.chapter.count({
@@ -154,6 +154,7 @@ export class AdminStagesService {
       throw new AppError(
         `Cannot delete stage with ${chapterCount} active chapters. Remove or reassign chapters first.`,
         409,
+        "STAGE_HAS_CHAPTERS",
       );
     }
 
@@ -181,7 +182,7 @@ export class AdminStagesService {
       });
 
       if (stages.length !== ids.length) {
-        throw new AppError("One or more stages not found", 404);
+        throw new AppError("One or more stages not found", 404, "STAGE_NOT_FOUND");
       }
 
       for (let i = 0; i < ids.length; i++) {

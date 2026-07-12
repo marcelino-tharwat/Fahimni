@@ -6,6 +6,8 @@ import {
   verifyOtpSchema,
   changePasswordSchema,
   updateLocaleSchema,
+  verifyEmailSchema,
+  resendVerificationSchema,
 } from "./auth.validation.js";
 import { AuthService } from "./auth.service.js";
 import { loginSchema } from "./auth.validation.js";
@@ -27,12 +29,7 @@ export class AuthController {
       const parsed = loginSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const result = await authService.loginUser(parsed.data);
@@ -65,12 +62,7 @@ export class AuthController {
       const parsed = registerSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       // Proof documents (teacher registration) arrive as multipart files; absent
@@ -92,12 +84,13 @@ export class AuthController {
         return;
       }
 
-      setAuthCookies(res, result.accessToken, result.refreshToken);
-
+      // Student registration is unverified and issues no session either — the
+      // student must click the emailed verification link before logging in.
       res.status(201).json({
-        message: "Registration successful",
+        message: "Registration successful. Please verify your email.",
         data: {
           user: result.user,
+          emailVerificationRequired: result.emailVerificationRequired,
         },
       });
     } catch (error) {
@@ -115,12 +108,7 @@ export class AuthController {
       const parsed = forgotPasswordSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const response = await authService.forgotPassword(parsed.data);
@@ -139,15 +127,48 @@ export class AuthController {
       const parsed = verifyOtpSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const response = await authService.verifyOtp(parsed.data);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public verifyEmail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = verifyEmailSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        throw parsed.error;
+      }
+
+      const response = await authService.verifyEmail(parsed.data);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public resendVerification = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = resendVerificationSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        throw parsed.error;
+      }
+
+      const response = await authService.resendVerificationEmail(parsed.data);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -163,12 +184,7 @@ export class AuthController {
       const parsed = resetPasswordSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const response = await authService.resetPassword(parsed.data);
@@ -280,12 +296,7 @@ export class AuthController {
       const parsed = changePasswordSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const response = await authService.changePassword(
@@ -307,12 +318,7 @@ export class AuthController {
       const parsed = updateLocaleSchema.safeParse(req.body);
 
       if (!parsed.success) {
-        res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: parsed.error.flatten().fieldErrors,
-        });
-        return;
+        throw parsed.error;
       }
 
       const user = await authService.updateLocale(req.user!.id, parsed.data);

@@ -17,19 +17,22 @@ export type ListPlansQuery = z.output<typeof listPlansQuerySchema>;
 
 // ── Mutation schemas ──
 
-const nonEmptyString = z.string().min(1, "Required").max(200);
+// `.trim()` runs before `.min()` so tab/space/newline-only input ("\t", "   ")
+// is treated as empty rather than as a valid non-empty string.
+const nonEmptyString = z.string().trim().min(1, "Required").max(200);
 const codePattern = /^[A-Z][A-Z0-9_]{1,19}$/;
 const price = z.number().min(0, "Must be 0 or greater");
 
 export const createPlanSchema = z.object({
   code: z
     .string()
+    .trim()
     .min(2, "Code must be at least 2 characters")
     .max(20, "Code must be at most 20 characters")
     .regex(codePattern, "Code must be uppercase alphanumeric (e.g. BASIC, PRO)"),
   name: nonEmptyString,
   displayName: nonEmptyString,
-  description: z.string().max(1000).optional().nullable().default(null),
+  description: z.string().trim().max(1000).optional().nullable().default(null),
   monthlyPrice: price.default(0),
   yearlyPrice: price.optional().nullable().default(null),
   currency: z.string().max(10).default("EGP"),
@@ -45,7 +48,7 @@ export type CreatePlanInput = z.input<typeof createPlanSchema>;
 export const updatePlanSchema = z.object({
   name: nonEmptyString.optional(),
   displayName: nonEmptyString.optional(),
-  description: z.string().max(1000).optional().nullable(),
+  description: z.string().trim().max(1000).optional().nullable(),
   monthlyPrice: price.optional(),
   yearlyPrice: price.optional().nullable(),
   features: z.record(z.string(), z.boolean()).optional(),
@@ -59,7 +62,7 @@ export type UpdatePlanInput = z.input<typeof updatePlanSchema>;
 
 export const statusChangeSchema = z.object({
   isActive: z.boolean(),
-  reason: z.string().min(1, "Reason is required when changing status").optional(),
+  reason: z.string().trim().min(1, "Reason is required when changing status").optional(),
 });
 
 export type StatusChangeInput = z.input<typeof statusChangeSchema>;

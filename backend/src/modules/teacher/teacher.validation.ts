@@ -36,11 +36,12 @@ export const updateTeacherProfileSchema = z
       )
       .optional(),
     subject: z.enum(VALID_SUBJECT_NAMES, { message: "Invalid subject" }).optional(),
-    bio: z
-      .string()
-      .trim()
-      .max(500, "Bio must not exceed 500 characters")
-      .optional(),
+    // Whitespace-only ("   ", "\n\t") normalizes away to "no bio" instead of
+    // being persisted as a blank/whitespace string.
+    bio: z.preprocess(
+      (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+      z.string().trim().max(500, "Bio must not exceed 500 characters").optional(),
+    ),
     photoUrl: z.string().optional(),
     logoUrl: z.string().optional(),
     aiTutorDailyQueryLimit: z
@@ -57,3 +58,16 @@ export const updateTeacherProfileSchema = z
 export type UpdateTeacherProfileInput = z.infer<
   typeof updateTeacherProfileSchema
 >;
+
+export const resubmitRequestSchema = z.object({
+  fullName: z.string().trim().min(3).max(100).optional(),
+  email: z.string().trim().email("Invalid email address").toLowerCase().optional(),
+  mobile: z
+    .string()
+    .trim()
+    .regex(/^(\+20|0)(10|11|12|15)[0-9]{8}$/, "Mobile must be a valid Egyptian number")
+    .optional(),
+  subject: z.string().trim().optional(),
+  bio: z.string().trim().max(500).optional(),
+});
+export type ResubmitRequestInput = z.infer<typeof resubmitRequestSchema>;

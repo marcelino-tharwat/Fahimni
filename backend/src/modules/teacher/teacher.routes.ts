@@ -5,7 +5,7 @@ import { authorizeMiddleware } from "../../shared/middlewares/authorize.middlewa
 import { requireActiveTeacherSubscription } from "../../shared/middlewares/teacher-access.middleware.js";
 import { validateRequest } from "../../shared/middlewares/validate.middleware.js";
 import { upload } from "../../shared/middlewares/upload.middleware.js";
-import { updateTeacherProfileSchema } from "./teacher.validation.js";
+import { updateTeacherProfileSchema, resubmitRequestSchema } from "./teacher.validation.js";
 
 const router = Router();
 const controller = new TeacherController();
@@ -18,6 +18,14 @@ router.get(
   authenticateMiddleware,
   authorizeMiddleware("OPERATION"),
   controller.getReviewStatus,
+);
+
+router.post(
+  "/registration-request/resubmit",
+  authenticateMiddleware,
+  authorizeMiddleware("OPERATION"),
+  validateRequest(resubmitRequestSchema),
+  controller.resubmitRequest,
 );
 
 router.get(

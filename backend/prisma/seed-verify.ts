@@ -32,12 +32,14 @@ async function main(): Promise<void> {
     "student5@fahimni.local",
   ];
 
-  const [adminCount, teacherCount, studentCount, userCount] = await Promise.all([
-    prisma.user.count({ where: { role: "ADMIN" } }),
-    prisma.user.count({ where: { role: "OPERATION" } }),
-    prisma.user.count({ where: { role: "STUDENT" } }),
-    prisma.user.count(),
-  ]);
+  const [adminCount, teacherCount, studentCount, userCount] = await Promise.all(
+    [
+      prisma.user.count({ where: { role: "ADMIN" } }),
+      prisma.user.count({ where: { role: "OPERATION" } }),
+      prisma.user.count({ where: { role: "STUDENT" } }),
+      prisma.user.count(),
+    ],
+  );
   check("Exactly 1 admin", adminCount === 1, `count=${adminCount}`);
   check("Exactly 4 teachers", teacherCount === 4, `count=${teacherCount}`);
   check("Exactly 5 students", studentCount === 5, `count=${studentCount}`);
@@ -69,16 +71,31 @@ async function main(): Promise<void> {
     });
     check(
       `Student ${email} active with profile/stage`,
-      !!student && student.role === "STUDENT" && student.status === "ACTIVE" && !!student.studentProfile?.stage,
+      !!student &&
+        student.role === "STUDENT" &&
+        student.status === "ACTIVE" &&
+        !!student.studentProfile?.stage,
       student?.studentProfile?.stage?.nameEn ?? "missing",
     );
   }
 
-  const stageRows = await prisma.stage.findMany({ orderBy: { sortOrder: "asc" } });
-  check("Exactly 3 platform stages", stageRows.length === 3, `count=${stageRows.length}`);
+  const stageRows = await prisma.stage.findMany({
+    orderBy: { sortOrder: "asc" },
+  });
+  check(
+    "Exactly 3 platform stages",
+    stageRows.length === 3,
+    `count=${stageRows.length}`,
+  );
   check(
     "Stages are active and platform-owned",
-    stageRows.every((stage) => stage.isActive && stage.teacherId === null && !!stage.nameAr && !!stage.nameEn),
+    stageRows.every(
+      (stage) =>
+        stage.isActive &&
+        stage.teacherId === null &&
+        !!stage.nameAr &&
+        !!stage.nameEn,
+    ),
   );
 
   const chapters = await prisma.chapter.findMany({
@@ -89,33 +106,58 @@ async function main(): Promise<void> {
     },
     orderBy: [{ stage: { sortOrder: "asc" } }, { sortOrder: "asc" }],
   });
-  check("Seed has required chapters", chapters.length === 8, `count=${chapters.length}`);
+  check(
+    "Seed has required chapters",
+    chapters.length === 8,
+    `count=${chapters.length}`,
+  );
   check(
     "All chapters have stage, teacher, term, visibility, image, and lesson",
-    chapters.every((chapter) =>
-      !!chapter.stageId &&
-      !!chapter.teacherId &&
-      !!chapter.teacher.teacherProfile?.subject &&
-      (chapter.term === "FIRST_TERM" || chapter.term === "SECOND_TERM") &&
-      typeof chapter.isVisible === "boolean" &&
-      !!chapter.imageUrl &&
-      chapter.lessons.length >= 1,
+    chapters.every(
+      (chapter) =>
+        !!chapter.stageId &&
+        !!chapter.teacherId &&
+        !!chapter.teacher.teacherProfile?.subject &&
+        (chapter.term === "FIRST_TERM" || chapter.term === "SECOND_TERM") &&
+        typeof chapter.isVisible === "boolean" &&
+        !!chapter.imageUrl &&
+        chapter.lessons.length >= 1,
     ),
   );
   check(
     "No teacher has content outside their subject",
-    chapters.every((chapter) => chapter.teacher.teacherProfile?.subject !== null),
+    chapters.every(
+      (chapter) => chapter.teacher.teacherProfile?.subject !== null,
+    ),
   );
 
   const firstStage = stageRows[0]!;
   const secondStage = stageRows[1]!;
-  const visibleFirst = chapters.filter((chapter) => chapter.stageId === firstStage.id && chapter.isVisible);
-  const hiddenFirst = chapters.filter((chapter) => chapter.stageId === firstStage.id && !chapter.isVisible);
-  check("First stage visible chapters appear", visibleFirst.length === 4, `count=${visibleFirst.length}`);
-  check("Hidden chapter exists for exclusion", hiddenFirst.length === 1, `count=${hiddenFirst.length}`);
+  const visibleFirst = chapters.filter(
+    (chapter) => chapter.stageId === firstStage.id && chapter.isVisible,
+  );
+  const hiddenFirst = chapters.filter(
+    (chapter) => chapter.stageId === firstStage.id && !chapter.isVisible,
+  );
+  check(
+    "First stage visible chapters appear",
+    visibleFirst.length === 4,
+    `count=${visibleFirst.length}`,
+  );
+  check(
+    "Hidden chapter exists for exclusion",
+    hiddenFirst.length === 1,
+    `count=${hiddenFirst.length}`,
+  );
   check(
     "Second stage has multiple visible subjects",
-    new Set(chapters.filter((chapter) => chapter.stageId === secondStage.id && chapter.isVisible).map((chapter) => chapter.teacher.teacherProfile?.subject)).size >= 2,
+    new Set(
+      chapters
+        .filter(
+          (chapter) => chapter.stageId === secondStage.id && chapter.isVisible,
+        )
+        .map((chapter) => chapter.teacher.teacherProfile?.subject),
+    ).size >= 2,
   );
 
   const firstStagePhysics = chapters.filter(
@@ -130,13 +172,20 @@ async function main(): Promise<void> {
       chapter.isVisible &&
       chapter.teacher.teacherProfile?.subject === subject("PHYSICS"),
   );
-  check("Student All Content subject filter can isolate Physics in stage 1", firstStagePhysics.length === 1);
-  check("Subject filter does not imply cross-stage leakage", secondStagePhysics.length === 1);
+  check(
+    "Student All Content subject filter can isolate Physics in stage 1",
+    firstStagePhysics.length === 1,
+  );
+  check(
+    "Subject filter does not imply cross-stage leakage",
+    secondStagePhysics.length === 1,
+  );
 
   const teacherPlanPromos = await prisma.platformPromoCode.findMany();
   check(
     "Platform promo codes are TEACHER_PLAN only",
-    teacherPlanPromos.length >= 1 && teacherPlanPromos.every((promo) => promo.scope === "TEACHER_PLAN"),
+    teacherPlanPromos.length >= 1 &&
+      teacherPlanPromos.every((promo) => promo.scope === "TEACHER_PLAN"),
     `count=${teacherPlanPromos.length}`,
   );
 

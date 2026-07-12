@@ -6,6 +6,7 @@ export type EmailTemplateName =
   | "teacherRegistrationRejected"
   | "teacherRegistrationResubmitted"
   | "studentWelcome"
+  | "emailVerification"
   | "teacherWithdrawalRequested"
   | "teacherWithdrawalStatusChanged"
   | "studentPaymentSuccess"
@@ -38,6 +39,8 @@ export interface EmailProvider {
     subject: string;
     html: string;
     text: string;
+    replyTo?: string;
+    headers?: Record<string, string>;
   }): Promise<unknown>;
 }
 

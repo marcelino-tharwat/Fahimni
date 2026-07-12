@@ -149,17 +149,21 @@ export const googleLogin = createAsyncThunk<
 });
 
 export const register = createAsyncThunk<
-  { user: User },
+  { user: User; emailVerificationRequired?: boolean },
   { fullName: string; email: string; mobile: string; password: string; stageId?: string; role?: string; locale?: 'ar' | 'en' },
   { rejectValue: RegisterReject }
 >('auth/register', async (payload, { rejectWithValue }) => {
   try {
     const { data } = await apiClient.post<{
       message: string;
-      data: { user: User };
+      data: { user: User; emailVerificationRequired?: boolean };
     }>('/v1/auth/register', { ...payload, role: payload.role ?? 'STUDENT' });
-    saveUser(data.data.user);
-    return { user: data.data.user };
+    // An unverified fresh registration has no session (no cookies were set) —
+    // only cache the user locally when one actually exists.
+    if (!data.data.emailVerificationRequired) {
+      saveUser(data.data.user);
+    }
+    return { user: data.data.user, emailVerificationRequired: data.data.emailVerificationRequired };
   } catch (err) {
     return rejectWithValue(err as ApiError);
   }
@@ -322,7 +326,11 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload.user;
-        state.isAuthenticated = true;
+        // A fresh, unverified registration issues no session (no cookies were
+        // set server-side) — never mark it authenticated, so AuthGuard keeps
+        // routing away from protected pages instead of relying on the
+        // redirect-after-register call site alone.
+        state.isAuthenticated = !action.payload.emailVerificationRequired;
         state.error = null;
       })
       .addCase(register.rejected, (state, action) => {

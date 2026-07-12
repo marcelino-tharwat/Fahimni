@@ -150,6 +150,15 @@ export function renderEmailTemplate(
       : renderEmail(locale, "Welcome to Fahimni", "Your account is ready", [`Welcome ${studentName}.`, "Your account was created successfully and you can start following your lessons."], "Go to dashboard", value(data, "dashboardUrl", "/student/dashboard"));
   }
 
+  if (template === "emailVerification") {
+    const studentName = value(data, "studentName", locale === "ar" ? "طالبنا" : "student");
+    const verifyUrl = `/verify-email?token=${encodeURIComponent(value(data, "token"))}`;
+    const verifyAbsUrl = absUrl(verifyUrl);
+    return locale === "ar"
+      ? renderEmail(locale, "تأكيد بريدك الإلكتروني في فاهمني", "تأكيد البريد الإلكتروني", [`مرحباً ${studentName}.`, "اضغط الزر التالي لتأكيد بريدك الإلكتروني وتفعيل حسابك.", `إذا لم يعمل الزر، انسخ هذا الرابط والصقه في المتصفح: ${verifyAbsUrl}`, "هذا الرابط صالح لمدة 24 ساعة. إذا لم تطلب إنشاء هذا الحساب، تجاهل هذه الرسالة."], "تأكيد البريد الإلكتروني", verifyUrl)
+      : renderEmail(locale, "Verify your Fahimni email address", "Verify your email", [`Hi ${studentName}.`, "Click the button below to verify your email address and activate your account.", `If the button doesn't work, copy and paste this link into your browser: ${verifyAbsUrl}`, "This link is valid for 24 hours. If you did not create this account, you can ignore this message."], "Verify email", verifyUrl);
+  }
+
   if (template === "teacherWithdrawalRequested") {
     return locale === "ar"
       ? renderEmail(locale, "تم إنشاء طلب السحب", "طلب السحب قيد الانتظار", [`المبلغ: ${amount}`, `الحالة: ${WITHDRAWAL_STATUS_LABELS.ar.PENDING}`], "عرض السحوبات", value(data, "withdrawalsUrl", "/teacher/withdrawals"))
