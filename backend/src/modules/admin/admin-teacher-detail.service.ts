@@ -21,9 +21,6 @@ import type {
   TeacherStudentsQuery,
 } from "./admin-teacher-detail.validation.js";
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 function startOfCurrentMonthUtc(): Date {
   const now = new Date();
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
@@ -53,7 +50,7 @@ export class AdminTeacherDetailService {
    * can never be pointed at a student/admin account.
    */
   private async assertTeacher(teacherId: string): Promise<TeacherIdentity & { subject: string | null; bio: string | null; photoUrl: string | null }> {
-    if (!UUID_RE.test(teacherId)) {
+    if (!teacherId) {
       throw new AppError("Teacher not found", 404, "TEACHER_NOT_FOUND");
     }
     const teacher = await prisma.user.findFirst({
