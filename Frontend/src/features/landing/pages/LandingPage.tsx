@@ -27,7 +27,10 @@ import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useDirection } from '@/shared/hooks/useDirection';
 import { cn } from '@/shared/lib/utils/cn';
 import { useAppSelector } from '@/shared/store/hooks';
-import { dashboardPathByRole, normalizeRole } from '@/features/auth/store/authSlice';
+import {
+  dashboardPathByRole,
+  normalizeRole,
+} from '@/features/auth/store/authSlice';
 
 /**
  * Landing CTAs must be auth-aware: a logged-in visitor who returns to the landing
@@ -38,7 +41,9 @@ function useLandingCta() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const target =
-    isAuthenticated && user ? dashboardPathByRole[normalizeRole(user.role)] : '/auth';
+    isAuthenticated && user
+      ? dashboardPathByRole[normalizeRole(user.role)]
+      : '/auth';
   return { isAuthenticated, ctaPath: target, goCta: () => navigate(target) };
 }
 
@@ -364,7 +369,7 @@ function HeroSection() {
 
           {/* Teacher image — scales with viewport, lighten blend + soft mask */}
           <div className="flex w-full items-center justify-center lg:w-1/2">
-            <div className="anim-scale-in anim-d2 relative mx-auto max-h-[30vh] w-full max-w-[280px] lg:max-h-[55vh] lg:max-w-none">
+            <div className="anim-scale-in anim-d2 relative mx-auto max-h-[50vh] w-full max-w-[450px] lg:max-h-[100vh] lg:max-w-none lg:scale-150">
               <div
                 aria-hidden
                 className="pointer-events-none absolute -inset-6 z-0 rounded-full"
@@ -387,7 +392,7 @@ function HeroSection() {
               <img
                 src="/images/hero.png"
                 alt={t('hero.photoAlt')}
-                className="anim-float relative z-10 h-full w-full object-contain object-center lg:object-bottom"
+                className="relative z-10 h-full w-full object-contain object-center lg:object-bottom"
                 style={{
                   maskImage:
                     'radial-gradient(ellipse 95% 90% at 50% 50%, black 45%, transparent 85%), linear-gradient(to bottom, black 70%, transparent 100%)',
@@ -395,7 +400,6 @@ function HeroSection() {
                     'radial-gradient(ellipse 95% 90% at 50% 50%, black 45%, transparent 85%), linear-gradient(to bottom, black 70%, transparent 100%)',
                   maskComposite: 'intersect',
                   WebkitMaskComposite: 'source-in',
-                  // mixBlendMode: 'lighten',
                 }}
               />
             </div>
