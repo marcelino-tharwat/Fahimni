@@ -117,6 +117,7 @@ const STUDENTS = [
     mobile: "01000000101",
     role: "STUDENT" as const,
     profileId: sid("profile-active1"),
+    emailVerified: true,
   },
   {
     id: sid("student-active2"),
@@ -125,6 +126,7 @@ const STUDENTS = [
     mobile: "01000000102",
     role: "STUDENT" as const,
     profileId: sid("profile-active2"),
+    emailVerified: true,
   },
   {
     id: sid("student-pending"),
@@ -133,6 +135,7 @@ const STUDENTS = [
     mobile: "01000000103",
     role: "STUDENT" as const,
     profileId: sid("profile-pending"),
+    emailVerified: true,
   },
   {
     id: sid("student-unassigned"),
@@ -141,6 +144,7 @@ const STUDENTS = [
     mobile: "01000000104",
     role: "STUDENT" as const,
     profileId: sid("profile-unassigned"),
+    emailVerified: true,
   },
   {
     id: sid("student-no-enrollment"),
@@ -149,6 +153,7 @@ const STUDENTS = [
     mobile: "01000000105",
     role: "STUDENT" as const,
     profileId: sid("profile-no-enrollment"),
+    emailVerified: true,
   },
   {
     id: sid("student-multi"),
@@ -157,6 +162,7 @@ const STUDENTS = [
     mobile: "01000000106",
     role: "STUDENT" as const,
     profileId: sid("profile-multi"),
+    emailVerified: true,
   },
   {
     id: sid("student-clean"),
@@ -165,6 +171,7 @@ const STUDENTS = [
     mobile: "01000000107",
     role: "STUDENT" as const,
     profileId: sid("profile-clean"),
+    emailVerified: true,
   },
   {
     id: sid("student-banned-stage"),
@@ -173,6 +180,7 @@ const STUDENTS = [
     mobile: "01000000108",
     role: "STUDENT" as const,
     profileId: sid("profile-banned-stage"),
+    emailVerified: true,
   },
   {
     id: sid("student-inactive-stage"),
@@ -181,6 +189,7 @@ const STUDENTS = [
     mobile: "01000000109",
     role: "STUDENT" as const,
     profileId: sid("profile-inactive-stage"),
+    emailVerified: true,
   },
   {
     id: sid("student-approved-free-stage"),
@@ -189,6 +198,19 @@ const STUDENTS = [
     mobile: "01000000110",
     role: "STUDENT" as const,
     profileId: sid("profile-approved-free-stage"),
+    emailVerified: true,
+  },
+  {
+    // Dedicated fixture for manually testing the pending-verification flow:
+    // login must be blocked with EMAIL_NOT_VERIFIED until this account is
+    // verified via POST /api/v1/auth/verify-email.
+    id: sid("student-unverified"),
+    email: "student.unverified" + DEMO_EMAIL_DOMAIN,
+    fullName: "طالب غير موثق البريد",
+    mobile: "01000000112",
+    role: "STUDENT" as const,
+    profileId: sid("profile-unverified"),
+    emailVerified: false,
   },
 ];
 
@@ -595,9 +617,13 @@ async function seedAll(): Promise<void> {
       }
 
       // 2. Create Admin
+      // emailVerified is set explicitly (true) rather than relying on the schema
+      // default — ADMIN accounts are also exempt from the login verification gate
+      // by role regardless of this value (see AuthService.loginUser), but seeding
+      // it explicitly keeps the data self-documenting.
       await tx.user.upsert({
         where: { email: ADMIN.email },
-        update: { status: "ACTIVE", fullName: ADMIN.fullName },
+        update: { status: "ACTIVE", fullName: ADMIN.fullName, emailVerified: true },
         create: {
           id: ADMIN.id,
           email: ADMIN.email,
@@ -606,13 +632,14 @@ async function seedAll(): Promise<void> {
           password: demoPasswordHash,
           role: ADMIN.role,
           status: "ACTIVE",
+          emailVerified: true,
         },
       });
 
       // 2b. Create Second Admin
       await tx.user.upsert({
         where: { email: ADMIN_2.email },
-        update: { status: "ACTIVE", fullName: ADMIN_2.fullName },
+        update: { status: "ACTIVE", fullName: ADMIN_2.fullName, emailVerified: true },
         create: {
           id: ADMIN_2.id,
           email: ADMIN_2.email,
@@ -621,6 +648,7 @@ async function seedAll(): Promise<void> {
           password: demoPasswordHash,
           role: ADMIN_2.role,
           status: "ACTIVE",
+          emailVerified: true,
         },
       });
 
@@ -640,7 +668,7 @@ async function seedAll(): Promise<void> {
 
         await tx.user.upsert({
           where: { email: t.email },
-          update: { status: teacherStatus, fullName: t.fullName, teacherApprovalState: teacherApproval },
+          update: { status: teacherStatus, fullName: t.fullName, teacherApprovalState: teacherApproval, emailVerified: true },
           create: {
             id: t.id,
             email: t.email,
@@ -650,6 +678,9 @@ async function seedAll(): Promise<void> {
             role: t.role,
             status: teacherStatus,
             teacherApprovalState: teacherApproval,
+            // Demo fixture, approved from the start — not the self-registration
+            // flow that now requires verification, so pre-verified for immediate use.
+            emailVerified: true,
           },
         });
         const payoutFields = {
@@ -758,7 +789,7 @@ async function seedAll(): Promise<void> {
       for (const lt of LIFECYCLE_TEACHERS) {
         await tx.user.upsert({
           where: { email: lt.email },
-          update: { status: lt.status, fullName: lt.fullName, teacherApprovalState: lt.state },
+          update: { status: lt.status, fullName: lt.fullName, teacherApprovalState: lt.state, emailVerified: true },
           create: {
             id: lt.id,
             email: lt.email,
@@ -768,6 +799,11 @@ async function seedAll(): Promise<void> {
             role: "OPERATION",
             status: lt.status,
             teacherApprovalState: lt.state,
+            // Pre-verified: these fixtures demo the PENDING_REVIEW/REJECTED teacher
+            // login UX specifically, which requires reaching the login endpoint's
+            // teacher-lifecycle branch — an unverified email would be blocked before
+            // ever getting there.
+            emailVerified: true,
           },
         });
         await tx.teacherProfile.upsert({
@@ -781,7 +817,7 @@ async function seedAll(): Promise<void> {
       for (const s of STUDENTS) {
         await tx.user.upsert({
           where: { email: s.email },
-          update: { status: "ACTIVE", fullName: s.fullName },
+          update: { status: "ACTIVE", fullName: s.fullName, emailVerified: s.emailVerified },
           create: {
             id: s.id,
             email: s.email,
@@ -790,6 +826,7 @@ async function seedAll(): Promise<void> {
             password: demoPasswordHash,
             role: s.role,
             status: "ACTIVE",
+            emailVerified: s.emailVerified,
           },
         });
       }
@@ -954,15 +991,53 @@ async function seedAll(): Promise<void> {
         },
       ];
 
+      // Result-visibility settings varied across the published single-chapter
+      // quizzes below (resultSettingsConfigured + the nullable show* booleans +
+      // pendingEssayResultMode) — quiz-math-pub is left at 100% schema defaults
+      // (legacy/unconfigured case); the other two exercise two different
+      // configured policies, including two of the three PendingEssayResultMode
+      // values. The multi-chapter/full-curriculum quizzes below exercise the
+      // third value plus a partially-configured case.
+      type QuizVisibilitySettings = {
+        resultSettingsConfigured: boolean;
+        showCorrectAnswers?: boolean;
+        showPerQuestionScores?: boolean;
+        showFinalScore?: boolean;
+        showStudentAnswers?: boolean;
+        showExplanations?: boolean;
+        pendingEssayResultMode?: "HIDE_ALL_RESULTS" | "SHOW_OBJECTIVE_ONLY" | "SHOW_OBJECTIVE_WITH_PENDING_MESSAGE";
+      };
+      const QUIZ_VISIBILITY: Record<string, QuizVisibilitySettings> = {
+        [sid("quiz-physics-pub")]: {
+          resultSettingsConfigured: true,
+          showCorrectAnswers: true,
+          showPerQuestionScores: true,
+          showFinalScore: true,
+          showStudentAnswers: false,
+          showExplanations: true,
+          pendingEssayResultMode: "SHOW_OBJECTIVE_ONLY",
+        },
+        [sid("quiz-chem-pub")]: {
+          resultSettingsConfigured: true,
+          showCorrectAnswers: false,
+          showPerQuestionScores: false,
+          showFinalScore: true,
+          showStudentAnswers: true,
+          showExplanations: false,
+          pendingEssayResultMode: "HIDE_ALL_RESULTS",
+        },
+      };
+
       for (const qd of quizDefs) {
         const teacherId = (() => {
           const ch = CHAPTERS.find((c) => c.id === qd.chapterId)!;
           return TEACHERS[ch.teacherIdx]!.id;
         })();
+        const visibility = QUIZ_VISIBILITY[qd.id] ?? {};
 
         await tx.quiz.upsert({
           where: { id: qd.id },
-          update: { title: qd.title, status: qd.status },
+          update: { title: qd.title, status: qd.status, ...visibility },
           create: {
             id: qd.id,
             title: qd.title,
@@ -978,6 +1053,7 @@ async function seedAll(): Promise<void> {
             passingScore: 50,
             createdBy: teacherId,
             publishedAt: qd.pub ? daysAgo(10) : null,
+            ...visibility,
           },
         });
 
@@ -1031,6 +1107,119 @@ async function seedAll(): Promise<void> {
             data: { questionCount: qCount, totalPoints: tPoints },
           });
         }
+      }
+
+      // 9b. Quizzes exercising the other two QuizSourceScope values (the loop
+      // above only ever creates SINGLE_CHAPTER quizzes). Both are PUBLISHED with
+      // chapterId left null (the generation source is chapters/a stage instead —
+      // Quiz.chapterId is nullable precisely for this case) and creator resolved
+      // directly rather than via a chapter lookup.
+      const scopedQuizDefs = [
+        {
+          id: sid("quiz-math-multi-chapter"),
+          title: "اختبار تجميعي — الجبر والتفاضل",
+          desc: "اختبار مراجعة يجمع بين فصلي الجبر والتفاضل.",
+          teacherIdx: 0,
+          sourceScope: "MULTI_CHAPTER" as const,
+          sourceChapterIds: [CHAPTERS[0]!.id, CHAPTERS[1]!.id],
+          sourceStageId: null,
+          visibility: {
+            resultSettingsConfigured: true,
+            showCorrectAnswers: true,
+            showPerQuestionScores: true,
+            showFinalScore: true,
+            showStudentAnswers: true,
+            showExplanations: true,
+            pendingEssayResultMode: "SHOW_OBJECTIVE_WITH_PENDING_MESSAGE" as const,
+          },
+        },
+        {
+          id: sid("quiz-math-full-curriculum"),
+          title: "اختبار شامل — منهج الرياضيات الكامل",
+          desc: "اختبار شامل يغطي منهج مرحلة الرياضيات بالكامل.",
+          teacherIdx: 0,
+          sourceScope: "FULL_CURRICULUM" as const,
+          sourceChapterIds: [] as string[],
+          sourceStageId: STAGES[0]!.id,
+          // Partially configured: only resultSettingsConfigured + showFinalScore
+          // are set, the rest stay null — exercises the policy layer's fallback
+          // for an incompletely-configured quiz.
+          visibility: {
+            resultSettingsConfigured: true,
+            showFinalScore: true,
+          },
+        },
+      ];
+
+      for (const qd of scopedQuizDefs) {
+        const teacherId = TEACHERS[qd.teacherIdx]!.id;
+
+        await tx.quiz.upsert({
+          where: { id: qd.id },
+          update: { title: qd.title, status: "PUBLISHED", ...qd.visibility },
+          create: {
+            id: qd.id,
+            title: qd.title,
+            description: qd.desc,
+            chapterId: null,
+            contentScope: "CHAPTER",
+            sourceScope: qd.sourceScope,
+            sourceChapterIds: qd.sourceChapterIds,
+            sourceStageId: qd.sourceStageId,
+            status: "PUBLISHED",
+            durationMinutes: 45,
+            questionCount: 0,
+            totalPoints: 0,
+            passingScore: 50,
+            createdBy: teacherId,
+            publishedAt: daysAgo(5),
+            ...qd.visibility,
+          },
+        });
+
+        const scopedQuestions: Prisma.QuestionCreateManyInput[] = [
+          {
+            id: sid(`q-${qd.id}-1`),
+            quizId: qd.id,
+            type: "MCQ",
+            text: `سؤال اختيار من متعدد — ${qd.title}`,
+            options: JSON.parse(JSON.stringify(["خيار ١", "خيار ٢", "خيار ٣", "خيار ٤"])),
+            correctAnswer: "خيار ١",
+            explanation: `شرح السؤال الأول — ${qd.title}.`,
+            sortOrder: 1,
+            points: 2,
+          },
+          {
+            id: sid(`q-${qd.id}-2`),
+            quizId: qd.id,
+            type: "TRUE_FALSE",
+            text: `سؤال صح/خطأ — ${qd.title}`,
+            options: JSON.parse(JSON.stringify(["صح", "خطأ"])),
+            correctAnswer: "صح",
+            explanation: `شرح السؤال الثاني — ${qd.title}.`,
+            sortOrder: 2,
+            points: 1,
+          },
+          {
+            id: sid(`q-${qd.id}-3`),
+            quizId: qd.id,
+            type: "ESSAY",
+            text: `سؤال مقالي — ${qd.title}`,
+            options: [],
+            correctAnswer: null,
+            explanation: `نموذج إجابة السؤال المقالي — ${qd.title}.`,
+            sortOrder: 3,
+            points: 3,
+          },
+        ];
+        await tx.question.createMany({ data: scopedQuestions, skipDuplicates: true });
+        await tx.quiz.update({
+          where: { id: qd.id },
+          data: {
+            questionCount: scopedQuestions.length,
+            totalPoints: scopedQuestions.reduce((s, q) => s + q.points, 0),
+          },
+        });
       }
 
       // 10. Enrollments
@@ -1848,6 +2037,59 @@ async function seedAll(): Promise<void> {
           createdById: ADMIN.id,
         },
       });
+      // Expired and disabled course-purchase codes — so the admin promo-codes
+      // page shows all three states (active/expired/disabled), not just active.
+      await tx.platformPromoCode.upsert({
+        where: { code: "DEMOEXPIRED10" },
+        update: { isActive: true, expiresAt: daysAgo(30) },
+        create: {
+          id: sid("pp-course-expired"),
+          code: "DEMOEXPIRED10",
+          scope: "COURSE_PURCHASE",
+          discountType: "PERCENTAGE",
+          discountValue: 10,
+          currency: "EGP",
+          isActive: true,
+          expiresAt: daysAgo(30),
+          createdById: ADMIN.id,
+        },
+      });
+      await tx.platformPromoCode.upsert({
+        where: { code: "DEMODISABLED15" },
+        update: { isActive: false },
+        create: {
+          id: sid("pp-course-disabled"),
+          code: "DEMODISABLED15",
+          scope: "COURSE_PURCHASE",
+          discountType: "PERCENTAGE",
+          discountValue: 15,
+          currency: "EGP",
+          isActive: false,
+          expiresAt: daysFromNow(365),
+          createdById: ADMIN.id,
+        },
+      });
+
+      // One real redemption against the active course-purchase code, so the
+      // PlatformPromoRedemption table (and DEMOCOURSE20's usedCount) aren't
+      // left completely empty.
+      await tx.platformPromoRedemption.upsert({
+        where: { id: sid("ppr-course20-active2") },
+        update: {},
+        create: {
+          id: sid("ppr-course20-active2"),
+          promoCodeId: sid("pp-course-20"),
+          userId: STUDENTS[1]!.id,
+          amountBefore: 150,
+          discount: 30,
+          amountAfter: 120,
+          createdAt: daysAgo(10),
+        },
+      });
+      await tx.platformPromoCode.update({
+        where: { id: sid("pp-course-20") },
+        data: { usedCount: 1 },
+      });
 
       // 18. Quiz Attempts
       const mathPubQuizId = sid("quiz-math-pub");
@@ -2184,6 +2426,8 @@ async function logSeedCounts(): Promise<void> {
             sid("quiz-math-pub"),
             sid("quiz-physics-pub"),
             sid("quiz-chem-pub"),
+            sid("quiz-math-multi-chapter"),
+            sid("quiz-math-full-curriculum"),
           ],
         },
       },

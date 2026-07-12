@@ -90,7 +90,10 @@ export class AuthService {
       throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
     }
 
-    if (!user.emailVerified) {
+    // ADMIN accounts are exempt from the email-verification gate regardless of
+    // the stored emailVerified value — role-based, not a one-time seed default,
+    // so an admin created any other way later is still never blocked here.
+    if (user.role !== "ADMIN" && !user.emailVerified) {
       throw new AppError("Please verify your email before logging in.", 403, "EMAIL_NOT_VERIFIED");
     }
 
@@ -284,10 +287,11 @@ export class AuthService {
           status: Status.INACTIVE,
           teacherApprovalState: "PENDING_REVIEW",
           locale: normalizeLocale(input.locale),
-          // Teachers already go through mandatory admin approval before they can
-          // do anything (separate gate from email verification), so this path
-          // is exempt from the student email-verification requirement.
-          emailVerified: true,
+          // Self-registered (the teacher entered their own email) — requires
+          // verification exactly like a student. Admin-created teacher accounts
+          // (AdminUsersService.createUser) are a separate, trusted path and are
+          // exempt (emailVerified: true there).
+          emailVerified: false,
         },
         select: userPublicFields,
       });
@@ -335,6 +339,24 @@ export class AuthService {
         });
       }
     }
+
+    const verificationToken = await this.generateEmailVerificationToken(user.created.id);
+
+    console.log(`[EmailVerification] ${input.email}: /verify-email?token=${verificationToken}`);
+
+    await sendTransactionalEmail({
+      to: input.email,
+      template: "emailVerification",
+      locale: input.locale,
+      data: {
+        studentName: input.fullName,
+        token: verificationToken,
+      },
+      metadata: { userId: user.created.id },
+      entityType: "User",
+      entityId: user.created.id,
+      dedupeKey: `${user.created.id}:emailVerification:register`,
+    });
 
     await sendTransactionalEmail({
       to: input.email,
