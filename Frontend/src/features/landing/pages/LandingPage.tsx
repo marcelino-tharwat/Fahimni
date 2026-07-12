@@ -460,8 +460,8 @@ interface ExploreChapter {
 const exploreChapters: ExploreChapter[] = [
   {
     id: 1,
-    titleAr: 'الكيمياء العضوية',
-    titleEn: 'Organic Chemistry',
+    titleAr: 'الكيمياء',
+    titleEn: 'Chemistry',
     image: '/images/img1.png',
     lessons: 8,
     quizzes: 3,
@@ -471,9 +471,9 @@ const exploreChapters: ExploreChapter[] = [
   },
   {
     id: 2,
-    titleAr: 'الروابط الكيميائية',
-    titleEn: 'Chemical Bonding',
-    image: '/images/img2.png',
+    titleAr: 'الفيزياء',
+    titleEn: 'Physics',
+    image: '/images/WhatsApp Image 2026-07-12 at 4.31.37 PM.jpeg',
     lessons: 10,
     quizzes: 4,
     price: 150,
@@ -482,9 +482,9 @@ const exploreChapters: ExploreChapter[] = [
   },
   {
     id: 3,
-    titleAr: 'الكيمياء الكهربية',
-    titleEn: 'Electrochemistry',
-    image: '/images/img3.png',
+    titleAr: 'الاحياء',
+    titleEn: 'Biology',
+    image: '/images/2151007461.jpg',
     lessons: 6,
     quizzes: 2,
     price: 200,
@@ -538,24 +538,24 @@ function ChaptersSection() {
                   <div className="from-navy-900/60 absolute inset-0 bg-gradient-to-t to-transparent" />
 
                   {/* Stage badge — start-aligned (RTL-aware) */}
-                  <span className="rounded-badge bg-navy-700/80 font-cairo absolute start-3 top-3 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                  {/* <span className="rounded-badge bg-navy-700/80 font-cairo absolute start-3 top-3 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
                     {isRtl ? chapter.badge.ar : chapter.badge.en}
-                  </span>
+                  </span> */}
 
-                  {locked && (
+                  {/* {locked && (
                     <div className="bg-navy-900/50 absolute inset-0 flex items-center justify-center backdrop-blur-[2px]">
                       <Lock className="h-8 w-8 text-white/60" />
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Content */}
-                <div className={cn('p-5', locked && 'opacity-60')}>
+                <div className={cn('p-5')}>
                   <h3 className="font-cairo text-navy-800 mb-3 line-clamp-1 text-base font-bold">
                     {title}
                   </h3>
 
-                  <div className="font-cairo mb-4 flex items-center gap-4 text-xs text-gray-500">
+                  {/* <div className="font-cairo mb-4 flex items-center gap-4 text-xs text-gray-500">
                     <span className="flex items-center gap-1">
                       <PlayCircle className="h-3.5 w-3.5" />
                       {toLocaleDigits(chapter.lessons, isRtl)}{' '}
@@ -596,7 +596,7 @@ function ChaptersSection() {
                         {t('chapters.comingSoon')}
                       </span>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             );
