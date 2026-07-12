@@ -21,6 +21,8 @@ import { NotFoundPage } from '@/features/landing/pages/NotFoundPage';
 // Auth pages
 import { AuthPage } from '@/features/auth/pages/AuthPage';
 import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage';
+import { VerifyEmailPendingPage } from '@/features/auth/pages/VerifyEmailPendingPage';
+import { VerifyEmailPage } from '@/features/auth/pages/VerifyEmailPage';
 
 // Teacher request page
 import { TeacherRequestPage } from '@/features/teacher-request/pages/TeacherRequestPage';
@@ -93,6 +95,8 @@ const router = createBrowserRouter([
       { path: '/become-teacher', element: <TeacherRequestPage /> },
       { path: '/teacher/pending-review', element: <TeacherPendingReviewPage /> },
       { path: '/teacher/rejected', element: <TeacherRejectedPage /> },
+      { path: '/verify-email-pending', element: <VerifyEmailPendingPage /> },
+      { path: '/verify-email', element: <VerifyEmailPage /> },
       { path: '/teacher/track', element: <TeacherRequestTrackPage /> },
       { path: '/t/:tenantSlug', element: <LandingPage /> },
       {

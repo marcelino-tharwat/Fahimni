@@ -20,6 +20,12 @@ model User {
   // "active teacher" (APPROVED + active subscription) is not stored here.
   teacherApprovalState TeacherApprovalState @default(NONE)
   locale              String               @default("ar")
+  // Defaults to true so every OTHER user-creation path in this codebase (admin
+  // tooling, seeds, the ~45 e2e test fixtures that create users directly via
+  // Prisma and then log in through the API) keeps working unchanged. Only the
+  // public self-registration path (registerUser's student branch) explicitly
+  // overrides this to false — that's the only flow this gate is meant to guard.
+  emailVerified       Boolean              @default(true)
   tokenVersion        Int                  @default(0)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt

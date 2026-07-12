@@ -19,6 +19,8 @@
   "invalidCredentials": "Invalid email or password",
   "currentPasswordInvalid": "Current password is incorrect",
   "accountInactive": "Your account is inactive. Please contact support.",
+  "emailNotVerified": "Please verify your email before logging in.",
+  "verificationTokenExpired": "This verification link is invalid or has expired.",
   "sessionSuperseded": "Your session has ended because you logged in elsewhere.",
   "tokenExpired": "Your session has expired. Please log in again.",
   "tokenInvalid": "Your session is invalid. Please log in again.",

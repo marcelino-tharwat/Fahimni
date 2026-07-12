@@ -9,6 +9,7 @@ export interface UserRecord {
   status: Status;
   teacherApprovalState: TeacherApprovalState;
   locale: string;
+  emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +25,7 @@ export const userPublicFields = {
   status: true,
   teacherApprovalState: true,
   locale: true,
+  emailVerified: true,
   createdAt: true,
   updatedAt: true,
 } as const;
