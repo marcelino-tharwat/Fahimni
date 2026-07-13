@@ -3,6 +3,7 @@ import { prisma } from "../../config/database.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../../shared/utils/AppError.js";
 import { auditLogService } from "../../shared/services/auditLog.service.js";
+import { logAdminStageOverride } from "../students/student-stage-change.service.js";
 import type {
   AdminUserListItem,
   AdminUserDetailResponse,
@@ -403,11 +404,22 @@ export class AdminUsersService {
       });
 
       if (input.studentProfile !== undefined && user.profiles.student && input.studentProfile.stageId) {
+        const newStageId = input.studentProfile.stageId;
+        // Fetch old stageId before upsert for logging
+        const existingProfile = await tx.studentProfile.findUnique({
+          where: { userId },
+          select: { stageId: true },
+        });
+        const oldStageId = existingProfile?.stageId;
         await tx.studentProfile.upsert({
           where: { userId },
-          update: { stageId: input.studentProfile.stageId },
-          create: { userId, stageId: input.studentProfile.stageId },
+          update: { stageId: newStageId },
+          create: { userId, stageId: newStageId },
         });
+        // Log admin stage override separately from student self-changes
+        if (oldStageId && oldStageId !== newStageId) {
+          await logAdminStageOverride(userId, oldStageId, newStageId, actorId);
+        }
       }
 
       if (input.teacherProfile !== undefined && user.profiles.teacher) {

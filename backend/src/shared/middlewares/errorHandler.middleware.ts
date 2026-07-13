@@ -52,6 +52,12 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
       method: req.method,
       path: requestPath(req),
       statusCode: 400,
+      issues: err.issues.map((i) => ({
+        path: i.path.join("."),
+        code: i.code,
+        message: i.message,
+      })),
+      bodyKeys: req.body && typeof req.body === "object" ? Object.keys(req.body) : [],
     });
     const locale = getRequestLocale(req);
     const { code, message, errors } = adaptZodError(err, locale);

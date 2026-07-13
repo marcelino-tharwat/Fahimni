@@ -69,3 +69,20 @@ export interface StudentProfileResponse {
   subscriptions: StudentSubscriptionSummary[];
   achievements: StudentAchievement[];
 }
+
+export interface StageSummary {
+  id: string;
+  name: string;
+  sortOrder: number;
+}
+
+export interface StageChangePolicy {
+  currentStage: StageSummary | null;
+  availableStages: StageSummary[];
+  canChangeStage: boolean;
+  reason: string | null;
+  windowStart: string;
+  windowEnd: string;
+  academicYear: string | null;
+  alreadyChangedThisYear: boolean;
+}
