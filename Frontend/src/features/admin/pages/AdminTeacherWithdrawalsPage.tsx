@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, AlertCircle, Banknote, Eye } from 'lucide-react';
+import { Search, AlertCircle, Banknote, Eye, Wallet, ArrowDownToLine, Clock, CreditCard } from 'lucide-react';
 import { Spinner, Badge, EmptyState, Modal, Button } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { addToast } from '@/shared/store/slices/toastSlice';
@@ -9,9 +9,11 @@ import { Pagination } from '../components/promo-codes';
 import {
   useAdminTeacherWithdrawals,
   useUpdateWithdrawalStatus,
+  useTeacherFinancialSummary,
 } from '@/features/admin/hooks/useAdminTeacherWithdrawals';
 import type {
   AdminWithdrawalListItem,
+  TeacherFinancialSummary,
   UpdatableWithdrawalStatus,
   WithdrawalStatus,
 } from '@/features/admin/types/teacherWithdrawals';
@@ -182,6 +184,109 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
+function MoneyCard({
+  testid,
+  icon: Icon,
+  label,
+  value,
+  currency,
+  locale,
+}: {
+  testid: string;
+  icon: typeof Wallet;
+  label: string;
+  value: number;
+  currency: string;
+  locale: string;
+}) {
+  return (
+    <div
+      className="flex items-center gap-3 rounded-card border border-border bg-white p-4 shadow-card"
+      data-testid={testid}
+    >
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600">
+        <Icon size={22} />
+      </span>
+      <div>
+        <p className="font-cairo text-xs text-text-secondary">{label}</p>
+        <p className="font-cairo text-xl font-bold text-navy-900">
+          {value.toLocaleString(locale)}{' '}
+          <span className="text-xs font-normal text-text-muted">{currency}</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SummaryCards({
+  summaries,
+  locale,
+  t,
+}: {
+  summaries: TeacherFinancialSummary[];
+  locale: string;
+  t: (key: string, fallback?: string) => string;
+}) {
+  if (summaries.length === 0) return null;
+
+  // Aggregate totals across all teachers
+  const total = summaries.reduce(
+    (acc, s) => ({
+      earnings: acc.earnings + s.totalEarnings,
+      withdrawn: acc.withdrawn + s.totalWithdrawn,
+      pending: acc.pending + s.pendingWithdrawalAmount,
+      balance: acc.balance + s.remainingAvailableBalance,
+      subPaid: acc.subPaid + s.teacherSubscriptionTotalPaid,
+    }),
+    { earnings: 0, withdrawn: 0, pending: 0, balance: 0, subPaid: 0 },
+  );
+
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5" data-testid="teacher-summary-cards">
+      <MoneyCard
+        testid="summary-total-earnings"
+        icon={Wallet}
+        label={t('adminTeacherWithdrawals.summary.totalEarnings', 'إجمالي الأرباح')}
+        value={total.earnings}
+        currency="EGP"
+        locale={locale}
+      />
+      <MoneyCard
+        testid="summary-total-withdrawn"
+        icon={ArrowDownToLine}
+        label={t('adminTeacherWithdrawals.summary.totalWithdrawn', 'تم سحبه')}
+        value={total.withdrawn}
+        currency="EGP"
+        locale={locale}
+      />
+      <MoneyCard
+        testid="summary-pending"
+        icon={Clock}
+        label={t('adminTeacherWithdrawals.summary.pendingWithdrawals', 'معلق')}
+        value={total.pending}
+        currency="EGP"
+        locale={locale}
+      />
+      <MoneyCard
+        testid="summary-available-balance"
+        icon={Banknote}
+        label={t('adminTeacherWithdrawals.summary.availableBalance', 'المتاح للسحب')}
+        value={total.balance}
+        currency="EGP"
+        locale={locale}
+      />
+      <MoneyCard
+        testid="summary-subscription-paid"
+        icon={CreditCard}
+        label={t('adminTeacherWithdrawals.summary.subscriptionPaid', 'اشتراكات المدرس')}
+        value={total.subPaid}
+        currency="EGP"
+        locale={locale}
+      />
+    </div>
+  );
+}
+
 export function AdminTeacherWithdrawalsPage() {
   const { t, i18n } = useTranslation();
   const [searchInput, setSearchInput] = useState('');
@@ -204,6 +309,9 @@ export function AdminTeacherWithdrawalsPage() {
   );
   const { data, isLoading, isError, refetch, isFetching } = useAdminTeacherWithdrawals(query);
 
+  // Teacher financial summary (no filters — shows all teachers)
+  const { data: summaries, isLoading: summariesLoading } = useTeacherFinancialSummary();
+
   const rows = data?.data ?? [];
   const total = data?.meta.total ?? 0;
   const totalPages = data?.meta.totalPages ?? 0;
@@ -223,6 +331,14 @@ export function AdminTeacherWithdrawalsPage() {
           {t('adminTeacherWithdrawals.subtitle', 'مراجعة ومعالجة طلبات سحب أرباح المدرسين')}
         </p>
       </div>
+
+      {summariesLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <Spinner />
+        </div>
+      ) : (
+        <SummaryCards summaries={summaries ?? []} locale={locale} t={t as (key: string, fallback?: string) => string} />
+      )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">

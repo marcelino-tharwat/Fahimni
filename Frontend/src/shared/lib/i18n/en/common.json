@@ -435,6 +435,17 @@
       "readOnly": "Final state — no actions available",
       "updated": "Withdrawal request status updated",
       "updateError": "Could not update the withdrawal request status"
+    },
+    "summary": {
+      "totalEarnings": "Total Earnings",
+      "totalWithdrawn": "Total Withdrawn",
+      "pendingWithdrawals": "Pending Withdrawals",
+      "availableBalance": "Available Balance",
+      "subscriptionPaid": "Subscription Payments",
+      "currentPlan": "Current Plan",
+      "planExpiresAt": "Plan Expires",
+      "lastWithdrawal": "Last Withdrawal",
+      "subject": "Subject"
     }
   },
   "support": {

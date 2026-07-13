@@ -38,3 +38,14 @@ export function useUpdateWithdrawalStatus() {
     },
   });
 }
+
+export function useTeacherFinancialSummary(query?: {
+  teacherId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}) {
+  return useQuery({
+    queryKey: [...KEY, 'teacher-summary', query],
+    queryFn: () => adminTeacherWithdrawalsApi.getTeacherSummary(query),
+  });
+}
