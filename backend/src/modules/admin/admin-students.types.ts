@@ -49,6 +49,14 @@ export interface Paginated<T> {
 }
 
 // ── Detail ──
+export interface StudentStageRef {
+  id: string;
+  name: string;
+  nameAr: string | null;
+  nameEn: string | null;
+  displayName?: string;
+}
+
 export interface StudentIdentity {
   id: string;
   fullName: string;
@@ -56,6 +64,7 @@ export interface StudentIdentity {
   mobile: string;
   status: Status;
   createdAt: string;
+  stage: StudentStageRef | null;
 }
 
 export interface StudentSummary {

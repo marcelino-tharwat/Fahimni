@@ -25,6 +25,7 @@ import { AdminStudentsController } from "./admin-students.controller.js";
 import {
   listStudentsQuerySchema,
   studentEnrollmentsQuerySchema,
+  updateStudentBodySchema,
 } from "./admin-students.validation.js";
 import { AdminTeacherRequestsController } from "./admin-teacher-requests.controller.js";
 import {
@@ -200,6 +201,11 @@ router.get(
   asyncHandler(studentsController.list),
 );
 router.get("/students/:studentId", asyncHandler(studentsController.getDetail));
+router.patch(
+  "/students/:studentId",
+  validateRequest(updateStudentBodySchema, "body"),
+  asyncHandler(studentsController.update),
+);
 router.get(
   "/students/:studentId/enrollments",
   validateRequest(studentEnrollmentsQuerySchema, "query"),

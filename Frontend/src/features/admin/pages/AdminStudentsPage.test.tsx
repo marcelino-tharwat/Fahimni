@@ -30,6 +30,15 @@ vi.mock('@/features/admin/hooks/useAdminStudents', () => ({
   useAdminStudentEnrollments: vi.fn(),
   useAdminStudentPayments: vi.fn(),
   useAdminStudentLearning: vi.fn(),
+  useAdminUpdateStudent: vi.fn(() => ({ mutateAsync: vi.fn(), isPending: false, isError: false, error: null })),
+}));
+
+vi.mock('@/features/admin/components/students/EditStudentModal', () => ({
+  EditStudentModal: () => null,
+}));
+
+vi.mock('@/features/admin/api/adminStages', () => ({
+  adminStagesApi: { list: vi.fn().mockResolvedValue({ data: [] }) },
 }));
 
 const m = hooks as unknown as Record<string, ReturnType<typeof vi.fn>>;
@@ -54,7 +63,7 @@ function list(items: AdminStudentListItem[], total = items.length): Paginated<Ad
 }
 
 const DETAIL: AdminStudentDetail = {
-  student: { id: 's1', fullName: 'Alpha Student', email: 'a@x.local', mobile: '01000000001', status: 'ACTIVE', createdAt: '2026-01-01T00:00:00.000Z' },
+  student: { id: 's1', fullName: 'Alpha Student', email: 'a@x.local', mobile: '01000000001', status: 'ACTIVE', createdAt: '2026-01-01T00:00:00.000Z', stage: { id: 'st1', name: 'Stage 1', nameAr: 'المرحلة الأولى', nameEn: 'Stage 1' } },
   summary: { enrollmentsCount: 2, activeEnrollmentsCount: 1, pendingEnrollmentsCount: 1, teachersCount: 2, quizAttemptsCount: 4, averageScore: 82, completedLessonsCount: 6, confirmedPayments: 1, pendingPayments: 1, failedPayments: 0 },
   teachers: [{ id: 't1', fullName: 'Math T', subject: 'Math' }, { id: 't2', fullName: 'Phys T', subject: 'Physics' }],
 };

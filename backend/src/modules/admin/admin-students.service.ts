@@ -1,6 +1,7 @@
 import { prisma } from "../../config/database.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../../shared/utils/AppError.js";
+import { auditLogService } from "../../shared/services/auditLog.service.js";
 import { CURRENCY } from "./admin-students.types.js";
 import type {
   AdminStudentDetailResponse,
@@ -15,13 +16,14 @@ import type {
 import type {
   ListStudentsQuery,
   StudentEnrollmentsQuery,
+  UpdateStudentBody,
 } from "./admin-students.validation.js";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Admin Students Management read model. ADMIN-only, read-only.
+ * Admin Students Management service. ADMIN-only.
  *
  * A student may belong to multiple teachers; teachers are always resolved as the
  * DISTINCT set of teachers reached through the student's enrollments
@@ -209,10 +211,40 @@ export class AdminStudentsService {
         mobile: true,
         status: true,
         createdAt: true,
+        studentProfile: {
+          select: {
+            stageId: true,
+            stage: {
+              select: {
+                id: true,
+                name: true,
+                nameAr: true,
+                nameEn: true,
+              },
+            },
+          },
+        },
       },
     });
     if (!s) throw new AppError("Student not found", 404, "STUDENT_NOT_FOUND");
-    return { ...s, createdAt: s.createdAt.toISOString() };
+    const stage = s.studentProfile?.stage
+      ? {
+          id: s.studentProfile.stage.id,
+          name: s.studentProfile.stage.name,
+          nameAr: s.studentProfile.stage.nameAr,
+          nameEn: s.studentProfile.stage.nameEn,
+          displayName: s.studentProfile.stage.nameAr ?? s.studentProfile.stage.nameEn ?? s.studentProfile.stage.name,
+        }
+      : null;
+    return {
+      id: s.id,
+      fullName: s.fullName,
+      email: s.email,
+      mobile: s.mobile,
+      status: s.status,
+      createdAt: s.createdAt.toISOString(),
+      stage,
+    };
   }
 
   private async resolveTeachers(studentId: string): Promise<StudentTeacherRef[]> {
@@ -430,6 +462,86 @@ export class AdminStudentsService {
       completedLessonsCount,
       lastActivityAt,
     };
+  }
+
+  async updateStudent(
+    studentId: string,
+    input: UpdateStudentBody,
+    actorId: string,
+  ): Promise<StudentIdentity> {
+    const student = await this.assertStudent(studentId);
+
+    // Validate stageId if provided: must exist and be active (not soft-deleted).
+    if (input.stageId) {
+      const stage = await prisma.stage.findFirst({
+        where: { id: input.stageId, deletedAt: null, isActive: true },
+        select: { id: true, name: true, nameAr: true, nameEn: true },
+      });
+      if (!stage) {
+        throw new AppError(
+          "المرحلة الدراسية غير صحيحة أو غير متاحة",
+          400,
+          "INVALID_STUDENT_STAGE",
+        );
+      }
+    }
+
+    // Check email/mobile uniqueness if provided.
+    if (input.email || input.mobile) {
+      const conditions: Prisma.UserWhereInput[] = [];
+      if (input.email) conditions.push({ email: input.email });
+      if (input.mobile) conditions.push({ mobile: input.mobile });
+      const existing = await prisma.user.findFirst({
+        where: { OR: conditions, NOT: { id: studentId } },
+      });
+      if (existing) {
+        throw new AppError(
+          "Email or mobile number already exists",
+          409,
+          "DUPLICATE_EMAIL_OR_MOBILE",
+        );
+      }
+    }
+
+    return prisma.$transaction(async (tx) => {
+      const updateData: Prisma.UserUpdateInput = {};
+      if (input.fullName !== undefined) updateData.fullName = input.fullName;
+      if (input.email !== undefined) updateData.email = input.email;
+      if (input.mobile !== undefined) updateData.mobile = input.mobile;
+      if (input.status !== undefined) updateData.status = input.status;
+
+      if (Object.keys(updateData).length > 0) {
+        await tx.user.update({
+          where: { id: studentId },
+          data: updateData,
+        });
+      }
+
+      if (input.stageId) {
+        await tx.studentProfile.upsert({
+          where: { userId: studentId },
+          update: { stageId: input.stageId },
+          create: { userId: studentId, stageId: input.stageId },
+        });
+      }
+
+      await auditLogService.record(
+        {
+          action: "ADMIN_USER_UPDATED",
+          resourceType: "User",
+          resourceId: studentId,
+          actorId,
+          actorType: "ADMIN",
+          details: {
+            updatedFields: Object.keys(input),
+            context: "admin-students-edit",
+          },
+        },
+        tx,
+      );
+
+      return this.assertStudent(studentId);
+    });
   }
 }
 
