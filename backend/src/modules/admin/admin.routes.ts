@@ -35,6 +35,7 @@ import {
 import { AdminTeacherWithdrawalsController } from "./admin-teacher-withdrawals.controller.js";
 import {
   listAdminWithdrawalsQuerySchema,
+  teacherSummaryQuerySchema,
   updateWithdrawalStatusSchema,
 } from "./admin-teacher-withdrawals.validation.js";
 import { AdminPlansController } from "./admin-plans.controller.js";
@@ -250,6 +251,11 @@ router.get(
   "/teacher-withdrawals",
   validateRequest(listAdminWithdrawalsQuerySchema, "query"),
   asyncHandler(teacherWithdrawalsController.list),
+);
+router.get(
+  "/teacher-withdrawals/teacher-summary",
+  validateRequest(teacherSummaryQuerySchema, "query"),
+  asyncHandler(teacherWithdrawalsController.teacherSummary),
 );
 router.get(
   "/teacher-withdrawals/:withdrawalId",

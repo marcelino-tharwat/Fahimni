@@ -434,6 +434,17 @@
       "readOnly": "حالة نهائية — لا توجد إجراءات متاحة",
       "updated": "تم تحديث حالة الطلب",
       "updateError": "تعذّر تحديث حالة الطلب"
+    },
+    "summary": {
+      "totalEarnings": "إجمالي أرباح المدرس",
+      "totalWithdrawn": "إجمالي ما تم سحبه",
+      "pendingWithdrawals": "إجمالي المعلق في طلبات السحب",
+      "availableBalance": "المتبقي المتاح للسحب",
+      "subscriptionPaid": "إجمالي ما دفعه المدرس في اشتراكات الباقات",
+      "currentPlan": "الباقة الحالية",
+      "planExpiresAt": "انتهاء الاشتراك",
+      "lastWithdrawal": "آخر سحب",
+      "subject": "المادة"
     }
   },
   "support": {

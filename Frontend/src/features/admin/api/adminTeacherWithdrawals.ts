@@ -4,6 +4,7 @@ import type {
   AdminWithdrawalListItem,
   AdminWithdrawalsQuery,
   Paginated,
+  TeacherFinancialSummary,
   UpdateWithdrawalStatusBody,
 } from '@/features/admin/types/teacherWithdrawals';
 
@@ -43,6 +44,22 @@ export const adminTeacherWithdrawalsApi = {
     const { data } = await apiClient.patch<ApiResponse<AdminWithdrawalListItem>>(
       `/admin/teacher-withdrawals/${withdrawalId}/status`,
       body,
+    );
+    return data.data;
+  },
+
+  getTeacherSummary: async (query?: {
+    teacherId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }): Promise<TeacherFinancialSummary[]> => {
+    const params: Record<string, string> = {};
+    if (query?.teacherId) params.teacherId = query.teacherId;
+    if (query?.dateFrom) params.dateFrom = query.dateFrom;
+    if (query?.dateTo) params.dateTo = query.dateTo;
+    const { data } = await apiClient.get<ApiResponse<TeacherFinancialSummary[]>>(
+      '/admin/teacher-withdrawals/teacher-summary',
+      { params },
     );
     return data.data;
   },
