@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import {
-  GraduationCap, User, Mail, Phone, Lock, Eye, EyeOff, Check, Loader2, ChevronDown, BookOpen,
+  User, Mail, Phone, Lock, Eye, EyeOff, Check, Loader2, ChevronDown, BookOpen,
   type LucideIcon,
 } from "lucide-react";
 import { AppHeader } from "@/shared/components/layout/AppHeader";
@@ -701,7 +701,7 @@ function StageSelect({
         } ${error ? "border-red-400" : "border-gray-300"} ${loading ? "cursor-not-allowed opacity-60" : ""}`}
       >
         <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
-          <GraduationCap size={18} />
+          <img src="/images/2.png" alt="" className="h-5 w-5 object-contain" />
         </span>
         <span className={`flex-1 font-cairo text-body ${isRtl ? "text-right" : "text-left"} ${selected ? "text-navy-900" : "text-gray-400"}`}>
           {loading
@@ -739,7 +739,7 @@ function StageSelect({
                 } ${selected?.id === stage.id ? "bg-cyan-50 font-semibold text-cyan-700" : "text-navy-900"}`}
               >
                 <span className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${isRtl ? "right-3" : "left-3"}`}>
-                  <GraduationCap size={16} />
+                  <img src="/images/2.png" alt="" className="h-4 w-4 object-contain" />
                 </span>
                 <span className="flex-1">{stage.displayName ?? stage.name}</span>
               </button>
@@ -867,7 +867,7 @@ export function AuthPage() {
       {/* Hero Panel */}
       <aside className="hidden min-h-0 w-full flex-col items-center justify-center bg-hero-gradient px-6 py-12 text-center lg:flex lg:w-2/5 lg:p-12">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-xl border border-cyan-500/30 bg-navy-800">
-          <GraduationCap className="text-cyan-500" size={36} />
+          <img src="/images/2.png" alt="Fahimni" className="h-9 w-9 object-contain" />
         </div>
 
         <h1 className="mt-6 text-4xl font-extrabold text-white">
