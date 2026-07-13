@@ -23,3 +23,10 @@ export const updateWithdrawalStatusSchema = z.object({
   adminNote: z.string().trim().max(1000).optional(),
 });
 export type UpdateWithdrawalStatusInput = z.infer<typeof updateWithdrawalStatusSchema>;
+
+export const teacherSummaryQuerySchema = z.object({
+  teacherId: z.string().uuid().optional(),
+  dateFrom: z.string().datetime().optional(),
+  dateTo: z.string().datetime().optional(),
+});
+export type TeacherSummaryQuery = z.infer<typeof teacherSummaryQuerySchema>;

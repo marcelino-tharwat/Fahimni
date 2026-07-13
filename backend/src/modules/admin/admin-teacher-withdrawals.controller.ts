@@ -3,6 +3,7 @@ import { okResponse } from "../../shared/utils/apiResponse.js";
 import { adminTeacherWithdrawalsService } from "./admin-teacher-withdrawals.service.js";
 import type {
   ListAdminWithdrawalsQuery,
+  TeacherSummaryQuery,
   UpdateWithdrawalStatusInput,
 } from "./admin-teacher-withdrawals.validation.js";
 
@@ -41,6 +42,16 @@ export class AdminTeacherWithdrawalsController {
         input,
       );
       res.status(200).json(okResponse("Withdrawal request status updated successfully", data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public teacherSummary = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const query = (req.validated?.query ?? req.query) as TeacherSummaryQuery;
+      const data = await adminTeacherWithdrawalsService.getTeacherSummary(query);
+      res.status(200).json(okResponse("Teacher financial summaries fetched successfully", data));
     } catch (error) {
       next(error);
     }

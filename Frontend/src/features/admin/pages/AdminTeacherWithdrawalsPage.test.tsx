@@ -7,6 +7,7 @@ import { AdminTeacherWithdrawalsPage } from './AdminTeacherWithdrawalsPage';
 import type {
   AdminWithdrawalListItem,
   Paginated,
+  TeacherFinancialSummary,
 } from '@/features/admin/types/teacherWithdrawals';
 
 // t() always returns the key itself (ignoring any Arabic fallback string
@@ -33,15 +34,37 @@ vi.mock('@/shared/store/slices/toastSlice', () => ({
   addToast: vi.fn(),
 }));
 
-const { mockUseAdminTeacherWithdrawals, mockUpdateMutate } = vi.hoisted(() => ({
-  mockUseAdminTeacherWithdrawals: vi.fn(),
-  mockUpdateMutate: vi.fn(),
-}));
+const { mockUseAdminTeacherWithdrawals, mockUpdateMutate, mockUseTeacherFinancialSummary } =
+  vi.hoisted(() => ({
+    mockUseAdminTeacherWithdrawals: vi.fn(),
+    mockUpdateMutate: vi.fn(),
+    mockUseTeacherFinancialSummary: vi.fn(),
+  }));
 
 vi.mock('@/features/admin/hooks/useAdminTeacherWithdrawals', () => ({
   useAdminTeacherWithdrawals: mockUseAdminTeacherWithdrawals,
   useUpdateWithdrawalStatus: () => ({ mutate: mockUpdateMutate, isPending: false }),
+  useTeacherFinancialSummary: mockUseTeacherFinancialSummary,
 }));
+
+function summary(overrides: Partial<TeacherFinancialSummary> = {}): TeacherFinancialSummary {
+  return {
+    teacherId: 't1',
+    teacherName: 'أحمد الرياضي',
+    teacherEmail: 'ahmed@e2e.test',
+    subject: 'الرياضيات',
+    totalEarnings: 5000,
+    totalWithdrawn: 2000,
+    pendingWithdrawalAmount: 500,
+    remainingAvailableBalance: 2500,
+    teacherSubscriptionTotalPaid: 300,
+    currentPlan: 'Premium',
+    planExpiresAt: '2026-12-31T00:00:00.000Z',
+    lastWithdrawalDate: '2026-06-01T00:00:00.000Z',
+    currency: 'EGP',
+    ...overrides,
+  };
+}
 
 function item(overrides: Partial<AdminWithdrawalListItem> = {}): AdminWithdrawalListItem {
   return {
@@ -62,7 +85,7 @@ function item(overrides: Partial<AdminWithdrawalListItem> = {}): AdminWithdrawal
   };
 }
 
-function loaded(items: AdminWithdrawalListItem[]) {
+function loaded(items: AdminWithdrawalListItem[], summaries: TeacherFinancialSummary[] = [summary()]) {
   const data: Paginated<AdminWithdrawalListItem> = {
     data: items,
     meta: { page: 1, limit: 20, total: items.length, totalPages: 1 },
@@ -73,6 +96,10 @@ function loaded(items: AdminWithdrawalListItem[]) {
     isError: false,
     isFetching: false,
     refetch: vi.fn(),
+  });
+  mockUseTeacherFinancialSummary.mockReturnValue({
+    data: summaries,
+    isLoading: false,
   });
 }
 
@@ -205,8 +232,49 @@ describe('AdminTeacherWithdrawalsPage', () => {
       isFetching: false,
       refetch,
     });
+    mockUseTeacherFinancialSummary.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+    });
     renderPage();
     fireEvent.click(screen.getByText('adminTeacherWithdrawals.retry'));
     expect(refetch).toHaveBeenCalled();
+  });
+
+  it('renders summary cards with financial data', () => {
+    loaded([item()]);
+    renderPage();
+    const cards = screen.getByTestId('teacher-summary-cards');
+    expect(cards).toBeInTheDocument();
+    expect(screen.getByTestId('summary-total-earnings')).toBeInTheDocument();
+    expect(screen.getByTestId('summary-total-withdrawn')).toBeInTheDocument();
+    expect(screen.getByTestId('summary-pending')).toBeInTheDocument();
+    expect(screen.getByTestId('summary-available-balance')).toBeInTheDocument();
+    expect(screen.getByTestId('summary-subscription-paid')).toBeInTheDocument();
+  });
+
+  it('displays aggregated summary values from all teachers', () => {
+    loaded(
+      [item()],
+      [
+        summary({ totalEarnings: 3000, totalWithdrawn: 1000, pendingWithdrawalAmount: 200, remainingAvailableBalance: 1800, teacherSubscriptionTotalPaid: 150 }),
+        summary({ teacherId: 't2', totalEarnings: 2000, totalWithdrawn: 1000, pendingWithdrawalAmount: 300, remainingAvailableBalance: 700, teacherSubscriptionTotalPaid: 150 }),
+      ],
+    );
+    renderPage();
+    // Total earnings should be 5000 (3000 + 2000)
+    const earningsCard = screen.getByTestId('summary-total-earnings');
+    // ar-EG locale formats 5000 as ٥٬٠٠٠ (Arabic-Indic numerals)
+    expect(earningsCard).toHaveTextContent(/5000|٥٬٠٠٠/);
+  });
+
+  it('shows loading state for summary cards', () => {
+    loaded([item()]);
+    mockUseTeacherFinancialSummary.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
+    renderPage();
+    expect(screen.queryByTestId('teacher-summary-cards')).not.toBeInTheDocument();
   });
 });

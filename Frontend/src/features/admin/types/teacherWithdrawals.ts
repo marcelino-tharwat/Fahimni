@@ -53,3 +53,19 @@ export interface UpdateWithdrawalStatusBody {
   status: UpdatableWithdrawalStatus;
   adminNote?: string;
 }
+
+export interface TeacherFinancialSummary {
+  teacherId: string;
+  teacherName: string;
+  teacherEmail: string;
+  subject: string | null;
+  totalEarnings: number;
+  totalWithdrawn: number;
+  pendingWithdrawalAmount: number;
+  remainingAvailableBalance: number;
+  teacherSubscriptionTotalPaid: number;
+  currentPlan: string | null;
+  planExpiresAt: string | null;
+  lastWithdrawalDate: string | null;
+  currency: string;
+}

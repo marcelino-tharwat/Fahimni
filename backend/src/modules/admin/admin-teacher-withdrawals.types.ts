@@ -37,3 +37,19 @@ export interface Paginated<T> {
   data: T[];
   meta: PaginationMeta;
 }
+
+export interface TeacherFinancialSummary {
+  teacherId: string;
+  teacherName: string;
+  teacherEmail: string;
+  subject: string | null;
+  totalEarnings: number;
+  totalWithdrawn: number;
+  pendingWithdrawalAmount: number;
+  remainingAvailableBalance: number;
+  teacherSubscriptionTotalPaid: number;
+  currentPlan: string | null;
+  planExpiresAt: string | null;
+  lastWithdrawalDate: string | null;
+  currency: string;
+}

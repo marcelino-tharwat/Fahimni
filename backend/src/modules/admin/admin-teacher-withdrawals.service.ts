@@ -9,9 +9,11 @@ import type {
   AdminWithdrawalListItem,
   Paginated,
   PayoutMethodSnapshotDTO,
+  TeacherFinancialSummary,
 } from "./admin-teacher-withdrawals.types.js";
 import type {
   ListAdminWithdrawalsQuery,
+  TeacherSummaryQuery,
   UpdateWithdrawalStatusInput,
 } from "./admin-teacher-withdrawals.validation.js";
 import { sendTransactionalEmail } from "../email/transactional-email.helpers.js";
@@ -272,6 +274,226 @@ export class AdminTeacherWithdrawalsService {
       dedupeKey: `${withdrawalId}:${row.status}:${updated.status}:teacherWithdrawalStatusChanged`,
     });
     return this.toListItem(updated, reviewerName);
+  }
+
+  /**
+   * GET /api/admin/teacher-withdrawals/teacher-summary — per-teacher financial
+   * summary showing earnings, withdrawals, pending, balance, and subscription
+   * payments. All values are derived from existing DB rows (no manual wallet
+   * edits). Batch-aggregated to avoid N+1 queries.
+   */
+  async getTeacherSummary(
+    query: TeacherSummaryQuery,
+  ): Promise<TeacherFinancialSummary[]> {
+    const { teacherId, dateFrom, dateTo } = query;
+
+    // Discover teachers from ALL financial sources in parallel
+    const [withdrawalTeachers, earningsTeachers, subPayTeachers] =
+      await Promise.all([
+        // Teachers with withdrawal requests
+        prisma.teacherWithdrawalRequest.findMany({
+          where: {
+            ...(teacherId ? { teacherId } : {}),
+            ...(dateFrom || dateTo
+              ? {
+                  requestedAt: {
+                    ...(dateFrom ? { gte: new Date(dateFrom) } : {}),
+                    ...(dateTo ? { lte: new Date(dateTo) } : {}),
+                  },
+                }
+              : {}),
+          },
+          select: { teacherId: true },
+          distinct: ["teacherId"],
+        }),
+        // Teachers with earnings (payment transactions via chapters)
+        prisma.chapter.findMany({
+          where: {
+            ...(teacherId ? { teacherId } : {}),
+            paymentTransactions: { some: { status: "SUCCESS" } },
+          },
+          select: { teacherId: true },
+          distinct: ["teacherId"],
+        }),
+        // Teachers with subscription payments
+        prisma.teacherSubscriptionPayment.findMany({
+          where: {
+            ...(teacherId ? { teacherId } : {}),
+            status: "SUCCESS",
+          },
+          select: { teacherId: true },
+          distinct: ["teacherId"],
+        }),
+      ]);
+
+    // Union all discovered teacher IDs
+    const teacherIdSet = new Set<string>();
+    for (const row of withdrawalTeachers) teacherIdSet.add(row.teacherId);
+    for (const row of earningsTeachers) teacherIdSet.add(row.teacherId);
+    for (const row of subPayTeachers) teacherIdSet.add(row.teacherId);
+
+    const teacherIds = Array.from(teacherIdSet);
+    if (teacherIds.length === 0) return [];
+
+    // Batch-aggregate all financial data in parallel
+    const [
+      earningsByTeacher,
+      withdrawalGroups,
+      subscriptionPaymentsByTeacher,
+      activeSubscriptions,
+      teacherProfiles,
+      latestTransferredByTeacher,
+    ] = await Promise.all([
+      // 1. Total earnings per teacher: SUM(PaymentTransaction.amount)
+      //    WHERE status='SUCCESS' AND chapter.teacherId = teacherId
+      prisma.paymentTransaction.groupBy({
+        by: ["chapterId"],
+        where: {
+          status: "SUCCESS",
+          chapter: { teacherId: { in: teacherIds } },
+        },
+        _sum: { amount: true },
+      }),
+
+      // 2. Withdrawal groups per teacher + status
+      prisma.teacherWithdrawalRequest.groupBy({
+        by: ["teacherId", "status"],
+        where: { teacherId: { in: teacherIds } },
+        _sum: { amount: true },
+      }),
+
+      // 3. Teacher subscription payments per teacher: SUM(amount)
+      //    WHERE status='SUCCESS'
+      prisma.teacherSubscriptionPayment.groupBy({
+        by: ["teacherId"],
+        where: {
+          status: "SUCCESS",
+          teacherId: { in: teacherIds },
+        },
+        _sum: { amount: true },
+      }),
+
+      // 4. Active subscriptions for current plan + expiry
+      prisma.teacherSubscription.findMany({
+        where: {
+          teacherId: { in: teacherIds },
+          status: "ACTIVE",
+        },
+        select: {
+          teacherId: true,
+          currentPeriodEnd: true,
+          plan: { select: { displayName: true } },
+        },
+      }),
+
+      // 5. Teacher profiles for subject
+      prisma.teacherProfile.findMany({
+        where: { userId: { in: teacherIds } },
+        select: { userId: true, subject: true },
+      }),
+
+      // 6. Latest TRANSFERRED withdrawal per teacher
+      prisma.teacherWithdrawalRequest.findMany({
+        where: {
+          teacherId: { in: teacherIds },
+          status: "TRANSFERRED",
+        },
+        select: {
+          teacherId: true,
+          transferredAt: true,
+        },
+        orderBy: { transferredAt: "desc" },
+      }),
+    ]);
+
+    // Resolve chapter -> teacherId mapping for earnings
+    const chapterIds = earningsByTeacher.map((e) => e.chapterId);
+    const chapters =
+      chapterIds.length > 0
+        ? await prisma.chapter.findMany({
+            where: { id: { in: chapterIds } },
+            select: { id: true, teacherId: true },
+          })
+        : [];
+    const chapterToTeacher = new Map(chapters.map((c) => [c.id, c.teacherId]));
+
+    // Aggregate earnings by teacherId
+    const earningsMap = new Map<string, number>();
+    for (const row of earningsByTeacher) {
+      const tid = chapterToTeacher.get(row.chapterId);
+      if (!tid) continue;
+      earningsMap.set(tid, (earningsMap.get(tid) ?? 0) + (row._sum.amount ?? 0));
+    }
+
+    // Aggregate withdrawals by teacherId + status
+    const withdrawnMap = new Map<string, number>();
+    const pendingMap = new Map<string, number>();
+    for (const row of withdrawalGroups) {
+      const amt = row._sum.amount ?? 0;
+      if (row.status === "TRANSFERRED") {
+        withdrawnMap.set(row.teacherId, (withdrawnMap.get(row.teacherId) ?? 0) + amt);
+      }
+      if (row.status === "PENDING" || row.status === "PROCESSING") {
+        pendingMap.set(row.teacherId, (pendingMap.get(row.teacherId) ?? 0) + amt);
+      }
+    }
+
+    // Aggregate subscription payments by teacherId
+    const subscriptionMap = new Map<string, number>();
+    for (const row of subscriptionPaymentsByTeacher) {
+      subscriptionMap.set(row.teacherId, row._sum.amount ?? 0);
+    }
+
+    // Build lookup maps
+    const subscriptionMap2 = new Map(
+      activeSubscriptions.map((s) => [
+        s.teacherId,
+        { plan: s.plan.displayName, expiresAt: s.currentPeriodEnd },
+      ]),
+    );
+    const profileMap = new Map(teacherProfiles.map((p) => [p.userId, p.subject]));
+    const lastTransferMap = new Map<string, Date | null>();
+    for (const row of latestTransferredByTeacher) {
+      if (!lastTransferMap.has(row.teacherId)) {
+        lastTransferMap.set(row.teacherId, row.transferredAt);
+      }
+    }
+
+    // Fetch teacher info for all teachers
+    const teachers = await prisma.user.findMany({
+      where: { id: { in: teacherIds } },
+      select: { id: true, fullName: true, email: true },
+    });
+    const teacherInfoMap = new Map(teachers.map((t) => [t.id, t]));
+
+    // Compose per-teacher summaries
+    return teacherIds.map((tid) => {
+      const earnings = earningsMap.get(tid) ?? 0;
+      const withdrawn = withdrawnMap.get(tid) ?? 0;
+      const pending = pendingMap.get(tid) ?? 0;
+      const balance = Math.max(0, earnings - withdrawn - pending);
+      const subPaid = subscriptionMap.get(tid) ?? 0;
+      const subInfo = subscriptionMap2.get(tid);
+      const subject = profileMap.get(tid) ?? null;
+      const lastTransfer = lastTransferMap.get(tid) ?? null;
+      const teacher = teacherInfoMap.get(tid);
+
+      return {
+        teacherId: tid,
+        teacherName: teacher?.fullName ?? "",
+        teacherEmail: teacher?.email ?? "",
+        subject,
+        totalEarnings: earnings,
+        totalWithdrawn: withdrawn,
+        pendingWithdrawalAmount: pending,
+        remainingAvailableBalance: balance,
+        teacherSubscriptionTotalPaid: subPaid,
+        currentPlan: subInfo?.plan ?? null,
+        planExpiresAt: subInfo?.expiresAt?.toISOString() ?? null,
+        lastWithdrawalDate: lastTransfer?.toISOString() ?? null,
+        currency: "EGP",
+      };
+    });
   }
 }
 
