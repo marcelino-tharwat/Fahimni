@@ -63,6 +63,7 @@
   "teacherRequestNotFound": "طلب المدرس غير موجود",
   "documentUnavailable": "المستند غير متاح",
   "requestNotPending": "يمكن معالجة الطلبات قيد الانتظار فقط",
+  "promoTargetMustBePaid": "لا يمكن إنشاء كود تفعيل لفصل مجاني.",
   "promoNotFound": "رمز الخصم غير صحيح",
   "promoScopeMismatch": "رمز الخصم غير صالح لهذه العملية",
   "promoInactive": "رمز الخصم غير مفعّل",

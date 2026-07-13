@@ -74,7 +74,9 @@ export function PromoCodesPage() {
         const message =
           error.code === 'CHAPTER_NOT_FOUND'
             ? t('promoCodes.errorChapterNotFound')
-            : t('promoCodes.errorGenerating');
+            : error.code === 'PROMO_TARGET_MUST_BE_PAID'
+              ? t('promoCodes.errorFreeChapter')
+              : t('promoCodes.errorGenerating');
         dispatch(addToast({ type: 'error', message }));
       },
     });

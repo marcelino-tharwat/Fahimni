@@ -104,6 +104,7 @@ const CODE_TO_VALIDATION_KEY: Record<string, string> = {
   INVALID_CODE: "validation:promoNotFound",
   CODE_ALREADY_USED: "validation:promoUserLimitReached",
   CODE_NOT_FOR_THIS_CHAPTER: "validation:promoScopeMismatch",
+  PROMO_TARGET_MUST_BE_PAID: "validation:promoTargetMustBePaid",
 };
 
 /**

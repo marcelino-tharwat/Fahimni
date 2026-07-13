@@ -63,6 +63,7 @@
   "teacherRequestNotFound": "Teacher request not found",
   "documentUnavailable": "Document is not available",
   "requestNotPending": "Only a pending request can be processed",
+  "promoTargetMustBePaid": "Promo codes can only be created for paid chapters.",
   "promoNotFound": "Invalid promo code",
   "promoScopeMismatch": "This promo code cannot be used for this purchase",
   "promoInactive": "This promo code is not active",

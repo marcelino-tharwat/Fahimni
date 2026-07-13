@@ -25,6 +25,8 @@ export interface ContentTreeChapter {
   imageUrl?: string | null;
   term: 'FIRST_TERM' | 'SECOND_TERM';
   isVisible: boolean;
+  /** null or <= 0 means the chapter is free. */
+  price: number | null;
   lessons: ContentTreeLesson[];
 }
 

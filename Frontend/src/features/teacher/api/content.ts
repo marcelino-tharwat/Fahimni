@@ -20,6 +20,7 @@ interface RawContentTreeNode {
       imageUrl?: string | null;
       term: 'FIRST_TERM' | 'SECOND_TERM';
       isVisible: boolean;
+      price: number | null;
     };
     lessons: { id: string; title: string; sortOrder: number }[];
   }[];
