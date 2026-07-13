@@ -833,9 +833,7 @@ export function AuthPage() {
             <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-modal md:p-8">
           {/* Logo row */}
           <div className="mb-6 text-center">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-500 text-lg font-bold text-white">
-              ف
-            </span>
+            <img src="/images/2.png" alt="Fahimni" className="mx-auto h-14 w-14 object-contain" />
             <h2 className="mt-2 text-h2 font-bold text-navy-900">{t("auth:brandName")}</h2>
           </div>
 
@@ -867,14 +865,11 @@ export function AuthPage() {
       {/* Hero Panel */}
       <aside className="hidden min-h-0 w-full flex-col items-center justify-center bg-hero-gradient px-6 py-12 text-center lg:flex lg:w-2/5 lg:p-12">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-xl border border-cyan-500/30 bg-navy-800">
-          <GraduationCap className="text-cyan-500" size={36} />
+          <img src="/images/2.png" alt="Fahimni" className="h-20 w-20 object-contain" />
         </div>
 
         <h1 className="mt-6 text-4xl font-extrabold text-white">
           {t("auth:brandName")}
-          <span className="mr-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500 text-sm font-bold text-white">
-            ف
-          </span>
         </h1>
 
         <p className="mt-3 max-w-sm text-body text-gray-300">
