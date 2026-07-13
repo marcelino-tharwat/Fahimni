@@ -24,6 +24,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type StudentProfile = $Result.DefaultSelection<Prisma.$StudentProfilePayload>
 /**
+ * Model StudentStageChangeLog
+ * 
+ */
+export type StudentStageChangeLog = $Result.DefaultSelection<Prisma.$StudentStageChangeLogPayload>
+/**
  * Model TeacherProfile
  * 
  */
@@ -732,6 +737,16 @@ export class PrismaClient<
     * ```
     */
   get studentProfile(): Prisma.StudentProfileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.studentStageChangeLog`: Exposes CRUD operations for the **StudentStageChangeLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StudentStageChangeLogs
+    * const studentStageChangeLogs = await prisma.studentStageChangeLog.findMany()
+    * ```
+    */
+  get studentStageChangeLog(): Prisma.StudentStageChangeLogDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.teacherProfile`: Exposes CRUD operations for the **TeacherProfile** model.
@@ -1488,6 +1503,7 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     StudentProfile: 'StudentProfile',
+    StudentStageChangeLog: 'StudentStageChangeLog',
     TeacherProfile: 'TeacherProfile',
     Stage: 'Stage',
     Chapter: 'Chapter',
@@ -1535,7 +1551,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "studentProfile" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "emailLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "platformPromoCode" | "platformPromoRedemption" | "notification" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment" | "teacherWithdrawalRequest"
+      modelProps: "user" | "studentProfile" | "studentStageChangeLog" | "teacherProfile" | "stage" | "chapter" | "lesson" | "otp" | "enrollment" | "paymentTransaction" | "lessonProgress" | "lessonMaterial" | "lessonMaterialDownload" | "contentChunk" | "aiTutorUsage" | "auditLog" | "emailLog" | "refreshToken" | "quiz" | "quizLesson" | "question" | "quizAttempt" | "promoCode" | "platformPromoCode" | "platformPromoRedemption" | "notification" | "teacherRegistrationRequest" | "aiConversation" | "aiMessage" | "teacherPlan" | "teacherSubscription" | "teacherSubscriptionRequest" | "teacherAiUsageEvent" | "teacherSubscriptionPayment" | "teacherWithdrawalRequest"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1684,6 +1700,80 @@ export namespace Prisma {
           count: {
             args: Prisma.StudentProfileCountArgs<ExtArgs>
             result: $Utils.Optional<StudentProfileCountAggregateOutputType> | number
+          }
+        }
+      }
+      StudentStageChangeLog: {
+        payload: Prisma.$StudentStageChangeLogPayload<ExtArgs>
+        fields: Prisma.StudentStageChangeLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StudentStageChangeLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StudentStageChangeLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>
+          }
+          findFirst: {
+            args: Prisma.StudentStageChangeLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StudentStageChangeLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>
+          }
+          findMany: {
+            args: Prisma.StudentStageChangeLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>[]
+          }
+          create: {
+            args: Prisma.StudentStageChangeLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>
+          }
+          createMany: {
+            args: Prisma.StudentStageChangeLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StudentStageChangeLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>[]
+          }
+          delete: {
+            args: Prisma.StudentStageChangeLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>
+          }
+          update: {
+            args: Prisma.StudentStageChangeLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.StudentStageChangeLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StudentStageChangeLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StudentStageChangeLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.StudentStageChangeLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StudentStageChangeLogPayload>
+          }
+          aggregate: {
+            args: Prisma.StudentStageChangeLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStudentStageChangeLog>
+          }
+          groupBy: {
+            args: Prisma.StudentStageChangeLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StudentStageChangeLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StudentStageChangeLogCountArgs<ExtArgs>
+            result: $Utils.Optional<StudentStageChangeLogCountAggregateOutputType> | number
           }
         }
       }
@@ -4165,6 +4255,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     studentProfile?: StudentProfileOmit
+    studentStageChangeLog?: StudentStageChangeLogOmit
     teacherProfile?: TeacherProfileOmit
     stage?: StageOmit
     chapter?: ChapterOmit
@@ -4301,6 +4392,8 @@ export namespace Prisma {
     notifications: number
     teacherWithdrawalRequests: number
     reviewedWithdrawalRequests: number
+    stageChangeLogs: number
+    stageChangeActs: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4328,6 +4421,8 @@ export namespace Prisma {
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     teacherWithdrawalRequests?: boolean | UserCountOutputTypeCountTeacherWithdrawalRequestsArgs
     reviewedWithdrawalRequests?: boolean | UserCountOutputTypeCountReviewedWithdrawalRequestsArgs
+    stageChangeLogs?: boolean | UserCountOutputTypeCountStageChangeLogsArgs
+    stageChangeActs?: boolean | UserCountOutputTypeCountStageChangeActsArgs
   }
 
   // Custom InputTypes
@@ -4509,6 +4604,20 @@ export namespace Prisma {
     where?: TeacherWithdrawalRequestWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountStageChangeLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StudentStageChangeLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountStageChangeActsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StudentStageChangeLogWhereInput
+  }
+
 
   /**
    * Count Type StageCountOutputType
@@ -4517,11 +4626,15 @@ export namespace Prisma {
   export type StageCountOutputType = {
     chapters: number
     studentProfiles: number
+    oldStageChanges: number
+    newStageChanges: number
   }
 
   export type StageCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapters?: boolean | StageCountOutputTypeCountChaptersArgs
     studentProfiles?: boolean | StageCountOutputTypeCountStudentProfilesArgs
+    oldStageChanges?: boolean | StageCountOutputTypeCountOldStageChangesArgs
+    newStageChanges?: boolean | StageCountOutputTypeCountNewStageChangesArgs
   }
 
   // Custom InputTypes
@@ -4547,6 +4660,20 @@ export namespace Prisma {
    */
   export type StageCountOutputTypeCountStudentProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StudentProfileWhereInput
+  }
+
+  /**
+   * StageCountOutputType without action
+   */
+  export type StageCountOutputTypeCountOldStageChangesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StudentStageChangeLogWhereInput
+  }
+
+  /**
+   * StageCountOutputType without action
+   */
+  export type StageCountOutputTypeCountNewStageChangesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StudentStageChangeLogWhereInput
   }
 
 
@@ -5217,6 +5344,8 @@ export namespace Prisma {
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     teacherWithdrawalRequests?: boolean | User$teacherWithdrawalRequestsArgs<ExtArgs>
     reviewedWithdrawalRequests?: boolean | User$reviewedWithdrawalRequestsArgs<ExtArgs>
+    stageChangeLogs?: boolean | User$stageChangeLogsArgs<ExtArgs>
+    stageChangeActs?: boolean | User$stageChangeActsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5297,6 +5426,8 @@ export namespace Prisma {
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     teacherWithdrawalRequests?: boolean | User$teacherWithdrawalRequestsArgs<ExtArgs>
     reviewedWithdrawalRequests?: boolean | User$reviewedWithdrawalRequestsArgs<ExtArgs>
+    stageChangeLogs?: boolean | User$stageChangeLogsArgs<ExtArgs>
+    stageChangeActs?: boolean | User$stageChangeActsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5332,6 +5463,8 @@ export namespace Prisma {
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       teacherWithdrawalRequests: Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>[]
       reviewedWithdrawalRequests: Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>[]
+      stageChangeLogs: Prisma.$StudentStageChangeLogPayload<ExtArgs>[]
+      stageChangeActs: Prisma.$StudentStageChangeLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5768,6 +5901,8 @@ export namespace Prisma {
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     teacherWithdrawalRequests<T extends User$teacherWithdrawalRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$teacherWithdrawalRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviewedWithdrawalRequests<T extends User$reviewedWithdrawalRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewedWithdrawalRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeacherWithdrawalRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    stageChangeLogs<T extends User$stageChangeLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$stageChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    stageChangeActs<T extends User$stageChangeActsArgs<ExtArgs> = {}>(args?: Subset<T, User$stageChangeActsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6833,6 +6968,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TeacherWithdrawalRequestScalarFieldEnum | TeacherWithdrawalRequestScalarFieldEnum[]
+  }
+
+  /**
+   * User.stageChangeLogs
+   */
+  export type User$stageChangeLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    where?: StudentStageChangeLogWhereInput
+    orderBy?: StudentStageChangeLogOrderByWithRelationInput | StudentStageChangeLogOrderByWithRelationInput[]
+    cursor?: StudentStageChangeLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StudentStageChangeLogScalarFieldEnum | StudentStageChangeLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.stageChangeActs
+   */
+  export type User$stageChangeActsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    where?: StudentStageChangeLogWhereInput
+    orderBy?: StudentStageChangeLogOrderByWithRelationInput | StudentStageChangeLogOrderByWithRelationInput[]
+    cursor?: StudentStageChangeLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StudentStageChangeLogScalarFieldEnum | StudentStageChangeLogScalarFieldEnum[]
   }
 
   /**
@@ -7922,6 +8105,1145 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: StudentProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model StudentStageChangeLog
+   */
+
+  export type AggregateStudentStageChangeLog = {
+    _count: StudentStageChangeLogCountAggregateOutputType | null
+    _min: StudentStageChangeLogMinAggregateOutputType | null
+    _max: StudentStageChangeLogMaxAggregateOutputType | null
+  }
+
+  export type StudentStageChangeLogMinAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    oldStageId: string | null
+    newStageId: string | null
+    changedByUserId: string | null
+    changedByRole: string | null
+    changeType: string | null
+    academicYear: string | null
+    createdAt: Date | null
+  }
+
+  export type StudentStageChangeLogMaxAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    oldStageId: string | null
+    newStageId: string | null
+    changedByUserId: string | null
+    changedByRole: string | null
+    changeType: string | null
+    academicYear: string | null
+    createdAt: Date | null
+  }
+
+  export type StudentStageChangeLogCountAggregateOutputType = {
+    id: number
+    studentId: number
+    oldStageId: number
+    newStageId: number
+    changedByUserId: number
+    changedByRole: number
+    changeType: number
+    academicYear: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type StudentStageChangeLogMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    oldStageId?: true
+    newStageId?: true
+    changedByUserId?: true
+    changedByRole?: true
+    changeType?: true
+    academicYear?: true
+    createdAt?: true
+  }
+
+  export type StudentStageChangeLogMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    oldStageId?: true
+    newStageId?: true
+    changedByUserId?: true
+    changedByRole?: true
+    changeType?: true
+    academicYear?: true
+    createdAt?: true
+  }
+
+  export type StudentStageChangeLogCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    oldStageId?: true
+    newStageId?: true
+    changedByUserId?: true
+    changedByRole?: true
+    changeType?: true
+    academicYear?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type StudentStageChangeLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StudentStageChangeLog to aggregate.
+     */
+    where?: StudentStageChangeLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StudentStageChangeLogs to fetch.
+     */
+    orderBy?: StudentStageChangeLogOrderByWithRelationInput | StudentStageChangeLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StudentStageChangeLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StudentStageChangeLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StudentStageChangeLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StudentStageChangeLogs
+    **/
+    _count?: true | StudentStageChangeLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StudentStageChangeLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StudentStageChangeLogMaxAggregateInputType
+  }
+
+  export type GetStudentStageChangeLogAggregateType<T extends StudentStageChangeLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateStudentStageChangeLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStudentStageChangeLog[P]>
+      : GetScalarType<T[P], AggregateStudentStageChangeLog[P]>
+  }
+
+
+
+
+  export type StudentStageChangeLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StudentStageChangeLogWhereInput
+    orderBy?: StudentStageChangeLogOrderByWithAggregationInput | StudentStageChangeLogOrderByWithAggregationInput[]
+    by: StudentStageChangeLogScalarFieldEnum[] | StudentStageChangeLogScalarFieldEnum
+    having?: StudentStageChangeLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StudentStageChangeLogCountAggregateInputType | true
+    _min?: StudentStageChangeLogMinAggregateInputType
+    _max?: StudentStageChangeLogMaxAggregateInputType
+  }
+
+  export type StudentStageChangeLogGroupByOutputType = {
+    id: string
+    studentId: string
+    oldStageId: string
+    newStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt: Date
+    _count: StudentStageChangeLogCountAggregateOutputType | null
+    _min: StudentStageChangeLogMinAggregateOutputType | null
+    _max: StudentStageChangeLogMaxAggregateOutputType | null
+  }
+
+  type GetStudentStageChangeLogGroupByPayload<T extends StudentStageChangeLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StudentStageChangeLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StudentStageChangeLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StudentStageChangeLogGroupByOutputType[P]>
+            : GetScalarType<T[P], StudentStageChangeLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StudentStageChangeLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    oldStageId?: boolean
+    newStageId?: boolean
+    changedByUserId?: boolean
+    changedByRole?: boolean
+    changeType?: boolean
+    academicYear?: boolean
+    createdAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+    oldStage?: boolean | StageDefaultArgs<ExtArgs>
+    newStage?: boolean | StageDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["studentStageChangeLog"]>
+
+  export type StudentStageChangeLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    oldStageId?: boolean
+    newStageId?: boolean
+    changedByUserId?: boolean
+    changedByRole?: boolean
+    changeType?: boolean
+    academicYear?: boolean
+    createdAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+    oldStage?: boolean | StageDefaultArgs<ExtArgs>
+    newStage?: boolean | StageDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["studentStageChangeLog"]>
+
+  export type StudentStageChangeLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    oldStageId?: boolean
+    newStageId?: boolean
+    changedByUserId?: boolean
+    changedByRole?: boolean
+    changeType?: boolean
+    academicYear?: boolean
+    createdAt?: boolean
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+    oldStage?: boolean | StageDefaultArgs<ExtArgs>
+    newStage?: boolean | StageDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["studentStageChangeLog"]>
+
+  export type StudentStageChangeLogSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    oldStageId?: boolean
+    newStageId?: boolean
+    changedByUserId?: boolean
+    changedByRole?: boolean
+    changeType?: boolean
+    academicYear?: boolean
+    createdAt?: boolean
+  }
+
+  export type StudentStageChangeLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "oldStageId" | "newStageId" | "changedByUserId" | "changedByRole" | "changeType" | "academicYear" | "createdAt", ExtArgs["result"]["studentStageChangeLog"]>
+  export type StudentStageChangeLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+    oldStage?: boolean | StageDefaultArgs<ExtArgs>
+    newStage?: boolean | StageDefaultArgs<ExtArgs>
+  }
+  export type StudentStageChangeLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+    oldStage?: boolean | StageDefaultArgs<ExtArgs>
+    newStage?: boolean | StageDefaultArgs<ExtArgs>
+  }
+  export type StudentStageChangeLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | UserDefaultArgs<ExtArgs>
+    actor?: boolean | UserDefaultArgs<ExtArgs>
+    oldStage?: boolean | StageDefaultArgs<ExtArgs>
+    newStage?: boolean | StageDefaultArgs<ExtArgs>
+  }
+
+  export type $StudentStageChangeLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StudentStageChangeLog"
+    objects: {
+      student: Prisma.$UserPayload<ExtArgs>
+      actor: Prisma.$UserPayload<ExtArgs>
+      oldStage: Prisma.$StagePayload<ExtArgs>
+      newStage: Prisma.$StagePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      studentId: string
+      oldStageId: string
+      newStageId: string
+      changedByUserId: string
+      changedByRole: string
+      changeType: string
+      academicYear: string
+      createdAt: Date
+    }, ExtArgs["result"]["studentStageChangeLog"]>
+    composites: {}
+  }
+
+  type StudentStageChangeLogGetPayload<S extends boolean | null | undefined | StudentStageChangeLogDefaultArgs> = $Result.GetResult<Prisma.$StudentStageChangeLogPayload, S>
+
+  type StudentStageChangeLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StudentStageChangeLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StudentStageChangeLogCountAggregateInputType | true
+    }
+
+  export interface StudentStageChangeLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StudentStageChangeLog'], meta: { name: 'StudentStageChangeLog' } }
+    /**
+     * Find zero or one StudentStageChangeLog that matches the filter.
+     * @param {StudentStageChangeLogFindUniqueArgs} args - Arguments to find a StudentStageChangeLog
+     * @example
+     * // Get one StudentStageChangeLog
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StudentStageChangeLogFindUniqueArgs>(args: SelectSubset<T, StudentStageChangeLogFindUniqueArgs<ExtArgs>>): Prisma__StudentStageChangeLogClient<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StudentStageChangeLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StudentStageChangeLogFindUniqueOrThrowArgs} args - Arguments to find a StudentStageChangeLog
+     * @example
+     * // Get one StudentStageChangeLog
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StudentStageChangeLogFindUniqueOrThrowArgs>(args: SelectSubset<T, StudentStageChangeLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StudentStageChangeLogClient<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StudentStageChangeLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudentStageChangeLogFindFirstArgs} args - Arguments to find a StudentStageChangeLog
+     * @example
+     * // Get one StudentStageChangeLog
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StudentStageChangeLogFindFirstArgs>(args?: SelectSubset<T, StudentStageChangeLogFindFirstArgs<ExtArgs>>): Prisma__StudentStageChangeLogClient<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StudentStageChangeLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudentStageChangeLogFindFirstOrThrowArgs} args - Arguments to find a StudentStageChangeLog
+     * @example
+     * // Get one StudentStageChangeLog
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StudentStageChangeLogFindFirstOrThrowArgs>(args?: SelectSubset<T, StudentStageChangeLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__StudentStageChangeLogClient<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StudentStageChangeLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudentStageChangeLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StudentStageChangeLogs
+     * const studentStageChangeLogs = await prisma.studentStageChangeLog.findMany()
+     * 
+     * // Get first 10 StudentStageChangeLogs
+     * const studentStageChangeLogs = await prisma.studentStageChangeLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const studentStageChangeLogWithIdOnly = await prisma.studentStageChangeLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StudentStageChangeLogFindManyArgs>(args?: SelectSubset<T, StudentStageChangeLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StudentStageChangeLog.
+     * @param {StudentStageChangeLogCreateArgs} args - Arguments to create a StudentStageChangeLog.
+     * @example
+     * // Create one StudentStageChangeLog
+     * const StudentStageChangeLog = await prisma.studentStageChangeLog.create({
+     *   data: {
+     *     // ... data to create a StudentStageChangeLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends StudentStageChangeLogCreateArgs>(args: SelectSubset<T, StudentStageChangeLogCreateArgs<ExtArgs>>): Prisma__StudentStageChangeLogClient<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StudentStageChangeLogs.
+     * @param {StudentStageChangeLogCreateManyArgs} args - Arguments to create many StudentStageChangeLogs.
+     * @example
+     * // Create many StudentStageChangeLogs
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StudentStageChangeLogCreateManyArgs>(args?: SelectSubset<T, StudentStageChangeLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StudentStageChangeLogs and returns the data saved in the database.
+     * @param {StudentStageChangeLogCreateManyAndReturnArgs} args - Arguments to create many StudentStageChangeLogs.
+     * @example
+     * // Create many StudentStageChangeLogs
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StudentStageChangeLogs and only return the `id`
+     * const studentStageChangeLogWithIdOnly = await prisma.studentStageChangeLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StudentStageChangeLogCreateManyAndReturnArgs>(args?: SelectSubset<T, StudentStageChangeLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a StudentStageChangeLog.
+     * @param {StudentStageChangeLogDeleteArgs} args - Arguments to delete one StudentStageChangeLog.
+     * @example
+     * // Delete one StudentStageChangeLog
+     * const StudentStageChangeLog = await prisma.studentStageChangeLog.delete({
+     *   where: {
+     *     // ... filter to delete one StudentStageChangeLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StudentStageChangeLogDeleteArgs>(args: SelectSubset<T, StudentStageChangeLogDeleteArgs<ExtArgs>>): Prisma__StudentStageChangeLogClient<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StudentStageChangeLog.
+     * @param {StudentStageChangeLogUpdateArgs} args - Arguments to update one StudentStageChangeLog.
+     * @example
+     * // Update one StudentStageChangeLog
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StudentStageChangeLogUpdateArgs>(args: SelectSubset<T, StudentStageChangeLogUpdateArgs<ExtArgs>>): Prisma__StudentStageChangeLogClient<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StudentStageChangeLogs.
+     * @param {StudentStageChangeLogDeleteManyArgs} args - Arguments to filter StudentStageChangeLogs to delete.
+     * @example
+     * // Delete a few StudentStageChangeLogs
+     * const { count } = await prisma.studentStageChangeLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StudentStageChangeLogDeleteManyArgs>(args?: SelectSubset<T, StudentStageChangeLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StudentStageChangeLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudentStageChangeLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StudentStageChangeLogs
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StudentStageChangeLogUpdateManyArgs>(args: SelectSubset<T, StudentStageChangeLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StudentStageChangeLogs and returns the data updated in the database.
+     * @param {StudentStageChangeLogUpdateManyAndReturnArgs} args - Arguments to update many StudentStageChangeLogs.
+     * @example
+     * // Update many StudentStageChangeLogs
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more StudentStageChangeLogs and only return the `id`
+     * const studentStageChangeLogWithIdOnly = await prisma.studentStageChangeLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends StudentStageChangeLogUpdateManyAndReturnArgs>(args: SelectSubset<T, StudentStageChangeLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one StudentStageChangeLog.
+     * @param {StudentStageChangeLogUpsertArgs} args - Arguments to update or create a StudentStageChangeLog.
+     * @example
+     * // Update or create a StudentStageChangeLog
+     * const studentStageChangeLog = await prisma.studentStageChangeLog.upsert({
+     *   create: {
+     *     // ... data to create a StudentStageChangeLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StudentStageChangeLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StudentStageChangeLogUpsertArgs>(args: SelectSubset<T, StudentStageChangeLogUpsertArgs<ExtArgs>>): Prisma__StudentStageChangeLogClient<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StudentStageChangeLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudentStageChangeLogCountArgs} args - Arguments to filter StudentStageChangeLogs to count.
+     * @example
+     * // Count the number of StudentStageChangeLogs
+     * const count = await prisma.studentStageChangeLog.count({
+     *   where: {
+     *     // ... the filter for the StudentStageChangeLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends StudentStageChangeLogCountArgs>(
+      args?: Subset<T, StudentStageChangeLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StudentStageChangeLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StudentStageChangeLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudentStageChangeLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StudentStageChangeLogAggregateArgs>(args: Subset<T, StudentStageChangeLogAggregateArgs>): Prisma.PrismaPromise<GetStudentStageChangeLogAggregateType<T>>
+
+    /**
+     * Group by StudentStageChangeLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StudentStageChangeLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StudentStageChangeLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StudentStageChangeLogGroupByArgs['orderBy'] }
+        : { orderBy?: StudentStageChangeLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StudentStageChangeLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStudentStageChangeLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StudentStageChangeLog model
+   */
+  readonly fields: StudentStageChangeLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StudentStageChangeLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StudentStageChangeLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    actor<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    oldStage<T extends StageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StageDefaultArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    newStage<T extends StageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StageDefaultArgs<ExtArgs>>): Prisma__StageClient<$Result.GetResult<Prisma.$StagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StudentStageChangeLog model
+   */
+  interface StudentStageChangeLogFieldRefs {
+    readonly id: FieldRef<"StudentStageChangeLog", 'String'>
+    readonly studentId: FieldRef<"StudentStageChangeLog", 'String'>
+    readonly oldStageId: FieldRef<"StudentStageChangeLog", 'String'>
+    readonly newStageId: FieldRef<"StudentStageChangeLog", 'String'>
+    readonly changedByUserId: FieldRef<"StudentStageChangeLog", 'String'>
+    readonly changedByRole: FieldRef<"StudentStageChangeLog", 'String'>
+    readonly changeType: FieldRef<"StudentStageChangeLog", 'String'>
+    readonly academicYear: FieldRef<"StudentStageChangeLog", 'String'>
+    readonly createdAt: FieldRef<"StudentStageChangeLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StudentStageChangeLog findUnique
+   */
+  export type StudentStageChangeLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * Filter, which StudentStageChangeLog to fetch.
+     */
+    where: StudentStageChangeLogWhereUniqueInput
+  }
+
+  /**
+   * StudentStageChangeLog findUniqueOrThrow
+   */
+  export type StudentStageChangeLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * Filter, which StudentStageChangeLog to fetch.
+     */
+    where: StudentStageChangeLogWhereUniqueInput
+  }
+
+  /**
+   * StudentStageChangeLog findFirst
+   */
+  export type StudentStageChangeLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * Filter, which StudentStageChangeLog to fetch.
+     */
+    where?: StudentStageChangeLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StudentStageChangeLogs to fetch.
+     */
+    orderBy?: StudentStageChangeLogOrderByWithRelationInput | StudentStageChangeLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StudentStageChangeLogs.
+     */
+    cursor?: StudentStageChangeLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StudentStageChangeLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StudentStageChangeLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StudentStageChangeLogs.
+     */
+    distinct?: StudentStageChangeLogScalarFieldEnum | StudentStageChangeLogScalarFieldEnum[]
+  }
+
+  /**
+   * StudentStageChangeLog findFirstOrThrow
+   */
+  export type StudentStageChangeLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * Filter, which StudentStageChangeLog to fetch.
+     */
+    where?: StudentStageChangeLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StudentStageChangeLogs to fetch.
+     */
+    orderBy?: StudentStageChangeLogOrderByWithRelationInput | StudentStageChangeLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StudentStageChangeLogs.
+     */
+    cursor?: StudentStageChangeLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StudentStageChangeLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StudentStageChangeLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StudentStageChangeLogs.
+     */
+    distinct?: StudentStageChangeLogScalarFieldEnum | StudentStageChangeLogScalarFieldEnum[]
+  }
+
+  /**
+   * StudentStageChangeLog findMany
+   */
+  export type StudentStageChangeLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * Filter, which StudentStageChangeLogs to fetch.
+     */
+    where?: StudentStageChangeLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StudentStageChangeLogs to fetch.
+     */
+    orderBy?: StudentStageChangeLogOrderByWithRelationInput | StudentStageChangeLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StudentStageChangeLogs.
+     */
+    cursor?: StudentStageChangeLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StudentStageChangeLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StudentStageChangeLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StudentStageChangeLogs.
+     */
+    distinct?: StudentStageChangeLogScalarFieldEnum | StudentStageChangeLogScalarFieldEnum[]
+  }
+
+  /**
+   * StudentStageChangeLog create
+   */
+  export type StudentStageChangeLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StudentStageChangeLog.
+     */
+    data: XOR<StudentStageChangeLogCreateInput, StudentStageChangeLogUncheckedCreateInput>
+  }
+
+  /**
+   * StudentStageChangeLog createMany
+   */
+  export type StudentStageChangeLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StudentStageChangeLogs.
+     */
+    data: StudentStageChangeLogCreateManyInput | StudentStageChangeLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StudentStageChangeLog createManyAndReturn
+   */
+  export type StudentStageChangeLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many StudentStageChangeLogs.
+     */
+    data: StudentStageChangeLogCreateManyInput | StudentStageChangeLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StudentStageChangeLog update
+   */
+  export type StudentStageChangeLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StudentStageChangeLog.
+     */
+    data: XOR<StudentStageChangeLogUpdateInput, StudentStageChangeLogUncheckedUpdateInput>
+    /**
+     * Choose, which StudentStageChangeLog to update.
+     */
+    where: StudentStageChangeLogWhereUniqueInput
+  }
+
+  /**
+   * StudentStageChangeLog updateMany
+   */
+  export type StudentStageChangeLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StudentStageChangeLogs.
+     */
+    data: XOR<StudentStageChangeLogUpdateManyMutationInput, StudentStageChangeLogUncheckedUpdateManyInput>
+    /**
+     * Filter which StudentStageChangeLogs to update
+     */
+    where?: StudentStageChangeLogWhereInput
+    /**
+     * Limit how many StudentStageChangeLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StudentStageChangeLog updateManyAndReturn
+   */
+  export type StudentStageChangeLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * The data used to update StudentStageChangeLogs.
+     */
+    data: XOR<StudentStageChangeLogUpdateManyMutationInput, StudentStageChangeLogUncheckedUpdateManyInput>
+    /**
+     * Filter which StudentStageChangeLogs to update
+     */
+    where?: StudentStageChangeLogWhereInput
+    /**
+     * Limit how many StudentStageChangeLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StudentStageChangeLog upsert
+   */
+  export type StudentStageChangeLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StudentStageChangeLog to update in case it exists.
+     */
+    where: StudentStageChangeLogWhereUniqueInput
+    /**
+     * In case the StudentStageChangeLog found by the `where` argument doesn't exist, create a new StudentStageChangeLog with this data.
+     */
+    create: XOR<StudentStageChangeLogCreateInput, StudentStageChangeLogUncheckedCreateInput>
+    /**
+     * In case the StudentStageChangeLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StudentStageChangeLogUpdateInput, StudentStageChangeLogUncheckedUpdateInput>
+  }
+
+  /**
+   * StudentStageChangeLog delete
+   */
+  export type StudentStageChangeLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    /**
+     * Filter which StudentStageChangeLog to delete.
+     */
+    where: StudentStageChangeLogWhereUniqueInput
+  }
+
+  /**
+   * StudentStageChangeLog deleteMany
+   */
+  export type StudentStageChangeLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StudentStageChangeLogs to delete
+     */
+    where?: StudentStageChangeLogWhereInput
+    /**
+     * Limit how many StudentStageChangeLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StudentStageChangeLog without action
+   */
+  export type StudentStageChangeLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
   }
 
 
@@ -9377,6 +10699,8 @@ export namespace Prisma {
     deletedAt?: boolean
     chapters?: boolean | Stage$chaptersArgs<ExtArgs>
     studentProfiles?: boolean | Stage$studentProfilesArgs<ExtArgs>
+    oldStageChanges?: boolean | Stage$oldStageChangesArgs<ExtArgs>
+    newStageChanges?: boolean | Stage$newStageChangesArgs<ExtArgs>
     teacher?: boolean | Stage$teacherArgs<ExtArgs>
     _count?: boolean | StageCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["stage"]>
@@ -9435,6 +10759,8 @@ export namespace Prisma {
   export type StageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chapters?: boolean | Stage$chaptersArgs<ExtArgs>
     studentProfiles?: boolean | Stage$studentProfilesArgs<ExtArgs>
+    oldStageChanges?: boolean | Stage$oldStageChangesArgs<ExtArgs>
+    newStageChanges?: boolean | Stage$newStageChangesArgs<ExtArgs>
     teacher?: boolean | Stage$teacherArgs<ExtArgs>
     _count?: boolean | StageCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -9450,6 +10776,8 @@ export namespace Prisma {
     objects: {
       chapters: Prisma.$ChapterPayload<ExtArgs>[]
       studentProfiles: Prisma.$StudentProfilePayload<ExtArgs>[]
+      oldStageChanges: Prisma.$StudentStageChangeLogPayload<ExtArgs>[]
+      newStageChanges: Prisma.$StudentStageChangeLogPayload<ExtArgs>[]
       teacher: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -9862,6 +11190,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     chapters<T extends Stage$chaptersArgs<ExtArgs> = {}>(args?: Subset<T, Stage$chaptersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     studentProfiles<T extends Stage$studentProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Stage$studentProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    oldStageChanges<T extends Stage$oldStageChangesArgs<ExtArgs> = {}>(args?: Subset<T, Stage$oldStageChangesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    newStageChanges<T extends Stage$newStageChangesArgs<ExtArgs> = {}>(args?: Subset<T, Stage$newStageChangesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentStageChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     teacher<T extends Stage$teacherArgs<ExtArgs> = {}>(args?: Subset<T, Stage$teacherArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -10351,6 +11681,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: StudentProfileScalarFieldEnum | StudentProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Stage.oldStageChanges
+   */
+  export type Stage$oldStageChangesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    where?: StudentStageChangeLogWhereInput
+    orderBy?: StudentStageChangeLogOrderByWithRelationInput | StudentStageChangeLogOrderByWithRelationInput[]
+    cursor?: StudentStageChangeLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StudentStageChangeLogScalarFieldEnum | StudentStageChangeLogScalarFieldEnum[]
+  }
+
+  /**
+   * Stage.newStageChanges
+   */
+  export type Stage$newStageChangesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StudentStageChangeLog
+     */
+    select?: StudentStageChangeLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StudentStageChangeLog
+     */
+    omit?: StudentStageChangeLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StudentStageChangeLogInclude<ExtArgs> | null
+    where?: StudentStageChangeLogWhereInput
+    orderBy?: StudentStageChangeLogOrderByWithRelationInput | StudentStageChangeLogOrderByWithRelationInput[]
+    cursor?: StudentStageChangeLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StudentStageChangeLogScalarFieldEnum | StudentStageChangeLogScalarFieldEnum[]
   }
 
   /**
@@ -45916,6 +47294,21 @@ export namespace Prisma {
   export type StudentProfileScalarFieldEnum = (typeof StudentProfileScalarFieldEnum)[keyof typeof StudentProfileScalarFieldEnum]
 
 
+  export const StudentStageChangeLogScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    oldStageId: 'oldStageId',
+    newStageId: 'newStageId',
+    changedByUserId: 'changedByUserId',
+    changedByRole: 'changedByRole',
+    changeType: 'changeType',
+    academicYear: 'academicYear',
+    createdAt: 'createdAt'
+  };
+
+  export type StudentStageChangeLogScalarFieldEnum = (typeof StudentStageChangeLogScalarFieldEnum)[keyof typeof StudentStageChangeLogScalarFieldEnum]
+
+
   export const TeacherProfileScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -47063,6 +48456,8 @@ export namespace Prisma {
     notifications?: NotificationListRelationFilter
     teacherWithdrawalRequests?: TeacherWithdrawalRequestListRelationFilter
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestListRelationFilter
+    stageChangeLogs?: StudentStageChangeLogListRelationFilter
+    stageChangeActs?: StudentStageChangeLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -47106,6 +48501,8 @@ export namespace Prisma {
     notifications?: NotificationOrderByRelationAggregateInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestOrderByRelationAggregateInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestOrderByRelationAggregateInput
+    stageChangeLogs?: StudentStageChangeLogOrderByRelationAggregateInput
+    stageChangeActs?: StudentStageChangeLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -47152,6 +48549,8 @@ export namespace Prisma {
     notifications?: NotificationListRelationFilter
     teacherWithdrawalRequests?: TeacherWithdrawalRequestListRelationFilter
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestListRelationFilter
+    stageChangeLogs?: StudentStageChangeLogListRelationFilter
+    stageChangeActs?: StudentStageChangeLogListRelationFilter
   }, "id" | "email" | "mobile">
 
   export type UserOrderByWithAggregationInput = {
@@ -47250,6 +48649,90 @@ export namespace Prisma {
     stageId?: StringWithAggregatesFilter<"StudentProfile"> | string
     createdAt?: DateTimeWithAggregatesFilter<"StudentProfile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"StudentProfile"> | Date | string
+  }
+
+  export type StudentStageChangeLogWhereInput = {
+    AND?: StudentStageChangeLogWhereInput | StudentStageChangeLogWhereInput[]
+    OR?: StudentStageChangeLogWhereInput[]
+    NOT?: StudentStageChangeLogWhereInput | StudentStageChangeLogWhereInput[]
+    id?: StringFilter<"StudentStageChangeLog"> | string
+    studentId?: StringFilter<"StudentStageChangeLog"> | string
+    oldStageId?: StringFilter<"StudentStageChangeLog"> | string
+    newStageId?: StringFilter<"StudentStageChangeLog"> | string
+    changedByUserId?: StringFilter<"StudentStageChangeLog"> | string
+    changedByRole?: StringFilter<"StudentStageChangeLog"> | string
+    changeType?: StringFilter<"StudentStageChangeLog"> | string
+    academicYear?: StringFilter<"StudentStageChangeLog"> | string
+    createdAt?: DateTimeFilter<"StudentStageChangeLog"> | Date | string
+    student?: XOR<UserScalarRelationFilter, UserWhereInput>
+    actor?: XOR<UserScalarRelationFilter, UserWhereInput>
+    oldStage?: XOR<StageScalarRelationFilter, StageWhereInput>
+    newStage?: XOR<StageScalarRelationFilter, StageWhereInput>
+  }
+
+  export type StudentStageChangeLogOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    oldStageId?: SortOrder
+    newStageId?: SortOrder
+    changedByUserId?: SortOrder
+    changedByRole?: SortOrder
+    changeType?: SortOrder
+    academicYear?: SortOrder
+    createdAt?: SortOrder
+    student?: UserOrderByWithRelationInput
+    actor?: UserOrderByWithRelationInput
+    oldStage?: StageOrderByWithRelationInput
+    newStage?: StageOrderByWithRelationInput
+  }
+
+  export type StudentStageChangeLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: StudentStageChangeLogWhereInput | StudentStageChangeLogWhereInput[]
+    OR?: StudentStageChangeLogWhereInput[]
+    NOT?: StudentStageChangeLogWhereInput | StudentStageChangeLogWhereInput[]
+    studentId?: StringFilter<"StudentStageChangeLog"> | string
+    oldStageId?: StringFilter<"StudentStageChangeLog"> | string
+    newStageId?: StringFilter<"StudentStageChangeLog"> | string
+    changedByUserId?: StringFilter<"StudentStageChangeLog"> | string
+    changedByRole?: StringFilter<"StudentStageChangeLog"> | string
+    changeType?: StringFilter<"StudentStageChangeLog"> | string
+    academicYear?: StringFilter<"StudentStageChangeLog"> | string
+    createdAt?: DateTimeFilter<"StudentStageChangeLog"> | Date | string
+    student?: XOR<UserScalarRelationFilter, UserWhereInput>
+    actor?: XOR<UserScalarRelationFilter, UserWhereInput>
+    oldStage?: XOR<StageScalarRelationFilter, StageWhereInput>
+    newStage?: XOR<StageScalarRelationFilter, StageWhereInput>
+  }, "id">
+
+  export type StudentStageChangeLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    oldStageId?: SortOrder
+    newStageId?: SortOrder
+    changedByUserId?: SortOrder
+    changedByRole?: SortOrder
+    changeType?: SortOrder
+    academicYear?: SortOrder
+    createdAt?: SortOrder
+    _count?: StudentStageChangeLogCountOrderByAggregateInput
+    _max?: StudentStageChangeLogMaxOrderByAggregateInput
+    _min?: StudentStageChangeLogMinOrderByAggregateInput
+  }
+
+  export type StudentStageChangeLogScalarWhereWithAggregatesInput = {
+    AND?: StudentStageChangeLogScalarWhereWithAggregatesInput | StudentStageChangeLogScalarWhereWithAggregatesInput[]
+    OR?: StudentStageChangeLogScalarWhereWithAggregatesInput[]
+    NOT?: StudentStageChangeLogScalarWhereWithAggregatesInput | StudentStageChangeLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StudentStageChangeLog"> | string
+    studentId?: StringWithAggregatesFilter<"StudentStageChangeLog"> | string
+    oldStageId?: StringWithAggregatesFilter<"StudentStageChangeLog"> | string
+    newStageId?: StringWithAggregatesFilter<"StudentStageChangeLog"> | string
+    changedByUserId?: StringWithAggregatesFilter<"StudentStageChangeLog"> | string
+    changedByRole?: StringWithAggregatesFilter<"StudentStageChangeLog"> | string
+    changeType?: StringWithAggregatesFilter<"StudentStageChangeLog"> | string
+    academicYear?: StringWithAggregatesFilter<"StudentStageChangeLog"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"StudentStageChangeLog"> | Date | string
   }
 
   export type TeacherProfileWhereInput = {
@@ -47363,6 +48846,8 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
     chapters?: ChapterListRelationFilter
     studentProfiles?: StudentProfileListRelationFilter
+    oldStageChanges?: StudentStageChangeLogListRelationFilter
+    newStageChanges?: StudentStageChangeLogListRelationFilter
     teacher?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
@@ -47382,6 +48867,8 @@ export namespace Prisma {
     deletedAt?: SortOrderInput | SortOrder
     chapters?: ChapterOrderByRelationAggregateInput
     studentProfiles?: StudentProfileOrderByRelationAggregateInput
+    oldStageChanges?: StudentStageChangeLogOrderByRelationAggregateInput
+    newStageChanges?: StudentStageChangeLogOrderByRelationAggregateInput
     teacher?: UserOrderByWithRelationInput
   }
 
@@ -47404,6 +48891,8 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"Stage"> | Date | string | null
     chapters?: ChapterListRelationFilter
     studentProfiles?: StudentProfileListRelationFilter
+    oldStageChanges?: StudentStageChangeLogListRelationFilter
+    newStageChanges?: StudentStageChangeLogListRelationFilter
     teacher?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
@@ -50138,6 +51627,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -50181,6 +51672,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserUpdateInput = {
@@ -50224,6 +51717,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -50267,6 +51762,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -50369,6 +51866,86 @@ export namespace Prisma {
     stageId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogCreateInput = {
+    id?: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+    student: UserCreateNestedOneWithoutStageChangeLogsInput
+    actor: UserCreateNestedOneWithoutStageChangeActsInput
+    oldStage: StageCreateNestedOneWithoutOldStageChangesInput
+    newStage: StageCreateNestedOneWithoutNewStageChangesInput
+  }
+
+  export type StudentStageChangeLogUncheckedCreateInput = {
+    id?: string
+    studentId: string
+    oldStageId: string
+    newStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+  }
+
+  export type StudentStageChangeLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutStageChangeLogsNestedInput
+    actor?: UserUpdateOneRequiredWithoutStageChangeActsNestedInput
+    oldStage?: StageUpdateOneRequiredWithoutOldStageChangesNestedInput
+    newStage?: StageUpdateOneRequiredWithoutNewStageChangesNestedInput
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    oldStageId?: StringFieldUpdateOperationsInput | string
+    newStageId?: StringFieldUpdateOperationsInput | string
+    changedByUserId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogCreateManyInput = {
+    id?: string
+    studentId: string
+    oldStageId: string
+    newStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+  }
+
+  export type StudentStageChangeLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    oldStageId?: StringFieldUpdateOperationsInput | string
+    newStageId?: StringFieldUpdateOperationsInput | string
+    changedByUserId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TeacherProfileCreateInput = {
@@ -50490,6 +52067,8 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     chapters?: ChapterCreateNestedManyWithoutStageInput
     studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogCreateNestedManyWithoutOldStageInput
+    newStageChanges?: StudentStageChangeLogCreateNestedManyWithoutNewStageInput
     teacher?: UserCreateNestedOneWithoutStagesInput
   }
 
@@ -50509,6 +52088,8 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     chapters?: ChapterUncheckedCreateNestedManyWithoutStageInput
     studentProfiles?: StudentProfileUncheckedCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutOldStageInput
+    newStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutNewStageInput
   }
 
   export type StageUpdateInput = {
@@ -50526,6 +52107,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUpdateManyWithoutStageNestedInput
     studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUpdateManyWithoutOldStageNestedInput
+    newStageChanges?: StudentStageChangeLogUpdateManyWithoutNewStageNestedInput
     teacher?: UserUpdateOneWithoutStagesNestedInput
   }
 
@@ -50545,6 +52128,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUncheckedUpdateManyWithoutStageNestedInput
     studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutOldStageNestedInput
+    newStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutNewStageNestedInput
   }
 
   export type StageCreateManyInput = {
@@ -53709,6 +55294,12 @@ export namespace Prisma {
     none?: TeacherWithdrawalRequestWhereInput
   }
 
+  export type StudentStageChangeLogListRelationFilter = {
+    every?: StudentStageChangeLogWhereInput
+    some?: StudentStageChangeLogWhereInput
+    none?: StudentStageChangeLogWhereInput
+  }
+
   export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -53794,6 +55385,10 @@ export namespace Prisma {
   }
 
   export type TeacherWithdrawalRequestOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StudentStageChangeLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -53971,6 +55566,42 @@ export namespace Prisma {
     stageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type StudentStageChangeLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    oldStageId?: SortOrder
+    newStageId?: SortOrder
+    changedByUserId?: SortOrder
+    changedByRole?: SortOrder
+    changeType?: SortOrder
+    academicYear?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type StudentStageChangeLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    oldStageId?: SortOrder
+    newStageId?: SortOrder
+    changedByUserId?: SortOrder
+    changedByRole?: SortOrder
+    changeType?: SortOrder
+    academicYear?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type StudentStageChangeLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    oldStageId?: SortOrder
+    newStageId?: SortOrder
+    changedByUserId?: SortOrder
+    changedByRole?: SortOrder
+    changeType?: SortOrder
+    academicYear?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
@@ -56534,6 +58165,20 @@ export namespace Prisma {
     connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
   }
 
+  export type StudentStageChangeLogCreateNestedManyWithoutStudentInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutStudentInput, StudentStageChangeLogUncheckedCreateWithoutStudentInput> | StudentStageChangeLogCreateWithoutStudentInput[] | StudentStageChangeLogUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutStudentInput | StudentStageChangeLogCreateOrConnectWithoutStudentInput[]
+    createMany?: StudentStageChangeLogCreateManyStudentInputEnvelope
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+  }
+
+  export type StudentStageChangeLogCreateNestedManyWithoutActorInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutActorInput, StudentStageChangeLogUncheckedCreateWithoutActorInput> | StudentStageChangeLogCreateWithoutActorInput[] | StudentStageChangeLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutActorInput | StudentStageChangeLogCreateOrConnectWithoutActorInput[]
+    createMany?: StudentStageChangeLogCreateManyActorInputEnvelope
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+  }
+
   export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -56718,6 +58363,20 @@ export namespace Prisma {
     connectOrCreate?: TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput | TeacherWithdrawalRequestCreateOrConnectWithoutReviewedByInput[]
     createMany?: TeacherWithdrawalRequestCreateManyReviewedByInputEnvelope
     connect?: TeacherWithdrawalRequestWhereUniqueInput | TeacherWithdrawalRequestWhereUniqueInput[]
+  }
+
+  export type StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutStudentInput, StudentStageChangeLogUncheckedCreateWithoutStudentInput> | StudentStageChangeLogCreateWithoutStudentInput[] | StudentStageChangeLogUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutStudentInput | StudentStageChangeLogCreateOrConnectWithoutStudentInput[]
+    createMany?: StudentStageChangeLogCreateManyStudentInputEnvelope
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+  }
+
+  export type StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutActorInput, StudentStageChangeLogUncheckedCreateWithoutActorInput> | StudentStageChangeLogCreateWithoutActorInput[] | StudentStageChangeLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutActorInput | StudentStageChangeLogCreateOrConnectWithoutActorInput[]
+    createMany?: StudentStageChangeLogCreateManyActorInputEnvelope
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -57118,6 +58777,34 @@ export namespace Prisma {
     deleteMany?: TeacherWithdrawalRequestScalarWhereInput | TeacherWithdrawalRequestScalarWhereInput[]
   }
 
+  export type StudentStageChangeLogUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutStudentInput, StudentStageChangeLogUncheckedCreateWithoutStudentInput> | StudentStageChangeLogCreateWithoutStudentInput[] | StudentStageChangeLogUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutStudentInput | StudentStageChangeLogCreateOrConnectWithoutStudentInput[]
+    upsert?: StudentStageChangeLogUpsertWithWhereUniqueWithoutStudentInput | StudentStageChangeLogUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: StudentStageChangeLogCreateManyStudentInputEnvelope
+    set?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    disconnect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    delete?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    update?: StudentStageChangeLogUpdateWithWhereUniqueWithoutStudentInput | StudentStageChangeLogUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: StudentStageChangeLogUpdateManyWithWhereWithoutStudentInput | StudentStageChangeLogUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
+  }
+
+  export type StudentStageChangeLogUpdateManyWithoutActorNestedInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutActorInput, StudentStageChangeLogUncheckedCreateWithoutActorInput> | StudentStageChangeLogCreateWithoutActorInput[] | StudentStageChangeLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutActorInput | StudentStageChangeLogCreateOrConnectWithoutActorInput[]
+    upsert?: StudentStageChangeLogUpsertWithWhereUniqueWithoutActorInput | StudentStageChangeLogUpsertWithWhereUniqueWithoutActorInput[]
+    createMany?: StudentStageChangeLogCreateManyActorInputEnvelope
+    set?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    disconnect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    delete?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    update?: StudentStageChangeLogUpdateWithWhereUniqueWithoutActorInput | StudentStageChangeLogUpdateWithWhereUniqueWithoutActorInput[]
+    updateMany?: StudentStageChangeLogUpdateManyWithWhereWithoutActorInput | StudentStageChangeLogUpdateManyWithWhereWithoutActorInput[]
+    deleteMany?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
+  }
+
   export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
@@ -57484,6 +59171,34 @@ export namespace Prisma {
     deleteMany?: TeacherWithdrawalRequestScalarWhereInput | TeacherWithdrawalRequestScalarWhereInput[]
   }
 
+  export type StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutStudentInput, StudentStageChangeLogUncheckedCreateWithoutStudentInput> | StudentStageChangeLogCreateWithoutStudentInput[] | StudentStageChangeLogUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutStudentInput | StudentStageChangeLogCreateOrConnectWithoutStudentInput[]
+    upsert?: StudentStageChangeLogUpsertWithWhereUniqueWithoutStudentInput | StudentStageChangeLogUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: StudentStageChangeLogCreateManyStudentInputEnvelope
+    set?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    disconnect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    delete?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    update?: StudentStageChangeLogUpdateWithWhereUniqueWithoutStudentInput | StudentStageChangeLogUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: StudentStageChangeLogUpdateManyWithWhereWithoutStudentInput | StudentStageChangeLogUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutActorInput, StudentStageChangeLogUncheckedCreateWithoutActorInput> | StudentStageChangeLogCreateWithoutActorInput[] | StudentStageChangeLogUncheckedCreateWithoutActorInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutActorInput | StudentStageChangeLogCreateOrConnectWithoutActorInput[]
+    upsert?: StudentStageChangeLogUpsertWithWhereUniqueWithoutActorInput | StudentStageChangeLogUpsertWithWhereUniqueWithoutActorInput[]
+    createMany?: StudentStageChangeLogCreateManyActorInputEnvelope
+    set?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    disconnect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    delete?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    update?: StudentStageChangeLogUpdateWithWhereUniqueWithoutActorInput | StudentStageChangeLogUpdateWithWhereUniqueWithoutActorInput[]
+    updateMany?: StudentStageChangeLogUpdateManyWithWhereWithoutActorInput | StudentStageChangeLogUpdateManyWithWhereWithoutActorInput[]
+    deleteMany?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutStudentProfileInput = {
     create?: XOR<UserCreateWithoutStudentProfileInput, UserUncheckedCreateWithoutStudentProfileInput>
     connectOrCreate?: UserCreateOrConnectWithoutStudentProfileInput
@@ -57510,6 +59225,62 @@ export namespace Prisma {
     upsert?: StageUpsertWithoutStudentProfilesInput
     connect?: StageWhereUniqueInput
     update?: XOR<XOR<StageUpdateToOneWithWhereWithoutStudentProfilesInput, StageUpdateWithoutStudentProfilesInput>, StageUncheckedUpdateWithoutStudentProfilesInput>
+  }
+
+  export type UserCreateNestedOneWithoutStageChangeLogsInput = {
+    create?: XOR<UserCreateWithoutStageChangeLogsInput, UserUncheckedCreateWithoutStageChangeLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStageChangeLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutStageChangeActsInput = {
+    create?: XOR<UserCreateWithoutStageChangeActsInput, UserUncheckedCreateWithoutStageChangeActsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStageChangeActsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type StageCreateNestedOneWithoutOldStageChangesInput = {
+    create?: XOR<StageCreateWithoutOldStageChangesInput, StageUncheckedCreateWithoutOldStageChangesInput>
+    connectOrCreate?: StageCreateOrConnectWithoutOldStageChangesInput
+    connect?: StageWhereUniqueInput
+  }
+
+  export type StageCreateNestedOneWithoutNewStageChangesInput = {
+    create?: XOR<StageCreateWithoutNewStageChangesInput, StageUncheckedCreateWithoutNewStageChangesInput>
+    connectOrCreate?: StageCreateOrConnectWithoutNewStageChangesInput
+    connect?: StageWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutStageChangeLogsNestedInput = {
+    create?: XOR<UserCreateWithoutStageChangeLogsInput, UserUncheckedCreateWithoutStageChangeLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStageChangeLogsInput
+    upsert?: UserUpsertWithoutStageChangeLogsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutStageChangeLogsInput, UserUpdateWithoutStageChangeLogsInput>, UserUncheckedUpdateWithoutStageChangeLogsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutStageChangeActsNestedInput = {
+    create?: XOR<UserCreateWithoutStageChangeActsInput, UserUncheckedCreateWithoutStageChangeActsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutStageChangeActsInput
+    upsert?: UserUpsertWithoutStageChangeActsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutStageChangeActsInput, UserUpdateWithoutStageChangeActsInput>, UserUncheckedUpdateWithoutStageChangeActsInput>
+  }
+
+  export type StageUpdateOneRequiredWithoutOldStageChangesNestedInput = {
+    create?: XOR<StageCreateWithoutOldStageChangesInput, StageUncheckedCreateWithoutOldStageChangesInput>
+    connectOrCreate?: StageCreateOrConnectWithoutOldStageChangesInput
+    upsert?: StageUpsertWithoutOldStageChangesInput
+    connect?: StageWhereUniqueInput
+    update?: XOR<XOR<StageUpdateToOneWithWhereWithoutOldStageChangesInput, StageUpdateWithoutOldStageChangesInput>, StageUncheckedUpdateWithoutOldStageChangesInput>
+  }
+
+  export type StageUpdateOneRequiredWithoutNewStageChangesNestedInput = {
+    create?: XOR<StageCreateWithoutNewStageChangesInput, StageUncheckedCreateWithoutNewStageChangesInput>
+    connectOrCreate?: StageCreateOrConnectWithoutNewStageChangesInput
+    upsert?: StageUpsertWithoutNewStageChangesInput
+    connect?: StageWhereUniqueInput
+    update?: XOR<XOR<StageUpdateToOneWithWhereWithoutNewStageChangesInput, StageUpdateWithoutNewStageChangesInput>, StageUncheckedUpdateWithoutNewStageChangesInput>
   }
 
   export type UserCreateNestedOneWithoutTeacherProfileInput = {
@@ -57548,6 +59319,20 @@ export namespace Prisma {
     connect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
   }
 
+  export type StudentStageChangeLogCreateNestedManyWithoutOldStageInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutOldStageInput, StudentStageChangeLogUncheckedCreateWithoutOldStageInput> | StudentStageChangeLogCreateWithoutOldStageInput[] | StudentStageChangeLogUncheckedCreateWithoutOldStageInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutOldStageInput | StudentStageChangeLogCreateOrConnectWithoutOldStageInput[]
+    createMany?: StudentStageChangeLogCreateManyOldStageInputEnvelope
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+  }
+
+  export type StudentStageChangeLogCreateNestedManyWithoutNewStageInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutNewStageInput, StudentStageChangeLogUncheckedCreateWithoutNewStageInput> | StudentStageChangeLogCreateWithoutNewStageInput[] | StudentStageChangeLogUncheckedCreateWithoutNewStageInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutNewStageInput | StudentStageChangeLogCreateOrConnectWithoutNewStageInput[]
+    createMany?: StudentStageChangeLogCreateManyNewStageInputEnvelope
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+  }
+
   export type UserCreateNestedOneWithoutStagesInput = {
     create?: XOR<UserCreateWithoutStagesInput, UserUncheckedCreateWithoutStagesInput>
     connectOrCreate?: UserCreateOrConnectWithoutStagesInput
@@ -57566,6 +59351,20 @@ export namespace Prisma {
     connectOrCreate?: StudentProfileCreateOrConnectWithoutStageInput | StudentProfileCreateOrConnectWithoutStageInput[]
     createMany?: StudentProfileCreateManyStageInputEnvelope
     connect?: StudentProfileWhereUniqueInput | StudentProfileWhereUniqueInput[]
+  }
+
+  export type StudentStageChangeLogUncheckedCreateNestedManyWithoutOldStageInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutOldStageInput, StudentStageChangeLogUncheckedCreateWithoutOldStageInput> | StudentStageChangeLogCreateWithoutOldStageInput[] | StudentStageChangeLogUncheckedCreateWithoutOldStageInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutOldStageInput | StudentStageChangeLogCreateOrConnectWithoutOldStageInput[]
+    createMany?: StudentStageChangeLogCreateManyOldStageInputEnvelope
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+  }
+
+  export type StudentStageChangeLogUncheckedCreateNestedManyWithoutNewStageInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutNewStageInput, StudentStageChangeLogUncheckedCreateWithoutNewStageInput> | StudentStageChangeLogCreateWithoutNewStageInput[] | StudentStageChangeLogUncheckedCreateWithoutNewStageInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutNewStageInput | StudentStageChangeLogCreateOrConnectWithoutNewStageInput[]
+    createMany?: StudentStageChangeLogCreateManyNewStageInputEnvelope
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
   }
 
   export type ChapterUpdateManyWithoutStageNestedInput = {
@@ -57594,6 +59393,34 @@ export namespace Prisma {
     update?: StudentProfileUpdateWithWhereUniqueWithoutStageInput | StudentProfileUpdateWithWhereUniqueWithoutStageInput[]
     updateMany?: StudentProfileUpdateManyWithWhereWithoutStageInput | StudentProfileUpdateManyWithWhereWithoutStageInput[]
     deleteMany?: StudentProfileScalarWhereInput | StudentProfileScalarWhereInput[]
+  }
+
+  export type StudentStageChangeLogUpdateManyWithoutOldStageNestedInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutOldStageInput, StudentStageChangeLogUncheckedCreateWithoutOldStageInput> | StudentStageChangeLogCreateWithoutOldStageInput[] | StudentStageChangeLogUncheckedCreateWithoutOldStageInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutOldStageInput | StudentStageChangeLogCreateOrConnectWithoutOldStageInput[]
+    upsert?: StudentStageChangeLogUpsertWithWhereUniqueWithoutOldStageInput | StudentStageChangeLogUpsertWithWhereUniqueWithoutOldStageInput[]
+    createMany?: StudentStageChangeLogCreateManyOldStageInputEnvelope
+    set?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    disconnect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    delete?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    update?: StudentStageChangeLogUpdateWithWhereUniqueWithoutOldStageInput | StudentStageChangeLogUpdateWithWhereUniqueWithoutOldStageInput[]
+    updateMany?: StudentStageChangeLogUpdateManyWithWhereWithoutOldStageInput | StudentStageChangeLogUpdateManyWithWhereWithoutOldStageInput[]
+    deleteMany?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
+  }
+
+  export type StudentStageChangeLogUpdateManyWithoutNewStageNestedInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutNewStageInput, StudentStageChangeLogUncheckedCreateWithoutNewStageInput> | StudentStageChangeLogCreateWithoutNewStageInput[] | StudentStageChangeLogUncheckedCreateWithoutNewStageInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutNewStageInput | StudentStageChangeLogCreateOrConnectWithoutNewStageInput[]
+    upsert?: StudentStageChangeLogUpsertWithWhereUniqueWithoutNewStageInput | StudentStageChangeLogUpsertWithWhereUniqueWithoutNewStageInput[]
+    createMany?: StudentStageChangeLogCreateManyNewStageInputEnvelope
+    set?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    disconnect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    delete?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    update?: StudentStageChangeLogUpdateWithWhereUniqueWithoutNewStageInput | StudentStageChangeLogUpdateWithWhereUniqueWithoutNewStageInput[]
+    updateMany?: StudentStageChangeLogUpdateManyWithWhereWithoutNewStageInput | StudentStageChangeLogUpdateManyWithWhereWithoutNewStageInput[]
+    deleteMany?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
   }
 
   export type UserUpdateOneWithoutStagesNestedInput = {
@@ -57632,6 +59459,34 @@ export namespace Prisma {
     update?: StudentProfileUpdateWithWhereUniqueWithoutStageInput | StudentProfileUpdateWithWhereUniqueWithoutStageInput[]
     updateMany?: StudentProfileUpdateManyWithWhereWithoutStageInput | StudentProfileUpdateManyWithWhereWithoutStageInput[]
     deleteMany?: StudentProfileScalarWhereInput | StudentProfileScalarWhereInput[]
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateManyWithoutOldStageNestedInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutOldStageInput, StudentStageChangeLogUncheckedCreateWithoutOldStageInput> | StudentStageChangeLogCreateWithoutOldStageInput[] | StudentStageChangeLogUncheckedCreateWithoutOldStageInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutOldStageInput | StudentStageChangeLogCreateOrConnectWithoutOldStageInput[]
+    upsert?: StudentStageChangeLogUpsertWithWhereUniqueWithoutOldStageInput | StudentStageChangeLogUpsertWithWhereUniqueWithoutOldStageInput[]
+    createMany?: StudentStageChangeLogCreateManyOldStageInputEnvelope
+    set?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    disconnect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    delete?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    update?: StudentStageChangeLogUpdateWithWhereUniqueWithoutOldStageInput | StudentStageChangeLogUpdateWithWhereUniqueWithoutOldStageInput[]
+    updateMany?: StudentStageChangeLogUpdateManyWithWhereWithoutOldStageInput | StudentStageChangeLogUpdateManyWithWhereWithoutOldStageInput[]
+    deleteMany?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateManyWithoutNewStageNestedInput = {
+    create?: XOR<StudentStageChangeLogCreateWithoutNewStageInput, StudentStageChangeLogUncheckedCreateWithoutNewStageInput> | StudentStageChangeLogCreateWithoutNewStageInput[] | StudentStageChangeLogUncheckedCreateWithoutNewStageInput[]
+    connectOrCreate?: StudentStageChangeLogCreateOrConnectWithoutNewStageInput | StudentStageChangeLogCreateOrConnectWithoutNewStageInput[]
+    upsert?: StudentStageChangeLogUpsertWithWhereUniqueWithoutNewStageInput | StudentStageChangeLogUpsertWithWhereUniqueWithoutNewStageInput[]
+    createMany?: StudentStageChangeLogCreateManyNewStageInputEnvelope
+    set?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    disconnect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    delete?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    connect?: StudentStageChangeLogWhereUniqueInput | StudentStageChangeLogWhereUniqueInput[]
+    update?: StudentStageChangeLogUpdateWithWhereUniqueWithoutNewStageInput | StudentStageChangeLogUpdateWithWhereUniqueWithoutNewStageInput[]
+    updateMany?: StudentStageChangeLogUpdateManyWithWhereWithoutNewStageInput | StudentStageChangeLogUpdateManyWithWhereWithoutNewStageInput[]
+    deleteMany?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
   }
 
   export type StageCreateNestedOneWithoutChaptersInput = {
@@ -60685,6 +62540,8 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     chapters?: ChapterCreateNestedManyWithoutStageInput
     studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogCreateNestedManyWithoutOldStageInput
+    newStageChanges?: StudentStageChangeLogCreateNestedManyWithoutNewStageInput
   }
 
   export type StageUncheckedCreateWithoutTeacherInput = {
@@ -60702,6 +62559,8 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     chapters?: ChapterUncheckedCreateNestedManyWithoutStageInput
     studentProfiles?: StudentProfileUncheckedCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutOldStageInput
+    newStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutNewStageInput
   }
 
   export type StageCreateOrConnectWithoutTeacherInput = {
@@ -61199,6 +63058,70 @@ export namespace Prisma {
 
   export type TeacherWithdrawalRequestCreateManyReviewedByInputEnvelope = {
     data: TeacherWithdrawalRequestCreateManyReviewedByInput | TeacherWithdrawalRequestCreateManyReviewedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type StudentStageChangeLogCreateWithoutStudentInput = {
+    id?: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+    actor: UserCreateNestedOneWithoutStageChangeActsInput
+    oldStage: StageCreateNestedOneWithoutOldStageChangesInput
+    newStage: StageCreateNestedOneWithoutNewStageChangesInput
+  }
+
+  export type StudentStageChangeLogUncheckedCreateWithoutStudentInput = {
+    id?: string
+    oldStageId: string
+    newStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+  }
+
+  export type StudentStageChangeLogCreateOrConnectWithoutStudentInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    create: XOR<StudentStageChangeLogCreateWithoutStudentInput, StudentStageChangeLogUncheckedCreateWithoutStudentInput>
+  }
+
+  export type StudentStageChangeLogCreateManyStudentInputEnvelope = {
+    data: StudentStageChangeLogCreateManyStudentInput | StudentStageChangeLogCreateManyStudentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type StudentStageChangeLogCreateWithoutActorInput = {
+    id?: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+    student: UserCreateNestedOneWithoutStageChangeLogsInput
+    oldStage: StageCreateNestedOneWithoutOldStageChangesInput
+    newStage: StageCreateNestedOneWithoutNewStageChangesInput
+  }
+
+  export type StudentStageChangeLogUncheckedCreateWithoutActorInput = {
+    id?: string
+    studentId: string
+    oldStageId: string
+    newStageId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+  }
+
+  export type StudentStageChangeLogCreateOrConnectWithoutActorInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    create: XOR<StudentStageChangeLogCreateWithoutActorInput, StudentStageChangeLogUncheckedCreateWithoutActorInput>
+  }
+
+  export type StudentStageChangeLogCreateManyActorInputEnvelope = {
+    data: StudentStageChangeLogCreateManyActorInput | StudentStageChangeLogCreateManyActorInput[]
     skipDuplicates?: boolean
   }
 
@@ -62065,6 +63988,53 @@ export namespace Prisma {
     data: XOR<TeacherWithdrawalRequestUpdateManyMutationInput, TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByInput>
   }
 
+  export type StudentStageChangeLogUpsertWithWhereUniqueWithoutStudentInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    update: XOR<StudentStageChangeLogUpdateWithoutStudentInput, StudentStageChangeLogUncheckedUpdateWithoutStudentInput>
+    create: XOR<StudentStageChangeLogCreateWithoutStudentInput, StudentStageChangeLogUncheckedCreateWithoutStudentInput>
+  }
+
+  export type StudentStageChangeLogUpdateWithWhereUniqueWithoutStudentInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    data: XOR<StudentStageChangeLogUpdateWithoutStudentInput, StudentStageChangeLogUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type StudentStageChangeLogUpdateManyWithWhereWithoutStudentInput = {
+    where: StudentStageChangeLogScalarWhereInput
+    data: XOR<StudentStageChangeLogUpdateManyMutationInput, StudentStageChangeLogUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type StudentStageChangeLogScalarWhereInput = {
+    AND?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
+    OR?: StudentStageChangeLogScalarWhereInput[]
+    NOT?: StudentStageChangeLogScalarWhereInput | StudentStageChangeLogScalarWhereInput[]
+    id?: StringFilter<"StudentStageChangeLog"> | string
+    studentId?: StringFilter<"StudentStageChangeLog"> | string
+    oldStageId?: StringFilter<"StudentStageChangeLog"> | string
+    newStageId?: StringFilter<"StudentStageChangeLog"> | string
+    changedByUserId?: StringFilter<"StudentStageChangeLog"> | string
+    changedByRole?: StringFilter<"StudentStageChangeLog"> | string
+    changeType?: StringFilter<"StudentStageChangeLog"> | string
+    academicYear?: StringFilter<"StudentStageChangeLog"> | string
+    createdAt?: DateTimeFilter<"StudentStageChangeLog"> | Date | string
+  }
+
+  export type StudentStageChangeLogUpsertWithWhereUniqueWithoutActorInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    update: XOR<StudentStageChangeLogUpdateWithoutActorInput, StudentStageChangeLogUncheckedUpdateWithoutActorInput>
+    create: XOR<StudentStageChangeLogCreateWithoutActorInput, StudentStageChangeLogUncheckedCreateWithoutActorInput>
+  }
+
+  export type StudentStageChangeLogUpdateWithWhereUniqueWithoutActorInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    data: XOR<StudentStageChangeLogUpdateWithoutActorInput, StudentStageChangeLogUncheckedUpdateWithoutActorInput>
+  }
+
+  export type StudentStageChangeLogUpdateManyWithWhereWithoutActorInput = {
+    where: StudentStageChangeLogScalarWhereInput
+    data: XOR<StudentStageChangeLogUpdateManyMutationInput, StudentStageChangeLogUncheckedUpdateManyWithoutActorInput>
+  }
+
   export type UserCreateWithoutStudentProfileInput = {
     id?: string
     fullName: string
@@ -62105,6 +64075,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -62147,6 +64119,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -62168,6 +64142,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapters?: ChapterCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogCreateNestedManyWithoutOldStageInput
+    newStageChanges?: StudentStageChangeLogCreateNestedManyWithoutNewStageInput
     teacher?: UserCreateNestedOneWithoutStagesInput
   }
 
@@ -62186,6 +64162,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     chapters?: ChapterUncheckedCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutOldStageInput
+    newStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutNewStageInput
   }
 
   export type StageCreateOrConnectWithoutStudentProfilesInput = {
@@ -62244,6 +64222,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -62286,6 +64266,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type StageUpsertWithoutStudentProfilesInput = {
@@ -62313,6 +64295,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUpdateManyWithoutOldStageNestedInput
+    newStageChanges?: StudentStageChangeLogUpdateManyWithoutNewStageNestedInput
     teacher?: UserUpdateOneWithoutStagesNestedInput
   }
 
@@ -62331,6 +64315,576 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUncheckedUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutOldStageNestedInput
+    newStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutNewStageNestedInput
+  }
+
+  export type UserCreateWithoutStageChangeLogsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
+    emailVerified?: boolean
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutStageChangeLogsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
+    emailVerified?: boolean
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutStageChangeLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutStageChangeLogsInput, UserUncheckedCreateWithoutStageChangeLogsInput>
+  }
+
+  export type UserCreateWithoutStageChangeActsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
+    emailVerified?: boolean
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressCreateNestedManyWithoutStudentInput
+    otps?: OtpCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptCreateNestedManyWithoutStudentInput
+    quizzes?: QuizCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenCreateNestedManyWithoutUserInput
+    stages?: StageCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserUncheckedCreateWithoutStageChangeActsInput = {
+    id?: string
+    fullName: string
+    email: string
+    password: string
+    mobile: string
+    role?: $Enums.Role
+    status?: $Enums.Status
+    teacherApprovalState?: $Enums.TeacherApprovalState
+    locale?: string
+    emailVerified?: boolean
+    tokenVersion?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedCreateNestedOneWithoutUserInput
+    createdPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    usedPromoCodes?: PromoCodeUncheckedCreateNestedManyWithoutUsedByStudentInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedCreateNestedManyWithoutCreatedByInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedCreateNestedManyWithoutUserInput
+    enrollments?: EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+    lessonProgress?: LessonProgressUncheckedCreateNestedManyWithoutStudentInput
+    otps?: OtpUncheckedCreateNestedManyWithoutUserInput
+    quizAttempts?: QuizAttemptUncheckedCreateNestedManyWithoutStudentInput
+    quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
+    refreshTokens?: RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+    stages?: StageUncheckedCreateNestedManyWithoutTeacherInput
+    chaptersOwned?: ChapterUncheckedCreateNestedManyWithoutTeacherInput
+    studentProfile?: StudentProfileUncheckedCreateNestedOneWithoutUserInput
+    teacherProfile?: TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutStudentInput
+    aiTutorUsage?: AiTutorUsageUncheckedCreateNestedManyWithoutStudentInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutStudentInput
+    materialDownloads?: LessonMaterialDownloadUncheckedCreateNestedManyWithoutStudentInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedCreateNestedManyWithoutTeacherInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedCreateNestedManyWithoutTeacherInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type UserCreateOrConnectWithoutStageChangeActsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutStageChangeActsInput, UserUncheckedCreateWithoutStageChangeActsInput>
+  }
+
+  export type StageCreateWithoutOldStageChangesInput = {
+    id?: string
+    name: string
+    nameAr?: string | null
+    nameEn?: string | null
+    description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
+    sortOrder: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    chapters?: ChapterCreateNestedManyWithoutStageInput
+    studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
+    newStageChanges?: StudentStageChangeLogCreateNestedManyWithoutNewStageInput
+    teacher?: UserCreateNestedOneWithoutStagesInput
+  }
+
+  export type StageUncheckedCreateWithoutOldStageChangesInput = {
+    id?: string
+    name: string
+    nameAr?: string | null
+    nameEn?: string | null
+    description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
+    sortOrder: number
+    teacherId?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    chapters?: ChapterUncheckedCreateNestedManyWithoutStageInput
+    studentProfiles?: StudentProfileUncheckedCreateNestedManyWithoutStageInput
+    newStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutNewStageInput
+  }
+
+  export type StageCreateOrConnectWithoutOldStageChangesInput = {
+    where: StageWhereUniqueInput
+    create: XOR<StageCreateWithoutOldStageChangesInput, StageUncheckedCreateWithoutOldStageChangesInput>
+  }
+
+  export type StageCreateWithoutNewStageChangesInput = {
+    id?: string
+    name: string
+    nameAr?: string | null
+    nameEn?: string | null
+    description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
+    sortOrder: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    chapters?: ChapterCreateNestedManyWithoutStageInput
+    studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogCreateNestedManyWithoutOldStageInput
+    teacher?: UserCreateNestedOneWithoutStagesInput
+  }
+
+  export type StageUncheckedCreateWithoutNewStageChangesInput = {
+    id?: string
+    name: string
+    nameAr?: string | null
+    nameEn?: string | null
+    description?: string | null
+    descriptionAr?: string | null
+    descriptionEn?: string | null
+    sortOrder: number
+    teacherId?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deletedAt?: Date | string | null
+    chapters?: ChapterUncheckedCreateNestedManyWithoutStageInput
+    studentProfiles?: StudentProfileUncheckedCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutOldStageInput
+  }
+
+  export type StageCreateOrConnectWithoutNewStageChangesInput = {
+    where: StageWhereUniqueInput
+    create: XOR<StageCreateWithoutNewStageChangesInput, StageUncheckedCreateWithoutNewStageChangesInput>
+  }
+
+  export type UserUpsertWithoutStageChangeLogsInput = {
+    update: XOR<UserUpdateWithoutStageChangeLogsInput, UserUncheckedUpdateWithoutStageChangeLogsInput>
+    create: XOR<UserCreateWithoutStageChangeLogsInput, UserUncheckedCreateWithoutStageChangeLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutStageChangeLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutStageChangeLogsInput, UserUncheckedUpdateWithoutStageChangeLogsInput>
+  }
+
+  export type UserUpdateWithoutStageChangeLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutStageChangeLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUpsertWithoutStageChangeActsInput = {
+    update: XOR<UserUpdateWithoutStageChangeActsInput, UserUncheckedUpdateWithoutStageChangeActsInput>
+    create: XOR<UserCreateWithoutStageChangeActsInput, UserUncheckedCreateWithoutStageChangeActsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutStageChangeActsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutStageChangeActsInput, UserUncheckedUpdateWithoutStageChangeActsInput>
+  }
+
+  export type UserUpdateWithoutStageChangeActsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUpdateManyWithoutStudentNestedInput
+    otps?: OtpUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUpdateManyWithoutUserNestedInput
+    stages?: StageUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutStageChangeActsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    mobile?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    teacherApprovalState?: EnumTeacherApprovalStateFieldUpdateOperationsInput | $Enums.TeacherApprovalState
+    locale?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    tokenVersion?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    teacherRegistrationRequest?: TeacherRegistrationRequestUncheckedUpdateOneWithoutUserNestedInput
+    createdPromoCodes?: PromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    usedPromoCodes?: PromoCodeUncheckedUpdateManyWithoutUsedByStudentNestedInput
+    createdPlatformPromoCodes?: PlatformPromoCodeUncheckedUpdateManyWithoutCreatedByNestedInput
+    platformPromoRedemptions?: PlatformPromoRedemptionUncheckedUpdateManyWithoutUserNestedInput
+    enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+    lessonProgress?: LessonProgressUncheckedUpdateManyWithoutStudentNestedInput
+    otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
+    quizAttempts?: QuizAttemptUncheckedUpdateManyWithoutStudentNestedInput
+    quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
+    refreshTokens?: RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+    stages?: StageUncheckedUpdateManyWithoutTeacherNestedInput
+    chaptersOwned?: ChapterUncheckedUpdateManyWithoutTeacherNestedInput
+    studentProfile?: StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+    teacherProfile?: TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutStudentNestedInput
+    aiTutorUsage?: AiTutorUsageUncheckedUpdateManyWithoutStudentNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutStudentNestedInput
+    materialDownloads?: LessonMaterialDownloadUncheckedUpdateManyWithoutStudentNestedInput
+    teacherSubscriptions?: TeacherSubscriptionUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionRequests?: TeacherSubscriptionRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherAiUsageEvents?: TeacherAiUsageEventUncheckedUpdateManyWithoutTeacherNestedInput
+    teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
+    teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StageUpsertWithoutOldStageChangesInput = {
+    update: XOR<StageUpdateWithoutOldStageChangesInput, StageUncheckedUpdateWithoutOldStageChangesInput>
+    create: XOR<StageCreateWithoutOldStageChangesInput, StageUncheckedCreateWithoutOldStageChangesInput>
+    where?: StageWhereInput
+  }
+
+  export type StageUpdateToOneWithWhereWithoutOldStageChangesInput = {
+    where?: StageWhereInput
+    data: XOR<StageUpdateWithoutOldStageChangesInput, StageUncheckedUpdateWithoutOldStageChangesInput>
+  }
+
+  export type StageUpdateWithoutOldStageChangesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapters?: ChapterUpdateManyWithoutStageNestedInput
+    studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
+    newStageChanges?: StudentStageChangeLogUpdateManyWithoutNewStageNestedInput
+    teacher?: UserUpdateOneWithoutStagesNestedInput
+  }
+
+  export type StageUncheckedUpdateWithoutOldStageChangesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    teacherId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapters?: ChapterUncheckedUpdateManyWithoutStageNestedInput
+    studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
+    newStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutNewStageNestedInput
+  }
+
+  export type StageUpsertWithoutNewStageChangesInput = {
+    update: XOR<StageUpdateWithoutNewStageChangesInput, StageUncheckedUpdateWithoutNewStageChangesInput>
+    create: XOR<StageCreateWithoutNewStageChangesInput, StageUncheckedCreateWithoutNewStageChangesInput>
+    where?: StageWhereInput
+  }
+
+  export type StageUpdateToOneWithWhereWithoutNewStageChangesInput = {
+    where?: StageWhereInput
+    data: XOR<StageUpdateWithoutNewStageChangesInput, StageUncheckedUpdateWithoutNewStageChangesInput>
+  }
+
+  export type StageUpdateWithoutNewStageChangesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapters?: ChapterUpdateManyWithoutStageNestedInput
+    studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUpdateManyWithoutOldStageNestedInput
+    teacher?: UserUpdateOneWithoutStagesNestedInput
+  }
+
+  export type StageUncheckedUpdateWithoutNewStageChangesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    nameAr?: NullableStringFieldUpdateOperationsInput | string | null
+    nameEn?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionAr?: NullableStringFieldUpdateOperationsInput | string | null
+    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    teacherId?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chapters?: ChapterUncheckedUpdateManyWithoutStageNestedInput
+    studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutOldStageNestedInput
   }
 
   export type UserCreateWithoutTeacherProfileInput = {
@@ -62373,6 +64927,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutTeacherProfileInput = {
@@ -62415,6 +64971,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutTeacherProfileInput = {
@@ -62473,6 +65031,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherProfileInput = {
@@ -62515,6 +65075,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type ChapterCreateWithoutStageInput = {
@@ -62591,6 +65153,70 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StudentStageChangeLogCreateWithoutOldStageInput = {
+    id?: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+    student: UserCreateNestedOneWithoutStageChangeLogsInput
+    actor: UserCreateNestedOneWithoutStageChangeActsInput
+    newStage: StageCreateNestedOneWithoutNewStageChangesInput
+  }
+
+  export type StudentStageChangeLogUncheckedCreateWithoutOldStageInput = {
+    id?: string
+    studentId: string
+    newStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+  }
+
+  export type StudentStageChangeLogCreateOrConnectWithoutOldStageInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    create: XOR<StudentStageChangeLogCreateWithoutOldStageInput, StudentStageChangeLogUncheckedCreateWithoutOldStageInput>
+  }
+
+  export type StudentStageChangeLogCreateManyOldStageInputEnvelope = {
+    data: StudentStageChangeLogCreateManyOldStageInput | StudentStageChangeLogCreateManyOldStageInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type StudentStageChangeLogCreateWithoutNewStageInput = {
+    id?: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+    student: UserCreateNestedOneWithoutStageChangeLogsInput
+    actor: UserCreateNestedOneWithoutStageChangeActsInput
+    oldStage: StageCreateNestedOneWithoutOldStageChangesInput
+  }
+
+  export type StudentStageChangeLogUncheckedCreateWithoutNewStageInput = {
+    id?: string
+    studentId: string
+    oldStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+  }
+
+  export type StudentStageChangeLogCreateOrConnectWithoutNewStageInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    create: XOR<StudentStageChangeLogCreateWithoutNewStageInput, StudentStageChangeLogUncheckedCreateWithoutNewStageInput>
+  }
+
+  export type StudentStageChangeLogCreateManyNewStageInputEnvelope = {
+    data: StudentStageChangeLogCreateManyNewStageInput | StudentStageChangeLogCreateManyNewStageInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserCreateWithoutStagesInput = {
     id?: string
     fullName: string
@@ -62631,6 +65257,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutStagesInput = {
@@ -62673,6 +65301,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutStagesInput = {
@@ -62721,6 +65351,38 @@ export namespace Prisma {
     stageId?: StringFilter<"StudentProfile"> | string
     createdAt?: DateTimeFilter<"StudentProfile"> | Date | string
     updatedAt?: DateTimeFilter<"StudentProfile"> | Date | string
+  }
+
+  export type StudentStageChangeLogUpsertWithWhereUniqueWithoutOldStageInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    update: XOR<StudentStageChangeLogUpdateWithoutOldStageInput, StudentStageChangeLogUncheckedUpdateWithoutOldStageInput>
+    create: XOR<StudentStageChangeLogCreateWithoutOldStageInput, StudentStageChangeLogUncheckedCreateWithoutOldStageInput>
+  }
+
+  export type StudentStageChangeLogUpdateWithWhereUniqueWithoutOldStageInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    data: XOR<StudentStageChangeLogUpdateWithoutOldStageInput, StudentStageChangeLogUncheckedUpdateWithoutOldStageInput>
+  }
+
+  export type StudentStageChangeLogUpdateManyWithWhereWithoutOldStageInput = {
+    where: StudentStageChangeLogScalarWhereInput
+    data: XOR<StudentStageChangeLogUpdateManyMutationInput, StudentStageChangeLogUncheckedUpdateManyWithoutOldStageInput>
+  }
+
+  export type StudentStageChangeLogUpsertWithWhereUniqueWithoutNewStageInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    update: XOR<StudentStageChangeLogUpdateWithoutNewStageInput, StudentStageChangeLogUncheckedUpdateWithoutNewStageInput>
+    create: XOR<StudentStageChangeLogCreateWithoutNewStageInput, StudentStageChangeLogUncheckedCreateWithoutNewStageInput>
+  }
+
+  export type StudentStageChangeLogUpdateWithWhereUniqueWithoutNewStageInput = {
+    where: StudentStageChangeLogWhereUniqueInput
+    data: XOR<StudentStageChangeLogUpdateWithoutNewStageInput, StudentStageChangeLogUncheckedUpdateWithoutNewStageInput>
+  }
+
+  export type StudentStageChangeLogUpdateManyWithWhereWithoutNewStageInput = {
+    where: StudentStageChangeLogScalarWhereInput
+    data: XOR<StudentStageChangeLogUpdateManyMutationInput, StudentStageChangeLogUncheckedUpdateManyWithoutNewStageInput>
   }
 
   export type UserUpsertWithoutStagesInput = {
@@ -62774,6 +65436,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStagesInput = {
@@ -62816,6 +65480,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type StageCreateWithoutChaptersInput = {
@@ -62832,6 +65498,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     studentProfiles?: StudentProfileCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogCreateNestedManyWithoutOldStageInput
+    newStageChanges?: StudentStageChangeLogCreateNestedManyWithoutNewStageInput
     teacher?: UserCreateNestedOneWithoutStagesInput
   }
 
@@ -62850,6 +65518,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     studentProfiles?: StudentProfileUncheckedCreateNestedManyWithoutStageInput
+    oldStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutOldStageInput
+    newStageChanges?: StudentStageChangeLogUncheckedCreateNestedManyWithoutNewStageInput
   }
 
   export type StageCreateOrConnectWithoutChaptersInput = {
@@ -62897,6 +65567,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutChaptersOwnedInput = {
@@ -62939,6 +65611,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutChaptersOwnedInput = {
@@ -63195,6 +65869,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUpdateManyWithoutOldStageNestedInput
+    newStageChanges?: StudentStageChangeLogUpdateManyWithoutNewStageNestedInput
     teacher?: UserUpdateOneWithoutStagesNestedInput
   }
 
@@ -63213,6 +65889,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutOldStageNestedInput
+    newStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutNewStageNestedInput
   }
 
   export type UserUpsertWithoutChaptersOwnedInput = {
@@ -63266,6 +65944,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChaptersOwnedInput = {
@@ -63308,6 +65988,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type EnrollmentUpsertWithWhereUniqueWithoutChapterInput = {
@@ -63885,6 +66567,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutOtpsInput = {
@@ -63927,6 +66611,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutOtpsInput = {
@@ -63985,6 +66671,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOtpsInput = {
@@ -64027,6 +66715,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type ChapterCreateWithoutEnrollmentsInput = {
@@ -64114,6 +66804,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -64156,6 +66848,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -64265,6 +66959,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -64307,6 +67003,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateWithoutPaymentTransactionsInput = {
@@ -64349,6 +67047,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutPaymentTransactionsInput = {
@@ -64391,6 +67091,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutPaymentTransactionsInput = {
@@ -64494,6 +67196,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPaymentTransactionsInput = {
@@ -64536,6 +67240,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type ChapterUpsertWithoutPaymentTransactionsInput = {
@@ -64672,6 +67378,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutLessonProgressInput = {
@@ -64714,6 +67422,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutLessonProgressInput = {
@@ -64821,6 +67531,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLessonProgressInput = {
@@ -64863,6 +67575,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type LessonCreateWithoutLessonMaterialsInput = {
@@ -65037,6 +67751,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutMaterialDownloadsInput = {
@@ -65079,6 +67795,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutMaterialDownloadsInput = {
@@ -65164,6 +67882,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaterialDownloadsInput = {
@@ -65206,6 +67926,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type LessonMaterialUpsertWithoutDownloadsInput = {
@@ -65373,6 +68095,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutAiTutorUsageInput = {
@@ -65415,6 +68139,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutAiTutorUsageInput = {
@@ -65473,6 +68199,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiTutorUsageInput = {
@@ -65515,6 +68243,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -65557,6 +68287,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -65599,6 +68331,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -65657,6 +68391,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -65699,6 +68435,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateWithoutRefreshTokensInput = {
@@ -65741,6 +68479,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -65783,6 +68523,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -65841,6 +68583,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -65883,6 +68627,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type QuestionCreateWithoutQuizInput = {
@@ -66116,6 +68862,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutQuizzesInput = {
@@ -66158,6 +68906,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutQuizzesInput = {
@@ -66348,6 +69098,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizzesInput = {
@@ -66390,6 +69142,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type QuizCreateWithoutQuizLessonsInput = {
@@ -66871,6 +69625,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutQuizAttemptsInput = {
@@ -66913,6 +69669,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutQuizAttemptsInput = {
@@ -67044,6 +69802,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuizAttemptsInput = {
@@ -67086,6 +69846,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateWithoutUsedPromoCodesInput = {
@@ -67128,6 +69890,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutUsedPromoCodesInput = {
@@ -67170,6 +69934,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutUsedPromoCodesInput = {
@@ -67217,6 +69983,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutCreatedPromoCodesInput = {
@@ -67259,6 +70027,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutCreatedPromoCodesInput = {
@@ -67362,6 +70132,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsedPromoCodesInput = {
@@ -67404,6 +70176,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserUpsertWithoutCreatedPromoCodesInput = {
@@ -67457,6 +70231,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedPromoCodesInput = {
@@ -67499,6 +70275,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type ChapterUpsertWithoutPromoCodesInput = {
@@ -67592,6 +70370,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutCreatedPlatformPromoCodesInput = {
@@ -67634,6 +70414,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutCreatedPlatformPromoCodesInput = {
@@ -67720,6 +70502,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedPlatformPromoCodesInput = {
@@ -67762,6 +70546,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type PlatformPromoRedemptionUpsertWithWhereUniqueWithoutPromoCodeInput = {
@@ -67865,6 +70651,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutPlatformPromoRedemptionsInput = {
@@ -67907,6 +70695,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutPlatformPromoRedemptionsInput = {
@@ -68016,6 +70806,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPlatformPromoRedemptionsInput = {
@@ -68058,6 +70850,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -68100,6 +70894,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -68142,6 +70938,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -68200,6 +70998,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -68242,6 +71042,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateWithoutTeacherRegistrationRequestInput = {
@@ -68284,6 +71086,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutTeacherRegistrationRequestInput = {
@@ -68326,6 +71130,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutTeacherRegistrationRequestInput = {
@@ -68384,6 +71190,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherRegistrationRequestInput = {
@@ -68426,6 +71234,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserCreateWithoutAiConversationsInput = {
@@ -68468,6 +71278,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutAiConversationsInput = {
@@ -68510,6 +71322,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutAiConversationsInput = {
@@ -68602,6 +71416,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiConversationsInput = {
@@ -68644,6 +71460,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type AiMessageUpsertWithWhereUniqueWithoutConversationInput = {
@@ -68986,6 +71804,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutTeacherSubscriptionsInput = {
@@ -69028,6 +71848,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutTeacherSubscriptionsInput = {
@@ -69211,6 +72033,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherSubscriptionsInput = {
@@ -69253,6 +72077,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type TeacherPlanUpsertWithoutSubscriptionsInput = {
@@ -69382,6 +72208,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutTeacherSubscriptionRequestsInput = {
@@ -69424,6 +72252,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutTeacherSubscriptionRequestsInput = {
@@ -69531,6 +72361,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherSubscriptionRequestsInput = {
@@ -69573,6 +72405,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type TeacherPlanUpsertWithoutRequestsInput = {
@@ -69670,6 +72504,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutTeacherAiUsageEventsInput = {
@@ -69712,6 +72548,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutTeacherAiUsageEventsInput = {
@@ -69856,6 +72694,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherAiUsageEventsInput = {
@@ -69898,6 +72738,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type TeacherSubscriptionUpsertWithoutUsageEventsInput = {
@@ -70038,6 +72880,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutTeacherSubscriptionPaymentsInput = {
@@ -70080,6 +72924,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutTeacherSubscriptionPaymentsInput = {
@@ -70224,6 +73070,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherSubscriptionPaymentsInput = {
@@ -70266,6 +73114,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type TeacherPlanUpsertWithoutPaymentsInput = {
@@ -70406,6 +73256,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutTeacherWithdrawalRequestsInput = {
@@ -70448,6 +73300,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutReviewedByInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutTeacherWithdrawalRequestsInput = {
@@ -70495,6 +73349,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentCreateNestedManyWithoutTeacherInput
     notifications?: NotificationCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestCreateNestedManyWithoutTeacherInput
+    stageChangeLogs?: StudentStageChangeLogCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogCreateNestedManyWithoutActorInput
   }
 
   export type UserUncheckedCreateWithoutReviewedWithdrawalRequestsInput = {
@@ -70537,6 +73393,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedCreateNestedManyWithoutTeacherInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutStudentInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedCreateNestedManyWithoutTeacherInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutStudentInput
+    stageChangeActs?: StudentStageChangeLogUncheckedCreateNestedManyWithoutActorInput
   }
 
   export type UserCreateOrConnectWithoutReviewedWithdrawalRequestsInput = {
@@ -70595,6 +73453,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTeacherWithdrawalRequestsInput = {
@@ -70637,6 +73497,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     reviewedWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type UserUpsertWithoutReviewedWithdrawalRequestsInput = {
@@ -70690,6 +73552,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUpdateManyWithoutTeacherNestedInput
+    stageChangeLogs?: StudentStageChangeLogUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUpdateManyWithoutActorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReviewedWithdrawalRequestsInput = {
@@ -70732,6 +73596,8 @@ export namespace Prisma {
     teacherSubscriptionPayments?: TeacherSubscriptionPaymentUncheckedUpdateManyWithoutTeacherNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutStudentNestedInput
     teacherWithdrawalRequests?: TeacherWithdrawalRequestUncheckedUpdateManyWithoutTeacherNestedInput
+    stageChangeLogs?: StudentStageChangeLogUncheckedUpdateManyWithoutStudentNestedInput
+    stageChangeActs?: StudentStageChangeLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type AuditLogCreateManyUserInput = {
@@ -71040,6 +73906,28 @@ export namespace Prisma {
     cancelledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type StudentStageChangeLogCreateManyStudentInput = {
+    id?: string
+    oldStageId: string
+    newStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+  }
+
+  export type StudentStageChangeLogCreateManyActorInput = {
+    id?: string
+    studentId: string
+    oldStageId: string
+    newStageId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
   }
 
   export type AuditLogUpdateWithoutUserInput = {
@@ -71496,6 +74384,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUpdateManyWithoutStageNestedInput
     studentProfiles?: StudentProfileUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUpdateManyWithoutOldStageNestedInput
+    newStageChanges?: StudentStageChangeLogUpdateManyWithoutNewStageNestedInput
   }
 
   export type StageUncheckedUpdateWithoutTeacherInput = {
@@ -71513,6 +74403,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     chapters?: ChapterUncheckedUpdateManyWithoutStageNestedInput
     studentProfiles?: StudentProfileUncheckedUpdateManyWithoutStageNestedInput
+    oldStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutOldStageNestedInput
+    newStageChanges?: StudentStageChangeLogUncheckedUpdateManyWithoutNewStageNestedInput
   }
 
   export type StageUncheckedUpdateManyWithoutTeacherInput = {
@@ -71996,6 +74888,72 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type StudentStageChangeLogUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    actor?: UserUpdateOneRequiredWithoutStageChangeActsNestedInput
+    oldStage?: StageUpdateOneRequiredWithoutOldStageChangesNestedInput
+    newStage?: StageUpdateOneRequiredWithoutNewStageChangesNestedInput
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    oldStageId?: StringFieldUpdateOperationsInput | string
+    newStageId?: StringFieldUpdateOperationsInput | string
+    changedByUserId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateManyWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    oldStageId?: StringFieldUpdateOperationsInput | string
+    newStageId?: StringFieldUpdateOperationsInput | string
+    changedByUserId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogUpdateWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutStageChangeLogsNestedInput
+    oldStage?: StageUpdateOneRequiredWithoutOldStageChangesNestedInput
+    newStage?: StageUpdateOneRequiredWithoutNewStageChangesNestedInput
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    oldStageId?: StringFieldUpdateOperationsInput | string
+    newStageId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateManyWithoutActorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    oldStageId?: StringFieldUpdateOperationsInput | string
+    newStageId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ChapterCreateManyStageInput = {
     id?: string
     name: string
@@ -72016,6 +74974,28 @@ export namespace Prisma {
     userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type StudentStageChangeLogCreateManyOldStageInput = {
+    id?: string
+    studentId: string
+    newStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
+  }
+
+  export type StudentStageChangeLogCreateManyNewStageInput = {
+    id?: string
+    studentId: string
+    oldStageId: string
+    changedByUserId: string
+    changedByRole: string
+    changeType: string
+    academicYear: string
+    createdAt?: Date | string
   }
 
   export type ChapterUpdateWithoutStageInput = {
@@ -72092,6 +75072,72 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogUpdateWithoutOldStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutStageChangeLogsNestedInput
+    actor?: UserUpdateOneRequiredWithoutStageChangeActsNestedInput
+    newStage?: StageUpdateOneRequiredWithoutNewStageChangesNestedInput
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateWithoutOldStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    newStageId?: StringFieldUpdateOperationsInput | string
+    changedByUserId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateManyWithoutOldStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    newStageId?: StringFieldUpdateOperationsInput | string
+    changedByUserId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogUpdateWithoutNewStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: UserUpdateOneRequiredWithoutStageChangeLogsNestedInput
+    actor?: UserUpdateOneRequiredWithoutStageChangeActsNestedInput
+    oldStage?: StageUpdateOneRequiredWithoutOldStageChangesNestedInput
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateWithoutNewStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    oldStageId?: StringFieldUpdateOperationsInput | string
+    changedByUserId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StudentStageChangeLogUncheckedUpdateManyWithoutNewStageInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    oldStageId?: StringFieldUpdateOperationsInput | string
+    changedByUserId?: StringFieldUpdateOperationsInput | string
+    changedByRole?: StringFieldUpdateOperationsInput | string
+    changeType?: StringFieldUpdateOperationsInput | string
+    academicYear?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type EnrollmentCreateManyChapterInput = {

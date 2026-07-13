@@ -8,6 +8,7 @@ import {
   createStudentSchema,
   updateStudentSchema,
 } from "./student.validation.js";
+import { changeStageSchema } from "./student-stage-change.validation.js";
 
 const router = Router();
 const controller = new StudentController();
@@ -19,6 +20,19 @@ router.get(
   authenticateMiddleware,
   authorizeMiddleware("STUDENT"),
   controller.getMyProfile,
+);
+router.get(
+  "/me/stage-change-policy",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  controller.getStageChangePolicy,
+);
+router.patch(
+  "/me/stage",
+  authenticateMiddleware,
+  authorizeMiddleware("STUDENT"),
+  validateRequest(changeStageSchema),
+  controller.changeStage,
 );
 router.get(
   "/",

@@ -144,6 +144,18 @@ exports.Prisma.StudentProfileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.StudentStageChangeLogScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  oldStageId: 'oldStageId',
+  newStageId: 'newStageId',
+  changedByUserId: 'changedByUserId',
+  changedByRole: 'changedByRole',
+  changeType: 'changeType',
+  academicYear: 'academicYear',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.TeacherProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -795,6 +807,7 @@ exports.TeacherWithdrawalStatus = exports.$Enums.TeacherWithdrawalStatus = {
 exports.Prisma.ModelName = {
   User: 'User',
   StudentProfile: 'StudentProfile',
+  StudentStageChangeLog: 'StudentStageChangeLog',
   TeacherProfile: 'TeacherProfile',
   Stage: 'Stage',
   Chapter: 'Chapter',
