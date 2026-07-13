@@ -324,6 +324,22 @@
       "learning": "Learning Summary",
       "completedLessons": "Completed Lessons",
       "noLearning": "No learning data"
+    },
+    "edit": {
+      "title": "Edit Student",
+      "fullName": "Full Name",
+      "email": "Email",
+      "mobile": "Mobile",
+      "status": "Status",
+      "stage": "Educational Stage",
+      "noStage": "No stage",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "success": "Student updated successfully",
+      "error": "Failed to update student",
+      "stageError": "The educational stage is invalid or unavailable",
+      "editButton": "Edit"
     }
   },
   "adminTeacherRequests": {

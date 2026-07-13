@@ -4,9 +4,11 @@ import type {
   AdminStudentDetail,
   AdminStudentsQuery,
   AdminStudentListItem,
+  AdminStudentUpdatePayload,
   EnrollmentStatus,
   Paginated,
   StudentEnrollmentItem,
+  StudentIdentity,
   StudentLearningSummary,
   StudentPayments,
 } from '@/features/admin/types/students';
@@ -57,6 +59,14 @@ export const adminStudentsApi = {
   getLearningSummary: async (studentId: string): Promise<StudentLearningSummary> => {
     const { data } = await apiClient.get<ApiResponse<StudentLearningSummary>>(
       `/admin/students/${studentId}/learning-summary`,
+    );
+    return data.data;
+  },
+
+  update: async (studentId: string, payload: AdminStudentUpdatePayload): Promise<StudentIdentity> => {
+    const { data } = await apiClient.patch<ApiResponse<StudentIdentity>>(
+      `/admin/students/${studentId}`,
+      payload,
     );
     return data.data;
   },

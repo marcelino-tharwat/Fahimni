@@ -59,6 +59,7 @@
   "freePlanMustBeFree": "The FREE plan must have a price of 0",
   "planNotFound": "Plan not found",
   "stageNotFound": "Stage not found",
+  "invalidStudentStage": "The educational stage is invalid or unavailable",
   "stageHasChapters": "Cannot delete this stage because it has linked chapters. Please remove or reassign them first.",
   "teacherRequestNotFound": "Teacher request not found",
   "documentUnavailable": "Document is not available",

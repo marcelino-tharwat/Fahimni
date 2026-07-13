@@ -85,6 +85,7 @@ const CODE_TO_VALIDATION_KEY: Record<string, string> = {
   // Admin — stages
   STAGE_NOT_FOUND: "validation:stageNotFound",
   STAGE_HAS_CHAPTERS: "validation:stageHasChapters",
+  INVALID_STUDENT_STAGE: "validation:invalidStudentStage",
 
   // Admin — teacher requests
   TEACHER_REQUEST_NOT_FOUND: "validation:teacherRequestNotFound",

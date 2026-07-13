@@ -60,6 +60,21 @@ export interface StudentIdentity {
   mobile: string;
   status: StudentStatus;
   createdAt: string;
+  stage: {
+    id: string;
+    name: string;
+    nameAr: string | null;
+    nameEn: string | null;
+    displayName?: string;
+  } | null;
+}
+
+export interface AdminStudentUpdatePayload {
+  fullName?: string;
+  email?: string;
+  mobile?: string;
+  status?: StudentStatus;
+  stageId?: string;
 }
 
 export interface StudentSummary {

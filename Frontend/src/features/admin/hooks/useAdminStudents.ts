@@ -1,6 +1,6 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { adminStudentsApi } from '@/features/admin/api/adminStudents';
-import type { AdminStudentsQuery } from '@/features/admin/types/students';
+import type { AdminStudentsQuery, AdminStudentUpdatePayload } from '@/features/admin/types/students';
 
 const KEY = ['admin', 'students'] as const;
 
@@ -41,5 +41,16 @@ export function useAdminStudentLearning(studentId: string | null) {
     queryKey: [...KEY, 'learning', studentId],
     queryFn: () => adminStudentsApi.getLearningSummary(studentId as string),
     enabled: !!studentId,
+  });
+}
+
+export function useAdminUpdateStudent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ studentId, payload }: { studentId: string; payload: AdminStudentUpdatePayload }) =>
+      adminStudentsApi.update(studentId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: KEY });
+    },
   });
 }

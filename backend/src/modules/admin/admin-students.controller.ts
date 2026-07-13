@@ -4,6 +4,7 @@ import { adminStudentsService } from "./admin-students.service.js";
 import type {
   ListStudentsQuery,
   StudentEnrollmentsQuery,
+  UpdateStudentBody,
 } from "./admin-students.validation.js";
 
 /**
@@ -53,6 +54,20 @@ export class AdminStudentsController {
     try {
       const data = await adminStudentsService.getLearningSummary(String(req.params.studentId));
       res.status(200).json(okResponse("Student learning summary fetched successfully", data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const input = (req.validated?.body ?? req.body) as UpdateStudentBody;
+      const data = await adminStudentsService.updateStudent(
+        String(req.params.studentId),
+        input,
+        req.user!.id,
+      );
+      res.status(200).json(okResponse("Student updated successfully", data));
     } catch (error) {
       next(error);
     }

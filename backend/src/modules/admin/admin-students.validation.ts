@@ -27,3 +27,21 @@ export const studentEnrollmentsQuerySchema = z.object({
   status: z.enum(["ACTIVE", "DEACTIVATED", "PAYMENT_PENDING"]).optional(),
 });
 export type StudentEnrollmentsQuery = z.infer<typeof studentEnrollmentsQuerySchema>;
+
+/** PATCH /api/admin/students/:studentId body. */
+export const updateStudentBodySchema = z
+  .object({
+    fullName: z.string().trim().min(2, "Full name must be at least 2 characters").max(100).optional(),
+    email: z.string().trim().email("Invalid email address").toLowerCase().optional(),
+    mobile: z
+      .string()
+      .trim()
+      .regex(/^01[0-9]{9}$/, "Mobile must be a valid Egyptian number")
+      .optional(),
+    status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+    stageId: z.string().uuid("Invalid stage ID").optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided for update",
+  });
+export type UpdateStudentBody = z.infer<typeof updateStudentBodySchema>;

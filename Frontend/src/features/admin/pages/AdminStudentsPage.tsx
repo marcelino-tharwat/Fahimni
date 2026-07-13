@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Search, Users, GraduationCap, BookOpen, CreditCard, AlertCircle, X, Sparkles,
-  UserCheck, Clock, DollarSign, ChevronLeft,
+  UserCheck, Clock, DollarSign, ChevronLeft, Pencil,
 } from 'lucide-react';
 import { Spinner, Badge, EmptyState, StatCard } from '@/shared/components/ui';
 import { Pagination } from '../components/promo-codes';
@@ -11,8 +11,9 @@ import {
   useAdminStudents, useAdminStudentDetail, useAdminStudentEnrollments,
   useAdminStudentPayments, useAdminStudentLearning,
 } from '@/features/admin/hooks/useAdminStudents';
+import { EditStudentModal } from '../components/students/EditStudentModal';
 import type {
-  AdminStudentListItem, StudentFilter, StudentStatus,
+  AdminStudentListItem, StudentFilter, StudentStatus, StudentIdentity,
 } from '@/features/admin/types/students';
 
 const PAGE_SIZE = 20;
@@ -39,6 +40,7 @@ export function AdminStudentsPage() {
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [editingStudent, setEditingStudent] = useState<StudentIdentity | null>(null);
 
   useEffect(() => {
     const id = setTimeout(() => { setQ(searchInput.trim()); setPage(1); }, 350);
@@ -139,7 +141,10 @@ export function AdminStudentsPage() {
                 </thead>
                 <tbody>
                   {students.map((s) => (
-                    <StudentRow key={s.id} student={s} nf={nf} onView={() => setSelectedId(s.id)} />
+                    <StudentRow key={s.id} student={s} nf={nf} onView={() => setSelectedId(s.id)} onEdit={() => setEditingStudent({
+                      id: s.id, fullName: s.fullName, email: s.email, mobile: s.mobile,
+                      status: s.status, createdAt: s.createdAt, stage: null,
+                    })} />
                   ))}
                 </tbody>
               </table>
@@ -155,17 +160,19 @@ export function AdminStudentsPage() {
         <p className="font-cairo text-xs text-text-muted">{t('adminStudents.totalCount', '{{count}} طالب', { count: total })}</p>
       )}
 
-      {selectedId && <StudentDetailDrawer studentId={selectedId} onClose={() => setSelectedId(null)} />}
+      {selectedId && <StudentDetailDrawer studentId={selectedId} onClose={() => setSelectedId(null)} onEdit={(student) => { setSelectedId(null); setEditingStudent(student); }} />}
+      <EditStudentModal isOpen={!!editingStudent} onClose={() => setEditingStudent(null)} student={editingStudent} />
     </div>
   );
 }
 
 function StudentRow({
-  student, nf, onView,
+  student, nf, onView, onEdit,
 }: {
   student: AdminStudentListItem;
   nf: (n: number) => string;
   onView: () => void;
+  onEdit: () => void;
 }) {
   const { t, i18n } = useTranslation();
   const created = new Date(student.createdAt).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US');
@@ -212,16 +219,21 @@ function StudentRow({
       </td>
       <td className="px-4 py-3 font-cairo text-text-secondary">{created}</td>
       <td className="px-4 py-3 text-end">
-        <button type="button" onClick={onView} className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold text-accent hover:underline">
-          {t('adminStudents.viewDetails', 'عرض التفاصيل')}
-          <ChevronLeft size={14} className="rtl:rotate-180" />
-        </button>
+        <div className="flex items-center justify-end gap-2">
+          <button type="button" onClick={onEdit} className="inline-flex items-center gap-1 whitespace-nowrap rounded-btn border border-border px-2 py-1 text-xs font-semibold text-text-secondary transition-colors hover:bg-gray-100 hover:text-text-primary" title={t('adminStudents.edit.editButton', 'تعديل')}>
+            <Pencil size={12} />
+          </button>
+          <button type="button" onClick={onView} className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold text-accent hover:underline">
+            {t('adminStudents.viewDetails', 'عرض التفاصيل')}
+            <ChevronLeft size={14} className="rtl:rotate-180" />
+          </button>
+        </div>
       </td>
     </tr>
   );
 }
 
-function StudentDetailDrawer({ studentId, onClose }: { studentId: string; onClose: () => void }) {
+function StudentDetailDrawer({ studentId, onClose, onEdit }: { studentId: string; onClose: () => void; onEdit: (student: StudentIdentity) => void }) {
   const { t, i18n } = useTranslation();
   const nf = (n: number) => n.toLocaleString(i18n.language === 'ar' ? 'ar-EG' : 'en-US');
   const detail = useAdminStudentDetail(studentId);
@@ -254,11 +266,26 @@ function StudentDetailDrawer({ studentId, onClose }: { studentId: string; onClos
           <>
             {/* Identity */}
             <div className="rounded-card border border-border bg-surface p-4">
-              <div className="flex items-center gap-2">
-                <span className="font-cairo text-base font-bold text-text-primary">{detail.data.student.fullName}</span>
-                <Badge variant={statusVariant[detail.data.student.status]}>{t(`adminStudents.status.${detail.data.student.status}`, detail.data.student.status)}</Badge>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-cairo text-base font-bold text-text-primary">{detail.data.student.fullName}</span>
+                  <Badge variant={statusVariant[detail.data.student.status]}>{t(`adminStudents.status.${detail.data.student.status}`, detail.data.student.status)}</Badge>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onEdit(detail.data!.student)}
+                  className="inline-flex items-center gap-1 rounded-btn border border-border px-2.5 py-1 font-cairo text-xs font-semibold text-text-secondary transition-colors hover:bg-gray-100 hover:text-text-primary"
+                >
+                  <Pencil size={12} />
+                  {t('adminStudents.edit.editButton', 'تعديل')}
+                </button>
               </div>
               <p className="mt-1 font-cairo text-sm text-text-secondary">{detail.data.student.email ?? '—'} · {detail.data.student.mobile}</p>
+              {detail.data.student.stage && (
+                <p className="mt-1 font-cairo text-xs text-text-muted">
+                  {t('adminStudents.edit.stage', 'المرحلة الدراسية')}: {detail.data.student.stage.displayName ?? detail.data.student.stage.name}
+                </p>
+              )}
             </div>
 
             {/* Summary cards */}
