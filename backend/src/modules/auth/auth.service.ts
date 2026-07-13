@@ -290,12 +290,10 @@ export class AuthService {
           status: Status.INACTIVE,
           teacherApprovalState: "PENDING_REVIEW",
           locale: normalizeLocale(input.locale),
-          // Teachers require admin approval instead of email verification — the
-          // login guard excludes OPERATION from the emailVerified check entirely
-          // (same pattern as ADMIN), so this value is never actually enforced for
-          // this role. Still set explicitly to true (not left to infer from the
-          // schema default) so the stored data isn't misleading to a future reader
-          // and stays consistent with admin-created teacher accounts.
+          // Teachers are gated by admin review (teacherApprovalState), not by
+          // email verification — loginUser's email-verification gate excludes
+          // OPERATION entirely. Matches AdminUsersService.createUser's
+          // trusted-path convention (emailVerified: true there too).
           emailVerified: true,
         },
         select: userPublicFields,
@@ -345,6 +343,9 @@ export class AuthService {
       }
     }
 
+    // No email-verification token/email here — teachers are gated by admin
+    // review (emailVerified is already true; see the user.create above), so
+    // only the "registration submitted" notification is sent.
     await sendTransactionalEmail({
       to: input.email,
       template: "teacherRegistrationSubmitted",

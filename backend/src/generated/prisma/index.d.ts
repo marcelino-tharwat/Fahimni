@@ -210,6 +210,15 @@ export namespace $Enums {
 export type QuizContentScope = (typeof QuizContentScope)[keyof typeof QuizContentScope]
 
 
+export const QuizDifficulty: {
+  EASY: 'EASY',
+  MEDIUM: 'MEDIUM',
+  HARD: 'HARD'
+};
+
+export type QuizDifficulty = (typeof QuizDifficulty)[keyof typeof QuizDifficulty]
+
+
 export const QuizSourceScope: {
   SINGLE_CHAPTER: 'SINGLE_CHAPTER',
   MULTI_CHAPTER: 'MULTI_CHAPTER',
@@ -466,6 +475,10 @@ export type TeacherWithdrawalStatus = (typeof TeacherWithdrawalStatus)[keyof typ
 export type QuizContentScope = $Enums.QuizContentScope
 
 export const QuizContentScope: typeof $Enums.QuizContentScope
+
+export type QuizDifficulty = $Enums.QuizDifficulty
+
+export const QuizDifficulty: typeof $Enums.QuizDifficulty
 
 export type QuizSourceScope = $Enums.QuizSourceScope
 
@@ -25385,6 +25398,7 @@ export namespace Prisma {
     questionCount: number | null
     totalPoints: number | null
     passingScore: number | null
+    difficulty: $Enums.QuizDifficulty | null
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -25411,6 +25425,7 @@ export namespace Prisma {
     questionCount: number | null
     totalPoints: number | null
     passingScore: number | null
+    difficulty: $Enums.QuizDifficulty | null
     createdBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -25438,6 +25453,7 @@ export namespace Prisma {
     questionCount: number
     totalPoints: number
     passingScore: number
+    difficulty: number
     createdBy: number
     createdAt: number
     updatedAt: number
@@ -25480,6 +25496,7 @@ export namespace Prisma {
     questionCount?: true
     totalPoints?: true
     passingScore?: true
+    difficulty?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -25506,6 +25523,7 @@ export namespace Prisma {
     questionCount?: true
     totalPoints?: true
     passingScore?: true
+    difficulty?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -25533,6 +25551,7 @@ export namespace Prisma {
     questionCount?: true
     totalPoints?: true
     passingScore?: true
+    difficulty?: true
     createdBy?: true
     createdAt?: true
     updatedAt?: true
@@ -25647,6 +25666,7 @@ export namespace Prisma {
     questionCount: number
     totalPoints: number
     passingScore: number | null
+    difficulty: $Enums.QuizDifficulty
     createdBy: string
     createdAt: Date
     updatedAt: Date
@@ -25693,6 +25713,7 @@ export namespace Prisma {
     questionCount?: boolean
     totalPoints?: boolean
     passingScore?: boolean
+    difficulty?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -25727,6 +25748,7 @@ export namespace Prisma {
     questionCount?: boolean
     totalPoints?: boolean
     passingScore?: boolean
+    difficulty?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -25756,6 +25778,7 @@ export namespace Prisma {
     questionCount?: boolean
     totalPoints?: boolean
     passingScore?: boolean
+    difficulty?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -25785,6 +25808,7 @@ export namespace Prisma {
     questionCount?: boolean
     totalPoints?: boolean
     passingScore?: boolean
+    difficulty?: boolean
     createdBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -25798,7 +25822,7 @@ export namespace Prisma {
     pendingEssayResultMode?: boolean
   }
 
-  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "contentScope" | "sourceScope" | "sourceChapterIds" | "sourceStageId" | "status" | "durationMinutes" | "questionCount" | "totalPoints" | "passingScore" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt" | "resultSettingsConfigured" | "showCorrectAnswers" | "showPerQuestionScores" | "showFinalScore" | "showStudentAnswers" | "showExplanations" | "pendingEssayResultMode", ExtArgs["result"]["quiz"]>
+  export type QuizOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "chapterId" | "contentScope" | "sourceScope" | "sourceChapterIds" | "sourceStageId" | "status" | "durationMinutes" | "questionCount" | "totalPoints" | "passingScore" | "difficulty" | "createdBy" | "createdAt" | "updatedAt" | "publishedAt" | "resultSettingsConfigured" | "showCorrectAnswers" | "showPerQuestionScores" | "showFinalScore" | "showStudentAnswers" | "showExplanations" | "pendingEssayResultMode", ExtArgs["result"]["quiz"]>
   export type QuizInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     questions?: boolean | Quiz$questionsArgs<ExtArgs>
     attempts?: boolean | Quiz$attemptsArgs<ExtArgs>
@@ -25841,6 +25865,7 @@ export namespace Prisma {
       questionCount: number
       totalPoints: number
       passingScore: number | null
+      difficulty: $Enums.QuizDifficulty
       createdBy: string
       createdAt: Date
       updatedAt: Date
@@ -26294,6 +26319,7 @@ export namespace Prisma {
     readonly questionCount: FieldRef<"Quiz", 'Int'>
     readonly totalPoints: FieldRef<"Quiz", 'Int'>
     readonly passingScore: FieldRef<"Quiz", 'Int'>
+    readonly difficulty: FieldRef<"Quiz", 'QuizDifficulty'>
     readonly createdBy: FieldRef<"Quiz", 'String'>
     readonly createdAt: FieldRef<"Quiz", 'DateTime'>
     readonly updatedAt: FieldRef<"Quiz", 'DateTime'>
@@ -46135,6 +46161,7 @@ export namespace Prisma {
     questionCount: 'questionCount',
     totalPoints: 'totalPoints',
     passingScore: 'passingScore',
+    difficulty: 'difficulty',
     createdBy: 'createdBy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -46734,6 +46761,20 @@ export namespace Prisma {
    * Reference to a field of type 'QuizStatus[]'
    */
   export type ListEnumQuizStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuizStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'QuizDifficulty'
+   */
+  export type EnumQuizDifficultyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuizDifficulty'>
+    
+
+
+  /**
+   * Reference to a field of type 'QuizDifficulty[]'
+   */
+  export type ListEnumQuizDifficultyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuizDifficulty[]'>
     
 
 
@@ -48454,6 +48495,7 @@ export namespace Prisma {
     questionCount?: IntFilter<"Quiz"> | number
     totalPoints?: IntFilter<"Quiz"> | number
     passingScore?: IntNullableFilter<"Quiz"> | number | null
+    difficulty?: EnumQuizDifficultyFilter<"Quiz"> | $Enums.QuizDifficulty
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
@@ -48487,6 +48529,7 @@ export namespace Prisma {
     questionCount?: SortOrder
     totalPoints?: SortOrder
     passingScore?: SortOrderInput | SortOrder
+    difficulty?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -48523,6 +48566,7 @@ export namespace Prisma {
     questionCount?: IntFilter<"Quiz"> | number
     totalPoints?: IntFilter<"Quiz"> | number
     passingScore?: IntNullableFilter<"Quiz"> | number | null
+    difficulty?: EnumQuizDifficultyFilter<"Quiz"> | $Enums.QuizDifficulty
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
@@ -48556,6 +48600,7 @@ export namespace Prisma {
     questionCount?: SortOrder
     totalPoints?: SortOrder
     passingScore?: SortOrderInput | SortOrder
+    difficulty?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -48591,6 +48636,7 @@ export namespace Prisma {
     questionCount?: IntWithAggregatesFilter<"Quiz"> | number
     totalPoints?: IntWithAggregatesFilter<"Quiz"> | number
     passingScore?: IntNullableWithAggregatesFilter<"Quiz"> | number | null
+    difficulty?: EnumQuizDifficultyWithAggregatesFilter<"Quiz"> | $Enums.QuizDifficulty
     createdBy?: StringWithAggregatesFilter<"Quiz"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Quiz"> | Date | string
@@ -51668,6 +51714,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -51700,6 +51747,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51730,6 +51778,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -51762,6 +51811,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51793,6 +51843,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51819,6 +51870,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -51845,6 +51897,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54990,6 +55043,13 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type EnumQuizDifficultyFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuizDifficulty | EnumQuizDifficultyFieldRefInput<$PrismaModel>
+    in?: $Enums.QuizDifficulty[] | ListEnumQuizDifficultyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuizDifficulty[] | ListEnumQuizDifficultyFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuizDifficultyFilter<$PrismaModel> | $Enums.QuizDifficulty
+  }
+
   export type BoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
@@ -55031,6 +55091,7 @@ export namespace Prisma {
     questionCount?: SortOrder
     totalPoints?: SortOrder
     passingScore?: SortOrder
+    difficulty?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -55064,6 +55125,7 @@ export namespace Prisma {
     questionCount?: SortOrder
     totalPoints?: SortOrder
     passingScore?: SortOrder
+    difficulty?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -55090,6 +55152,7 @@ export namespace Prisma {
     questionCount?: SortOrder
     totalPoints?: SortOrder
     passingScore?: SortOrder
+    difficulty?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -55154,6 +55217,16 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type EnumQuizDifficultyWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuizDifficulty | EnumQuizDifficultyFieldRefInput<$PrismaModel>
+    in?: $Enums.QuizDifficulty[] | ListEnumQuizDifficultyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuizDifficulty[] | ListEnumQuizDifficultyFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuizDifficultyWithAggregatesFilter<$PrismaModel> | $Enums.QuizDifficulty
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuizDifficultyFilter<$PrismaModel>
+    _max?: NestedEnumQuizDifficultyFilter<$PrismaModel>
   }
 
   export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -58372,6 +58445,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type EnumQuizDifficultyFieldUpdateOperationsInput = {
+    set?: $Enums.QuizDifficulty
+  }
+
   export type NullableBoolFieldUpdateOperationsInput = {
     set?: boolean | null
   }
@@ -59754,6 +59831,13 @@ export namespace Prisma {
     not?: NestedEnumQuizStatusFilter<$PrismaModel> | $Enums.QuizStatus
   }
 
+  export type NestedEnumQuizDifficultyFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuizDifficulty | EnumQuizDifficultyFieldRefInput<$PrismaModel>
+    in?: $Enums.QuizDifficulty[] | ListEnumQuizDifficultyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuizDifficulty[] | ListEnumQuizDifficultyFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuizDifficultyFilter<$PrismaModel> | $Enums.QuizDifficulty
+  }
+
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
@@ -59821,6 +59905,16 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumQuizDifficultyWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuizDifficulty | EnumQuizDifficultyFieldRefInput<$PrismaModel>
+    in?: $Enums.QuizDifficulty[] | ListEnumQuizDifficultyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuizDifficulty[] | ListEnumQuizDifficultyFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuizDifficultyWithAggregatesFilter<$PrismaModel> | $Enums.QuizDifficulty
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuizDifficultyFilter<$PrismaModel>
+    _max?: NestedEnumQuizDifficultyFilter<$PrismaModel>
   }
 
   export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -60493,6 +60587,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -60524,6 +60619,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -61460,6 +61556,7 @@ export namespace Prisma {
     questionCount?: IntFilter<"Quiz"> | number
     totalPoints?: IntFilter<"Quiz"> | number
     passingScore?: IntNullableFilter<"Quiz"> | number | null
+    difficulty?: EnumQuizDifficultyFilter<"Quiz"> | $Enums.QuizDifficulty
     createdBy?: StringFilter<"Quiz"> | string
     createdAt?: DateTimeFilter<"Quiz"> | Date | string
     updatedAt?: DateTimeFilter<"Quiz"> | Date | string
@@ -62944,6 +63041,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -62974,6 +63072,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63470,6 +63569,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -63501,6 +63601,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -63695,6 +63796,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63726,6 +63828,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66302,6 +66405,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -66333,6 +66437,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66421,6 +66526,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -66452,6 +66558,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66530,6 +66637,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -66561,6 +66669,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66606,6 +66715,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -66637,6 +66747,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66666,6 +66777,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -66697,6 +66809,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66831,6 +66944,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -66862,6 +66976,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70742,6 +70857,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
@@ -71268,6 +71384,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71299,6 +71416,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71329,6 +71447,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -72015,6 +72134,7 @@ export namespace Prisma {
     questionCount?: number
     totalPoints?: number
     passingScore?: number | null
+    difficulty?: $Enums.QuizDifficulty
     createdBy: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72155,6 +72275,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -72185,6 +72306,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72215,6 +72337,7 @@ export namespace Prisma {
     questionCount?: IntFieldUpdateOperationsInput | number
     totalPoints?: IntFieldUpdateOperationsInput | number
     passingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    difficulty?: EnumQuizDifficultyFieldUpdateOperationsInput | $Enums.QuizDifficulty
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

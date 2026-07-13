@@ -100,6 +100,30 @@ export function allocateQuestionCounts(
   return counts;
 }
 
+/**
+ * The single difficulty level persisted on `Quiz.difficulty`. SINGLE mode
+ * carries the teacher's own chosen level; MIXED mode has no single choice, so
+ * the plurality level (most questions allocated) is used, tie-broken by enum
+ * order (easy → medium → hard) — same tie-break convention as
+ * `allocateQuestionCounts`.
+ */
+export function pickQuizLevelDifficulty(resolved: ResolvedQuizDifficulty): Difficulty {
+  if (resolved.difficultyMode === "SINGLE") {
+    return resolved.difficulty;
+  }
+
+  let best: Difficulty = LEVEL_ORDER[0]!;
+  let bestCount = -1;
+  for (const level of LEVEL_ORDER) {
+    const count = resolved.questionCounts[level];
+    if (count > bestCount) {
+      best = level;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
 export function resolveQuizDifficulty(
   input: {
     difficultyMode: QuizDifficultyMode;

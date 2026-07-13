@@ -374,6 +374,10 @@ model Quiz {
   questionCount          Int              @default(0)
   totalPoints            Int              @default(0)
   passingScore           Int?             @map("passing_score")
+  // Teacher-chosen difficulty at generation/creation time (SINGLE mode: the
+  // chosen level; MIXED mode: the plurality level of the distribution).
+  // Existing rows backfill to MEDIUM via the column default.
+  difficulty             QuizDifficulty   @default(MEDIUM)
   createdBy              String
   createdAt              DateTime         @default(now())
   updatedAt              DateTime         @updatedAt
@@ -415,6 +419,12 @@ model QuizLesson {
 enum QuizContentScope {
   CHAPTER
   SELECTED_LESSONS
+}
+
+enum QuizDifficulty {
+  EASY
+  MEDIUM
+  HARD
 }
 
 enum QuizSourceScope {

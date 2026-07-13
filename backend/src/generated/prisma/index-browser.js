@@ -344,6 +344,7 @@ exports.Prisma.QuizScalarFieldEnum = {
   questionCount: 'questionCount',
   totalPoints: 'totalPoints',
   passingScore: 'passingScore',
+  difficulty: 'difficulty',
   createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -681,6 +682,12 @@ exports.QuizSourceScope = exports.$Enums.QuizSourceScope = {
 exports.QuizStatus = exports.$Enums.QuizStatus = {
   DRAFT: 'DRAFT',
   PUBLISHED: 'PUBLISHED'
+};
+
+exports.QuizDifficulty = exports.$Enums.QuizDifficulty = {
+  EASY: 'EASY',
+  MEDIUM: 'MEDIUM',
+  HARD: 'HARD'
 };
 
 exports.PendingEssayResultMode = exports.$Enums.PendingEssayResultMode = {

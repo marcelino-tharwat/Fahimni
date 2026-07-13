@@ -4,583 +4,605 @@ import { v5 as uuidv5 } from "uuid";
 import { prisma } from "../src/config/database.js";
 import { logger } from "../src/config/logger.js";
 import { assertLocalDatabase } from "../src/seed/local-guard.js";
-
 import { TEACHER_PLANS } from "../src/modules/teacher-plans/teacher-plan.seed-data.js";
+import { TF_TRUE, TF_FALSE, TF_OPTIONS } from "../src/modules/quizzes/quiz-generation.mapping.js";
 import { seedQuizUnlockScenario } from "./seed-quiz-unlock.js";
+import {
+  CHEMISTRY_CHAPTER_DEFS,
+  buildChemistryLessonCatalog,
+  chemistryLessonId,
+  CHEMISTRY_REQUIRED_GATE_QUIZ_ID,
+} from "../src/seed/chemistry-lesson-catalog.js";
+import { buildChemistryQuizCatalog, buildQuizLessonLinks } from "../src/seed/chemistry-quiz-catalog.js";
 import type { Prisma } from "../src/generated/prisma/client.js";
 
-const BCRYPT_ROUNDS = 12;
-const DEFAULT_PASSWORD = process.env.SEED_DEFAULT_PASSWORD ?? "Fahimni@123456";
-const DEMO_EMAIL_DOMAIN = "@fahimni.local";
-const DEMO_ORDER_PREFIX = "DEMO_";
-const DEMO_REF_PREFIX = "DEMO_";
+/**
+ * Realistic local dev seed — real-sounding Egyptian names/emails instead of
+ * technical labels (teacher.math@..., student1@...), real Egyptian secondary
+ * chemistry/physics curriculum content, one simple shared password.
+ *
+ * Idempotent: every row is upserted by a deterministic id (or natural unique
+ * key), so re-running `npx prisma db seed` never duplicates data.
+ */
 
-const SEED_NAMESPACE = "f5a0b1c2-d3e4-4f6a-a8bc-9d0e1f2a3b4c";
+const BCRYPT_ROUNDS = 12;
+
+/**
+ * Single, simple, memorable password shared by every seeded account
+ * (including admin) so it's trivial to log in and test manually. Satisfies
+ * auth.validation.ts's passwordSchema (min 8, upper/lower/digit/special).
+ * Override via env if you need something else locally.
+ */
+export const SEED_SHARED_PASSWORD = process.env.SEED_SHARED_PASSWORD ?? "Pass@1234";
+
+const EMAIL_DOMAIN = "@fahimni.com";
+const SEED_NAMESPACE = "6f1e9d2a-8b3c-4a7e-9f0d-1c2b3a4e5f60";
 function sid(key: string): string {
-  return uuidv5(`fahimni-seed:${key}`, SEED_NAMESPACE);
+  return uuidv5(`fahimni-realistic-seed:${key}`, SEED_NAMESPACE);
 }
 
 const now = new Date();
-const daysAgo = (d: number) =>
-  new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
-const daysFromNow = (d: number) =>
-  new Date(now.getTime() + d * 24 * 60 * 60 * 1000);
+const daysAgo = (d: number) => new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
+const daysFromNow = (d: number) => new Date(now.getTime() + d * 24 * 60 * 60 * 1000);
+
+// ── Accounts ────────────────────────────────────────────────────────────
 
 const ADMIN = {
   id: sid("admin"),
-  email: "admin" + DEMO_EMAIL_DOMAIN,
-  fullName: "مدير المنصة — حساب تجريبي",
+  email: "admin" + EMAIL_DOMAIN,
+  fullName: "Admin",
   mobile: "01000000001",
-  role: "ADMIN" as const,
 };
 
-const ADMIN_2 = {
-  id: sid("admin-2"),
-  email: "admin2" + DEMO_EMAIL_DOMAIN,
-  fullName: "مدير مساعد — حساب تجريبي",
-  mobile: "01000000002",
-  role: "ADMIN" as const,
+const TEACHER_CHEMISTRY = {
+  id: sid("teacher-ahmed"),
+  profileId: sid("profile-ahmed"),
+  email: "ahmed.sami" + EMAIL_DOMAIN,
+  fullName: "أحمد سامي",
+  mobile: "01000000011",
+  subject: "الكيمياء",
+  bio: "مدرّس كيمياء لمراحل الثانوية العامة — خبرة 9 سنوات في تدريس الكيمياء وتحضير الطلاب لامتحانات الثانوية العامة.",
 };
 
-const TEACHERS = [
-  {
-    id: sid("teacher-math"),
-    email: "teacher.math" + DEMO_EMAIL_DOMAIN,
-    fullName: "أ. أحمد الرياضي",
-    mobile: "01000000010",
-    role: "OPERATION" as const,
-    profileId: sid("profile-math"),
-    subject: "الرياضيات",
-    bio: "أستاذ رياضيات للمرحلة الثانوية — خبرة ١٠ سنوات في تدريس الرياضيات.",
-    // Wallet demo: this teacher has confirmed student payments (see
-    // PaymentTransactions below) + a configured payout profile.
-    instaPayHandle: "ahmed.math@instapay",
-    vodafoneCashNumber: "01001234567",
-  },
-  {
-    id: sid("teacher-physics"),
-    email: "teacher.physics" + DEMO_EMAIL_DOMAIN,
-    fullName: "أ. فيصل الفيزيائي",
-    mobile: "01000000020",
-    role: "OPERATION" as const,
-    profileId: sid("profile-physics"),
-    subject: "الفيزياء",
-    bio: "أستاذ فيزياء — متخصص في تدريس الفيزياء للثانوية العامة.",
-  },
-  {
-    id: sid("teacher-chemistry"),
-    email: "teacher.chemistry" + DEMO_EMAIL_DOMAIN,
-    fullName: "أ. محمود الكيميائي",
-    mobile: "01000000030",
-    role: "OPERATION" as const,
-    profileId: sid("profile-chemistry"),
-    subject: "الكيمياء",
-    bio: "أستاذ كيمياء — خبرة في تدريس الكيمياء العضوية وغير العضوية.",
-  },
-  {
-    id: sid("teacher-banned"),
-    email: "teacher.banned" + DEMO_EMAIL_DOMAIN,
-    fullName: "أ. محظور المدرّس",
-    mobile: "01000000100",
-    role: "OPERATION" as const,
-    profileId: sid("profile-banned"),
-    subject: "اللغة العربية",
-    bio: "معلم محظور — محتواه مخفي عن الطلاب.",
-  },
-  {
-    id: sid("teacher-inactive"),
-    email: "teacher.inactive" + DEMO_EMAIL_DOMAIN,
-    fullName: "أ. خامل المدرّس",
-    mobile: "01000000111",
-    role: "OPERATION" as const,
-    profileId: sid("profile-inactive"),
-    subject: "التربية الإسلامية",
-    bio: "معلم غير نشط — محتواه مخفي عن الطلاب.",
-  },
-  {
-    id: sid("teacher-approved-unpaid"),
-    email: "teacher.approved.unpaid" + DEMO_EMAIL_DOMAIN,
-    fullName: "أ. ليلى المدرّسة المعتمدة",
-    mobile: "01000000060",
-    role: "OPERATION" as const,
-    profileId: sid("profile-approved-unpaid"),
-    subject: "التاريخ",
-    bio: "معتمدة على الباقة المجانية ويمكنها الترقية في أي وقت.",
-  },
-];
+const TEACHER_PHYSICS = {
+  id: sid("teacher-mona"),
+  profileId: sid("profile-mona"),
+  email: "mona.farouk" + EMAIL_DOMAIN,
+  fullName: "منى فاروق",
+  mobile: "01000000012",
+  subject: "الفيزياء",
+  bio: "مدرّسة فيزياء للصف الأول الثانوي — تركز على ربط المفاهيم الفيزيائية بالتطبيقات العملية.",
+};
+
+// Pending-review teacher: no content yet, exists purely to exercise the
+// admin approval flow end-to-end.
+const TEACHER_PENDING = {
+  id: sid("teacher-youssef"),
+  email: "youssef.adel" + EMAIL_DOMAIN,
+  fullName: "يوسف عادل",
+  mobile: "01000000013",
+  subject: "الأحياء",
+  bio: "مدرّس أحياء — بانتظار مراجعة الإدارة لطلب التسجيل.",
+};
 
 const STUDENTS = [
   {
-    id: sid("student-active1"),
-    email: "student.active1" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب نشط ١",
-    mobile: "01000000101",
-    role: "STUDENT" as const,
-    profileId: sid("profile-active1"),
+    id: sid("student-mona-tarek"),
+    profileId: sid("student-profile-mona-tarek"),
+    email: "mona.tarek" + EMAIL_DOMAIN,
+    fullName: "منى طارق",
+    mobile: "01100000001",
     emailVerified: true,
   },
   {
-    id: sid("student-active2"),
-    email: "student.active2" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب نشط ٢",
-    mobile: "01000000102",
-    role: "STUDENT" as const,
-    profileId: sid("profile-active2"),
+    id: sid("student-youssef-hassan"),
+    profileId: sid("student-profile-youssef-hassan"),
+    email: "youssef.hassan" + EMAIL_DOMAIN,
+    fullName: "يوسف حسن",
+    mobile: "01100000002",
     emailVerified: true,
   },
   {
-    id: sid("student-pending"),
-    email: "student.pending" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب معلق",
-    mobile: "01000000103",
-    role: "STUDENT" as const,
-    profileId: sid("profile-pending"),
+    id: sid("student-nour-ibrahim"),
+    profileId: sid("student-profile-nour-ibrahim"),
+    email: "nour.ibrahim" + EMAIL_DOMAIN,
+    fullName: "نور إبراهيم",
+    mobile: "01100000003",
     emailVerified: true,
   },
   {
-    id: sid("student-unassigned"),
-    email: "student.unassigned" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب بدون معلم",
-    mobile: "01000000104",
-    role: "STUDENT" as const,
-    profileId: sid("profile-unassigned"),
+    id: sid("student-omar-khaled"),
+    profileId: sid("student-profile-omar-khaled"),
+    email: "omar.khaled" + EMAIL_DOMAIN,
+    fullName: "عمر خالد",
+    mobile: "01100000004",
     emailVerified: true,
   },
   {
-    id: sid("student-no-enrollment"),
-    email: "student.no-enrollment" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب بدون تسجيل",
-    mobile: "01000000105",
-    role: "STUDENT" as const,
-    profileId: sid("profile-no-enrollment"),
-    emailVerified: true,
-  },
-  {
-    id: sid("student-multi"),
-    email: "student.multi-teacher" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب متعدد المعلمين",
-    mobile: "01000000106",
-    role: "STUDENT" as const,
-    profileId: sid("profile-multi"),
-    emailVerified: true,
-  },
-  {
-    id: sid("student-clean"),
-    email: "student.clean" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب نظيف — بدون بيانات",
-    mobile: "01000000107",
-    role: "STUDENT" as const,
-    profileId: sid("profile-clean"),
-    emailVerified: true,
-  },
-  {
-    id: sid("student-banned-stage"),
-    email: "student.banned-stage" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب في مرحلة معلم محظور",
-    mobile: "01000000108",
-    role: "STUDENT" as const,
-    profileId: sid("profile-banned-stage"),
-    emailVerified: true,
-  },
-  {
-    id: sid("student-inactive-stage"),
-    email: "student.inactive-stage" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب في مرحلة معلم غير نشط",
-    mobile: "01000000109",
-    role: "STUDENT" as const,
-    profileId: sid("profile-inactive-stage"),
-    emailVerified: true,
-  },
-  {
-    id: sid("student-approved-free-stage"),
-    email: "student.approved-free-stage" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب في مرحلة معلم معتمد مجاني",
-    mobile: "01000000110",
-    role: "STUDENT" as const,
-    profileId: sid("profile-approved-free-stage"),
-    emailVerified: true,
-  },
-  {
-    // Dedicated fixture for manually testing the pending-verification flow:
-    // login must be blocked with EMAIL_NOT_VERIFIED until this account is
-    // verified via POST /api/v1/auth/verify-email.
-    id: sid("student-unverified"),
-    email: "student.unverified" + DEMO_EMAIL_DOMAIN,
-    fullName: "طالب غير موثق البريد",
-    mobile: "01000000112",
-    role: "STUDENT" as const,
-    profileId: sid("profile-unverified"),
+    // Deliberately unverified — for testing the pending-email-verification
+    // screen. A normal-looking account otherwise; only emailVerified differs.
+    id: sid("student-laila-mostafa"),
+    profileId: sid("student-profile-laila-mostafa"),
+    email: "laila.mostafa" + EMAIL_DOMAIN,
+    fullName: "ليلى مصطفى",
+    mobile: "01100000005",
     emailVerified: false,
   },
 ];
+const [MONA_TAREK, YOUSSEF_HASSAN, NOUR_IBRAHIM, OMAR_KHALED, LAILA_MOSTAFA] = STUDENTS;
 
-type StageDef = {
-  id: string;
-  name: string;
-  description: string;
-  sortOrder: number;
-  teacherIdx: number;
+// ── Stages (platform-owned; matches admin-stages.service.ts's teacherId: null) ──
+
+const STAGE_1 = {
+  id: sid("stage-1"),
+  name: "الصف الأول الثانوي",
+  nameAr: "الصف الأول الثانوي",
+  nameEn: "First Secondary",
+  description: "المرحلة الثانوية العامة — الصف الأول الثانوي.",
+  descriptionAr: "المرحلة الثانوية العامة — الصف الأول الثانوي.",
+  descriptionEn: "Egyptian general secondary education — First Secondary year.",
+  sortOrder: 1,
 };
-
-type ChapterDef = {
-  id: string;
-  name: string;
-  description: string;
-  sortOrder: number;
-  stageId: string;
-  price: number | null;
-  teacherIdx: number;
+const STAGE_2 = {
+  id: sid("stage-2"),
+  name: "الصف الثاني الثانوي",
+  nameAr: "الصف الثاني الثانوي",
+  nameEn: "Second Secondary",
+  description: "المرحلة الثانوية العامة — الصف الثاني الثانوي.",
+  descriptionAr: "المرحلة الثانوية العامة — الصف الثاني الثانوي.",
+  descriptionEn: "Egyptian general secondary education — Second Secondary year.",
+  sortOrder: 2,
 };
+const STAGE_3 = {
+  id: sid("stage-3"),
+  name: "الصف الثالث الثانوي",
+  nameAr: "الصف الثالث الثانوي",
+  nameEn: "Third Secondary",
+  description: "المرحلة الثانوية العامة — الصف الثالث الثانوي.",
+  descriptionAr: "المرحلة الثانوية العامة — الصف الثالث الثانوي.",
+  descriptionEn: "Egyptian general secondary education — Third Secondary year.",
+  sortOrder: 3,
+};
+const STAGES = [STAGE_1, STAGE_2, STAGE_3];
 
-type LessonDef = {
+// ── Custom chapters/lessons (real Egyptian curriculum topics) ───────────
+// Stage 3 reuses the existing, tested `chemistry-lesson-catalog.ts` (5 units,
+// 15 lessons, full RAG-sourced descriptions) — see seedAll() below.
+
+interface CustomLessonDef {
   id: string;
   title: string;
-  chapterId: string;
-  sortOrder: number;
+  description: string;
   durationMinutes: number;
-};
-
-const STAGES: StageDef[] = [
-  {
-    id: sid("stage-math"),
-    name: "الرياضيات للصف الثالث الثانوي",
-    description:
-      "منهج الرياضيات للصف الثالث الثانوي — الجبر والتفاضل وحساب المثلثات.",
-    sortOrder: 1,
-    teacherIdx: 0,
-  },
-  {
-    id: sid("stage-physics"),
-    name: "الفيزياء للصف الثالث الثانوي",
-    description: "منهج الفيزياء للصف الثالث الثانوي — الميكانيكا والكهرباء.",
-    sortOrder: 1,
-    teacherIdx: 1,
-  },
-  {
-    id: sid("stage-chemistry"),
-    name: "الكيمياء للصف الثالث الثانوي",
-    description:
-      "منهج الكيمياء للصف الثالث الثانوي — الكيمياء العامة والعضوية.",
-    sortOrder: 1,
-    teacherIdx: 2,
-  },
-  {
-    id: sid("stage-banned"),
-    name: "مرحلة المعلم المحظور",
-    description: "مرحلة تجريبية لمعلم محظور — يجب ألا تظهر للطلاب.",
-    sortOrder: 10,
-    teacherIdx: 3,
-  },
-  {
-    id: sid("stage-inactive"),
-    name: "مرحلة المعلم غير النشط",
-    description: "مرحلة تجريبية لمعلم غير نشط — يجب ألا تظهر للطلاب.",
-    sortOrder: 11,
-    teacherIdx: 4,
-  },
-  {
-    id: sid("stage-approved-free"),
-    name: "مرحلة المعلم المعتمد المجاني",
-    description: "مرحلة تجريبية لمعلم معتمد على الباقة المجانية — يجب أن تظهر للطلاب.",
-    sortOrder: 12,
-    teacherIdx: 5,
-  },
-];
-
-const CHAPTERS: ChapterDef[] = [
-  {
-    id: sid("ch-math-1"),
-    name: "الجبر — الدوال والمتباينات",
-    description: "دراسة الدوال الجبرية وأنواعها وحل المتباينات.",
-    sortOrder: 1,
-    stageId: STAGES[0]!.id,
-    price: null,
-    teacherIdx: 0,
-  },
-  {
-    id: sid("ch-math-2"),
-    name: "التفاضل — النهايات والاشتقاق",
-    description: "النهايات وقواعد الاشتقاق وتطبيقاتها.",
-    sortOrder: 2,
-    stageId: STAGES[0]!.id,
-    price: 150,
-    teacherIdx: 0,
-  },
-  {
-    id: sid("ch-math-3"),
-    name: "ميكانيكا الرياضيات — معلم فيزيائي في مرحلة الرياضيات",
-    description:
-      "فصل إضافي من المعلم الفيزيائي في مرحلة الرياضيات — لإظهار محتوى متعدد المعلمين.",
-    sortOrder: 3,
-    stageId: STAGES[0]!.id,
-    price: null,
-    teacherIdx: 1,
-  },
-  {
-    id: sid("ch-physics-1"),
-    name: "الميكانيكا — الحركة والقوى",
-    description: "قوانين نيوتن للحركة وتطبيقاتها.",
-    sortOrder: 1,
-    stageId: STAGES[1]!.id,
-    price: null,
-    teacherIdx: 1,
-  },
-  {
-    id: sid("ch-physics-2"),
-    name: "الكهرباء — التيار والدوائر",
-    description: "التيار الكهربي وقانون أوم والدوائر.",
-    sortOrder: 2,
-    stageId: STAGES[1]!.id,
-    price: 200,
-    teacherIdx: 1,
-  },
-  {
-    id: sid("ch-chem-1"),
-    name: "الكيمياء العامة — الذرة والروابط",
-    description: "تركيب الذرة والروابط الكيميائية.",
-    sortOrder: 1,
-    stageId: STAGES[2]!.id,
-    price: null,
-    teacherIdx: 2,
-  },
-  {
-    id: sid("ch-chem-2"),
-    name: "الكيمياء العضوية — الهيدروكربونات",
-    description: "المركبات الهيدروكربونية وتفاعلاتها.",
-    sortOrder: 2,
-    stageId: STAGES[2]!.id,
-    price: 150,
-    teacherIdx: 2,
-  },
-  {
-    id: sid("ch-banned-1"),
-    name: "محتوى المعلم المحظور — مجاني",
-    description: "هذا المحتوى يجب ألا يظهر في صفحة المحتوى الكامل للطلاب.",
-    sortOrder: 1,
-    stageId: STAGES[3]!.id,
-    price: null,
-    teacherIdx: 3,
-  },
-  {
-    id: sid("ch-banned-2"),
-    name: "محتوى المعلم المحظور — مدفوع",
-    description: "هذا المحتوى المدفوع يجب ألا يظهر ولا يمكن التسجيل به.",
-    sortOrder: 2,
-    stageId: STAGES[3]!.id,
-    price: 100,
-    teacherIdx: 3,
-  },
-  {
-    id: sid("ch-inactive-1"),
-    name: "محتوى المعلم غير النشط — مجاني",
-    description: "هذا المحتوى يجب ألا يظهر في صفحة المحتوى الكامل للطلاب.",
-    sortOrder: 1,
-    stageId: STAGES[4]!.id,
-    price: null,
-    teacherIdx: 4,
-  },
-  {
-    id: sid("ch-approved-free-1"),
-    name: "محتوى المعلم المعتمد المجاني",
-    description: "هذا المحتوى يجب أن يظهر للطلاب.",
-    sortOrder: 1,
-    stageId: STAGES[5]!.id,
-    price: null,
-    teacherIdx: 5,
-  },
-];
-
-const LESSONS: LessonDef[] = [];
-CHAPTERS.forEach((ch, ci) => {
-  for (let li = 0; li < 3; li++) {
-    LESSONS.push({
-      id: sid(`lesson-${ci}-${li}`),
-      title: `درس ${ch.name} — الجزء ${li + 1}`,
-      chapterId: ch.id,
-      sortOrder: li + 1,
-      durationMinutes: 30 + li * 10,
-    });
-  }
-});
-
-const LIFECYCLE_TEACHER_IDS = [
-  sid("teacher-pending"),
-  sid("teacher-rejected-user"),
-  sid("teacher-rejected-editable"),
-  sid("teacher-pending-payment"),
-  sid("teacher-failed-payment"),
-  sid("teacher-clean"),
-];
-const LIFECYCLE_TEACHER_EMAILS = [
-  "teacher.pending" + DEMO_EMAIL_DOMAIN,
-  "teacher.rejected.user" + DEMO_EMAIL_DOMAIN,
-  "teacher.rejected.editable" + DEMO_EMAIL_DOMAIN,
-  "teacher.pending.payment" + DEMO_EMAIL_DOMAIN,
-  "teacher.failed.payment" + DEMO_EMAIL_DOMAIN,
-  "teacher.clean" + DEMO_EMAIL_DOMAIN,
-];
-
-const ALL_SEED_USER_IDS = [
-  ADMIN.id,
-  ADMIN_2.id,
-  ...TEACHERS.map((t) => t.id),
-  ...LIFECYCLE_TEACHER_IDS,
-  ...STUDENTS.map((s) => s.id),
-];
-
-const LEGACY_CHEMISTRY_EMAILS = [
-  "admin.chemistry@fahimni.test",
-  "teacher.chemistry@fahimni.test",
-  "chem.student01@fahimni.test",
-  "chem.student02@fahimni.test",
-  "chem.student03@fahimni.test",
-  "chem.student04@fahimni.test",
-  "chem.student05@fahimni.test",
-  "chem.student06@fahimni.test",
-  "chem.student07@fahimni.test",
-  "chem.student08@fahimni.test",
-];
-
-const ALL_SEED_EMAILS = [
-  ADMIN.email,
-  ADMIN_2.email,
-  ...TEACHERS.map((t) => t.email),
-  ...LIFECYCLE_TEACHER_EMAILS,
-  ...STUDENTS.map((s) => s.email),
-  ...LEGACY_CHEMISTRY_EMAILS,
-];
-
-async function cleanupSeedOwnedRecords(): Promise<void> {
-  const ownedEmails = ALL_SEED_EMAILS;
-  const ownedUserIds = ALL_SEED_USER_IDS;
-
-  await prisma.$transaction(async (tx) => {
-    const existing = await tx.user.findMany({
-      where: { email: { in: ownedEmails } },
-      select: { id: true },
-    });
-    const ids = [...new Set([...ownedUserIds, ...existing.map((u) => u.id)])];
-    if (ids.length === 0) return;
-
-    await tx.quizAttempt.deleteMany({ where: { studentId: { in: ids } } });
-
-    // Delete lesson progress for ALL lessons owned by the seed teachers (not just
-    // progress owned by seed students — e2e tests may create progress for non-seed
-    // students against seed-owned lessons, which would block lesson deletion below).
-    const ownedLessonIds = await tx.lesson.findMany({
-      where: { chapter: { OR: [{ stage: { teacherId: { in: ids } } }, { teacherId: { in: ids } }] } },
-      select: { id: true },
-    });
-    const olIds = ownedLessonIds.map((l) => l.id);
-    if (olIds.length > 0) {
-      await tx.lessonProgress.deleteMany({ where: { lessonId: { in: olIds } } });
-      await tx.lessonMaterialDownload.deleteMany({ where: { materialId: { in: olIds } } });
-      await tx.lessonMaterial.deleteMany({ where: { lessonId: { in: olIds } } });
-    }
-
-    await tx.enrollment.deleteMany({ where: { studentId: { in: ids } } });
-
-    // Also delete enrollments for chapters owned by seed teachers (e2e tests may
-    // create enrollments for non-seed students on seed-owned chapters).
-    const stageIds = STAGES.map((s) => s.id);
-    const chapterIds = CHAPTERS.map((c) => c.id);
-    await tx.enrollment.deleteMany({ where: { chapterId: { in: chapterIds } } });
-    await tx.paymentTransaction.deleteMany({
-      where: {
-        OR: [
-          { studentId: { in: ids } },
-          { chapterId: { in: chapterIds } },
-        ],
-      },
-    });
-    await tx.aiTutorUsage.deleteMany({ where: { studentId: { in: ids } } });
-
-    const lessonIds = olIds;
-    if (lessonIds.length > 0) {
-      await tx.$executeRaw`DELETE FROM content_chunks WHERE "lessonId" = ANY(${lessonIds}::text[])`;
-    }
-
-    await tx.quizLesson.deleteMany({
-      where: { quiz: { createdBy: { in: ids } } },
-    });
-    await tx.question.deleteMany({
-      where: { quiz: { createdBy: { in: ids } } },
-    });
-    await tx.quiz.deleteMany({ where: { createdBy: { in: ids } } });
-
-    await tx.teacherAiUsageEvent.deleteMany({
-      where: { teacherId: { in: ids } },
-    });
-    await tx.teacherSubscriptionPayment.deleteMany({
-      where: { teacherId: { in: ids } },
-    });
-    await tx.teacherSubscriptionRequest.deleteMany({
-      where: { teacherId: { in: ids } },
-    });
-    await tx.teacherSubscription.deleteMany({
-      where: { teacherId: { in: ids } },
-    });
-    await tx.teacherWithdrawalRequest.deleteMany({
-      where: { teacherId: { in: ids } },
-    });
-
-    await tx.promoCode.deleteMany({
-      where: {
-        OR: [{ createdById: { in: ids } }, { code: { startsWith: "DEMO" } }],
-      },
-    });
-
-    // Platform promo codes reference createdById (RESTRICT) — clear their
-    // redemptions then the codes before the referenced users are deleted.
-    await tx.platformPromoRedemption.deleteMany({
-      where: {
-        OR: [
-          { userId: { in: ids } },
-          { promoCode: { OR: [{ createdById: { in: ids } }, { code: { startsWith: "DEMO" } }] } },
-        ],
-      },
-    });
-    await tx.platformPromoCode.deleteMany({
-      where: {
-        OR: [{ createdById: { in: ids } }, { code: { startsWith: "DEMO" } }],
-      },
-    });
-
-    await tx.lesson.deleteMany({
-      where: { chapter: { OR: [{ stage: { teacherId: { in: ids } } }, { teacherId: { in: ids } }] } },
-    });
-    await tx.chapter.deleteMany({
-      where: { OR: [{ stage: { teacherId: { in: ids } } }, { teacherId: { in: ids } }] },
-    });
-    // Also delete student profiles referencing seed stages (e2e may create profiles
-    // for non-seed students referencing our stages, blocking stage deletion).
-    await tx.studentProfile.deleteMany({
-      where: { OR: [{ userId: { in: ids } }, { stageId: { in: stageIds } }] },
-    });
-    await tx.stage.deleteMany({ where: { teacherId: { in: ids } } });
-    await tx.teacherProfile.deleteMany({ where: { userId: { in: ids } } });
-
-    await tx.auditLog.deleteMany({
-      where: {
-        OR: [{ userId: { in: ids } }, { scopeTeacherId: { in: ids } }],
-      },
-    });
-
-    await tx.teacherRegistrationRequest.deleteMany({
-      where: { publicReference: { startsWith: DEMO_REF_PREFIX } },
-    });
-
-    await tx.user.deleteMany({ where: { id: { in: ids } } });
-  });
+  sortOrder: number;
+}
+interface CustomChapterDef {
+  id: string;
+  name: string;
+  description: string;
+  stageId: string;
+  teacherId: string;
+  sortOrder: number;
+  price: number | null;
+  term: "FIRST_TERM" | "SECOND_TERM";
+  imageUrl: string;
+  lessons: CustomLessonDef[];
 }
 
+function customChapter(
+  key: string,
+  name: string,
+  description: string,
+  stageId: string,
+  teacherId: string,
+  sortOrder: number,
+  price: number | null,
+  term: "FIRST_TERM" | "SECOND_TERM",
+  lessons: Array<{ title: string; description: string; durationMinutes: number }>,
+): CustomChapterDef {
+  return {
+    id: sid(`chapter-${key}`),
+    name,
+    description,
+    stageId,
+    teacherId,
+    sortOrder,
+    price,
+    term,
+    imageUrl: `https://placehold.co/640x360?text=${encodeURIComponent(name)}`,
+    lessons: lessons.map((l, i) => ({
+      id: sid(`lesson-${key}-${i + 1}`),
+      title: l.title,
+      description: l.description,
+      durationMinutes: l.durationMinutes,
+      sortOrder: i + 1,
+    })),
+  };
+}
+
+const CHAPTER_MATTER_STRUCTURE = customChapter(
+  "matter-structure",
+  "الكيمياء — مقدمة في تركيب المادة",
+  "مدخل إلى حالات المادة وتركيب الذرة والجدول الدوري الحديث، تمهيدًا لمنهج الكيمياء في المرحلة الثانوية.",
+  STAGE_1.id,
+  TEACHER_CHEMISTRY.id,
+  1,
+  40,
+  "FIRST_TERM",
+  [
+    {
+      title: "حالات المادة وخواصها",
+      description:
+        "حالات المادة الثلاث (صلبة، سائلة، غازية) وخواص كل حالة، والتغيرات بين الحالات (الانصهار والتجمد والتبخر والتكاثف والتسامي).",
+      durationMinutes: 20,
+    },
+    {
+      title: "تركيب الذرة",
+      description:
+        "مكونات الذرة (البروتونات والنيوترونات والإلكترونات)، والعدد الذري والعدد الكتلي، ومفهوم النظائر.",
+      durationMinutes: 25,
+    },
+    {
+      title: "الجدول الدوري الحديث",
+      description:
+        "تنظيم الجدول الدوري في مجموعات ودورات، والعلاقة بين موضع العنصر وخواصه (نصف القطر الذري، السالبية الكهربية).",
+      durationMinutes: 25,
+    },
+  ],
+);
+
+const CHAPTER_PHYSICAL_QUANTITIES = customChapter(
+  "physical-quantities",
+  "الفيزياء — الكميات الفيزيائية والقياس",
+  "أساسيات القياس في الفيزياء: الفرق بين الكميات القياسية والمتجهة، ووحدات القياس الدولية.",
+  STAGE_1.id,
+  TEACHER_PHYSICS.id,
+  2,
+  null,
+  "FIRST_TERM",
+  [
+    {
+      title: "الكميات القياسية والمتجهة",
+      description:
+        "الفرق بين الكمية القياسية (لها مقدار فقط، مثل الكتلة والزمن) والكمية المتجهة (لها مقدار واتجاه، مثل السرعة المتجهة والقوة).",
+      durationMinutes: 20,
+    },
+    {
+      title: "وحدات القياس الدولية",
+      description:
+        "النظام الدولي للوحدات (SI): الوحدات الأساسية (المتر، الكيلوجرام، الثانية) والوحدات المشتقة، وأهمية توحيد وحدات القياس.",
+      durationMinutes: 20,
+    },
+  ],
+);
+
+const CHAPTER_CHEMICAL_BONDING = customChapter(
+  "chemical-bonding",
+  "الكيمياء — الروابط الكيميائية",
+  "أنواع الروابط الكيميائية بين الذرات وكيفية تفسير خواص المركبات في ضوء نوع الرابطة.",
+  STAGE_2.id,
+  TEACHER_CHEMISTRY.id,
+  1,
+  80,
+  "FIRST_TERM",
+  [
+    {
+      title: "الرابطة الأيونية",
+      description:
+        "تكوّن الرابطة الأيونية بانتقال إلكترون أو أكثر من ذرة فلزية إلى ذرة لا فلزية، وخواص المركبات الأيونية.",
+      durationMinutes: 22,
+    },
+    {
+      title: "الرابطة التساهمية",
+      description:
+        "تكوّن الرابطة التساهمية بمشاركة أزواج من الإلكترونات بين ذرتين لا فلزيتين، والفرق بين الرابطة الأحادية والثنائية والثلاثية.",
+      durationMinutes: 22,
+    },
+    {
+      title: "الرابطة الفلزية",
+      description:
+        "بحر الإلكترونات الحرة بين أيونات الفلز الموجبة، وتفسير التوصيل الكهربي والحراري وقابلية الطرق والسحب في الفلزات.",
+      durationMinutes: 20,
+    },
+  ],
+);
+
+const CHAPTER_SOLUTIONS = customChapter(
+  "solutions",
+  "الكيمياء — المحاليل والتركيز",
+  "أنواع المحاليل وطرق التعبير عن تركيزها والعوامل المؤثرة على الذوبانية.",
+  STAGE_2.id,
+  TEACHER_CHEMISTRY.id,
+  2,
+  60,
+  "SECOND_TERM",
+  [
+    {
+      title: "أنواع المحاليل",
+      description:
+        "المذيب والمذاب، والمحاليل المخففة والمركزة والمشبعة وفوق المشبعة، وأمثلة من محاليل صلبة وسائلة وغازية.",
+      durationMinutes: 20,
+    },
+    {
+      title: "طرق التعبير عن التركيز",
+      description:
+        "التركيز المولاري (مول/لتر) والنسبة المئوية الوزنية والحجمية، وكيفية التحويل بين الوحدات المختلفة.",
+      durationMinutes: 25,
+    },
+    {
+      title: "الذوبانية والعوامل المؤثرة فيها",
+      description:
+        "تعريف الذوبانية، وأثر درجة الحرارة وطبيعة المذيب والمذاب على مقدار الذوبانية.",
+      durationMinutes: 20,
+    },
+  ],
+);
+
+const CUSTOM_CHAPTERS = [
+  CHAPTER_MATTER_STRUCTURE,
+  CHAPTER_PHYSICAL_QUANTITIES,
+  CHAPTER_CHEMICAL_BONDING,
+  CHAPTER_SOLUTIONS,
+];
+
+// ── Custom quizzes for the custom chapters (SINGLE_CHAPTER, real Qs) ────
+
+interface CustomQuestionDef {
+  id: string;
+  type: "MCQ" | "TRUE_FALSE" | "ESSAY";
+  text: string;
+  options: string[];
+  correctAnswer: string | null;
+  explanation: string;
+  points: number;
+}
+interface CustomQuizDef {
+  id: string;
+  title: string;
+  description: string;
+  chapterId: string;
+  createdBy: string;
+  status: "DRAFT" | "PUBLISHED";
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+  questions: CustomQuestionDef[];
+}
+
+function mcq(
+  id: string,
+  text: string,
+  options: string[],
+  correctAnswer: string,
+  explanation: string,
+): CustomQuestionDef {
+  return { id, type: "MCQ", text, options, correctAnswer, explanation, points: 2 };
+}
+function tf(id: string, text: string, correctAnswer: string, explanation: string): CustomQuestionDef {
+  return { id, type: "TRUE_FALSE", text, options: [...TF_OPTIONS], correctAnswer, explanation, points: 1 };
+}
+
+const QUIZ_MATTER_STRUCTURE: CustomQuizDef = {
+  id: sid("quiz-matter-structure"),
+  title: "اختبار مقدمة في تركيب المادة",
+  description: "أسئلة على حالات المادة وتركيب الذرة والجدول الدوري.",
+  chapterId: CHAPTER_MATTER_STRUCTURE.id,
+  createdBy: TEACHER_CHEMISTRY.id,
+  status: "PUBLISHED",
+  difficulty: "EASY",
+  questions: [
+    mcq(
+      sid("q-matter-1"),
+      "ما عدد البروتونات في ذرة متعادلة عددها الذري 8؟",
+      ["8", "16", "6", "10"],
+      "8",
+      "العدد الذري يساوي عدد البروتونات في النواة، وفي الذرة المتعادلة يساوي أيضًا عدد الإلكترونات.",
+    ),
+    tf(
+      sid("q-matter-2"),
+      "تحتفظ المادة بشكلها وحجمها الثابتين في الحالة الغازية.",
+      TF_FALSE,
+      "الغازات ليس لها شكل أو حجم ثابت؛ فهي تملأ الإناء الذي توضع فيه بالكامل.",
+    ),
+  ],
+};
+
+const QUIZ_PHYSICAL_QUANTITIES: CustomQuizDef = {
+  id: sid("quiz-physical-quantities"),
+  title: "اختبار الكميات الفيزيائية والقياس",
+  description: "أسئلة على الكميات القياسية والمتجهة ووحدات القياس الدولية.",
+  chapterId: CHAPTER_PHYSICAL_QUANTITIES.id,
+  createdBy: TEACHER_PHYSICS.id,
+  status: "PUBLISHED",
+  difficulty: "EASY",
+  questions: [
+    mcq(
+      sid("q-physq-1"),
+      "أي مما يلي كمية متجهة؟",
+      ["السرعة المتجهة", "الكتلة", "الزمن", "درجة الحرارة"],
+      "السرعة المتجهة",
+      "الكمية المتجهة لها مقدار واتجاه معًا، والسرعة المتجهة تتحدد بمقدارها واتجاه الحركة.",
+    ),
+    tf(
+      sid("q-physq-2"),
+      "وحدة القياس الدولية للكتلة هي الجرام.",
+      TF_FALSE,
+      "الوحدة الدولية القياسية للكتلة هي الكيلوجرام (kg) وليس الجرام.",
+    ),
+  ],
+};
+
+const QUIZ_CHEMICAL_BONDING: CustomQuizDef = {
+  id: sid("quiz-chemical-bonding"),
+  title: "اختبار الروابط الكيميائية",
+  description: "أسئلة على أنواع الروابط الكيميائية بين الذرات.",
+  chapterId: CHAPTER_CHEMICAL_BONDING.id,
+  createdBy: TEACHER_CHEMISTRY.id,
+  status: "PUBLISHED",
+  difficulty: "MEDIUM",
+  questions: [
+    mcq(
+      sid("q-bond-1"),
+      "أي نوع من الروابط ينتج عن انتقال إلكترونات من ذرة إلى أخرى؟",
+      ["الرابطة الأيونية", "الرابطة التساهمية", "الرابطة الفلزية", "رابطة هيدروجينية"],
+      "الرابطة الأيونية",
+      "الرابطة الأيونية تنشأ من انتقال إلكترون أو أكثر من ذرة فلزية إلى ذرة لا فلزية.",
+    ),
+    tf(
+      sid("q-bond-2"),
+      "الرابطة التساهمية تنشأ عن مشاركة زوج أو أكثر من الإلكترونات بين ذرتين.",
+      TF_TRUE,
+      "المشاركة الإلكترونية بين ذرتين لا فلزيتين تكوّن الرابطة التساهمية.",
+    ),
+  ],
+};
+
+// Deliberately DRAFT — demonstrates the visibility/status toggle at stage-2
+// level too (stage 3's catalog already has its own draft quiz).
+const QUIZ_SOLUTIONS: CustomQuizDef = {
+  id: sid("quiz-solutions"),
+  title: "اختبار المحاليل والتركيز",
+  description: "أسئلة على أنواع المحاليل وطرق التعبير عن التركيز.",
+  chapterId: CHAPTER_SOLUTIONS.id,
+  createdBy: TEACHER_CHEMISTRY.id,
+  status: "DRAFT",
+  difficulty: "HARD",
+  questions: [
+    mcq(
+      sid("q-sol-1"),
+      "وحدة قياس التركيز المولاري هي:",
+      ["مول/لتر", "جرام/مول", "لتر/مول", "مول فقط"],
+      "مول/لتر",
+      "التركيز المولاري يُعبَّر عنه بعدد مولات المذاب مقسومًا على حجم المحلول باللتر.",
+    ),
+    tf(
+      sid("q-sol-2"),
+      "زيادة درجة الحرارة تزيد دائمًا من ذوبانية جميع المواد الصلبة في الماء.",
+      TF_FALSE,
+      "معظم المواد الصلبة تزداد ذوبانيتها بارتفاع الحرارة، لكن توجد استثناءات تقل فيها الذوبانية بارتفاع الحرارة.",
+    ),
+  ],
+};
+
+const CUSTOM_QUIZZES = [
+  QUIZ_MATTER_STRUCTURE,
+  QUIZ_PHYSICAL_QUANTITIES,
+  QUIZ_CHEMICAL_BONDING,
+  QUIZ_SOLUTIONS,
+];
+
+// ── Extra stage-3 quizzes demonstrating MULTI_CHAPTER / FULL_CURRICULUM ──
+// (the reused chemistry-quiz-catalog only covers SINGLE_CHAPTER + intra-
+// chapter SELECTED_LESSONS; these two are additive, on top of it.)
+
+const CHEM_CH1_ID = CHEMISTRY_CHAPTER_DEFS[0]!.id; // العناصر الانتقالية
+const CHEM_CH2_ID = CHEMISTRY_CHAPTER_DEFS[1]!.id; // التحليل الكيميائي
+
+const QUIZ_MULTI_CHAPTER_REVIEW = {
+  id: sid("quiz-multi-chapter-review"),
+  title: "مراجعة شاملة — الوحدتان الأولى والثانية",
+  description: "اختبار مراجعة يغطي العناصر الانتقالية والتحليل الكيميائي معًا.",
+  chapterId: CHEM_CH1_ID,
+  sourceChapterIds: [CHEM_CH1_ID, CHEM_CH2_ID],
+  createdBy: TEACHER_CHEMISTRY.id,
+  status: "PUBLISHED" as const,
+  questions: [
+    mcq(
+      sid("q-multi-1"),
+      "أي مما يلي مثال على عنصر انتقالي؟",
+      ["الحديد", "الصوديوم", "الكالسيوم", "الكلور"],
+      "الحديد",
+      "الحديد عنصر انتقالي يُظهر أكثر من حالة تأكسد بسبب تقارب طاقات مستويات (n-1)d و ns.",
+    ),
+    tf(
+      sid("q-multi-2"),
+      "يمكن استخدام المعايرة لتحديد تركيز حمض مجهول.",
+      TF_TRUE,
+      "المعايرة تعتمد على تفاعل كمية معلومة من قاعدة قياسية مع الحمض المجهول لحساب تركيزه.",
+    ),
+    {
+      id: sid("q-multi-3"),
+      type: "ESSAY" as const,
+      text: "قارن بين التحليل الكيفي والتحليل الكمي في الكيمياء التحليلية.",
+      options: [],
+      correctAnswer: null,
+      explanation:
+        "التحليل الكيفي يحدد نوع المكونات الموجودة، بينما التحليل الكمي يحدد كمياتها بدقة باستخدام أساليب مثل المعايرة والوزن.",
+      points: 3,
+    },
+  ],
+};
+
+const QUIZ_FULL_CURRICULUM_FINAL = {
+  id: sid("quiz-full-curriculum-final"),
+  title: "الاختبار الشامل النهائي — الصف الثالث الثانوي",
+  description: "اختبار شامل يغطي منهج الكيمياء بالكامل للصف الثالث الثانوي.",
+  chapterId: CHEM_CH1_ID,
+  createdBy: TEACHER_CHEMISTRY.id,
+  status: "PUBLISHED" as const,
+  questions: [
+    mcq(
+      sid("q-final-1"),
+      "في الخلية الجلفانية، يحدث الاختزال عند:",
+      ["المهبط (الكاثود)", "المصعد (الأنود)", "المحلول الوسيط", "لا يحدث اختزال"],
+      "المهبط (الكاثود)",
+      "الاختزال (اكتساب إلكترونات) يحدث دائمًا عند المهبط في الخلية الجلفانية.",
+    ),
+    tf(
+      sid("q-final-2"),
+      "البوليمرات الطبيعية مثل النشا والسليولوز تتكون من وحدات جلوكوز متكررة.",
+      TF_TRUE,
+      "كلاهما بوليمر طبيعي أساسه وحدات الجلوكوز، لكنهما يختلفان في نوع الرابطة بين الوحدات.",
+    ),
+    {
+      id: sid("q-final-3"),
+      type: "ESSAY" as const,
+      text: "اشرح العلاقة بين مبدأ لوشاتلييه وتوقع اتجاه انزياح الاتزان عند تغيير الظروف.",
+      options: [],
+      correctAnswer: null,
+      explanation:
+        "ينص المبدأ على أن النظام الموجود في اتزان يقاوم أي تغيير خارجي بالانزياح في الاتجاه الذي يقلل من أثر هذا التغيير.",
+      points: 3,
+    },
+  ],
+};
+
+// ── Promo codes ───────────────────────────────────────────────────────
+// PlatformPromoCode (admin-managed, COURSE_PURCHASE) — active / expired / disabled.
+const PROMO_ACTIVE = {
+  id: sid("promo-active"),
+  code: "WELCOME10",
+  discountValue: 10,
+};
+const PROMO_EXPIRED = {
+  id: sid("promo-expired"),
+  code: "SUMMER23",
+  discountValue: 15,
+};
+const PROMO_DISABLED = {
+  id: sid("promo-disabled"),
+  code: "OLDPROMO",
+  discountValue: 20,
+};
+
+// PromoCode (teacher single-use, chapter-bound) — one used, one still available.
+const TEACHER_PROMO_USED = {
+  id: sid("teacher-promo-used"),
+  code: "AHMED001",
+  chapterId: CHAPTER_CHEMICAL_BONDING.id,
+};
+const TEACHER_PROMO_UNUSED = {
+  id: sid("teacher-promo-unused"),
+  code: "AHMED002",
+  chapterId: CHAPTER_SOLUTIONS.id,
+};
+
+// ── Seed ────────────────────────────────────────────────────────────────
+
 async function seedAll(): Promise<void> {
-  const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, BCRYPT_ROUNDS);
-  const demoPasswordHash = passwordHash;
+  const passwordHash = await bcrypt.hash(SEED_SHARED_PASSWORD, BCRYPT_ROUNDS);
 
   await prisma.$transaction(
     async (tx) => {
-      // 1. Upsert Teacher Plans (canonical catalog)
+      // 1. Teacher plan catalog (canonical, unrelated to accounts).
       for (const plan of TEACHER_PLANS) {
         await tx.teacherPlan.upsert({
           where: { code: plan.code },
@@ -589,7 +611,7 @@ async function seedAll(): Promise<void> {
             displayName: plan.displayName,
             description: plan.description,
             monthlyPrice: plan.monthlyPrice,
-            yearlyPrice: plan.yearlyPrice ?? undefined,
+            yearlyPrice: plan.yearlyPrice,
             currency: plan.currency,
             billingInterval: plan.billingInterval,
             isActive: plan.isActive,
@@ -604,7 +626,7 @@ async function seedAll(): Promise<void> {
             displayName: plan.displayName,
             description: plan.description,
             monthlyPrice: plan.monthlyPrice,
-            yearlyPrice: plan.yearlyPrice ?? undefined,
+            yearlyPrice: plan.yearlyPrice,
             currency: plan.currency,
             billingInterval: plan.billingInterval,
             isActive: plan.isActive,
@@ -616,255 +638,165 @@ async function seedAll(): Promise<void> {
         });
       }
 
-      // 2. Create Admin
-      // emailVerified is set explicitly (true) rather than relying on the schema
-      // default — ADMIN accounts are also exempt from the login verification gate
-      // by role regardless of this value (see AuthService.loginUser), but seeding
-      // it explicitly keeps the data self-documenting.
+      // 2. Admin.
       await tx.user.upsert({
         where: { email: ADMIN.email },
-        update: { status: "ACTIVE", fullName: ADMIN.fullName, emailVerified: true },
+        update: { fullName: ADMIN.fullName, status: "ACTIVE", emailVerified: true },
         create: {
           id: ADMIN.id,
           email: ADMIN.email,
           fullName: ADMIN.fullName,
           mobile: ADMIN.mobile,
-          password: demoPasswordHash,
-          role: ADMIN.role,
+          password: passwordHash,
+          role: "ADMIN",
           status: "ACTIVE",
           emailVerified: true,
         },
       });
 
-      // 2b. Create Second Admin
-      await tx.user.upsert({
-        where: { email: ADMIN_2.email },
-        update: { status: "ACTIVE", fullName: ADMIN_2.fullName, emailVerified: true },
-        create: {
-          id: ADMIN_2.id,
-          email: ADMIN_2.email,
-          fullName: ADMIN_2.fullName,
-          mobile: ADMIN_2.mobile,
-          password: demoPasswordHash,
-          role: ADMIN_2.role,
-          status: "ACTIVE",
-          emailVerified: true,
-        },
-      });
-
-      // 3. Create Teachers
-      for (let ti = 0; ti < TEACHERS.length; ti++) {
-        const t = TEACHERS[ti]!;
-
-        // Determine teacher-specific status and approval state.
-        const teacherStatus =
-          t.id === sid("teacher-banned") ? "BANNED" as const :
-          t.id === sid("teacher-inactive") ? "INACTIVE" as const :
-          "ACTIVE" as const;
-        const teacherApproval =
-          t.id === sid("teacher-banned") ? "APPROVED" as const :
-          t.id === sid("teacher-inactive") ? "APPROVED" as const :
-          "APPROVED" as const;
-
+      // 3. Teachers (approved/active).
+      for (const t of [TEACHER_CHEMISTRY, TEACHER_PHYSICS]) {
         await tx.user.upsert({
           where: { email: t.email },
-          update: { status: teacherStatus, fullName: t.fullName, teacherApprovalState: teacherApproval, emailVerified: true },
+          update: {
+            fullName: t.fullName,
+            status: "ACTIVE",
+            teacherApprovalState: "APPROVED",
+            emailVerified: true,
+          },
           create: {
             id: t.id,
             email: t.email,
             fullName: t.fullName,
             mobile: t.mobile,
-            password: demoPasswordHash,
-            role: t.role,
-            status: teacherStatus,
-            teacherApprovalState: teacherApproval,
-            // Demo fixture, approved from the start — not the self-registration
-            // flow that now requires verification, so pre-verified for immediate use.
+            password: passwordHash,
+            role: "OPERATION",
+            status: "ACTIVE",
+            teacherApprovalState: "APPROVED",
             emailVerified: true,
           },
         });
-        const payoutFields = {
-          instaPayHandle: ("instaPayHandle" in t ? t.instaPayHandle : null) ?? null,
-          vodafoneCashNumber:
-            ("vodafoneCashNumber" in t ? t.vodafoneCashNumber : null) ?? null,
-          payoutMethodUpdatedAt:
-            ("instaPayHandle" in t || "vodafoneCashNumber" in t) ? daysAgo(1) : null,
-        };
         await tx.teacherProfile.upsert({
           where: { userId: t.id },
-          update: { subject: t.subject, bio: t.bio, ...payoutFields },
-          create: {
-            id: t.profileId,
-            userId: t.id,
-            subject: t.subject,
-            bio: t.bio,
-            aiTutorDailyQueryLimit: 30,
-            ...payoutFields,
-          },
+          update: { subject: t.subject, bio: t.bio },
+          create: { id: t.profileId, userId: t.id, subject: t.subject, bio: t.bio },
         });
       }
 
-      // Teacher lifecycle demo accounts (unified-registration flow):
-      //  - pending: INACTIVE + PENDING_REVIEW, linked to a PENDING request.
-      //  - rejected: INACTIVE + REJECTED, linked to a REJECTED request.
-      //  - approved-free: APPROVED + ACTIVE, no paid subscription → FREE plan
-      //    (full access, NOT blocked; can upgrade any time).
-      //  - pending-payment-only / failed-payment-only: APPROVED + ACTIVE with a
-      //    PENDING / FAILED payment but NO active subscription → still FREE
-      //    (an unconfirmed/failed payment neither upgrades nor removes FREE access).
-      const LIFECYCLE_TEACHERS = [
-        {
-          id: sid("teacher-pending"),
-          profileId: sid("profile-pending"),
-          email: "teacher.pending" + DEMO_EMAIL_DOMAIN,
-          fullName: "أ. سلمى المدرّسة المنتظرة",
-          mobile: "01000000040",
-          subject: "الأحياء",
-          bio: "مدرّسة أحياء بانتظار مراجعة الإدارة.",
-          state: "PENDING_REVIEW" as const,
-          status: "INACTIVE" as const,
+      // 3b. Pending-review teacher — no profile/content yet; exists to
+      // exercise the admin approval flow.
+      await tx.user.upsert({
+        where: { email: TEACHER_PENDING.email },
+        update: {
+          fullName: TEACHER_PENDING.fullName,
+          status: "INACTIVE",
+          teacherApprovalState: "PENDING_REVIEW",
+          emailVerified: true,
         },
-        {
-          id: sid("teacher-rejected-user"),
-          profileId: sid("profile-rejected-user"),
-          email: "teacher.rejected.user" + DEMO_EMAIL_DOMAIN,
-          fullName: "أ. سامي المدرّس المرفوض",
-          mobile: "01000000050",
-          subject: "اللغة الإنجليزية",
-          bio: "طلب مرفوض من الإدارة.",
-          state: "REJECTED" as const,
-          status: "INACTIVE" as const,
+        create: {
+          id: TEACHER_PENDING.id,
+          email: TEACHER_PENDING.email,
+          fullName: TEACHER_PENDING.fullName,
+          mobile: TEACHER_PENDING.mobile,
+          password: passwordHash,
+          role: "OPERATION",
+          status: "INACTIVE",
+          teacherApprovalState: "PENDING_REVIEW",
+          emailVerified: true,
         },
-        {
-          id: sid("teacher-rejected-editable"),
-          profileId: sid("profile-rejected-editable"),
-          email: "teacher.rejected.editable" + DEMO_EMAIL_DOMAIN,
-          fullName: "أ. ندى المدرّسة المرفوضة القابلة للتعديل",
-          mobile: "01000000055",
-          subject: "العلوم",
-          bio: "طلب مرفوض مع إمكانية التعديل.",
-          state: "REJECTED" as const,
-          status: "INACTIVE" as const,
+      });
+      await tx.teacherRegistrationRequest.upsert({
+        where: { publicReference: "REALSEED_REQ_001" },
+        update: { status: "PENDING", userId: TEACHER_PENDING.id },
+        create: {
+          id: sid("req-pending-youssef"),
+          publicReference: "REALSEED_REQ_001",
+          fullName: TEACHER_PENDING.fullName,
+          email: TEACHER_PENDING.email,
+          mobile: TEACHER_PENDING.mobile,
+          subject: TEACHER_PENDING.subject,
+          bio: TEACHER_PENDING.bio,
+          status: "PENDING",
+          proofDocuments: [
+            {
+              originalName: "certificate.pdf",
+              mimeType: "application/pdf",
+              size: 12345,
+              path: "teacher-registration-requests/REALSEED/certificate.pdf",
+            },
+          ],
+          userId: TEACHER_PENDING.id,
         },
-        {
-          // Approved, has a PENDING (unconfirmed) payment but no active subscription
-          // → still FREE (a pending payment does not upgrade).
-          id: sid("teacher-pending-payment"),
-          profileId: sid("profile-pending-payment"),
-          email: "teacher.pending.payment" + DEMO_EMAIL_DOMAIN,
-          fullName: "أ. مراد صاحب الدفع المعلّق",
-          mobile: "01000000070",
-          subject: "الجغرافيا",
-          bio: "معتمد، لديه عملية دفع بانتظار التأكيد — يبقى على الباقة المجانية.",
-          state: "APPROVED" as const,
-          status: "ACTIVE" as const,
-        },
-        {
-          // Approved, has a FAILED payment but no active subscription → still FREE
-          // (a failed payment neither upgrades nor removes FREE access).
-          id: sid("teacher-failed-payment"),
-          profileId: sid("profile-failed-payment"),
-          email: "teacher.failed.payment" + DEMO_EMAIL_DOMAIN,
-          fullName: "أ. هالة صاحبة الدفع الفاشل",
-          mobile: "01000000080",
-          subject: "الفلسفة",
-          bio: "معتمدة، فشلت عملية الدفع الأخيرة — تبقى على الباقة المجانية.",
-          state: "APPROVED" as const,
-          status: "ACTIVE" as const,
-        },
-        {
-          // Clean teacher — has NO content, no subscriptions, no payments.
-          // Useful for positive role-change tests (OPERATION → STUDENT).
-          id: sid("teacher-clean"),
-          profileId: sid("profile-clean-teacher"),
-          email: "teacher.clean" + DEMO_EMAIL_DOMAIN,
-          fullName: "أ. نظيف المدرّس — بدون محتوى",
-          mobile: "01000000090",
-          subject: "اللغة العربية",
-          bio: "معلم بدون أي محتوى أو اشتراكات — للاختبار.",
-          state: "APPROVED" as const,
-          status: "ACTIVE" as const,
-        },
-      ];
-      for (const lt of LIFECYCLE_TEACHERS) {
-        await tx.user.upsert({
-          where: { email: lt.email },
-          update: { status: lt.status, fullName: lt.fullName, teacherApprovalState: lt.state, emailVerified: true },
-          create: {
-            id: lt.id,
-            email: lt.email,
-            fullName: lt.fullName,
-            mobile: lt.mobile,
-            password: demoPasswordHash,
-            role: "OPERATION",
-            status: lt.status,
-            teacherApprovalState: lt.state,
-            // Pre-verified: these fixtures demo the PENDING_REVIEW/REJECTED teacher
-            // login UX specifically, which requires reaching the login endpoint's
-            // teacher-lifecycle branch — an unverified email would be blocked before
-            // ever getting there.
-            emailVerified: true,
-          },
-        });
-        await tx.teacherProfile.upsert({
-          where: { userId: lt.id },
-          update: { subject: lt.subject, bio: lt.bio },
-          create: { id: lt.profileId, userId: lt.id, subject: lt.subject, bio: lt.bio },
-        });
-      }
+      });
 
-      // 4. Create Students
+      // 4. Students.
       for (const s of STUDENTS) {
         await tx.user.upsert({
           where: { email: s.email },
-          update: { status: "ACTIVE", fullName: s.fullName, emailVerified: s.emailVerified },
+          update: { fullName: s.fullName, status: "ACTIVE", emailVerified: s.emailVerified },
           create: {
             id: s.id,
             email: s.email,
             fullName: s.fullName,
             mobile: s.mobile,
-            password: demoPasswordHash,
-            role: s.role,
+            password: passwordHash,
+            role: "STUDENT",
             status: "ACTIVE",
             emailVerified: s.emailVerified,
           },
         });
       }
+      // Stage assignment: Mona Tarek + Omar Khaled → 3rd secondary,
+      // Youssef Hassan → 2nd secondary, Nour Ibrahim + Laila Mostafa → 1st secondary.
+      const STUDENT_STAGE: Record<string, string> = {
+        [MONA_TAREK!.id]: STAGE_3.id,
+        [OMAR_KHALED!.id]: STAGE_3.id,
+        [YOUSSEF_HASSAN!.id]: STAGE_2.id,
+        [NOUR_IBRAHIM!.id]: STAGE_1.id,
+        [LAILA_MOSTAFA!.id]: STAGE_1.id,
+      };
 
-      // 5. Create Stages
-      const planFreeId = (await tx.teacherPlan.findUnique({
-        where: { code: "FREE" },
-        select: { id: true },
-      }))!.id;
-      const planBasicId = (await tx.teacherPlan.findUnique({
-        where: { code: "BASIC" },
-        select: { id: true },
-      }))!.id;
-      const planProId = (await tx.teacherPlan.findUnique({
-        where: { code: "PRO" },
-        select: { id: true },
-      }))!.id;
-
+      // 5. Stages (platform-owned).
       for (const st of STAGES) {
         await tx.stage.upsert({
           where: { id: st.id },
           update: {
             name: st.name,
+            nameAr: st.nameAr,
+            nameEn: st.nameEn,
             description: st.description,
+            descriptionAr: st.descriptionAr,
+            descriptionEn: st.descriptionEn,
             sortOrder: st.sortOrder,
+            isActive: true,
+            teacherId: null,
           },
           create: {
             id: st.id,
             name: st.name,
+            nameAr: st.nameAr,
+            nameEn: st.nameEn,
             description: st.description,
+            descriptionAr: st.descriptionAr,
+            descriptionEn: st.descriptionEn,
             sortOrder: st.sortOrder,
-            teacherId: TEACHERS[st.teacherIdx]!.id,
+            isActive: true,
+            teacherId: null,
           },
         });
       }
 
-      // 6. Create Chapters
-      for (const ch of CHAPTERS) {
+      // 5b. Student profiles (needs stages to exist).
+      for (const s of STUDENTS) {
+        await tx.studentProfile.upsert({
+          where: { userId: s.id },
+          update: { stageId: STUDENT_STAGE[s.id]! },
+          create: { id: s.profileId, userId: s.id, stageId: STUDENT_STAGE[s.id]! },
+        });
+      }
+
+      // 6. Custom chapters + lessons (stages 1 & 2).
+      for (const ch of CUSTOM_CHAPTERS) {
         await tx.chapter.upsert({
           where: { id: ch.id },
           update: {
@@ -872,1563 +804,702 @@ async function seedAll(): Promise<void> {
             description: ch.description,
             sortOrder: ch.sortOrder,
             price: ch.price,
-            teacherId: TEACHERS[ch.teacherIdx]!.id,
+            term: ch.term,
+            imageUrl: ch.imageUrl,
+            isVisible: true,
+            stageId: ch.stageId,
+            teacherId: ch.teacherId,
+            deletedAt: null,
           },
           create: {
             id: ch.id,
             name: ch.name,
             description: ch.description,
             sortOrder: ch.sortOrder,
-            stageId: ch.stageId,
             price: ch.price,
-            teacherId: TEACHERS[ch.teacherIdx]!.id,
+            term: ch.term,
+            imageUrl: ch.imageUrl,
+            isVisible: true,
+            stageId: ch.stageId,
+            teacherId: ch.teacherId,
+          },
+        });
+        for (const l of ch.lessons) {
+          await tx.lesson.upsert({
+            where: { id: l.id },
+            update: {
+              title: l.title,
+              description: l.description,
+              durationMinutes: l.durationMinutes,
+              sortOrder: l.sortOrder,
+              chapterId: ch.id,
+              deletedAt: null,
+            },
+            create: {
+              id: l.id,
+              title: l.title,
+              description: l.description,
+              durationMinutes: l.durationMinutes,
+              sortOrder: l.sortOrder,
+              chapterId: ch.id,
+            },
+          });
+        }
+      }
+
+      // 7. Stage-3 chapters + lessons (reused, tested real chemistry catalog).
+      const chemLessons = buildChemistryLessonCatalog();
+      const chemChapterPrices = [null, 45, 55, 65, 75] as const;
+      const chemChapterTerms = [
+        "FIRST_TERM",
+        "FIRST_TERM",
+        "SECOND_TERM",
+        "SECOND_TERM",
+        "SECOND_TERM",
+      ] as const;
+      const chemChapterDescriptions = [
+        "دراسة العناصر الانتقالية وخواصها المميزة وحالات تأكسدها المتعددة.",
+        "أساليب التحليل الكيفي والكمي في الكيمياء، بما في ذلك المعايرة وحساباتها.",
+        "مفهوم الاتزان الديناميكي وثابت الاتزان والعوامل المؤثرة على موضع الاتزان.",
+        "الخلايا الجلفانية والتحليل الكهربي وقوانين فاراداي في الكيمياء الكهربية.",
+        "الهيدروكربونات والكحولات والأحماض الكربوكسيلية والبوليمرات في الكيمياء العضوية.",
+      ];
+      for (let ci = 0; ci < CHEMISTRY_CHAPTER_DEFS.length; ci++) {
+        const chDef = CHEMISTRY_CHAPTER_DEFS[ci]!;
+        await tx.chapter.upsert({
+          where: { id: chDef.id },
+          update: {
+            name: chDef.name,
+            description: chemChapterDescriptions[ci]!,
+            sortOrder: ci + 1,
+            price: chemChapterPrices[ci] ?? null,
+            term: chemChapterTerms[ci] ?? "FIRST_TERM",
+            imageUrl: `https://placehold.co/640x360?text=${encodeURIComponent(chDef.name)}`,
+            isVisible: true,
+            stageId: STAGE_3.id,
+            teacherId: TEACHER_CHEMISTRY.id,
+            deletedAt: null,
+          },
+          create: {
+            id: chDef.id,
+            name: chDef.name,
+            description: chemChapterDescriptions[ci]!,
+            sortOrder: ci + 1,
+            price: chemChapterPrices[ci] ?? null,
+            term: chemChapterTerms[ci] ?? "FIRST_TERM",
+            imageUrl: `https://placehold.co/640x360?text=${encodeURIComponent(chDef.name)}`,
+            isVisible: true,
+            stageId: STAGE_3.id,
+            teacherId: TEACHER_CHEMISTRY.id,
           },
         });
       }
-
-      // 7. Create Lessons
-      for (const l of LESSONS) {
+      for (const l of chemLessons) {
         await tx.lesson.upsert({
           where: { id: l.id },
           update: {
             title: l.title,
+            description: l.description,
             durationMinutes: l.durationMinutes,
+            youtubeUrl: l.youtubeUrl,
             sortOrder: l.sortOrder,
+            chapterId: l.chapterId,
+            deletedAt: null,
           },
           create: {
             id: l.id,
             title: l.title,
-            description: null,
+            description: l.description,
             durationMinutes: l.durationMinutes,
-            youtubeUrl: null,
+            youtubeUrl: l.youtubeUrl,
             sortOrder: l.sortOrder,
             chapterId: l.chapterId,
-            requiredQuizId: null,
           },
         });
       }
 
-      // 8. Create Student Profiles
-      const stageAssignment = new Map<string, number>();
-      stageAssignment.set(sid("student-banned-stage"), 3);
-      stageAssignment.set(sid("student-inactive-stage"), 4);
-      stageAssignment.set(sid("student-approved-free-stage"), 5);
-
-      for (const s of STUDENTS) {
-        const stageIdx = stageAssignment.get(s.id) ?? 0;
-        if (s.id === sid("student-clean")) {
-          await tx.studentProfile.upsert({
-            where: { userId: s.id },
-            update: {},
-            create: {
-              id: s.profileId,
-              userId: s.id,
-              stageId: STAGES[stageIdx]!.id,
+      // 8. Custom quizzes + questions (stages 1 & 2).
+      for (const q of CUSTOM_QUIZZES) {
+        const totalPoints = q.questions.reduce((sum, item) => sum + item.points, 0);
+        await tx.quiz.upsert({
+          where: { id: q.id },
+          update: {
+            title: q.title,
+            description: q.description,
+            chapterId: q.chapterId,
+            status: q.status,
+            questionCount: q.questions.length,
+            totalPoints,
+            durationMinutes: 15,
+            passingScore: 50,
+            difficulty: q.difficulty,
+            createdBy: q.createdBy,
+            publishedAt: q.status === "PUBLISHED" ? now : null,
+          },
+          create: {
+            id: q.id,
+            title: q.title,
+            description: q.description,
+            chapterId: q.chapterId,
+            status: q.status,
+            questionCount: q.questions.length,
+            totalPoints,
+            durationMinutes: 15,
+            passingScore: 50,
+            difficulty: q.difficulty,
+            createdBy: q.createdBy,
+            publishedAt: q.status === "PUBLISHED" ? now : null,
+          },
+        });
+        for (const [i, question] of q.questions.entries()) {
+          await tx.question.upsert({
+            where: { id: question.id },
+            update: {
+              quizId: q.id,
+              type: question.type,
+              text: question.text,
+              options: question.options as unknown as Prisma.InputJsonValue,
+              correctAnswer: question.correctAnswer,
+              explanation: question.explanation,
+              sortOrder: i + 1,
+              points: question.points,
             },
-          });
-        } else {
-          await tx.studentProfile.upsert({
-            where: { userId: s.id },
-            update: { stageId: STAGES[stageIdx]!.id },
             create: {
-              id: s.profileId,
-              userId: s.id,
-              stageId: STAGES[stageIdx]!.id,
+              id: question.id,
+              quizId: q.id,
+              type: question.type,
+              text: question.text,
+              options: question.options as unknown as Prisma.InputJsonValue,
+              correctAnswer: question.correctAnswer,
+              explanation: question.explanation,
+              sortOrder: i + 1,
+              points: question.points,
             },
           });
         }
       }
 
-      // 9. Create Quizzes & Questions
-      const quizDefs = [
-        {
-          id: sid("quiz-math-pub"),
-          title: "اختبار الجبر — الدوال",
-          chapterId: CHAPTERS[0]!.id,
-          status: "PUBLISHED" as const,
-          desc: "أسئلة على الدوال الجبرية",
-          pub: true,
-        },
-        {
-          id: sid("quiz-math-draft"),
-          title: "اختبار التفاضل (مسودة)",
-          chapterId: CHAPTERS[1]!.id,
-          status: "DRAFT" as const,
-          desc: "مسودة اختبار التفاضل",
-          pub: false,
-        },
-        {
-          id: sid("quiz-physics-pub"),
-          title: "اختبار الميكانيكا",
-          chapterId: CHAPTERS[2]!.id,
-          status: "PUBLISHED" as const,
-          desc: "أسئلة على قوانين نيوتن",
-          pub: true,
-        },
-        {
-          id: sid("quiz-physics-draft"),
-          title: "اختبار الكهرباء (مسودة)",
-          chapterId: CHAPTERS[3]!.id,
-          status: "DRAFT" as const,
-          desc: "مسودة اختبار الكهرباء",
-          pub: false,
-        },
-        {
-          id: sid("quiz-chem-pub"),
-          title: "اختبار الكيمياء العامة",
-          chapterId: CHAPTERS[4]!.id,
-          status: "PUBLISHED" as const,
-          desc: "أسئلة على الذرة والروابط",
-          pub: true,
-        },
-        {
-          id: sid("quiz-chem-draft"),
-          title: "اختبار الكيمياء العضوية (مسودة)",
-          chapterId: CHAPTERS[5]!.id,
-          status: "DRAFT" as const,
-          desc: "مسودة اختبار الكيمياء العضوية",
-          pub: false,
-        },
+      // 9. Stage-3 chapter quizzes + questions (reused chemistry catalog:
+      // SINGLE_CHAPTER, mixes PUBLISHED/DRAFT + CHAPTER/SELECTED_LESSONS).
+      const chemQuizzes = buildChemistryQuizCatalog();
+      // Order matches buildChemistryQuizCatalog()'s own push order: 5 chapter
+      // quizzes (transition elements, analysis, equilibrium, electrochemistry,
+      // organic), then optional-lesson, gate, and multi-lesson quizzes.
+      const chemQuizDifficulties: Array<"EASY" | "MEDIUM" | "HARD"> = [
+        "MEDIUM",
+        "EASY",
+        "HARD",
+        "MEDIUM",
+        "HARD",
+        "EASY",
+        "EASY",
+        "MEDIUM",
       ];
-
-      // Result-visibility settings varied across the published single-chapter
-      // quizzes below (resultSettingsConfigured + the nullable show* booleans +
-      // pendingEssayResultMode) — quiz-math-pub is left at 100% schema defaults
-      // (legacy/unconfigured case); the other two exercise two different
-      // configured policies, including two of the three PendingEssayResultMode
-      // values. The multi-chapter/full-curriculum quizzes below exercise the
-      // third value plus a partially-configured case.
-      type QuizVisibilitySettings = {
-        resultSettingsConfigured: boolean;
-        showCorrectAnswers?: boolean;
-        showPerQuestionScores?: boolean;
-        showFinalScore?: boolean;
-        showStudentAnswers?: boolean;
-        showExplanations?: boolean;
-        pendingEssayResultMode?: "HIDE_ALL_RESULTS" | "SHOW_OBJECTIVE_ONLY" | "SHOW_OBJECTIVE_WITH_PENDING_MESSAGE";
-      };
-      const QUIZ_VISIBILITY: Record<string, QuizVisibilitySettings> = {
-        [sid("quiz-physics-pub")]: {
-          resultSettingsConfigured: true,
-          showCorrectAnswers: true,
-          showPerQuestionScores: true,
-          showFinalScore: true,
-          showStudentAnswers: false,
-          showExplanations: true,
-          pendingEssayResultMode: "SHOW_OBJECTIVE_ONLY",
-        },
-        [sid("quiz-chem-pub")]: {
-          resultSettingsConfigured: true,
-          showCorrectAnswers: false,
-          showPerQuestionScores: false,
-          showFinalScore: true,
-          showStudentAnswers: true,
-          showExplanations: false,
-          pendingEssayResultMode: "HIDE_ALL_RESULTS",
-        },
-      };
-
-      for (const qd of quizDefs) {
-        const teacherId = (() => {
-          const ch = CHAPTERS.find((c) => c.id === qd.chapterId)!;
-          return TEACHERS[ch.teacherIdx]!.id;
-        })();
-        const visibility = QUIZ_VISIBILITY[qd.id] ?? {};
-
+      for (const [qi, q] of chemQuizzes.entries()) {
+        const totalPoints = q.questions.reduce((sum, item) => sum + item.points, 0);
+        const difficulty = chemQuizDifficulties[qi] ?? "MEDIUM";
         await tx.quiz.upsert({
-          where: { id: qd.id },
-          update: { title: qd.title, status: qd.status, ...visibility },
+          where: { id: q.id },
+          update: {
+            title: q.title,
+            description: q.description,
+            chapterId: q.chapterId,
+            contentScope: q.contentScope,
+            status: q.status,
+            questionCount: q.questions.length,
+            totalPoints,
+            durationMinutes: q.durationMinutes,
+            passingScore: q.passingScore,
+            difficulty,
+            createdBy: TEACHER_CHEMISTRY.id,
+            publishedAt: q.status === "PUBLISHED" ? now : null,
+          },
           create: {
-            id: qd.id,
-            title: qd.title,
-            description: qd.desc,
-            chapterId: qd.chapterId,
-            contentScope: "CHAPTER",
-            sourceScope: "SINGLE_CHAPTER",
-            sourceChapterIds: [],
-            status: qd.status,
+            id: q.id,
+            title: q.title,
+            description: q.description,
+            chapterId: q.chapterId,
+            contentScope: q.contentScope,
+            status: q.status,
+            questionCount: q.questions.length,
+            totalPoints,
+            durationMinutes: q.durationMinutes,
+            passingScore: q.passingScore,
+            difficulty,
+            createdBy: TEACHER_CHEMISTRY.id,
+            publishedAt: q.status === "PUBLISHED" ? now : null,
+          },
+        });
+        for (const question of q.questions) {
+          await tx.question.upsert({
+            where: { id: question.id },
+            update: {
+              quizId: question.quizId,
+              type: question.type,
+              text: question.text,
+              options: question.options,
+              correctAnswer: question.correctAnswer,
+              explanation: question.explanation,
+              sortOrder: question.sortOrder,
+              points: question.points,
+            },
+            create: {
+              id: question.id,
+              quizId: question.quizId,
+              type: question.type,
+              text: question.text,
+              options: question.options,
+              correctAnswer: question.correctAnswer,
+              explanation: question.explanation,
+              sortOrder: question.sortOrder,
+              points: question.points,
+            },
+          });
+        }
+      }
+      for (const link of buildQuizLessonLinks()) {
+        await tx.quizLesson.upsert({
+          where: { quizId_lessonId: { quizId: link.quizId, lessonId: link.lessonId } },
+          update: {},
+          create: { quizId: link.quizId, lessonId: link.lessonId },
+        });
+      }
+      // Progression-gate wiring: chapter-1 lesson-1 requires passing the gate quiz.
+      await tx.lesson.update({
+        where: { id: chemistryLessonId(0, 0) },
+        data: { requiredQuizId: CHEMISTRY_REQUIRED_GATE_QUIZ_ID },
+      });
+
+      // 10. Extra stage-3 quizzes: MULTI_CHAPTER + FULL_CURRICULUM sourceScope.
+      for (const q of [QUIZ_MULTI_CHAPTER_REVIEW, QUIZ_FULL_CURRICULUM_FINAL]) {
+        const isMulti = "sourceChapterIds" in q;
+        const totalPoints = q.questions.reduce((sum, item) => sum + item.points, 0);
+        await tx.quiz.upsert({
+          where: { id: q.id },
+          update: {
+            title: q.title,
+            description: q.description,
+            chapterId: q.chapterId,
+            sourceScope: isMulti ? "MULTI_CHAPTER" : "FULL_CURRICULUM",
+            sourceChapterIds: isMulti ? (q as typeof QUIZ_MULTI_CHAPTER_REVIEW).sourceChapterIds : [],
+            sourceStageId: isMulti ? null : STAGE_3.id,
+            status: q.status,
+            questionCount: q.questions.length,
+            totalPoints,
             durationMinutes: 30,
-            questionCount: 0,
-            totalPoints: 0,
             passingScore: 50,
-            createdBy: teacherId,
-            publishedAt: qd.pub ? daysAgo(10) : null,
-            ...visibility,
+            difficulty: "HARD",
+            createdBy: q.createdBy,
+            publishedAt: q.status === "PUBLISHED" ? now : null,
+          },
+          create: {
+            id: q.id,
+            title: q.title,
+            description: q.description,
+            chapterId: q.chapterId,
+            sourceScope: isMulti ? "MULTI_CHAPTER" : "FULL_CURRICULUM",
+            sourceChapterIds: isMulti ? (q as typeof QUIZ_MULTI_CHAPTER_REVIEW).sourceChapterIds : [],
+            sourceStageId: isMulti ? null : STAGE_3.id,
+            status: q.status,
+            questionCount: q.questions.length,
+            totalPoints,
+            durationMinutes: 30,
+            passingScore: 50,
+            difficulty: "HARD",
+            createdBy: q.createdBy,
+            publishedAt: q.status === "PUBLISHED" ? now : null,
           },
         });
-
-        if (qd.pub) {
-          const chNum = CHAPTERS.findIndex((c) => c.id === qd.chapterId) + 1;
-          const questions: Prisma.QuestionCreateManyInput[] = [
-            {
-              id: sid(`q-${qd.id}-1`),
-              quizId: qd.id,
-              type: "MCQ",
-              text: `سؤال اختيار من متعدد — الفصل ${chNum}`,
-              options: JSON.parse(
-                JSON.stringify(["خيار ١", "خيار ٢", "خيار ٣", "خيار ٤"]),
-              ),
-              correctAnswer: "خيار ١",
-              explanation: `شرح السؤال الأول للفصل ${chNum}.`,
-              sortOrder: 1,
-              points: 2,
+        for (const [i, question] of q.questions.entries()) {
+          await tx.question.upsert({
+            where: { id: question.id },
+            update: {
+              quizId: q.id,
+              type: question.type,
+              text: question.text,
+              options: question.options as unknown as Prisma.InputJsonValue,
+              correctAnswer: question.correctAnswer,
+              explanation: question.explanation,
+              sortOrder: i + 1,
+              points: question.points,
             },
-            {
-              id: sid(`q-${qd.id}-2`),
-              quizId: qd.id,
-              type: "TRUE_FALSE",
-              text: `سؤال صح/خطأ — الفصل ${chNum}`,
-              options: JSON.parse(JSON.stringify(["صح", "خطأ"])),
-              correctAnswer: "صح",
-              explanation: `شرح السؤال الثاني للفصل ${chNum}.`,
-              sortOrder: 2,
-              points: 1,
+            create: {
+              id: question.id,
+              quizId: q.id,
+              type: question.type,
+              text: question.text,
+              options: question.options as unknown as Prisma.InputJsonValue,
+              correctAnswer: question.correctAnswer,
+              explanation: question.explanation,
+              sortOrder: i + 1,
+              points: question.points,
             },
-            {
-              id: sid(`q-${qd.id}-3`),
-              quizId: qd.id,
-              type: "ESSAY",
-              text: `سؤال مقالي — الفصل ${chNum}`,
-              options: [],
-              correctAnswer: null,
-              explanation: `نموذج إجابة السؤال المقالي للفصل ${chNum}.`,
-              sortOrder: 3,
-              points: 3,
-            },
-          ];
-          await tx.question.createMany({
-            data: questions,
-            skipDuplicates: true,
-          });
-          const qCount = questions.length;
-          const tPoints = questions.reduce((s, q) => s + q.points, 0);
-          await tx.quiz.update({
-            where: { id: qd.id },
-            data: { questionCount: qCount, totalPoints: tPoints },
           });
         }
       }
 
-      // 9b. Quizzes exercising the other two QuizSourceScope values (the loop
-      // above only ever creates SINGLE_CHAPTER quizzes). Both are PUBLISHED with
-      // chapterId left null (the generation source is chapters/a stage instead —
-      // Quiz.chapterId is nullable precisely for this case) and creator resolved
-      // directly rather than via a chapter lookup.
-      const scopedQuizDefs = [
-        {
-          id: sid("quiz-math-multi-chapter"),
-          title: "اختبار تجميعي — الجبر والتفاضل",
-          desc: "اختبار مراجعة يجمع بين فصلي الجبر والتفاضل.",
-          teacherIdx: 0,
-          sourceScope: "MULTI_CHAPTER" as const,
-          sourceChapterIds: [CHAPTERS[0]!.id, CHAPTERS[1]!.id],
-          sourceStageId: null,
-          visibility: {
-            resultSettingsConfigured: true,
-            showCorrectAnswers: true,
-            showPerQuestionScores: true,
-            showFinalScore: true,
-            showStudentAnswers: true,
-            showExplanations: true,
-            pendingEssayResultMode: "SHOW_OBJECTIVE_WITH_PENDING_MESSAGE" as const,
-          },
-        },
-        {
-          id: sid("quiz-math-full-curriculum"),
-          title: "اختبار شامل — منهج الرياضيات الكامل",
-          desc: "اختبار شامل يغطي منهج مرحلة الرياضيات بالكامل.",
-          teacherIdx: 0,
-          sourceScope: "FULL_CURRICULUM" as const,
-          sourceChapterIds: [] as string[],
-          sourceStageId: STAGES[0]!.id,
-          // Partially configured: only resultSettingsConfigured + showFinalScore
-          // are set, the rest stay null — exercises the policy layer's fallback
-          // for an incompletely-configured quiz.
-          visibility: {
-            resultSettingsConfigured: true,
-            showFinalScore: true,
-          },
-        },
-      ];
-
-      for (const qd of scopedQuizDefs) {
-        const teacherId = TEACHERS[qd.teacherIdx]!.id;
-
-        await tx.quiz.upsert({
-          where: { id: qd.id },
-          update: { title: qd.title, status: "PUBLISHED", ...qd.visibility },
-          create: {
-            id: qd.id,
-            title: qd.title,
-            description: qd.desc,
-            chapterId: null,
-            contentScope: "CHAPTER",
-            sourceScope: qd.sourceScope,
-            sourceChapterIds: qd.sourceChapterIds,
-            sourceStageId: qd.sourceStageId,
-            status: "PUBLISHED",
-            durationMinutes: 45,
-            questionCount: 0,
-            totalPoints: 0,
-            passingScore: 50,
-            createdBy: teacherId,
-            publishedAt: daysAgo(5),
-            ...qd.visibility,
-          },
-        });
-
-        const scopedQuestions: Prisma.QuestionCreateManyInput[] = [
-          {
-            id: sid(`q-${qd.id}-1`),
-            quizId: qd.id,
-            type: "MCQ",
-            text: `سؤال اختيار من متعدد — ${qd.title}`,
-            options: JSON.parse(JSON.stringify(["خيار ١", "خيار ٢", "خيار ٣", "خيار ٤"])),
-            correctAnswer: "خيار ١",
-            explanation: `شرح السؤال الأول — ${qd.title}.`,
-            sortOrder: 1,
-            points: 2,
-          },
-          {
-            id: sid(`q-${qd.id}-2`),
-            quizId: qd.id,
-            type: "TRUE_FALSE",
-            text: `سؤال صح/خطأ — ${qd.title}`,
-            options: JSON.parse(JSON.stringify(["صح", "خطأ"])),
-            correctAnswer: "صح",
-            explanation: `شرح السؤال الثاني — ${qd.title}.`,
-            sortOrder: 2,
-            points: 1,
-          },
-          {
-            id: sid(`q-${qd.id}-3`),
-            quizId: qd.id,
-            type: "ESSAY",
-            text: `سؤال مقالي — ${qd.title}`,
-            options: [],
-            correctAnswer: null,
-            explanation: `نموذج إجابة السؤال المقالي — ${qd.title}.`,
-            sortOrder: 3,
-            points: 3,
-          },
-        ];
-        await tx.question.createMany({ data: scopedQuestions, skipDuplicates: true });
-        await tx.quiz.update({
-          where: { id: qd.id },
-          data: {
-            questionCount: scopedQuestions.length,
-            totalPoints: scopedQuestions.reduce((s, q) => s + q.points, 0),
-          },
-        });
-      }
-
-      // 10. Enrollments
-      await tx.enrollment.createMany({
-        data: [
-          {
-            id: sid("enroll-active1-ch1"),
-            studentId: STUDENTS[0]!.id,
-            chapterId: CHAPTERS[0]!.id,
-            status: "ACTIVE",
-            price: 0,
-            paymentMethod: "FREE",
-            enrolledAt: daysAgo(30),
-          },
-          {
-            id: sid("enroll-active1-ch2"),
-            studentId: STUDENTS[0]!.id,
-            chapterId: CHAPTERS[1]!.id,
-            status: "ACTIVE",
-            price: 150,
-            paymentMethod: "PAYMOB",
-            enrolledAt: daysAgo(25),
-          },
-          {
-            id: sid("enroll-active2-ch1"),
-            studentId: STUDENTS[1]!.id,
-            chapterId: CHAPTERS[0]!.id,
-            status: "ACTIVE",
-            price: 0,
-            paymentMethod: "FREE",
-            enrolledAt: daysAgo(20),
-          },
-          {
-            id: sid("enroll-active2-ch3"),
-            studentId: STUDENTS[1]!.id,
-            chapterId: CHAPTERS[2]!.id,
-            status: "ACTIVE",
-            price: 0,
-            paymentMethod: "FREE",
-            enrolledAt: daysAgo(15),
-          },
-          {
-            id: sid("enroll-pending-ch1"),
-            studentId: STUDENTS[2]!.id,
-            chapterId: CHAPTERS[0]!.id,
-            status: "PAYMENT_PENDING",
-            price: 0,
-            paymentMethod: "FREE",
-            enrolledAt: daysAgo(5),
-          },
-          {
-            id: sid("enroll-unassigned-ch2"),
-            studentId: STUDENTS[3]!.id,
-            chapterId: CHAPTERS[1]!.id,
-            status: "PAYMENT_PENDING",
-            price: 150,
-            paymentMethod: "PAYMOB",
-            enrolledAt: daysAgo(3),
-          },
-          {
-            id: sid("enroll-multi-ch1"),
-            studentId: STUDENTS[5]!.id,
-            chapterId: CHAPTERS[0]!.id,
-            status: "ACTIVE",
-            price: 0,
-            paymentMethod: "FREE",
-            enrolledAt: daysAgo(20),
-          },
-          {
-            id: sid("enroll-multi-ch3"),
-            studentId: STUDENTS[5]!.id,
-            chapterId: CHAPTERS[2]!.id,
-            status: "ACTIVE",
-            price: 0,
-            paymentMethod: "FREE",
-            enrolledAt: daysAgo(18),
-          },
-          {
-            id: sid("enroll-multi-ch4"),
-            studentId: STUDENTS[5]!.id,
-            chapterId: CHAPTERS[3]!.id,
-            status: "ACTIVE",
-            price: 200,
-            paymentMethod: "PAYMOB",
-            enrolledAt: daysAgo(10),
-          },
-          {
-            id: sid("enroll-active1-ch-deact"),
-            studentId: STUDENTS[0]!.id,
-            chapterId: CHAPTERS[4]!.id,
-            status: "DEACTIVATED",
-            price: 0,
-            paymentMethod: "FREE",
-            enrolledAt: daysAgo(60),
-          },
-          {
-            // Student-multi enrolled in banned teacher's chapter for My Courses test.
-            id: sid("enroll-multi-banned"),
-            studentId: STUDENTS[5]!.id,
-            chapterId: CHAPTERS[6]!.id,
-            status: "ACTIVE",
-            price: 0,
-            paymentMethod: "FREE",
-            enrolledAt: daysAgo(5),
-          },
-        ],
-        skipDuplicates: true,
-      });
-
-      // 11. PaymentTransactions (course payments)
-      await tx.paymentTransaction.createMany({
-        data: [
-          {
-            id: sid("pt-success-1"),
-            studentId: STUDENTS[0]!.id,
-            chapterId: CHAPTERS[1]!.id,
-            paymobOrderId: DEMO_ORDER_PREFIX + "COURSE_ORD_001",
-            paymobTransactionId: DEMO_ORDER_PREFIX + "COURSE_TXN_001",
-            amount: 150,
-            currency: "EGP",
-            status: "SUCCESS",
-            createdAt: daysAgo(25),
-          },
-          {
-            id: sid("pt-success-2"),
-            studentId: STUDENTS[1]!.id,
-            chapterId: CHAPTERS[1]!.id,
-            paymobOrderId: DEMO_ORDER_PREFIX + "COURSE_ORD_002",
-            paymobTransactionId: DEMO_ORDER_PREFIX + "COURSE_TXN_002",
-            amount: 150,
-            currency: "EGP",
-            status: "SUCCESS",
-            createdAt: daysAgo(20),
-          },
-          {
-            id: sid("pt-success-3"),
-            studentId: STUDENTS[5]!.id,
-            chapterId: CHAPTERS[3]!.id,
-            paymobOrderId: DEMO_ORDER_PREFIX + "COURSE_ORD_005",
-            paymobTransactionId: DEMO_ORDER_PREFIX + "COURSE_TXN_005",
-            amount: 200,
-            currency: "EGP",
-            status: "SUCCESS",
-            createdAt: daysAgo(10),
-          },
-          {
-            id: sid("pt-pending-1"),
-            studentId: STUDENTS[2]!.id,
-            chapterId: CHAPTERS[1]!.id,
-            paymobOrderId: DEMO_ORDER_PREFIX + "COURSE_ORD_003",
-            amount: 150,
-            currency: "EGP",
-            status: "PENDING",
-            createdAt: daysAgo(5),
-          },
-          {
-            id: sid("pt-failed-1"),
-            studentId: STUDENTS[3]!.id,
-            chapterId: CHAPTERS[1]!.id,
-            paymobOrderId: DEMO_ORDER_PREFIX + "COURSE_ORD_004",
-            amount: 150,
-            currency: "EGP",
-            status: "FAILED",
-            errorMessage: "تم رفض الدفع — بطاقة غير صالحة",
-            createdAt: daysAgo(3),
-          },
-        ],
-        skipDuplicates: true,
-      });
-
-      // 12. TeacherRegistrationRequests
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_001" },
-        update: { status: "PENDING" },
-        create: {
-          id: sid("req-pending"),
-          publicReference: DEMO_REF_PREFIX + "REQ_001",
-          fullName: "أ. أحمد المدرس الجديد",
-          email: "ahmed.newteacher@example.com",
-          mobile: "01000000901",
-          subject: "الرياضيات",
-          bio: "مدرس رياضيات حديث — خبرة ٣ سنوات.",
-          status: "PENDING",
-          proofDocuments: [],
-        },
-      });
-
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_002" },
-        update: { status: "APPROVED" },
-        create: {
-          id: sid("req-approved"),
-          publicReference: DEMO_REF_PREFIX + "REQ_002",
-          fullName: "أ. محمد المدرس المعتمد",
-          email: "mohamed.approved@example.com",
-          mobile: "01000000902",
-          subject: "الفيزياء",
-          bio: "مدرس فيزياء معتمد — خبرة ٧ سنوات.",
-          status: "APPROVED",
-          proofDocuments: [],
-          reviewedById: ADMIN.id,
-          reviewedAt: daysAgo(15),
-        },
-      });
-
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_003" },
-        update: { status: "REJECTED", rejectionMode: "FINAL_REJECTION" },
-        create: {
-          id: sid("req-rejected"),
-          publicReference: DEMO_REF_PREFIX + "REQ_003",
-          fullName: "أ. خالد المدرس المرفوض",
-          email: "khaled.rejected@example.com",
-          mobile: "01000000903",
-          subject: "الكيمياء",
-          bio: "—",
-          status: "REJECTED",
-          proofDocuments: [],
-          reviewedById: ADMIN.id,
-          reviewedAt: daysAgo(10),
-          adminNotes:
-            "المستندات المقدمة غير مكتملة. يُرجى إعادة التقديم بعد استكمال الأوراق.",
-          rejectionMode: "FINAL_REJECTION",
-        },
-      });
-
-      // Linked requests (unified-registration flow): tied to a real pending/rejected
-      // OPERATION user via userId. These are the shape the approval phase consumes.
-      // Fake/safe proof documents: metadata only + a synthetic storage path that
-      // cannot be signed (admin detail shows the name; signed-url → DOCUMENT_UNAVAILABLE).
-      const fakeProofDocuments = [
-        {
-          originalName: "certificate.pdf",
-          mimeType: "application/pdf",
-          size: 12345,
-          path: "teacher-registration-requests/DEMO_FAKE/certificate.pdf",
-        },
-      ];
-      // Multi-document set exercising the admin previewType distinction: a PDF, an
-      // image, and one "fake" doc with NO storable path (renders as UNAVAILABLE and
-      // yields DOCUMENT_UNAVAILABLE from the signed-url endpoint).
-      const multiDocProofDocuments = [
-        {
-          originalName: "teaching-certificate.pdf",
-          mimeType: "application/pdf",
-          size: 204800,
-          path: "teacher-registration-requests/DEMO_FAKE/teaching-certificate.pdf",
-        },
-        {
-          originalName: "national-id.jpg",
-          mimeType: "image/jpeg",
-          size: 98304,
-          path: "teacher-registration-requests/DEMO_FAKE/national-id.jpg",
-        },
-        {
-          originalName: "unavailable-scan.png",
-          mimeType: "image/png",
-          size: 51200,
-          // No path → UNAVAILABLE in admin detail; signed-url → DOCUMENT_UNAVAILABLE.
-        },
-      ];
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_004" },
-        update: { status: "PENDING", userId: sid("teacher-pending"), proofDocuments: fakeProofDocuments },
-        create: {
-          id: sid("req-pending-linked"),
-          publicReference: DEMO_REF_PREFIX + "REQ_004",
-          fullName: "أ. سلمى المدرّسة المنتظرة",
-          email: "teacher.pending" + DEMO_EMAIL_DOMAIN,
-          mobile: "01000000040",
-          subject: "الأحياء",
-          bio: "مدرّسة أحياء بانتظار مراجعة الإدارة.",
-          status: "PENDING",
-          proofDocuments: fakeProofDocuments,
-          userId: sid("teacher-pending"),
-        },
-      });
-
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_005" },
-        update: { status: "REJECTED", userId: sid("teacher-rejected-user") },
-        create: {
-          id: sid("req-rejected-linked"),
-          publicReference: DEMO_REF_PREFIX + "REQ_005",
-          fullName: "أ. سامي المدرّس المرفوض",
-          email: "teacher.rejected.user" + DEMO_EMAIL_DOMAIN,
-          mobile: "01000000050",
-          subject: "اللغة الإنجليزية",
-          bio: "طلب مرفوض من الإدارة.",
-          status: "REJECTED",
-          proofDocuments: [],
-          reviewedById: ADMIN.id,
-          reviewedAt: daysAgo(5),
-          adminNotes: "لم تُستوفَ متطلبات المراجعة.",
-          rejectionMode: "FINAL_REJECTION",
-          userId: sid("teacher-rejected-user"),
-        },
-      });
-
-      // Approved FREE linked request → teacher is login-capable on the FREE plan.
-      // Carries the multi-document proof set (PDF + image + unavailable) so admin
-      // detail demonstrates the previewType distinction and UNAVAILABLE handling.
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_006" },
-        update: {
-          status: "APPROVED",
-          userId: sid("teacher-approved-unpaid"),
-          proofDocuments: multiDocProofDocuments,
-        },
-        create: {
-          id: sid("req-approved-linked"),
-          publicReference: DEMO_REF_PREFIX + "REQ_006",
-          fullName: "أ. ليلى المدرّسة المعتمدة",
-          email: "teacher.approved.unpaid" + DEMO_EMAIL_DOMAIN,
-          mobile: "01000000060",
-          subject: "التاريخ",
-          bio: "معتمدة على الباقة المجانية.",
-          status: "APPROVED",
-          proofDocuments: multiDocProofDocuments,
-          reviewedById: ADMIN.id,
-          reviewedAt: daysAgo(2),
-          userId: sid("teacher-approved-unpaid"),
-        },
-      });
-
-      // Approved FREE teachers that also have a PENDING / FAILED payment — linked
-      // requests so their lifecycle mirrors the unified-registration flow.
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_007" },
-        update: { status: "APPROVED", userId: sid("teacher-pending-payment") },
-        create: {
-          id: sid("req-pending-payment-linked"),
-          publicReference: DEMO_REF_PREFIX + "REQ_007",
-          fullName: "أ. مراد صاحب الدفع المعلّق",
-          email: "teacher.pending.payment" + DEMO_EMAIL_DOMAIN,
-          mobile: "01000000070",
-          subject: "الجغرافيا",
-          bio: "معتمد على الباقة المجانية مع عملية دفع معلّقة.",
-          status: "APPROVED",
-          proofDocuments: [],
-          reviewedById: ADMIN.id,
-          reviewedAt: daysAgo(1),
-          userId: sid("teacher-pending-payment"),
-        },
-      });
-
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_008" },
-        update: { status: "APPROVED", userId: sid("teacher-failed-payment") },
-        create: {
-          id: sid("req-failed-payment-linked"),
-          publicReference: DEMO_REF_PREFIX + "REQ_008",
-          fullName: "أ. هالة صاحبة الدفع الفاشل",
-          email: "teacher.failed.payment" + DEMO_EMAIL_DOMAIN,
-          mobile: "01000000080",
-          subject: "الفلسفة",
-          bio: "معتمدة على الباقة المجانية مع عملية دفع فاشلة.",
-          status: "APPROVED",
-          proofDocuments: [],
-          reviewedById: ADMIN.id,
-          reviewedAt: daysAgo(3),
-          userId: sid("teacher-failed-payment"),
-        },
-      });
-
-      // REQ_009 — rejected linked request with EDIT_ALLOWED policy (teacher can resubmit).
-      await tx.teacherRegistrationRequest.upsert({
-        where: { publicReference: DEMO_REF_PREFIX + "REQ_009" },
-        update: { status: "REJECTED", userId: sid("teacher-rejected-editable") },
-        create: {
-          id: sid("req-rejected-editable-linked"),
-          publicReference: DEMO_REF_PREFIX + "REQ_009",
-          fullName: "أ. ندى المدرّسة المرفوضة القابلة للتعديل",
-          email: "teacher.rejected.editable" + DEMO_EMAIL_DOMAIN,
-          mobile: "01000000055",
-          subject: "العلوم",
-          bio: "طلب مرفوض مع إمكانية التعديل.",
-          status: "REJECTED",
-          proofDocuments: [],
-          reviewedById: ADMIN.id,
-          reviewedAt: daysAgo(3),
-          adminNotes: "يرجى تحديث المستندات وإعادة الإرسال.",
-          rejectionMode: "EDIT_ALLOWED",
-          userId: sid("teacher-rejected-editable"),
-        },
-      });
-
-      // 13. Teacher Subscriptions
-      const mathTeacherId = TEACHERS[0]!.id;
-      const physicsTeacherId = TEACHERS[1]!.id;
-      const chemTeacherId = TEACHERS[2]!.id;
-
-      // Math teacher: ACTIVE on PRO
-      await tx.teacherSubscription.upsert({
-        where: { id: sid("sub-math-pro") },
-        update: { status: "ACTIVE" },
-        create: {
-          id: sid("sub-math-pro"),
-          teacherId: mathTeacherId,
-          planId: planProId,
-          status: "ACTIVE",
-          billingInterval: "MONTHLY",
-          startedAt: daysAgo(60),
-          currentPeriodStart: daysAgo(30),
-          currentPeriodEnd: daysFromNow(30),
-          trialEndsAt: null,
-        },
-      });
-
-      // Physics teacher: TRIALING on FREE
-      await tx.teacherSubscription.upsert({
-        where: { id: sid("sub-physics-free") },
-        update: { status: "TRIALING" },
-        create: {
-          id: sid("sub-physics-free"),
-          teacherId: physicsTeacherId,
-          planId: planFreeId,
-          status: "TRIALING",
-          billingInterval: "MONTHLY",
-          startedAt: daysAgo(5),
-          currentPeriodStart: daysAgo(5),
-          currentPeriodEnd: daysFromNow(25),
-          trialEndsAt: daysFromNow(10),
-        },
-      });
-
-      // Chemistry teacher: EXPIRED on BASIC
-      await tx.teacherSubscription.upsert({
-        where: { id: sid("sub-chem-expired") },
-        update: { status: "EXPIRED" },
-        create: {
-          id: sid("sub-chem-expired"),
-          teacherId: chemTeacherId,
-          planId: planBasicId,
-          status: "EXPIRED",
-          billingInterval: "MONTHLY",
-          startedAt: daysAgo(90),
-          currentPeriodStart: daysAgo(60),
-          currentPeriodEnd: daysAgo(30),
-          cancelledAt: daysAgo(30),
-          trialEndsAt: null,
-        },
-      });
-
-      // 14. Teacher Subscription Payments
-      await tx.teacherSubscriptionPayment.createMany({
-        data: [
-          {
-            id: sid("tsp-success-1"),
-            teacherId: mathTeacherId,
-            planId: planProId,
-            subscriptionId: sid("sub-math-pro"),
-            provider: "PAYMOB",
-            providerOrderId: DEMO_ORDER_PREFIX + "SUB_ORD_001",
-            providerTransactionId: DEMO_ORDER_PREFIX + "SUB_TXN_001",
-            amount: 499,
-            currency: "EGP",
-            billingInterval: "MONTHLY",
-            status: "SUCCESS",
-            createdAt: daysAgo(60),
-          },
-          {
-            id: sid("tsp-success-2"),
-            teacherId: mathTeacherId,
-            planId: planProId,
-            subscriptionId: sid("sub-math-pro"),
-            provider: "PAYMOB",
-            providerOrderId: DEMO_ORDER_PREFIX + "SUB_ORD_002",
-            providerTransactionId: DEMO_ORDER_PREFIX + "SUB_TXN_002",
-            amount: 499,
-            currency: "EGP",
-            billingInterval: "MONTHLY",
-            status: "SUCCESS",
-            createdAt: daysAgo(30),
-          },
-          {
-            id: sid("tsp-pending-1"),
-            teacherId: physicsTeacherId,
-            planId: planBasicId,
-            provider: "PAYMOB",
-            providerOrderId: DEMO_ORDER_PREFIX + "SUB_ORD_003",
-            amount: 199,
-            currency: "EGP",
-            billingInterval: "MONTHLY",
-            status: "PENDING",
-            createdAt: daysAgo(2),
-          },
-          {
-            id: sid("tsp-failed-1"),
-            teacherId: chemTeacherId,
-            planId: planBasicId,
-            provider: "PAYMOB",
-            providerOrderId: DEMO_ORDER_PREFIX + "SUB_ORD_004",
-            amount: 199,
-            currency: "EGP",
-            billingInterval: "MONTHLY",
-            status: "FAILED",
-            errorMessage: "رصيد غير كافٍ",
-            createdAt: daysAgo(60),
-          },
-          {
-            // Approved FREE teacher with a PENDING payment and NO subscription:
-            // proves a pending payment does NOT upgrade (teacher stays FREE).
-            id: sid("tsp-pending-free"),
-            teacherId: sid("teacher-pending-payment"),
-            planId: planBasicId,
-            provider: "PAYMOB",
-            providerOrderId: DEMO_ORDER_PREFIX + "SUB_ORD_005",
-            amount: 199,
-            currency: "EGP",
-            billingInterval: "MONTHLY",
-            status: "PENDING",
-            createdAt: daysAgo(1),
-          },
-          {
-            // Approved FREE teacher with a FAILED payment and NO subscription:
-            // proves a failed payment neither upgrades nor removes FREE access.
-            id: sid("tsp-failed-free"),
-            teacherId: sid("teacher-failed-payment"),
-            planId: planBasicId,
-            provider: "PAYMOB",
-            providerOrderId: DEMO_ORDER_PREFIX + "SUB_ORD_006",
-            amount: 199,
-            currency: "EGP",
-            billingInterval: "MONTHLY",
-            status: "FAILED",
-            errorMessage: "فشلت عملية الدفع",
-            createdAt: daysAgo(3),
-          },
-        ],
-        skipDuplicates: true,
-      });
-
-      // 14b. Teacher Withdrawal Requests (wallet demo — teacher-math).
-      // teacher-math's confirmed earnings = pt-success-1 (150) + pt-success-2
-      // (150) = 300. With TRANSFERRED=150 and held PENDING(50)+PROCESSING(30),
-      // availableBalance = 300 - 150 - 80 = 70 (never manually edited/stored).
-      await tx.teacherWithdrawalRequest.createMany({
-        data: [
-          {
-            id: sid("twr-math-transferred"),
-            teacherId: sid("teacher-math"),
-            amount: 150,
-            currency: "EGP",
-            status: "TRANSFERRED",
-            payoutMethodSnapshot: {
-              instaPayHandle: "ahmed.math@instapay",
-              vodafoneCashNumber: "01001234567",
-            },
-            requestedAt: daysAgo(15),
-            processedAt: daysAgo(12),
-            transferredAt: daysAgo(10),
-          },
-          {
-            id: sid("twr-math-pending"),
-            teacherId: sid("teacher-math"),
-            amount: 50,
-            currency: "EGP",
-            status: "PENDING",
-            requestedAt: daysAgo(2),
-          },
-          {
-            id: sid("twr-math-processing"),
-            teacherId: sid("teacher-math"),
-            amount: 30,
-            currency: "EGP",
-            status: "PROCESSING",
-            requestedAt: daysAgo(4),
-            processedAt: daysAgo(1),
-          },
-          {
-            id: sid("twr-math-rejected"),
-            teacherId: sid("teacher-math"),
-            amount: 20,
-            currency: "EGP",
-            status: "REJECTED",
-            adminNote: "بيانات الحساب غير مكتملة",
-            requestedAt: daysAgo(20),
-            cancelledAt: daysAgo(19),
-          },
-          {
-            // Teacher-cancelled-while-PENDING demo. CANCELLED releases the held
-            // amount (excluded from both heldWithdrawals and
-            // completedWithdrawals), so this does not affect the availableBalance
-            // math documented above.
-            id: sid("twr-math-cancelled"),
-            teacherId: sid("teacher-math"),
-            amount: 40,
-            currency: "EGP",
-            status: "CANCELLED",
-            teacherNote: "غيّرت رأيي",
-            requestedAt: daysAgo(8),
-            cancelledAt: daysAgo(8),
-          },
-        ],
-        skipDuplicates: true,
-      });
-
-      // 15. Teacher Subscription Requests
-      await tx.teacherSubscriptionRequest.upsert({
-        where: { id: sid("tsr-math-approved") },
-        update: { status: "APPROVED" },
-        create: {
-          id: sid("tsr-math-approved"),
-          teacherId: mathTeacherId,
-          planId: planProId,
-          requestedInterval: "MONTHLY",
-          status: "APPROVED",
-          adminNotes: "تمت الموافقة على طلب الترقية إلى الباقة الاحترافية.",
-        },
-      });
-
-      await tx.teacherSubscriptionRequest.upsert({
-        where: { id: sid("tsr-physics-pending") },
-        update: { status: "PENDING" },
-        create: {
-          id: sid("tsr-physics-pending"),
-          teacherId: physicsTeacherId,
-          planId: planBasicId,
-          requestedInterval: "MONTHLY",
-          status: "PENDING",
-        },
-      });
-
-      await tx.teacherSubscriptionRequest.upsert({
-        where: { id: sid("tsr-chem-rejected") },
-        update: { status: "REJECTED" },
-        create: {
-          id: sid("tsr-chem-rejected"),
-          teacherId: chemTeacherId,
-          planId: planProId,
-          requestedInterval: "MONTHLY",
-          status: "REJECTED",
-          adminNotes:
-            "الباقة المميزة غير متاحة حالياً. يُرجى التواصل مع الدعم.",
-        },
-      });
-
-      // 16. Teacher AI Usage Events
-      const usageData = [
-        {
-          teacherId: mathTeacherId,
-          type: "AI_QUIZ_GENERATION" as const,
-          units: 3,
-          meta: { quizTitle: "اختبار الجبر", questionCount: 10 },
-        },
-        {
-          teacherId: mathTeacherId,
-          type: "AI_QUIZ_GENERATION" as const,
-          units: 2,
-          meta: { quizTitle: "اختبار التفاضل", questionCount: 8 },
-        },
-        {
-          teacherId: mathTeacherId,
-          type: "AI_ESSAY_GRADING" as const,
-          units: 5,
-          meta: { essayCount: 5 },
-        },
-        {
-          teacherId: mathTeacherId,
-          type: "AI_ESSAY_GRADING" as const,
-          units: 3,
-          meta: { essayCount: 3 },
-        },
-        {
-          teacherId: mathTeacherId,
-          type: "AI_LESSON_SUMMARY" as const,
-          units: 1,
-          meta: { lessonTitle: "مفهوم الدالة الخطية" },
-        },
-        {
-          teacherId: physicsTeacherId,
-          type: "AI_QUIZ_GENERATION" as const,
-          units: 1,
-          meta: { quizTitle: "اختبار الميكانيكا", questionCount: 5 },
-        },
-        {
-          teacherId: physicsTeacherId,
-          type: "AI_ESSAY_GRADING" as const,
-          units: 2,
-          meta: { essayCount: 2 },
-        },
-        {
-          teacherId: chemTeacherId,
-          type: "AI_QUIZ_GENERATION" as const,
-          units: 2,
-          meta: { quizTitle: "اختبار الكيمياء العامة", questionCount: 6 },
-        },
-        {
-          teacherId: chemTeacherId,
-          type: "AI_ESSAY_GRADING" as const,
-          units: 1,
-          meta: { essayCount: 1 },
-        },
-        {
-          teacherId: chemTeacherId,
-          type: "AI_CONTENT_GENERATION" as const,
-          units: 1,
-          meta: { contentTitle: "ملخص الروابط الكيميائية" },
-        },
-      ];
-
-      for (let ui = 0; ui < usageData.length; ui++) {
-        const u = usageData[ui]!;
-        await tx.teacherAiUsageEvent.upsert({
-          where: { id: sid(`usage-${ui}`) },
-          update: { units: u.units },
-          create: {
-            id: sid(`usage-${ui}`),
-            teacherId: u.teacherId,
-            usageType: u.type,
-            units: u.units,
-            metadata: u.meta,
-            createdAt: daysAgo(ui * 2 + 1),
-          },
-        });
-      }
-
-      // 17. PromoCodes
-      await tx.promoCode.upsert({
-        where: { code: "DEMO2025" },
-        update: { isUsed: false, expiresAt: daysFromNow(365) },
-        create: {
-          id: sid("promo-active"),
-          code: "DEMO2025",
-          isUsed: false,
-          createdById: ADMIN.id,
-          chapterId: CHAPTERS[0]!.id,
-          expiresAt: daysFromNow(365),
-        },
-      });
-
-      await tx.promoCode.upsert({
-        where: { code: "DEMO2023" },
-        update: { isUsed: false, expiresAt: daysAgo(365) },
-        create: {
-          id: sid("promo-expired"),
-          code: "DEMO2023",
-          isUsed: false,
-          createdById: ADMIN.id,
-          chapterId: CHAPTERS[0]!.id,
-          expiresAt: daysAgo(365),
-        },
-      });
-
-      await tx.promoCode.upsert({
-        where: { code: "DEMO1USE" },
-        update: {
-          isUsed: true,
-          usedByStudentId: STUDENTS[0]!.id,
-          usedAt: daysAgo(15),
-        },
-        create: {
-          id: sid("promo-used"),
-          code: "DEMO1USE",
-          isUsed: true,
-          createdById: ADMIN.id,
-          chapterId: CHAPTERS[0]!.id,
-          usedByStudentId: STUDENTS[0]!.id,
-          usedAt: daysAgo(15),
-        },
-      });
-
-      // 17b. Platform (scope-separated) discount promo codes. COURSE_PURCHASE codes
-      // apply only to student course checkout; TEACHER_PLAN codes only to teacher
-      // subscription checkout (optionally restricted to plans/interval). Idempotent.
+      // 11. Promo codes.
       await tx.platformPromoCode.upsert({
-        where: { code: "DEMOCOURSE20" },
-        update: { isActive: true, expiresAt: daysFromNow(365) },
-        create: {
-          id: sid("pp-course-20"),
-          code: "DEMOCOURSE20",
+        where: { code: PROMO_ACTIVE.code },
+        update: {
           scope: "COURSE_PURCHASE",
           discountType: "PERCENTAGE",
-          discountValue: 20,
-          currency: "EGP",
+          discountValue: PROMO_ACTIVE.discountValue,
           isActive: true,
-          maxUses: 100,
-          perUserLimit: 1,
-          expiresAt: daysFromNow(365),
+          expiresAt: null,
           createdById: ADMIN.id,
         },
-      });
-      await tx.platformPromoCode.upsert({
-        where: { code: "DEMOPLANPRO50" },
-        update: { isActive: true, applicablePlanIds: [planProId], billingInterval: "MONTHLY" },
         create: {
-          id: sid("pp-plan-pro-50"),
-          code: "DEMOPLANPRO50",
-          scope: "TEACHER_PLAN",
-          discountType: "FIXED_AMOUNT",
-          discountValue: 50,
-          currency: "EGP",
-          isActive: true,
-          maxUses: 50,
-          perUserLimit: 1,
-          applicablePlanIds: [planProId],
-          billingInterval: "MONTHLY",
-          expiresAt: daysFromNow(180),
-          createdById: ADMIN.id,
-        },
-      });
-      await tx.platformPromoCode.upsert({
-        where: { code: "DEMOPLANALL10" },
-        update: { isActive: true },
-        create: {
-          id: sid("pp-plan-all-10"),
-          code: "DEMOPLANALL10",
-          scope: "TEACHER_PLAN",
-          discountType: "PERCENTAGE",
-          discountValue: 10,
-          currency: "EGP",
-          isActive: true,
-          billingInterval: "ALL",
-          createdById: ADMIN.id,
-        },
-      });
-      // Expired and disabled course-purchase codes — so the admin promo-codes
-      // page shows all three states (active/expired/disabled), not just active.
-      await tx.platformPromoCode.upsert({
-        where: { code: "DEMOEXPIRED10" },
-        update: { isActive: true, expiresAt: daysAgo(30) },
-        create: {
-          id: sid("pp-course-expired"),
-          code: "DEMOEXPIRED10",
+          id: PROMO_ACTIVE.id,
+          code: PROMO_ACTIVE.code,
           scope: "COURSE_PURCHASE",
           discountType: "PERCENTAGE",
-          discountValue: 10,
-          currency: "EGP",
+          discountValue: PROMO_ACTIVE.discountValue,
+          isActive: true,
+          createdById: ADMIN.id,
+        },
+      });
+      await tx.platformPromoCode.upsert({
+        where: { code: PROMO_EXPIRED.code },
+        update: {
+          scope: "COURSE_PURCHASE",
+          discountType: "PERCENTAGE",
+          discountValue: PROMO_EXPIRED.discountValue,
+          isActive: true,
+          expiresAt: daysAgo(30),
+          createdById: ADMIN.id,
+        },
+        create: {
+          id: PROMO_EXPIRED.id,
+          code: PROMO_EXPIRED.code,
+          scope: "COURSE_PURCHASE",
+          discountType: "PERCENTAGE",
+          discountValue: PROMO_EXPIRED.discountValue,
           isActive: true,
           expiresAt: daysAgo(30),
           createdById: ADMIN.id,
         },
       });
       await tx.platformPromoCode.upsert({
-        where: { code: "DEMODISABLED15" },
-        update: { isActive: false },
-        create: {
-          id: sid("pp-course-disabled"),
-          code: "DEMODISABLED15",
+        where: { code: PROMO_DISABLED.code },
+        update: {
           scope: "COURSE_PURCHASE",
           discountType: "PERCENTAGE",
-          discountValue: 15,
-          currency: "EGP",
+          discountValue: PROMO_DISABLED.discountValue,
           isActive: false,
-          expiresAt: daysFromNow(365),
+          createdById: ADMIN.id,
+        },
+        create: {
+          id: PROMO_DISABLED.id,
+          code: PROMO_DISABLED.code,
+          scope: "COURSE_PURCHASE",
+          discountType: "PERCENTAGE",
+          discountValue: PROMO_DISABLED.discountValue,
+          isActive: false,
           createdById: ADMIN.id,
         },
       });
 
-      // One real redemption against the active course-purchase code, so the
-      // PlatformPromoRedemption table (and DEMOCOURSE20's usedCount) aren't
-      // left completely empty.
-      await tx.platformPromoRedemption.upsert({
-        where: { id: sid("ppr-course20-active2") },
-        update: {},
+      await tx.promoCode.upsert({
+        where: { code: TEACHER_PROMO_USED.code },
+        update: {
+          isUsed: true,
+          usedByStudentId: YOUSSEF_HASSAN!.id,
+          usedAt: daysAgo(2),
+          chapterId: TEACHER_PROMO_USED.chapterId,
+          createdById: TEACHER_CHEMISTRY.id,
+        },
         create: {
-          id: sid("ppr-course20-active2"),
-          promoCodeId: sid("pp-course-20"),
-          userId: STUDENTS[1]!.id,
-          amountBefore: 150,
-          discount: 30,
-          amountAfter: 120,
-          createdAt: daysAgo(10),
+          id: TEACHER_PROMO_USED.id,
+          code: TEACHER_PROMO_USED.code,
+          isUsed: true,
+          usedByStudentId: YOUSSEF_HASSAN!.id,
+          usedAt: daysAgo(2),
+          chapterId: TEACHER_PROMO_USED.chapterId,
+          createdById: TEACHER_CHEMISTRY.id,
         },
       });
-      await tx.platformPromoCode.update({
-        where: { id: sid("pp-course-20") },
-        data: { usedCount: 1 },
+      await tx.promoCode.upsert({
+        where: { code: TEACHER_PROMO_UNUSED.code },
+        update: {
+          isUsed: false,
+          chapterId: TEACHER_PROMO_UNUSED.chapterId,
+          createdById: TEACHER_CHEMISTRY.id,
+        },
+        create: {
+          id: TEACHER_PROMO_UNUSED.id,
+          code: TEACHER_PROMO_UNUSED.code,
+          isUsed: false,
+          chapterId: TEACHER_PROMO_UNUSED.chapterId,
+          createdById: TEACHER_CHEMISTRY.id,
+          expiresAt: daysFromNow(60),
+        },
       });
 
-      // 18. Quiz Attempts
-      const mathPubQuizId = sid("quiz-math-pub");
-      const physicsPubQuizId = sid("quiz-physics-pub");
-      const chemPubQuizId = sid("quiz-chem-pub");
-      const allPubQuizIds = [mathPubQuizId, physicsPubQuizId, chemPubQuizId];
+      // 12. Enrollments + payments.
+      // Mona Tarek: one free chapter, one PAYMOB-paid chapter.
+      await tx.enrollment.upsert({
+        where: { studentId_chapterId: { studentId: MONA_TAREK!.id, chapterId: CHEM_CH1_ID } },
+        update: { status: "ACTIVE", price: 0, paymentMethod: "FREE" },
+        create: {
+          id: sid("enr-mona-ch1"),
+          studentId: MONA_TAREK!.id,
+          chapterId: CHEM_CH1_ID,
+          status: "ACTIVE",
+          price: 0,
+          paymentMethod: "FREE",
+        },
+      });
+      const CHEM_ORGANIC_ID = CHEMISTRY_CHAPTER_DEFS[4]!.id;
+      await tx.enrollment.upsert({
+        where: { studentId_chapterId: { studentId: MONA_TAREK!.id, chapterId: CHEM_ORGANIC_ID } },
+        update: { status: "ACTIVE", price: 75, paymentMethod: "PAYMOB" },
+        create: {
+          id: sid("enr-mona-organic"),
+          studentId: MONA_TAREK!.id,
+          chapterId: CHEM_ORGANIC_ID,
+          status: "ACTIVE",
+          price: 75,
+          paymentMethod: "PAYMOB",
+        },
+      });
+      await tx.paymentTransaction.upsert({
+        where: { id: sid("pt-mona-organic") },
+        update: {
+          studentId: MONA_TAREK!.id,
+          chapterId: CHEM_ORGANIC_ID,
+          paymobOrderId: "REALSEED_ORD_001",
+          amount: 75,
+          status: "SUCCESS",
+        },
+        create: {
+          id: sid("pt-mona-organic"),
+          studentId: MONA_TAREK!.id,
+          chapterId: CHEM_ORGANIC_ID,
+          paymobOrderId: "REALSEED_ORD_001",
+          amount: 75,
+          status: "SUCCESS",
+          createdAt: daysAgo(7),
+        },
+      });
 
-      const attemptDefs = [
-        {
-          sid: "attempt-active1-math",
-          studentId: STUDENTS[0]!.id,
-          quizId: mathPubQuizId,
-          score: 5,
-          total: 6,
-          status: "COMPLETED" as const,
-          completedAt: daysAgo(20),
+      // Youssef Hassan: PROMO-enrolled (free via teacher single-use code) in bonding.
+      await tx.enrollment.upsert({
+        where: {
+          studentId_chapterId: { studentId: YOUSSEF_HASSAN!.id, chapterId: CHAPTER_CHEMICAL_BONDING.id },
         },
-        {
-          sid: "attempt-active2-math",
-          studentId: STUDENTS[1]!.id,
-          quizId: mathPubQuizId,
-          score: 4,
-          total: 6,
-          status: "COMPLETED" as const,
-          completedAt: daysAgo(15),
+        update: { status: "ACTIVE", price: 0, paymentMethod: "PROMO", promoCodeId: TEACHER_PROMO_USED.id },
+        create: {
+          id: sid("enr-youssef-bonding"),
+          studentId: YOUSSEF_HASSAN!.id,
+          chapterId: CHAPTER_CHEMICAL_BONDING.id,
+          status: "ACTIVE",
+          price: 0,
+          paymentMethod: "PROMO",
+          promoCodeId: TEACHER_PROMO_USED.id,
         },
-        {
-          sid: "attempt-active1-physics",
-          studentId: STUDENTS[0]!.id,
-          quizId: physicsPubQuizId,
-          score: 5,
-          total: 6,
-          status: "COMPLETED" as const,
-          completedAt: daysAgo(10),
+      });
+
+      // Nour Ibrahim: PAYMOB purchase discounted via the active platform promo.
+      const nourAmountBefore = 40;
+      const nourDiscount = (nourAmountBefore * PROMO_ACTIVE.discountValue) / 100;
+      const nourAmountAfter = nourAmountBefore - nourDiscount;
+      await tx.enrollment.upsert({
+        where: {
+          studentId_chapterId: { studentId: NOUR_IBRAHIM!.id, chapterId: CHAPTER_MATTER_STRUCTURE.id },
         },
-        {
-          sid: "attempt-active2-physics",
-          studentId: STUDENTS[1]!.id,
-          quizId: physicsPubQuizId,
-          score: 3,
-          total: 6,
-          status: "COMPLETED" as const,
-          completedAt: daysAgo(8),
+        update: { status: "ACTIVE", price: nourAmountAfter, paymentMethod: "PAYMOB" },
+        create: {
+          id: sid("enr-nour-matter"),
+          studentId: NOUR_IBRAHIM!.id,
+          chapterId: CHAPTER_MATTER_STRUCTURE.id,
+          status: "ACTIVE",
+          price: nourAmountAfter,
+          paymentMethod: "PAYMOB",
         },
-        {
-          sid: "attempt-multi-chem",
-          studentId: STUDENTS[5]!.id,
-          quizId: chemPubQuizId,
-          score: 6,
-          total: 6,
-          status: "GRADED" as const,
-          completedAt: daysAgo(5),
+      });
+      await tx.paymentTransaction.upsert({
+        where: { id: sid("pt-nour-matter") },
+        update: {
+          studentId: NOUR_IBRAHIM!.id,
+          chapterId: CHAPTER_MATTER_STRUCTURE.id,
+          paymobOrderId: "REALSEED_ORD_002",
+          amount: nourAmountAfter,
+          status: "SUCCESS",
         },
-        {
-          sid: "attempt-active1-chem",
-          studentId: STUDENTS[0]!.id,
-          quizId: chemPubQuizId,
-          score: 2,
-          total: 6,
-          status: "COMPLETED" as const,
+        create: {
+          id: sid("pt-nour-matter"),
+          studentId: NOUR_IBRAHIM!.id,
+          chapterId: CHAPTER_MATTER_STRUCTURE.id,
+          paymobOrderId: "REALSEED_ORD_002",
+          amount: nourAmountAfter,
+          status: "SUCCESS",
+          createdAt: daysAgo(4),
+        },
+      });
+      await tx.platformPromoRedemption.upsert({
+        where: { id: sid("redemption-nour") },
+        update: {
+          promoCodeId: PROMO_ACTIVE.id,
+          userId: NOUR_IBRAHIM!.id,
+          amountBefore: nourAmountBefore,
+          discount: nourDiscount,
+          amountAfter: nourAmountAfter,
+        },
+        create: {
+          id: sid("redemption-nour"),
+          promoCodeId: PROMO_ACTIVE.id,
+          userId: NOUR_IBRAHIM!.id,
+          amountBefore: nourAmountBefore,
+          discount: nourDiscount,
+          amountAfter: nourAmountAfter,
+        },
+      });
+
+      // Omar Khaled: verified, no enrollments (empty-state fixture).
+      // Laila Mostafa: unverified, no enrollments.
+
+      // 13. Quiz attempts (Mona Tarek) — reuse ids straight off the catalog
+      // objects built above so they always match the actual seeded rows.
+      const gateQuiz = chemQuizzes.find((q) => q.id === CHEMISTRY_REQUIRED_GATE_QUIZ_ID)!;
+      const gateQuestion = gateQuiz.questions[0]!;
+      await tx.quizAttempt.upsert({
+        where: { quizId_studentId: { quizId: gateQuiz.id, studentId: MONA_TAREK!.id } },
+        update: {
+          answers: [{ questionId: gateQuestion.id, answer: gateQuestion.correctAnswer }],
+          score: gateQuestion.points,
+          totalPoints: gateQuestion.points,
+          status: "GRADED",
+        },
+        create: {
+          id: sid("attempt-mona-gate"),
+          quizId: gateQuiz.id,
+          studentId: MONA_TAREK!.id,
+          answers: [{ questionId: gateQuestion.id, answer: gateQuestion.correctAnswer }],
+          score: gateQuestion.points,
+          totalPoints: gateQuestion.points,
+          status: "GRADED",
+          startedAt: daysAgo(6),
+          completedAt: daysAgo(6),
+        },
+      });
+
+      // Second attempt on the chapter-2 quiz (has an essay question) — left
+      // COMPLETED with no score yet, matching the real "awaiting essay grading"
+      // state instead of a fully-graded one.
+      const analysisQuiz = chemQuizzes.find((q) => q.chapterId === CHEM_CH2_ID)!;
+      const analysisAnswers = analysisQuiz.questions.map((q) => ({
+        questionId: q.id,
+        answer: q.type === "ESSAY" ? "المعايرة تعتمد على معرفة تركيز محلول قياسي." : (q.correctAnswer ?? ""),
+      }));
+      await tx.quizAttempt.upsert({
+        where: { quizId_studentId: { quizId: analysisQuiz.id, studentId: MONA_TAREK!.id } },
+        update: { answers: analysisAnswers, status: "COMPLETED", totalPoints: analysisQuiz.questions.reduce((s, q) => s + q.points, 0) },
+        create: {
+          id: sid("attempt-mona-analysis"),
+          quizId: analysisQuiz.id,
+          studentId: MONA_TAREK!.id,
+          answers: analysisAnswers,
+          status: "COMPLETED",
+          totalPoints: analysisQuiz.questions.reduce((s, q) => s + q.points, 0),
+          startedAt: daysAgo(3),
           completedAt: daysAgo(3),
         },
-        {
-          sid: "attempt-pending-math",
-          studentId: STUDENTS[2]!.id,
-          quizId: mathPubQuizId,
-          score: null,
-          total: 6,
-          status: "IN_PROGRESS" as const,
-          completedAt: null,
-        },
+      });
+
+      // Nour Ibrahim: PASS case for manual verification — real, non-100%
+      // percentage (2/3 points = 67%) on a quiz she's actually enrolled in
+      // (chapter-1's own quiz, passingScore 50 → 67% passes).
+      const nourAttemptAnswers = [
+        { questionId: QUIZ_MATTER_STRUCTURE.questions[0]!.id, answer: QUIZ_MATTER_STRUCTURE.questions[0]!.correctAnswer },
+        { questionId: QUIZ_MATTER_STRUCTURE.questions[1]!.id, answer: TF_TRUE }, // wrong (correct is TF_FALSE)
       ];
+      const nourTotalPoints = QUIZ_MATTER_STRUCTURE.questions.reduce((s, q) => s + q.points, 0);
+      await tx.quizAttempt.upsert({
+        where: { quizId_studentId: { quizId: QUIZ_MATTER_STRUCTURE.id, studentId: NOUR_IBRAHIM!.id } },
+        update: { answers: nourAttemptAnswers, status: "GRADED", score: 2, totalPoints: nourTotalPoints },
+        create: {
+          id: sid("attempt-nour-matter"),
+          quizId: QUIZ_MATTER_STRUCTURE.id,
+          studentId: NOUR_IBRAHIM!.id,
+          answers: nourAttemptAnswers,
+          status: "GRADED",
+          score: 2,
+          totalPoints: nourTotalPoints,
+          startedAt: daysAgo(2),
+          completedAt: daysAgo(2),
+        },
+      });
 
-      for (const ad of attemptDefs) {
-        const answers = allPubQuizIds.includes(ad.quizId)
-          ? {
-              answers: [
-                { questionIndex: 0, answer: "خيار ١" },
-                { questionIndex: 1, answer: "صح" },
-              ],
-            }
-          : {};
-
-        await tx.quizAttempt.upsert({
-          where: {
-            quizId_studentId: { quizId: ad.quizId, studentId: ad.studentId },
-          },
-          update: { score: ad.score, status: ad.status },
-          create: {
-            id: sid(ad.sid),
-            quizId: ad.quizId,
-            studentId: ad.studentId,
-            answers,
-            score: ad.score,
-            totalPoints: ad.total,
-            status: ad.status,
-            startedAt: ad.completedAt
-              ? new Date(ad.completedAt.getTime() - 30 * 60 * 1000)
-              : daysAgo(1),
-            completedAt: ad.completedAt,
-            durationMinutesSnapshot: 30,
-          },
-        });
-      }
-
-      // 19. AuditLogs
-      const auditEntries = [
-        {
-          id: sid("audit-admin-create"),
-          action: "USER_CREATED",
-          resourceType: "User",
-          resourceId: ADMIN.id,
-          details: { role: "ADMIN", email: ADMIN.email },
-          userId: ADMIN.id,
-          actorType: "SYSTEM",
-          actorName: "النظام",
-          scopeTeacherId: null,
-          createdAt: daysAgo(100),
-        },
-        {
-          id: sid("audit-teacher-req-approved"),
-          action: "TEACHER_REQUEST_APPROVED",
-          resourceType: "TeacherRegistrationRequest",
-          resourceId: sid("req-approved"),
-          details: { publicReference: DEMO_REF_PREFIX + "REQ_002" },
-          userId: ADMIN.id,
-          actorType: "ADMIN",
-          actorName: ADMIN.fullName,
-          scopeTeacherId: null,
-          createdAt: daysAgo(15),
-        },
-        {
-          id: sid("audit-payment-completed"),
-          action: "PAYMENT_COMPLETED",
-          resourceType: "PaymentTransaction",
-          resourceId: sid("pt-success-1"),
-          details: { amount: 150, chapterId: CHAPTERS[1]!.id },
-          userId: STUDENTS[0]!.id,
-          actorType: "SYSTEM",
-          actorName: "النظام",
-          scopeTeacherId: TEACHERS[0]!.id,
-          createdAt: daysAgo(25),
-        },
-        {
-          id: sid("audit-sub-payment"),
-          action: "SUBSCRIPTION_PAYMENT_COMPLETED",
-          resourceType: "TeacherSubscriptionPayment",
-          resourceId: sid("tsp-success-1"),
-          details: { amount: 499, planCode: "PRO" },
-          userId: mathTeacherId,
-          actorType: "SYSTEM",
-          actorName: "النظام",
-          scopeTeacherId: mathTeacherId,
-          createdAt: daysAgo(60),
-        },
-        {
-          id: sid("audit-user-updated"),
-          action: "USER_STATUS_CHANGED",
-          resourceType: "User",
-          resourceId: STUDENTS[0]!.id,
-          details: { from: "ACTIVE", to: "INACTIVE" },
-          userId: ADMIN.id,
-          actorType: "ADMIN",
-          actorName: ADMIN.fullName,
-          scopeTeacherId: null,
-          createdAt: daysAgo(12),
-        },
-        {
-          id: sid("audit-teacher-req-rejected"),
-          action: "TEACHER_REQUEST_REJECTED",
-          resourceType: "TeacherRegistrationRequest",
-          resourceId: sid("req-rejected"),
-          details: { publicReference: DEMO_REF_PREFIX + "REQ_003", reason: "incomplete documents" },
-          userId: ADMIN.id,
-          actorType: "ADMIN",
-          actorName: ADMIN.fullName,
-          scopeTeacherId: null,
-          createdAt: daysAgo(10),
-        },
-        {
-          id: sid("audit-plan-created"),
-          action: "ADMIN_PLAN_CREATED",
-          resourceType: "TeacherPlan",
-          resourceId: planProId,
-          details: { code: "PRO", monthlyPrice: 499 },
-          userId: ADMIN.id,
-          actorType: "ADMIN",
-          actorName: ADMIN.fullName,
-          scopeTeacherId: null,
-          createdAt: daysAgo(90),
-        },
-        {
-          id: sid("audit-plan-updated"),
-          action: "ADMIN_PLAN_UPDATED",
-          resourceType: "TeacherPlan",
-          resourceId: planBasicId,
-          details: { changed: ["monthlyPrice"], monthlyPrice: 199 },
-          userId: ADMIN.id,
-          actorType: "ADMIN",
-          actorName: ADMIN.fullName,
-          scopeTeacherId: null,
-          createdAt: daysAgo(40),
-        },
-        {
-          id: sid("audit-sub-req-approved"),
-          action: "TEACHER_SUBSCRIPTION_REQUEST_APPROVED",
-          resourceType: "TeacherSubscriptionRequest",
-          resourceId: sid("tsr-math-approved"),
-          details: { planCode: "PRO" },
-          userId: ADMIN.id,
-          actorType: "ADMIN",
-          actorName: ADMIN.fullName,
-          scopeTeacherId: mathTeacherId,
-          createdAt: daysAgo(58),
-        },
-        {
-          id: sid("audit-sub-req-rejected"),
-          action: "TEACHER_SUBSCRIPTION_REQUEST_REJECTED",
-          resourceType: "TeacherSubscriptionRequest",
-          resourceId: sid("tsr-chem-rejected"),
-          details: { planCode: "BASIC" },
-          userId: ADMIN.id,
-          actorType: "ADMIN",
-          actorName: ADMIN.fullName,
-          scopeTeacherId: chemTeacherId,
-          createdAt: daysAgo(20),
-        },
-        {
-          id: sid("audit-password-changed"),
-          action: "PASSWORD_CHANGED",
-          resourceType: "User",
-          resourceId: STUDENTS[1]!.id,
-          details: { method: "SELF_SERVICE" },
-          userId: STUDENTS[1]!.id,
-          actorType: "STUDENT",
-          actorName: STUDENTS[1]!.fullName,
-          scopeTeacherId: null,
-          createdAt: daysAgo(5),
-        },
-        {
-          // Intentionally seeded WITH sensitive keys (written via prisma directly,
-          // bypassing the write-time sanitiser) so the READ-path sanitiser can be
-          // verified to strip them in the API response.
-          id: sid("audit-with-secrets"),
-          action: "PAYMENT_COMPLETED",
-          resourceType: "TeacherSubscriptionPayment",
-          resourceId: sid("tsp-success-2"),
-          details: {
-            amount: 499,
-            planCode: "PRO",
-            password: "should-not-appear",
-            passwordHash: "$2b$should-not-appear",
-            tokenVersion: 7,
-            rawCallback: { hmac: "top-secret-hmac", raw: "provider-payload" },
-            checkoutUrl: "https://pay.example/secret-checkout",
-            resetToken: "reset-should-not-appear",
-            otp: "123456",
-            storagePath: "teachers/secret/path.pdf",
-            nested: { authorization: "Bearer secret", safeField: "ok" },
-          },
-          userId: mathTeacherId,
-          actorType: "SYSTEM",
-          actorName: "النظام",
-          scopeTeacherId: mathTeacherId,
-          createdAt: daysAgo(59),
-        },
+      // Youssef Hassan: FAIL case for manual verification — real percentage
+      // (1/3 points = 33%) on the chapter he's enrolled/PROMO-enrolled in,
+      // below its passingScore of 50 → fails.
+      const youssefAttemptAnswers = [
+        { questionId: QUIZ_CHEMICAL_BONDING.questions[0]!.id, answer: "الرابطة الفلزية" }, // wrong (correct is الرابطة الأيونية)
+        { questionId: QUIZ_CHEMICAL_BONDING.questions[1]!.id, answer: QUIZ_CHEMICAL_BONDING.questions[1]!.correctAnswer },
       ];
+      const youssefTotalPoints = QUIZ_CHEMICAL_BONDING.questions.reduce((s, q) => s + q.points, 0);
+      await tx.quizAttempt.upsert({
+        where: { quizId_studentId: { quizId: QUIZ_CHEMICAL_BONDING.id, studentId: YOUSSEF_HASSAN!.id } },
+        update: { answers: youssefAttemptAnswers, status: "GRADED", score: 1, totalPoints: youssefTotalPoints },
+        create: {
+          id: sid("attempt-youssef-bonding"),
+          quizId: QUIZ_CHEMICAL_BONDING.id,
+          studentId: YOUSSEF_HASSAN!.id,
+          answers: youssefAttemptAnswers,
+          status: "GRADED",
+          score: 1,
+          totalPoints: youssefTotalPoints,
+          startedAt: daysAgo(1),
+          completedAt: daysAgo(1),
+        },
+      });
 
-      for (const ae of auditEntries) {
-        await tx.auditLog.upsert({
-          where: { id: ae.id },
-          update: { action: ae.action, details: ae.details as Prisma.InputJsonValue },
-          create: ae,
-        });
-      }
-
-      // 20. LessonProgress records
-      for (const studentId of [
-        STUDENTS[0]!.id,
-        STUDENTS[1]!.id,
-        STUDENTS[5]!.id,
-      ]) {
-        const firstLessonId = LESSONS[0]!.id;
-        await tx.lessonProgress.upsert({
-          where: { studentId_lessonId: { studentId, lessonId: firstLessonId } },
-          update: { completed: true },
+      // 14. Teacher subscription (Ahmed Sami on the PRO plan).
+      const proPlan = await tx.teacherPlan.findUnique({ where: { code: "PRO" } });
+      if (proPlan) {
+        await tx.teacherSubscription.upsert({
+          where: { id: sid("sub-ahmed-pro") },
+          update: {
+            teacherId: TEACHER_CHEMISTRY.id,
+            planId: proPlan.id,
+            status: "ACTIVE",
+            currentPeriodEnd: daysFromNow(20),
+          },
           create: {
-            id: sid(
-              `progress-${studentId.slice(0, 8)}-${firstLessonId.slice(0, 8)}`,
-            ),
-            studentId,
-            lessonId: firstLessonId,
-            completed: true,
+            id: sid("sub-ahmed-pro"),
+            teacherId: TEACHER_CHEMISTRY.id,
+            planId: proPlan.id,
+            status: "ACTIVE",
+            startedAt: daysAgo(10),
+            currentPeriodStart: daysAgo(10),
+            currentPeriodEnd: daysFromNow(20),
           },
         });
       }
     },
-    { timeout: 60_000 },
+    { timeout: 30_000 },
   );
 }
 
 async function logSeedCounts(): Promise<void> {
-  const [
-    users,
-    teachers,
-    students,
-    stages,
-    chapters,
-    lessons,
-    quizzesPub,
-    quizzesDraft,
-    enrollments,
-    payments,
-    subPayments,
-    attempts,
-    aiEvents,
-    requests,
-    subscriptions,
-  ] = await Promise.all([
-    prisma.user.count({ where: { email: { in: ALL_SEED_EMAILS } } }),
-    prisma.user.count({
-      where: { email: { in: ALL_SEED_EMAILS }, role: "OPERATION" },
-    }),
-    prisma.user.count({
-      where: { email: { in: ALL_SEED_EMAILS }, role: "STUDENT" },
-    }),
+  const allEmails = [
+    ADMIN.email,
+    TEACHER_CHEMISTRY.email,
+    TEACHER_PHYSICS.email,
+    TEACHER_PENDING.email,
+    ...STUDENTS.map((s) => s.email),
+  ];
+  const [users, stages, chapters, lessons, quizzes, enrollments, promoCodes] = await Promise.all([
+    prisma.user.count({ where: { email: { in: allEmails } } }),
     prisma.stage.count({ where: { id: { in: STAGES.map((s) => s.id) } } }),
-    prisma.chapter.count({ where: { id: { in: CHAPTERS.map((c) => c.id) } } }),
-    prisma.lesson.count({ where: { id: { in: LESSONS.map((l) => l.id) } } }),
-    prisma.quiz.count({
+    prisma.chapter.count({
+      where: { id: { in: [...CUSTOM_CHAPTERS.map((c) => c.id), ...CHEMISTRY_CHAPTER_DEFS.map((c) => c.id)] } },
+    }),
+    prisma.lesson.count({
       where: {
-        id: {
-          in: [
-            sid("quiz-math-pub"),
-            sid("quiz-physics-pub"),
-            sid("quiz-chem-pub"),
-            sid("quiz-math-multi-chapter"),
-            sid("quiz-math-full-curriculum"),
-          ],
+        chapterId: {
+          in: [...CUSTOM_CHAPTERS.map((c) => c.id), ...CHEMISTRY_CHAPTER_DEFS.map((c) => c.id)],
         },
       },
     }),
@@ -2436,52 +1507,30 @@ async function logSeedCounts(): Promise<void> {
       where: {
         id: {
           in: [
-            sid("quiz-math-draft"),
-            sid("quiz-physics-draft"),
-            sid("quiz-chem-draft"),
+            ...CUSTOM_QUIZZES.map((q) => q.id),
+            ...buildChemistryQuizCatalog().map((q) => q.id),
+            QUIZ_MULTI_CHAPTER_REVIEW.id,
+            QUIZ_FULL_CURRICULUM_FINAL.id,
           ],
         },
       },
     }),
-    prisma.enrollment.count({
-      where: { studentId: { in: STUDENTS.map((s) => s.id) } },
-    }),
-    prisma.paymentTransaction.count({
-      where: { paymobOrderId: { startsWith: DEMO_ORDER_PREFIX } },
-    }),
-    prisma.teacherSubscriptionPayment.count({
-      where: { providerOrderId: { startsWith: DEMO_ORDER_PREFIX } },
-    }),
-    prisma.quizAttempt.count({
-      where: { studentId: { in: STUDENTS.map((s) => s.id) } },
-    }),
-    prisma.teacherAiUsageEvent.count({
-      where: { teacherId: { in: TEACHERS.map((t) => t.id) } },
-    }),
-    prisma.teacherRegistrationRequest.count({
-      where: { publicReference: { startsWith: DEMO_REF_PREFIX } },
-    }),
-    prisma.teacherSubscription.count({
-      where: { teacherId: { in: TEACHERS.map((t) => t.id) } },
+    prisma.enrollment.count({ where: { studentId: { in: STUDENTS.map((s) => s.id) } } }),
+    prisma.platformPromoCode.count({
+      where: { code: { in: [PROMO_ACTIVE.code, PROMO_EXPIRED.code, PROMO_DISABLED.code] } },
     }),
   ]);
 
-  logger.info("seed_counts", {
-    users,
-    teachers,
-    students,
-    stages,
-    chapters,
-    lessons,
-    publishedQuizzes: quizzesPub,
-    draftQuizzes: quizzesDraft,
-    enrollments,
-    coursePayments: payments,
-    subPayments,
-    quizAttempts: attempts,
-    aiUsageEvents: aiEvents,
-    registrationRequests: requests,
-    subscriptions,
+  logger.info("realistic_seed_complete", {
+    counts: { users, stages, chapters, lessons, quizzes, enrollments, promoCodes },
+    admin: { email: ADMIN.email, password: SEED_SHARED_PASSWORD },
+    teachers: [
+      { email: TEACHER_CHEMISTRY.email, name: TEACHER_CHEMISTRY.fullName, subject: TEACHER_CHEMISTRY.subject },
+      { email: TEACHER_PHYSICS.email, name: TEACHER_PHYSICS.fullName, subject: TEACHER_PHYSICS.subject },
+      { email: TEACHER_PENDING.email, name: TEACHER_PENDING.fullName, state: "PENDING_REVIEW" },
+    ],
+    students: STUDENTS.map((s) => ({ email: s.email, name: s.fullName, emailVerified: s.emailVerified })),
+    password: SEED_SHARED_PASSWORD,
   });
 }
 
@@ -2490,28 +1539,18 @@ async function main(): Promise<void> {
     nodeEnv: process.env.NODE_ENV,
     databaseUrl: process.env.DATABASE_URL,
     productionFlag:
-      process.env.ALLOW_PRODUCTION_SEED === "true"
-        ? undefined
-        : process.env.NODE_ENV,
+      process.env.ALLOW_PRODUCTION_SEED === "true" ? undefined : process.env.NODE_ENV,
   });
 
-  if (
-    process.env.NODE_ENV === "production" &&
-    process.env.ALLOW_PRODUCTION_SEED !== "true"
-  ) {
-    throw new Error(
-      "Seed aborted: NODE_ENV=production. Set ALLOW_PRODUCTION_SEED=true to override.",
-    );
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_PRODUCTION_SEED !== "true") {
+    throw new Error("Seed aborted: NODE_ENV=production. Set ALLOW_PRODUCTION_SEED=true to override.");
   }
 
-  logger.info("seed_started", {
-    environment: process.env.NODE_ENV ?? "development",
-    databaseHost: host,
-  });
+  logger.info("seed_started", { environment: process.env.NODE_ENV ?? "development", databaseHost: host });
 
-  await cleanupSeedOwnedRecords();
   await seedAll();
-  // Quiz unlock-by-lesson-completion demo scenario (self-contained + idempotent).
+  // Self-contained quiz-unlock-by-lesson-completion QA scenario (own emails
+  // under @fahimni.local, own teacher+5 students) — preserved unchanged.
   await seedQuizUnlockScenario();
 
   await logSeedCounts();
@@ -2521,9 +1560,9 @@ async function main(): Promise<void> {
 
 main()
   .catch((e) => {
-    logger.error("seed_failed", {
-      message: e instanceof Error ? e.message : String(e),
-    });
+    logger.error("seed_failed", { message: e instanceof Error ? e.message : String(e) });
     process.exitCode = 1;
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

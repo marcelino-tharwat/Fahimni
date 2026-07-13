@@ -213,6 +213,28 @@ describe("QuizGenerationService.generate", () => {
     }
   });
 
+  it("persists the SINGLE-mode chosen difficulty on the Quiz row itself (Quiz.difficulty)", async () => {
+    primeHappyPath(m);
+    await service().generate(CHAPTER_INPUT, TEACHER);
+
+    const createArg = m.tx.quiz.create.mock.calls[0]![0] as { data: { difficulty: string } };
+    expect(createArg.data.difficulty).toBe("MEDIUM");
+  });
+
+  it("persists the MIXED-mode plurality difficulty on the Quiz row (no single choice exists)", async () => {
+    primeHappyPath(m);
+    const mixedInput: GenerateQuizInput = {
+      ...CHAPTER_INPUT,
+      difficultyMode: "MIXED",
+      difficulty: undefined,
+      difficultyDistribution: { easy: 10, medium: 20, hard: 70 },
+    };
+    await service().generate(mixedInput, TEACHER);
+
+    const createArg = m.tx.quiz.create.mock.calls[0]![0] as { data: { difficulty: string } };
+    expect(createArg.data.difficulty).toBe("HARD");
+  });
+
   it("nulls the source lesson when more than one lesson fed generation", async () => {
     m.prisma.chapter.findFirst.mockResolvedValue({ id: CHAPTER_ID, name: "الجبر" });
     m.prisma.lesson.findMany.mockResolvedValue([

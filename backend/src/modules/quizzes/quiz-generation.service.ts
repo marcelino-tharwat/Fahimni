@@ -32,7 +32,7 @@ import {
   persistQuizLessonRelations,
   type QuizContentScope,
 } from "./quiz-scope.js";
-import { resolveQuizDifficulty } from "./quiz-difficulty.js";
+import { resolveQuizDifficulty, pickQuizLevelDifficulty } from "./quiz-difficulty.js";
 import {
   buildAllocationPlan,
   type AllocationPlan,
@@ -291,7 +291,7 @@ export class QuizGenerationService {
       : null;
 
     this.assertDeadline(deadline);
-    return this.persistPlan(title, description, plan, teacherId, items);
+    return this.persistPlan(title, description, plan, teacherId, items, resolvedDifficulty);
   }
 
   /**
@@ -308,6 +308,11 @@ export class QuizGenerationService {
     teacherId: string,
     deadline: number,
   ): Promise<GeneratedQuizDTO> {
+    // Quiz-level difficulty (persisted on Quiz.difficulty), resolved once from
+    // the teacher's overall request — independent of each bucket's own
+    // per-pass resolution below, which only drives that bucket's prompt.
+    const resolvedDifficulty = this.resolveDifficultyFor(input, input.questionCount);
+
     // Fail fast: every bucket must have usable indexed content before any
     // Gemini call, so we never persist a partial quiz.
     const chunkCounts = await Promise.all(
@@ -357,7 +362,7 @@ export class QuizGenerationService {
       : null;
 
     this.assertDeadline(deadline);
-    return this.persistPlan(title, description, plan, teacherId, items);
+    return this.persistPlan(title, description, plan, teacherId, items, resolvedDifficulty);
   }
 
   /** Run a single bucket's grounded generation pass (scoped RAG → Gemini → parse). */
@@ -634,8 +639,13 @@ export class QuizGenerationService {
     plan: AllocationPlan,
     teacherId: string,
     items: QuestionWithSource[],
+    resolvedDifficulty: ReturnType<typeof resolveQuizDifficulty>,
   ): Promise<GeneratedQuizDTO> {
     const questions = items.map((i) => i.parsed);
+    const difficulty = pickQuizLevelDifficulty(resolvedDifficulty).toUpperCase() as
+      | "EASY"
+      | "MEDIUM"
+      | "HARD";
     let created;
     try {
       created = await this.prisma.$transaction(async (tx) => {
@@ -651,6 +661,7 @@ export class QuizGenerationService {
             sourceChapterIds: plan.sourceChapterIds,
             sourceStageId: plan.sourceStageId,
             createdBy: teacherId,
+            difficulty,
           },
           select: quizPublicFields,
         });

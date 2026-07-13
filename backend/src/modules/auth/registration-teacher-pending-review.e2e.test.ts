@@ -169,12 +169,20 @@ describe("Registration — teacher pending review", () => {
     expect(r2.status).toBe(409);
   });
 
-  it("10. a pending teacher cannot log in (blocked → no dashboard access)", async () => {
+  it("10. a pending teacher logs in in restricted mode (200 + TEACHER_PENDING_REVIEW), not blocked", async () => {
+    // Regression guard: this used to incorrectly assert a 403 because
+    // registerTeacherPending set emailVerified:false, which tripped the
+    // EMAIL_NOT_VERIFIED gate before the teacher-lifecycle restricted-login
+    // path (see teacher-pending-login-review-status.e2e.test.ts, the
+    // authoritative coverage for that path) ever ran. Teachers are gated by
+    // admin review, not email verification — see AuthService.registerTeacherPending.
     const body = teacherBody("nologin");
     expect((await reg(body)).status).toBe(201);
     const login = await http("POST", "/api/v1/auth/login", { body: { email: body.email, password: PW } });
-    expect(login.status).toBe(403); // INACTIVE account cannot authenticate
-    expect(login.setCookie.some((c) => c.startsWith("access_token="))).toBe(false);
+    expect(login.status).toBe(200);
+    const data = (login.json as { data: { accessState?: string } }).data;
+    expect(data.accessState).toBe("TEACHER_PENDING_REVIEW");
+    expect(login.setCookie.some((c) => c.startsWith("access_token="))).toBe(true);
   });
 });
 

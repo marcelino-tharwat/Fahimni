@@ -111,6 +111,7 @@ export class AttemptsService {
         durationMinutes: true,
         chapterId: true,
         passingScore: true,
+        difficulty: true,
         sourceScope: true,
         sourceChapterIds: true,
         sourceStageId: true,
@@ -205,7 +206,10 @@ export class AttemptsService {
           questionCount: q.questionCount,
           points: q.totalPoints,
           durationMinutes: q.durationMinutes,
-          difficulty: "medium" as const,
+          // Real, backend-persisted difficulty (schema: Quiz.difficulty, set at
+          // generation time) — lowercased to match the existing student-facing
+          // `Difficulty` contract ('easy' | 'medium' | 'hard').
+          difficulty: q.difficulty.toLowerCase() as "easy" | "medium" | "hard",
           status: display.status as QuizStatus,
           attemptId: attempt?.id ?? null,
           attemptStatus: attempt?.status ?? null,
