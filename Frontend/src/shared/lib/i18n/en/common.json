@@ -19,7 +19,6 @@
     "profile": "Profile",
     "promoCodes": "Promo Codes",
     "studentLookup": "Student Lookup",
-    "tenants": "Academies",
     "plans": "Plans & Subscriptions",
     "subscriptions": "Subscriptions",
     "teacherWithdrawals": "Withdrawals",
@@ -84,21 +83,6 @@
     "error": "An error occurred",
     "empty": "No data",
     "success": "Success"
-  },
-  "admin": {
-    "tenants": "Academies",
-    "tenantName": "Academy Name",
-    "link": "Link",
-    "teacher": "Teacher",
-    "subject": "Subject",
-    "status": "Status",
-    "studentCount": "Number of Students",
-    "chapterCount": "Number of Chapters",
-    "revenue": "Revenue",
-    "active": "Active",
-    "trial": "Trial",
-    "expired": "Expired",
-    "suspended": "Suspended"
   },
   "adminDashboard": {
     "title": "Admin Dashboard",

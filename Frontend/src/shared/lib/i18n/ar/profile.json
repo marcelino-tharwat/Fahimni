@@ -71,12 +71,5 @@
     "phoneLabel": "رقم الهاتف",
     "phonePlaceholder": "01012345678",
     "saving": "جاري الحفظ..."
-  },
-  "academicIdentity": {
-    "title": "هوية الأكاديمية",
-    "academyName": "أكاديمية الكيمياء — أ. محمد",
-    "editLink": "تعديل الهوية",
-    "fontLabel": "Cairo",
-    "colorsLabel": "ألوان الأكاديمية"
   }
 }

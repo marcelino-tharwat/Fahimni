@@ -74,8 +74,6 @@ import { AdminStudentsPage } from '@/features/admin/pages/AdminStudentsPage';
 import { AdminStagesPage } from '@/features/admin/pages/AdminStagesPage';
 import { AdminTeacherRequestsPage } from '@/features/admin/pages/AdminTeacherRequestsPage';
 import { AdminTeacherRequestDetailPage } from '@/features/admin/pages/AdminTeacherRequestDetailPage';
-import { TenantsPage } from '@/features/admin/pages/TenantsPage';
-import { TenantDetailsPage } from '@/features/admin/pages/TenantDetailsPage';
 import { PromoCodesPage as AdminPromoCodesPage } from '@/features/admin/pages/PromoCodesPage';
 import { AdminPromoCodesManagementPage } from '@/features/admin/pages/AdminPromoCodesManagementPage';
 import { AdminAuditLogsPage } from '@/features/admin/pages/AdminAuditLogsPage';
@@ -221,8 +219,6 @@ const router = createBrowserRouter([
               { path: '/admin/stages', element: <AdminStagesPage /> },
               { path: '/admin/teacher-requests', element: <AdminTeacherRequestsPage /> },
               { path: '/admin/teacher-requests/:requestId', element: <AdminTeacherRequestDetailPage /> },
-              { path: '/admin/tenants', element: <TenantsPage /> },
-              { path: '/admin/tenants/:tenantId', element: <TenantDetailsPage /> },
               { path: '/admin/promo-codes', element: <AdminPromoCodesManagementPage /> },
               { path: '/admin/subscriptions', element: <AdminSubscriptionsPage /> },
               { path: '/admin/teacher-withdrawals', element: <AdminTeacherWithdrawalsPage /> },

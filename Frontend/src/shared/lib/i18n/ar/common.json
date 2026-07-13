@@ -18,7 +18,6 @@
     "profile": "الملف الشخصي",
     "promoCodes": "أكواد الخصم",
     "studentLookup": "بحث الطلاب",
-    "tenants": "الأكاديميات",
     "plans": "الباقات والاشتراكات",
     "subscriptions": "الاشتراكات",
     "teacherWithdrawals": "طلبات السحب",
@@ -83,21 +82,6 @@
     "error": "حدث خطأ",
     "empty": "لا توجد بيانات",
     "success": "تم بنجاح"
-  },
-  "admin": {
-    "tenants": "الأكاديميات",
-    "tenantName": "اسم الأكاديمية",
-    "link": "الرابط",
-    "teacher": "المعلم",
-    "subject": "المادة",
-    "status": "الحالة",
-    "studentCount": "عدد الطلاب",
-    "chapterCount": "عدد الأبواب",
-    "revenue": "الإيرادات",
-    "active": "نشط",
-    "trial": "تجريبي",
-    "expired": "منتهي",
-    "suspended": "موقوف"
   },
   "adminDashboard": {
     "title": "لوحة تحكم المشرف",

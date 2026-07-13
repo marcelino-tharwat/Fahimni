@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { LayoutDashboard, Building2, Ticket, GraduationCap, Users, ClipboardCheck, CreditCard, Wallet, TrendingUp, Receipt, ScrollText, Banknote, Layers } from 'lucide-react';
+import { LayoutDashboard, Ticket, GraduationCap, Users, ClipboardCheck, CreditCard, Wallet, TrendingUp, Receipt, ScrollText, Banknote, Layers } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from './AppHeader';
 import { Sidebar, type SidebarItem } from './Sidebar';
@@ -15,7 +15,6 @@ export function AdminLayout() {
     { label: t('nav.students'), icon: Users, path: '/admin/students' },
     { label: t('nav.stages', 'Stages'), icon: Layers, path: '/admin/stages' },
     { label: t('nav.teacherRequests'), icon: ClipboardCheck, path: '/admin/teacher-requests' },
-    { label: t('nav.tenants'), icon: Building2, path: '/admin/tenants' },
     { label: t('nav.promoCodes'), icon: Ticket, path: '/admin/promo-codes' },
     { label: t('nav.plans'), icon: CreditCard, path: '/admin/plans' },
     { label: t('nav.subscriptions'), icon: Wallet, path: '/admin/subscriptions' },
