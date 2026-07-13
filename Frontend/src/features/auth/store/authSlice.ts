@@ -70,10 +70,17 @@ export const dashboardPathByRole: Record<UserRole, string> = {
 /*  Thunks                                                              */
 /* ------------------------------------------------------------------ */
 
+// Rejects with the raw, untranslated `ApiError` (code + message) rather than a
+// pre-translated string — same reasoning as `register` below: the UI layer
+// (LoginForm) needs the actual `.code` to special-case EMAIL_NOT_VERIFIED
+// (redirect instead of an inline message) and to translate the rest itself in
+// the current UI language. Translating here and re-translating in the
+// component silently collapsed every error into the generic fallback, since a
+// plain string has no `.code` for translateApiError to read.
 export const login = createAsyncThunk<
   { user: User; accessState?: LoginAccessState },
   { email: string; password: string; remember?: boolean },
-  { rejectValue: string }
+  { rejectValue: ApiError }
 >('auth/login', async (credentials, { rejectWithValue }) => {
   try {
     const { data } = await apiClient.post<{
@@ -84,7 +91,7 @@ export const login = createAsyncThunk<
     saveUser(data.data.user);
     return { user: data.data.user, accessState: data.data.accessState };
   } catch (err) {
-    return rejectWithValue(await translateThunkError(err));
+    return rejectWithValue(err as ApiError);
   }
 });
 
@@ -263,7 +270,10 @@ const authSlice = createSlice({
         state.accessState = action.payload.accessState ?? null;
       })
       .addCase(login.rejected, (state, action) => {
-        state.error = action.payload ?? null;
+        // Raw ApiError now (see the login thunk) — LoginForm reads it via
+        // unwrap() and translates it itself, same as register.rejected below.
+        // No UI reads state.error for this flow, so keep this synchronous.
+        state.error = action.payload?.message ?? null;
         if (!state.isAuthenticated) {
           state.status = 'failed';
         }

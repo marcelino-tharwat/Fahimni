@@ -90,10 +90,13 @@ export class AuthService {
       throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
     }
 
-    // ADMIN accounts are exempt from the email-verification gate regardless of
-    // the stored emailVerified value — role-based, not a one-time seed default,
-    // so an admin created any other way later is still never blocked here.
-    if (user.role !== "ADMIN" && !user.emailVerified) {
+    // ADMIN and OPERATION (teacher) accounts are exempt from the email-verification
+    // gate regardless of the stored emailVerified value — role-based, not a
+    // one-time registration-time default, so an account created any other way
+    // later is still never blocked here. Teachers are gated on admin-approval
+    // status instead (teacherApprovalState, checked below); only students go
+    // through the email-verification flow.
+    if (user.role !== "ADMIN" && user.role !== "OPERATION" && !user.emailVerified) {
       throw new AppError("Please verify your email before logging in.", 403, "EMAIL_NOT_VERIFIED");
     }
 
@@ -288,11 +291,9 @@ export class AuthService {
           teacherApprovalState: "PENDING_REVIEW",
           locale: normalizeLocale(input.locale),
           // Teachers are gated by admin review (teacherApprovalState), not by
-          // email verification — the admin approval step is itself a stronger
-          // check than an email click. Matches AdminUsersService.createUser's
-          // trusted-path convention (emailVerified: true there too), so the
-          // loginUser email-verification gate (role !== ADMIN) never blocks a
-          // legitimately pending/approved/rejected teacher.
+          // email verification — loginUser's email-verification gate excludes
+          // OPERATION entirely. Matches AdminUsersService.createUser's
+          // trusted-path convention (emailVerified: true there too).
           emailVerified: true,
         },
         select: userPublicFields,
@@ -407,9 +408,7 @@ export class AuthService {
       },
     });
 
-    // 6. MVP: console.log — SMS/email integration in v2
-    console.log(`[OTP] ${input.email}: ${otp}`);
-
+    // 6. Send OTP via email
     await sendTransactionalEmail({
       to: input.email,
       template: "passwordReset",

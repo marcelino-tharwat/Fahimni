@@ -18,9 +18,9 @@
     "teacherName": "Mr. Ahmed Mohamed",
     "bio": "Chemistry teacher with 15 years of experience teaching secondary school. Holds a master's degree in Organic Chemistry from Cairo University.",
     "photoAlt": "Mr. Ahmed Mohamed",
-    "headlineLine1": "Mr. Ahmed's Academy for",
-    "headlineLine2": "Teaching Chemistry",
-    "subtext": "Master chemistry for your exams with interactive video lessons, smart quizzes, and an AI assistant to help you anytime",
+    "headlineLine1": "Everything You Need to Learn,",
+    "headlineLine2": "In One Place",
+    "subtext": "Video lessons, quizzes, and instant AI help, built around how you learn best.",
     "ratingCount": "(120+ reviews)",
     "ctaPrimary": "Start Learning Now",
     "ctaSecondary": "Watch a Free Lesson",
@@ -106,8 +106,8 @@
     "btn": "Sign Up & Start"
   },
   "footer": {
-    "academyName": "Mr. Ahmed's Chemistry Academy",
-    "platformDesc": "A smart learning platform that helps teachers manage their content and students",
+    "academyName": "Everything You Need to Learn, In One Place",
+    "platformDesc": "Video lessons, quizzes, and instant AI help, built around how you learn best.",
     "curriculum": "Curriculum Content",
     "curriculumLinks": [
       "Acids and Bases",

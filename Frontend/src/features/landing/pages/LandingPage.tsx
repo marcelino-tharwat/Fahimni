@@ -5,7 +5,6 @@ import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import {
   Menu,
   X,
-  GraduationCap,
   BookOpen,
   FileText,
   FileDown,
@@ -157,7 +156,7 @@ function LandingNavbar() {
             }}
             className="font-cairo flex cursor-pointer items-center gap-2 text-lg font-bold text-white transition-opacity hover:opacity-80 md:text-xl"
           >
-            <GraduationCap aria-hidden className="h-6 w-6 text-cyan-500" />
+            <img src="/images/2.png" alt="Fahimni" className="h-14 w-14 object-contain" />
             {t('brand')}
           </a>
         </div>
@@ -554,7 +553,7 @@ function ChaptersSection() {
                 </div>
 
                 {/* Content */}
-                <div className={cn('p-5')}>
+                <div className={cn('p-5 text-center')}>
                   <h3 className="font-cairo text-navy-800 mb-3 line-clamp-1 text-base font-bold">
                     {title}
                   </h3>
@@ -1331,7 +1330,7 @@ function LandingFooter() {
               <li className="flex items-center justify-center gap-2 md:justify-start">
                 <Mail size={14} className="text-cyan-500" />
                 <span className="font-cairo text-navy-400 text-sm">
-                  info@fahimni.com
+                  fahimniproject@gmail.com
                 </span>
               </li>
               <li className="flex items-center justify-center gap-2 md:justify-start">

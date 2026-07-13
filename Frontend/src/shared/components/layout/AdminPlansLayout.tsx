@@ -83,7 +83,7 @@ export function AdminPlansLayout() {
             to="/"
             className="inline-flex items-center gap-2 font-cairo text-xl font-bold text-cyan-500 transition-opacity hover:opacity-80"
           >
-            <GraduationCap size={24} className="shrink-0 text-cyan-500" />
+            <img src="/images/2.png" alt="Fahimni" className="h-14 w-14 shrink-0 object-contain" />
             {expanded && <span>{t('appName')}</span>}
           </Link>
         </div>
