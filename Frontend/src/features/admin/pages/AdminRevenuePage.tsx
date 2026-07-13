@@ -117,7 +117,7 @@ export function AdminRevenuePage() {
       <div className="rounded-card border border-border bg-white p-4 shadow-card">
         <h2 className="mb-3 font-cairo text-base font-bold text-navy-900">{t('adminRevenue.byTeacherTitle')}</h2>
         <div className="overflow-x-auto">
-          <table className="w-full" data-testid="revenue-by-teacher-table">
+          <table className="w-full min-w-[640px]" data-testid="revenue-by-teacher-table">
             <thead className="border-b border-border">
               <tr><Th>{t('adminRevenue.colTeacher')}</Th><Th>{t('adminRevenue.colCourseRevenue')}</Th><Th>{t('adminRevenue.colSubscriptionRevenue')}</Th><Th>{t('adminRevenue.colSuccessfulPayments')}</Th></tr>
             </thead>
@@ -146,7 +146,7 @@ export function AdminRevenuePage() {
       <div className="rounded-card border border-border bg-white p-4 shadow-card">
         <h2 className="mb-3 font-cairo text-base font-bold text-navy-900">{t('adminRevenue.byChapterTitle')}</h2>
         <div className="overflow-x-auto">
-          <table className="w-full" data-testid="revenue-by-chapter-table">
+          <table className="w-full min-w-[640px]" data-testid="revenue-by-chapter-table">
             <thead className="border-b border-border">
               <tr><Th>{t('adminRevenue.colChapter')}</Th><Th>{t('adminRevenue.colTeacher')}</Th><Th>{t('adminRevenue.colConfirmedRevenue')}</Th><Th>{t('adminRevenue.colSuccessfulPayments')}</Th></tr>
             </thead>

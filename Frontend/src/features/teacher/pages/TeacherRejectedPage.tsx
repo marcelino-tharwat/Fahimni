@@ -180,7 +180,7 @@ return (
           </button>
         </div>
       ) : canEdit && editing ? (
-        <div className="w-full space-y-6 text-right">
+        <div className="w-full space-y-6 text-end">
           <h2 className="font-cairo text-lg font-bold text-navy-900">
             {t('auth:editRequestTitle', 'تعديل بيانات الطلب')}
           </h2>
@@ -197,14 +197,14 @@ return (
                   {t('auth:fullName', 'الاسم الكامل')}
                 </label>
                 <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <span className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400">
                     <User size={18} />
                   </span>
                   <input
                     type="text"
                     value={editFullName}
                     onChange={(e) => setEditFullName(e.target.value)}
-                    className={`${inputClass} pr-11`}
+                    className={`${inputClass} pe-11`}
                     placeholder={t('auth:fullNamePlaceholder', 'الاسم الكامل')}
                   />
                 </div>
@@ -215,14 +215,14 @@ return (
                   {t('auth:email', 'البريد الإلكتروني')}
                 </label>
                 <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <span className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400">
                     <Mail size={18} />
                   </span>
                   <input
                     type="email"
                     value={editEmail}
                     onChange={(e) => setEditEmail(e.target.value)}
-                    className={`${inputClass} pr-11`}
+                    className={`${inputClass} pe-11`}
                     placeholder={t('auth:emailPlaceholder', 'البريد الإلكتروني')}
                   />
                 </div>
@@ -233,14 +233,14 @@ return (
                   {t('auth:mobile', 'رقم الجوال')}
                 </label>
                 <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <span className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400">
                     <Phone size={18} />
                   </span>
                   <input
                     type="text"
                     value={editMobile}
                     onChange={(e) => setEditMobile(e.target.value)}
-                    className={`${inputClass} pr-11`}
+                    className={`${inputClass} pe-11`}
                     placeholder={t('auth:mobilePlaceholder', 'رقم الجوال')}
                   />
                 </div>
@@ -260,13 +260,13 @@ return (
                   {t('auth:subject', 'التخصص')}
                 </label>
                 <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10">
+                  <span className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10">
                     <BookOpen size={18} />
                   </span>
                   <select
                     value={editSubject}
                     onChange={(e) => setEditSubject(e.target.value)}
-                    className={`${inputClass} pr-11 appearance-none`}
+                    className={`${inputClass} pe-11 appearance-none`}
                   >
                     <option value="">{t('auth:selectSubject', 'اختر التخصص')}</option>
                     {SUBJECT_CATALOG.map((s) => (
@@ -283,14 +283,14 @@ return (
                   {t('auth:bio', 'نبذة (اختياري)')}
                 </label>
                 <div className="relative">
-                  <span className="absolute right-3 top-3 text-gray-400 pointer-events-none z-10">
+                  <span className="absolute end-3 top-3 text-gray-400 pointer-events-none z-10">
                     <FileText size={18} />
                   </span>
                   <textarea
                     value={editBio}
                     onChange={(e) => setEditBio(e.target.value)}
                     rows={3}
-                    className={`${inputClass} pr-11 resize-none`}
+                    className={`${inputClass} pe-11 resize-none`}
                     placeholder={t('auth:bioPlaceholder', 'نبذة عنك')}
                   />
                 </div>

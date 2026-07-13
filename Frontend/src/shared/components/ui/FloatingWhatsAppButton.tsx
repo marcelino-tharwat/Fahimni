@@ -30,12 +30,11 @@ const styles = `
 `;
 
 export function FloatingWhatsAppButton() {
-  const { t, i18n } = useTranslation('student');
+  const { t } = useTranslation('student');
   const user = useAppSelector((s) => s.auth.user);
 
   if (!PHONE || user?.role !== 'STUDENT') return null;
 
-  const isRtl = i18n.dir() === 'rtl';
   const name = user?.fullName ?? '';
   const email = user?.email ?? '';
 
@@ -48,7 +47,7 @@ export function FloatingWhatsAppButton() {
   const waUrl = `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`;
 
   return (
-    <div className={`wa-group fixed bottom-6 z-[199] ${isRtl ? 'left-6' : 'right-6'}`}>
+    <div className="wa-group fixed bottom-6 end-6 z-[199]">
       <style>{styles}</style>
 
       <a
@@ -68,7 +67,7 @@ export function FloatingWhatsAppButton() {
         <FaWhatsapp size={28} />
       </a>
 
-      <span className={`wa-tooltip pointer-events-none absolute bottom-full mb-3 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-sm text-white shadow-md ${isRtl ? 'left-0' : 'right-0'}`}>
+      <span className="wa-tooltip pointer-events-none absolute bottom-full end-0 mb-3 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-sm text-white shadow-md">
         {t('support.whatsapp.tooltip')}
       </span>
     </div>

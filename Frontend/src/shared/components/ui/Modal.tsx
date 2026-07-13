@@ -100,38 +100,45 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', initialFo
     // element on every keystroke, and could trigger focus loss from a
     // controlled textarea inside the modal).
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-[200] overflow-y-auto bg-black/50 p-4"
       onClick={() => onCloseRef.current()}
       role="presentation"
     >
-      {/* Solid modal card, centered above the overlay. */}
-      <div
-        ref={dialogRef}
-        tabIndex={-1}
-        className={cn(
-          'relative z-[201] w-full rounded-xl bg-white p-6 shadow-xl outline-none',
-          sizeClasses[size],
-        )}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className="mb-4 flex items-center justify-between gap-4">
-          {title ? (
-            <h2 className="font-cairo text-lg font-semibold text-text-primary">{title}</h2>
-          ) : (
-            <span />
+      {/* Flex wrapper centers the card and keeps its top edge reachable when
+          scrolled — centering directly on an `overflow-y-auto` flex container
+          would clip an overflowing child equally on both sides instead. */}
+      <div className="flex min-h-full items-center justify-center">
+        {/* Solid modal card, centered above the overlay. Capped height + its own
+            scroll so tall content (long forms, textareas) never gets pushed past
+            the viewport with the submit button unreachable. */}
+        <div
+          ref={dialogRef}
+          tabIndex={-1}
+          className={cn(
+            'relative z-[201] max-h-[85vh] w-full overflow-y-auto rounded-xl bg-white p-6 shadow-xl outline-none',
+            sizeClasses[size],
           )}
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="close"
-            className="text-text-secondary transition-colors hover:text-text-primary"
-          >
-            <X size={20} />
-          </button>
+          onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="mb-4 flex items-center justify-between gap-4">
+            {title ? (
+              <h2 className="font-cairo text-lg font-semibold text-text-primary">{title}</h2>
+            ) : (
+              <span />
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="close"
+              className="text-text-secondary transition-colors hover:text-text-primary"
+            >
+              <X size={20} />
+            </button>
+          </div>
+          {children}
         </div>
-        {children}
       </div>
     </div>,
     document.body,

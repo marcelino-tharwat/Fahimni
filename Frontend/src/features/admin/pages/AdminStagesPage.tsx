@@ -90,7 +90,7 @@ export function AdminStagesPage() {
       </div>
 
       <form
-        className="grid gap-3 rounded-card border border-border bg-surface p-4 shadow-card md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_120px_auto]"
+        className="grid grid-cols-1 gap-3 rounded-card border border-border bg-surface p-4 shadow-card md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_120px_auto]"
         onSubmit={(e) => {
           e.preventDefault();
           if (!nameAr.trim() || !nameEn.trim()) return;
@@ -135,7 +135,7 @@ export function AdminStagesPage() {
         </Button>
       </form>
 
-      <div className="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+      <div className="overflow-x-auto rounded-card border border-border bg-surface shadow-card">
         {isLoading ? (
           <div className="flex justify-center py-16" role="status">
             <Spinner />

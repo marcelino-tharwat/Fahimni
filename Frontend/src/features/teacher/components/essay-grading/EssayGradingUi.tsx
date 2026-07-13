@@ -90,7 +90,7 @@ export function EssayGradingToast({ message, show }: { message: string; show: bo
   return (
     <div
       role="status"
-      className="fixed start-1/2 top-20 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3"
+      className="fixed left-1/2 top-20 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3"
       style={{
         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         borderInlineStartWidth: 4,

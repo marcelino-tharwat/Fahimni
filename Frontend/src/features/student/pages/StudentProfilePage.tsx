@@ -196,7 +196,7 @@ function MyCoursesCard({ courses }: { courses: StudentCourseSummary[] }) {
 
       <div className="flex flex-col gap-4">
         {preview.map((course) => (
-          <div key={course.id} className="flex gap-3 rounded-md border-r-4 border-cyan-500 p-3">
+          <div key={course.id} className="flex gap-3 rounded-md border-s-4 border-cyan-500 p-3">
             <div className="flex shrink-0 items-start pt-1">
               <CircularProgress percent={course.progressPercent} />
             </div>

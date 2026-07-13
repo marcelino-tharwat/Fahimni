@@ -156,7 +156,7 @@ function EntitlementsTab({ q }: { q: string }) {
   return (
     <StateWrap isLoading={isLoading} isError={isError} isEmpty={rows.length === 0}>
       <div className="overflow-x-auto">
-        <table className="w-full" data-testid="entitlements-table">
+        <table className="w-full min-w-[860px]" data-testid="entitlements-table">
           <thead className="border-b border-border">
             <tr>
               <Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.colEntitlement')}</Th><Th>{t('adminSubscriptions.colPlan')}</Th>
@@ -198,7 +198,7 @@ function SubscriptionsTab({ q }: { q: string }) {
   return (
     <StateWrap isLoading={isLoading} isError={isError} isEmpty={rows.length === 0}>
       <div className="overflow-x-auto">
-        <table className="w-full" data-testid="subscriptions-table">
+        <table className="w-full min-w-[760px]" data-testid="subscriptions-table">
           <thead className="border-b border-border">
             <tr><Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.colPlan')}</Th><Th>{t('adminSubscriptions.colStatus')}</Th><Th>{t('adminSubscriptions.colInterval')}</Th><Th>{t('adminSubscriptions.colPeriodEnd')}</Th></tr>
           </thead>
@@ -230,7 +230,7 @@ function PaymentsTab({ q }: { q: string }) {
   return (
     <StateWrap isLoading={isLoading} isError={isError} isEmpty={rows.length === 0}>
       <div className="overflow-x-auto">
-        <table className="w-full" data-testid="payments-table">
+        <table className="w-full min-w-[860px]" data-testid="payments-table">
           <thead className="border-b border-border">
             <tr><Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.colPlan')}</Th><Th>{t('adminSubscriptions.colAmount')}</Th><Th>{t('adminSubscriptions.colStatus')}</Th><Th>{t('adminSubscriptions.colProvider')}</Th><Th>{t('adminSubscriptions.colDate')}</Th></tr>
           </thead>
@@ -285,7 +285,7 @@ function RequestsTab({ q }: { q: string }) {
   return (
     <StateWrap isLoading={isLoading} isError={isError} isEmpty={rows.length === 0}>
       <div className="overflow-x-auto">
-        <table className="w-full" data-testid="requests-table">
+        <table className="w-full min-w-[760px]" data-testid="requests-table">
           <thead className="border-b border-border">
             <tr><Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.colPlan')}</Th><Th>{t('adminSubscriptions.colInterval')}</Th><Th>{t('adminSubscriptions.colStatus')}</Th><Th>{t('adminSubscriptions.colActions')}</Th></tr>
           </thead>
@@ -355,7 +355,7 @@ function AiUsageTab({ q }: { q: string }) {
         </div>
       )}
       <div className="overflow-x-auto">
-        <table className="w-full" data-testid="ai-usage-table">
+        <table className="w-full min-w-[860px]" data-testid="ai-usage-table">
           <thead className="border-b border-border">
             <tr>
               <Th>{t('adminSubscriptions.colTeacher')}</Th><Th>{t('adminSubscriptions.aiTotalEvents')}</Th><Th>{t('adminSubscriptions.aiTotalUnits')}</Th><Th>{t('adminSubscriptions.colThisMonth')}</Th>

@@ -99,7 +99,7 @@ export function AdminAuditLogsPage() {
 
       {/* Filters — each control is labelled; the two date fields form a "from / to"
           date range so it's clear they aren't two separate calendars. */}
-      <div className="flex flex-wrap items-end gap-3" data-testid="audit-filters">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" data-testid="audit-filters">
         <label className="flex flex-col gap-1">
           <span className="font-cairo text-xs font-medium text-text-secondary">{t('auditLogs.search')}</span>
           <span className="relative">
@@ -168,7 +168,7 @@ export function AdminAuditLogsPage() {
           <p className="py-16 text-center font-cairo text-sm text-text-muted" data-testid="audit-empty">{t('auditLogs.empty')}</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full" data-testid="audit-logs-table">
+            <table className="w-full min-w-[760px]" data-testid="audit-logs-table">
               <thead className="border-b border-border">
                 <tr><Th>{t('auditLogs.colAction')}</Th><Th>{t('auditLogs.colEntity')}</Th><Th>{t('auditLogs.colActor')}</Th><Th>{t('auditLogs.colDate')}</Th><Th>{t('auditLogs.colView')}</Th></tr>
               </thead>

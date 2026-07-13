@@ -139,9 +139,9 @@ function FullHeader({ showMenu, showBrand }: { showMenu: boolean; showBrand: boo
               className="flex items-center gap-2 rounded-btn p-1 transition-colors hover:bg-gray-100"
             >
               <Avatar name={user.fullName} src={avatarUrl} size="sm" />
-              <span className="hidden flex-col text-start leading-tight sm:flex">
-                <span className="font-cairo text-sm font-medium text-navy-900">{user.fullName}</span>
-                <span className="font-cairo text-xs text-gray-500">
+              <span className="hidden max-w-35 flex-col text-start leading-tight sm:flex">
+                <span className="truncate font-cairo text-sm font-medium text-navy-900">{user.fullName}</span>
+                <span className="truncate font-cairo text-xs text-gray-500">
                   {t(`roles.${user.role}`)}
                 </span>
               </span>
@@ -198,7 +198,7 @@ export function AppHeader({ variant = 'full', showMenu = true, showBrand = false
     return (
       <nav
         dir="ltr"
-        className="sticky top-0 z-50 flex w-full items-center justify-between border-b border-gray-100 bg-white px-8 py-4 shadow-sm"
+        className="sticky top-0 z-50 flex w-full items-center justify-between border-b border-gray-100 bg-white px-4 py-4 shadow-sm sm:px-6 lg:px-8"
       >
         <Brand asLink />
         <LanguageToggle />

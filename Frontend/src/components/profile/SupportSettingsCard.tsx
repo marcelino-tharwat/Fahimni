@@ -200,24 +200,22 @@ export function SupportSettingsCard({ profile, isLoading }: SupportSettingsCardP
         </p>
 
         <div className="mt-3 flex items-center gap-3">
-          <div className="flex shrink-0 items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-whatsapp-light">
-              <FaWhatsapp size={20} className="text-whatsapp" />
-            </div>
-            <div className="flex flex-col">
-              <p className="font-cairo text-small text-gray-600">
-                {t('settings.support.previewBody')}
-              </p>
-              {previewPhone ? (
-                <span className="mt-0.5 font-cairo text-body font-semibold text-navy-800" dir="ltr">
-                  {previewPhone}
-                </span>
-              ) : (
-                <span className="mt-0.5 font-cairo text-small text-gray-500">
-                  {t('settings.support.previewEmpty')}
-                </span>
-              )}
-            </div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-whatsapp-light">
+            <FaWhatsapp size={20} className="text-whatsapp" />
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <p className="truncate font-cairo text-small text-gray-600">
+              {t('settings.support.previewBody')}
+            </p>
+            {previewPhone ? (
+              <span className="mt-0.5 truncate font-cairo text-body font-semibold text-navy-800" dir="ltr">
+                {previewPhone}
+              </span>
+            ) : (
+              <span className="mt-0.5 truncate font-cairo text-small text-gray-500">
+                {t('settings.support.previewEmpty')}
+              </span>
+            )}
           </div>
 
           <div className="ms-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-whatsapp shadow-elevated">

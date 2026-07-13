@@ -14,7 +14,10 @@ interface TabsProps {
 
 export function Tabs({ tabs, activeTab, onTabChange, className }: TabsProps) {
   return (
-    <div role="tablist" className={cn('flex gap-2 border-b border-border', className)}>
+    <div
+      role="tablist"
+      className={cn('flex flex-nowrap gap-2 overflow-x-auto border-b border-border scrollbar-hide', className)}
+    >
       {tabs.map((tab) => {
         const isActive = tab.key === activeTab;
         return (
@@ -25,7 +28,7 @@ export function Tabs({ tabs, activeTab, onTabChange, className }: TabsProps) {
             aria-selected={isActive}
             onClick={() => onTabChange(tab.key)}
             className={cn(
-              '-mb-px border-b-2 px-4 py-2 font-cairo text-sm font-medium transition-colors',
+              '-mb-px shrink-0 border-b-2 px-4 py-2 font-cairo text-sm font-medium whitespace-nowrap transition-colors',
               isActive
                 ? 'border-accent text-accent'
                 : 'border-transparent text-text-secondary hover:text-text-primary',

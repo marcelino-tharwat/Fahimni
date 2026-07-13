@@ -53,29 +53,29 @@ export function TeacherPlanPromoBox({ plans }: Props) {
   };
 
   return (
-    <div className="rounded-card border border-border bg-white p-4 shadow-card" data-testid="teacher-plan-promo-box" dir="rtl">
+    <div className="rounded-card border border-border bg-white p-4 shadow-card" data-testid="teacher-plan-promo-box">
       <div className="mb-3 flex items-center gap-2">
         <Tag size={18} className="text-cyan-600" />
-        <h3 className="font-cairo text-base font-bold text-navy-900">لديك رمز خصم؟</h3>
+        <h3 className="font-cairo text-base font-bold text-navy-900">{t('teacherPlanPromo.title')}</h3>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
         <select data-testid="promo-plan-select" value={planId} onChange={(e) => { setPlanId(e.target.value); setPreview(null); }}
           className="h-10 rounded-input border border-border px-3 font-cairo text-sm">
-          <option value="">اختر الباقة</option>
+          <option value="">{t('teacherPlanPromo.selectPlan')}</option>
           {paidPlans.map((p) => <option key={p.id} value={p.id}>{p.displayName}</option>)}
         </select>
         <select data-testid="promo-interval-select" value={billingInterval} onChange={(e) => { setBillingInterval(e.target.value as 'MONTHLY' | 'YEARLY'); setPreview(null); }}
           className="h-10 rounded-input border border-border px-3 font-cairo text-sm">
-          <option value="MONTHLY">شهري</option>
-          <option value="YEARLY">سنوي</option>
+          <option value="MONTHLY">{t('teacherPlanPromo.monthly')}</option>
+          <option value="YEARLY">{t('teacherPlanPromo.yearly')}</option>
         </select>
-        <input data-testid="promo-code-input" value={code} onChange={(e) => setCode(e.target.value)} placeholder="رمز الخصم"
+        <input data-testid="promo-code-input" value={code} onChange={(e) => setCode(e.target.value)} placeholder={t('teacherPlanPromo.codePlaceholder')}
           className="h-10 rounded-input border border-border px-3 font-cairo text-sm" />
       </div>
       <div className="mt-3 flex items-center gap-2">
         <button type="button" data-testid="promo-apply-btn" onClick={apply} disabled={loading || !planId || !code.trim()}
           className="inline-flex items-center gap-1 rounded-btn bg-cyan-gradient px-4 py-2 font-cairo text-sm font-semibold text-white disabled:opacity-50">
-          {loading ? <Loader2 size={14} className="animate-spin" /> : null} تطبيق
+          {loading ? <Loader2 size={14} className="animate-spin" /> : null} {t('teacherPlanPromo.apply')}
         </button>
       </div>
 
@@ -85,12 +85,12 @@ export function TeacherPlanPromoBox({ plans }: Props) {
 
       {preview && (
         <div data-testid="promo-preview" className="mt-3 flex flex-col gap-1 rounded-lg border border-cyan-200 bg-cyan-50 p-3 font-cairo text-sm">
-          <div className="flex justify-between"><span>السعر الأصلي</span><span data-testid="promo-original">{preview.originalAmount} {preview.currency}</span></div>
-          <div className="flex justify-between text-green-700"><span>الخصم</span><span data-testid="promo-discount">- {preview.discount} {preview.currency}</span></div>
-          <div className="flex justify-between font-bold"><span>الإجمالي بعد الخصم</span><span data-testid="promo-final">{preview.amountAfter} {preview.currency}</span></div>
+          <div className="flex justify-between"><span>{t('teacherPlanPromo.originalPrice')}</span><span data-testid="promo-original">{preview.originalAmount} {preview.currency}</span></div>
+          <div className="flex justify-between text-green-700"><span>{t('teacherPlanPromo.discount')}</span><span data-testid="promo-discount">- {preview.discount} {preview.currency}</span></div>
+          <div className="flex justify-between font-bold"><span>{t('teacherPlanPromo.totalAfterDiscount')}</span><span data-testid="promo-final">{preview.amountAfter} {preview.currency}</span></div>
           <button type="button" data-testid="promo-proceed-btn" onClick={proceed} disabled={loading}
             className="mt-2 rounded-btn bg-purple-gradient px-4 py-2 font-cairo text-sm font-semibold text-white disabled:opacity-50">
-            المتابعة للدفع
+            {t('teacherPlanPromo.proceedToPayment')}
           </button>
         </div>
       )}

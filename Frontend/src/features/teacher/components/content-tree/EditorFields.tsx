@@ -163,19 +163,19 @@ export function FormActions({
   const idleLabel = submitLabel ?? t('teacher:contentTree.editor.save');
   const busyLabel = submittingLabel ?? t('teacher:contentTree.editor.saving');
   return (
-    <div className="mt-8 flex items-center justify-end gap-3">
+    <div className="mt-8 flex flex-col-reverse items-center gap-3 sm:flex-row sm:justify-end">
       <button
         type="button"
         onClick={onCancel}
         disabled={saving}
-        className="min-w-[120px] rounded-lg border border-gray-300 bg-surface px-6 py-2.5 font-cairo text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+        className="w-full min-w-[120px] rounded-lg border border-gray-300 bg-surface px-6 py-2.5 font-cairo text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 sm:w-auto"
       >
         {t('actions.cancel')}
       </button>
       <button
         type="submit"
         disabled={saving}
-        className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-lg bg-cyan-500 px-6 py-2.5 font-cairo text-sm font-medium text-white transition-colors hover:bg-cyan-600 disabled:opacity-50"
+        className="inline-flex w-full min-w-[120px] items-center justify-center gap-2 rounded-lg bg-cyan-500 px-6 py-2.5 font-cairo text-sm font-medium text-white transition-colors hover:bg-cyan-600 disabled:opacity-50 sm:w-auto"
       >
         {saving ? busyLabel : idleLabel}
         {saving ? (

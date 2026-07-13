@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/shared/hooks/useDirection';
 import {
   Search, Users, GraduationCap, BookOpen, CreditCard, AlertCircle, X, Sparkles,
   UserCheck, Clock, DollarSign, ChevronLeft,
@@ -223,6 +224,7 @@ function StudentRow({
 
 function StudentDetailDrawer({ studentId, onClose }: { studentId: string; onClose: () => void }) {
   const { t, i18n } = useTranslation();
+  const dir = useDirection();
   const nf = (n: number) => n.toLocaleString(i18n.language === 'ar' ? 'ar-EG' : 'en-US');
   const detail = useAdminStudentDetail(studentId);
   const enrollments = useAdminStudentEnrollments(studentId);
@@ -232,7 +234,7 @@ function StudentDetailDrawer({ studentId, onClose }: { studentId: string; onClos
   return (
     <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
-      <div className="relative flex h-full w-full max-w-lg flex-col gap-4 overflow-y-auto bg-background p-5 shadow-elevated" dir="rtl">
+      <div className="relative flex h-full w-full max-w-lg flex-col gap-4 overflow-y-auto bg-background p-5 shadow-elevated" dir={dir}>
         <div className="flex items-center justify-between">
           <h2 className="font-cairo text-lg font-bold text-text-primary">{t('adminStudents.detail.title', 'تفاصيل الطالب')}</h2>
           <button type="button" onClick={onClose} aria-label={t('adminStudents.detail.close', 'إغلاق')} className="rounded-btn p-1.5 text-text-muted hover:bg-gray-100 hover:text-text-primary">
