@@ -19,6 +19,7 @@ import {
 } from '@/features/teacher/hooks/useEssayGrading';
 import type { EssayAnswerDetail } from '@/features/teacher/types/essayGrading';
 import { cn } from '@/shared/lib/utils/cn';
+import { useDirection } from '@/shared/hooks/useDirection';
 
 interface GradeField {
   awardedPoints: string;
@@ -230,6 +231,7 @@ function EssayQuestionCard({
 
 export function EssayGradingDetailPage() {
   const { t } = useTranslation('teacher');
+  const direction = useDirection();
   const navigate = useNavigate();
   const { quizId = '', attemptId = '' } = useParams<{ quizId: string; attemptId: string }>();
   const { data, isLoading, isError, refetch } = useEssayGradingDetail(attemptId);
@@ -433,7 +435,12 @@ export function EssayGradingDetailPage() {
       </div>
 
       {!readOnly && data.essayAnswers.length > 0 && (
-        <div className="fixed bottom-6 left-[calc(50%+8rem)] z-30 flex max-sm:left-1/2 -translate-x-1/2 items-center gap-3 rounded-full border border-[#E5E7EB] bg-white px-3 py-2 shadow-lg">
+        <div
+          className={cn(
+            'fixed bottom-6 z-30 flex max-md:left-1/2 -translate-x-1/2 items-center gap-3 rounded-full border border-[#E5E7EB] bg-white px-3 py-2 shadow-lg',
+            direction === 'rtl' ? 'md:left-[calc(50%-8rem)]' : 'md:left-[calc(50%+8rem)]',
+          )}
+        >
           <span className="rounded-full bg-[#F3F4F6] px-3 py-1 text-xs font-semibold text-[#6B7280]">
             {gradedCount}/{data.essayAnswers.length}
           </span>

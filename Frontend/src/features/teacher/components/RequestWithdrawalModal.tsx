@@ -70,7 +70,7 @@ export function RequestWithdrawalModal({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={t('wallet.withdrawals.requestModalTitle')}>
-      <div className="flex flex-col gap-4" dir="rtl">
+      <div className="flex flex-col gap-4">
         <p className="font-cairo text-sm text-text-secondary" data-testid="request-available-hint">
           {t('wallet.withdrawals.availableBalanceHint', {
             amount: Math.round(availableBalance).toLocaleString('ar-EG'),

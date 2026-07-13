@@ -108,7 +108,7 @@ export function TeacherWalletPage() {
 
   if (isLoading) {
     return (
-      <div dir="rtl" className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5">
         <div>
           <h1 className="font-cairo text-2xl font-bold text-navy-900">{t('wallet.pageTitle')}</h1>
           <p className="mt-1 font-cairo text-sm text-text-secondary">{t('wallet.pageSubtitle')}</p>
@@ -120,7 +120,7 @@ export function TeacherWalletPage() {
 
   if (isError || !data) {
     return (
-      <div dir="rtl" className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+      <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
         <AlertCircle size={48} className="text-danger" />
         <p className="font-cairo text-body text-text-secondary">{t('wallet.errorTitle')}</p>
         <Button onClick={() => refetch()}>{t('wallet.retry')}</Button>
@@ -131,7 +131,7 @@ export function TeacherWalletPage() {
   const currency = t('wallet.currency', { defaultValue: data.currency });
 
   return (
-    <div dir="rtl" className="flex flex-col gap-5" data-testid="teacher-wallet-page">
+    <div className="flex flex-col gap-5" data-testid="teacher-wallet-page">
       <div>
         <h1 className="font-cairo text-2xl font-bold text-navy-900">{t('wallet.pageTitle')}</h1>
         <p className="mt-1 font-cairo text-sm text-text-secondary">{t('wallet.pageSubtitle')}</p>

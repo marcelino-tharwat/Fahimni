@@ -71,7 +71,7 @@ export function EditPayoutProfileModal({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={t('wallet.payoutProfile.modalTitle')}>
-      <div className="flex flex-col gap-4" dir="rtl">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="instaPayHandle" className="font-cairo text-sm font-medium text-text-primary">
             {t('wallet.payoutProfile.instaPayHandle')}

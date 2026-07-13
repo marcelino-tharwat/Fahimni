@@ -80,7 +80,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 function Filters({ query, onChange }: { query: PaymentsQuery; onChange: (q: PaymentsQuery) => void }) {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-wrap items-end gap-3" data-testid="payment-filters">
+    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" data-testid="payment-filters">
       <input
         value={query.q ?? ''}
         onChange={(e) => onChange({ ...query, q: e.target.value || undefined, page: 1 })}
@@ -136,7 +136,7 @@ function CourseTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
       <Filters query={query} onChange={setQuery} />
       <StateWrap isLoading={isLoading} isError={isError} isEmpty={rows.length === 0}>
         <div className="overflow-x-auto">
-          <table className="w-full" data-testid="course-payments-table">
+          <table className="w-full min-w-[860px]" data-testid="course-payments-table">
             <thead className="border-b border-border">
               <tr><Th>{t('adminPayments.colStudent')}</Th><Th>{t('adminPayments.colChapter')}</Th><Th>{t('adminPayments.colTeacher')}</Th><Th>{t('adminPayments.colAmount')}</Th><Th>{t('adminPayments.colStatus')}</Th><Th>{t('adminPayments.colDate')}</Th></tr>
             </thead>
@@ -172,7 +172,7 @@ function SubscriptionTab({ onOpen }: { onOpen: (e: DrawerRow) => void }) {
       <Filters query={query} onChange={setQuery} />
       <StateWrap isLoading={isLoading} isError={isError} isEmpty={rows.length === 0}>
         <div className="overflow-x-auto">
-          <table className="w-full" data-testid="subscription-payments-table">
+          <table className="w-full min-w-[860px]" data-testid="subscription-payments-table">
             <thead className="border-b border-border">
               <tr><Th>{t('adminPayments.colTeacher')}</Th><Th>{t('adminPayments.colPlan')}</Th><Th>{t('adminPayments.colAmount')}</Th><Th>{t('adminPayments.colStatus')}</Th><Th>{t('adminPayments.colProvider')}</Th><Th>{t('adminPayments.colDate')}</Th></tr>
             </thead>

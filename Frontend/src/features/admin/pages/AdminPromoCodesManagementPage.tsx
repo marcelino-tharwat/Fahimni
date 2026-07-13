@@ -71,8 +71,12 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose} data-testid="create-promo-modal">
-      <div className="w-full max-w-lg rounded-card bg-white p-6 shadow-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 p-4" onClick={onClose} data-testid="create-promo-modal">
+      <div className="flex min-h-full items-center justify-center">
+        <div
+          className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-card bg-white p-6 shadow-modal"
+          onClick={(e) => e.stopPropagation()}
+        >
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-cairo text-lg font-bold text-navy-900">{t('adminPromoCodes.createTitle')}</h3>
           <button type="button" onClick={onClose} className="rounded-btn p-1.5 text-gray-500 hover:bg-gray-100"><X size={20} /></button>
@@ -85,7 +89,7 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
             <input data-testid="promo-code-input" value={code} onChange={(e) => setCode(e.target.value)} placeholder={t('adminPromoCodes.createCodePlaceholder')}
               className="mt-1 h-10 w-full rounded-input border border-border px-3 text-sm" />
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="font-cairo text-sm">{t('adminPromoCodes.createDiscountType')}
               <select value={discountType} onChange={(e) => setDiscountType(e.target.value as 'PERCENTAGE' | 'FIXED_AMOUNT')}
                 className="mt-1 h-10 w-full rounded-input border border-border px-3 text-sm">
@@ -141,6 +145,7 @@ function CreatePromoModal({ onClose }: { onClose: () => void }) {
         </div>
       </div>
     </div>
+  </div>
   );
 }
 
@@ -192,7 +197,7 @@ export function AdminPromoCodesManagementPage() {
           <p className="py-16 text-center font-cairo text-sm text-text-muted">{t('adminPromoCodes.empty')}</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full" data-testid="promo-codes-table">
+            <table className="w-full min-w-[860px]" data-testid="promo-codes-table">
               <thead className="border-b border-border">
                 <tr><Th>{t('adminPromoCodes.colCode')}</Th><Th>{t('adminPromoCodes.colScope')}</Th><Th>{t('adminPromoCodes.colDiscount')}</Th><Th>{t('adminPromoCodes.colUsage')}</Th><Th>{t('adminPromoCodes.colStatus')}</Th><Th>{t('adminPromoCodes.colAction')}</Th></tr>
               </thead>

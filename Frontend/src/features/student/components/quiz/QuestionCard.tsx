@@ -126,7 +126,7 @@ export function QuestionCard({
       )}
 
       {question.type === 'tf' && (
-        <div className="mt-4 flex gap-3">
+        <div className="mt-4 flex flex-wrap gap-3">
           {[
             { value: 'true', label: t('common:true', { defaultValue: 'صح' }) },
             { value: 'false', label: t('common:false', { defaultValue: 'خطأ' }) },
@@ -138,7 +138,7 @@ export function QuestionCard({
                 type="button"
                 onClick={() => onAnswer(question.id, opt.value)}
                 className={cn(
-                  'flex min-w-[140px] cursor-pointer items-center justify-center gap-2 rounded-md border-2 text-sm font-semibold transition-all',
+                  'flex min-w-[120px] cursor-pointer items-center justify-center gap-2 rounded-md border-2 text-sm font-semibold transition-all',
                   selected
                     ? 'border-cyan-500 bg-cyan-50 text-cyan-700'
                     : 'border-gray-300 bg-white text-gray-600',

@@ -494,6 +494,18 @@
     "chapterFreeLabel": "مجاني",
     "noChapters": "لا توجد فصول متاحة. أنشئ فصلاً من إدارة المحتوى أولاً."
   },
+  "teacherPlanPromo": {
+    "title": "لديك رمز خصم؟",
+    "selectPlan": "اختر الباقة",
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "codePlaceholder": "رمز الخصم",
+    "apply": "تطبيق",
+    "originalPrice": "السعر الأصلي",
+    "discount": "الخصم",
+    "totalAfterDiscount": "الإجمالي بعد الخصم",
+    "proceedToPayment": "المتابعة للدفع"
+  },
   "adminPlans": {
     "title": "الباقات",
     "subtitle": "إدارة باقات المدرسين وإحصاءاتها",

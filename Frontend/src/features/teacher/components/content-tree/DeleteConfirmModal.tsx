@@ -44,12 +44,12 @@ export function DeleteConfirmModal({
     <Modal isOpen={isOpen} onClose={onCancel} title={t('contentTree.delete.title')} size="sm">
       <p className="mb-2 font-cairo text-base font-bold text-navy-800">{itemName}</p>
       <p className="font-cairo text-sm text-gray-500">{warning()}</p>
-      <div className="mt-6 flex justify-end gap-3">
+      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <button
           type="button"
           onClick={onCancel}
           disabled={loading}
-          className="min-w-[120px] rounded-btn border border-gray-300 bg-white px-6 py-2.5 font-cairo text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+          className="w-full min-w-[120px] rounded-btn border border-gray-300 bg-white px-6 py-2.5 font-cairo text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 sm:w-auto"
         >
           {t('actions.cancel', { ns: 'common' })}
         </button>
@@ -57,7 +57,7 @@ export function DeleteConfirmModal({
           type="button"
           onClick={onConfirm}
           disabled={loading}
-          className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-btn bg-danger-600 px-6 py-2.5 font-cairo text-sm font-medium text-white transition-colors hover:bg-danger-600/90 disabled:opacity-50"
+          className="inline-flex w-full min-w-[120px] items-center justify-center gap-2 rounded-btn bg-danger-600 px-6 py-2.5 font-cairo text-sm font-medium text-white transition-colors hover:bg-danger-600/90 disabled:opacity-50 sm:w-auto"
         >
           {loading && <Loader2 size={16} className="animate-spin" />}
           {t('actions.delete', { ns: 'common' })}

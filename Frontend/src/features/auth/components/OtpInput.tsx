@@ -58,7 +58,7 @@ export function OtpInput({ value, onChange, error, disabled }: OtpInputProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-center gap-2.5 rtl:flex-row-reverse">
+      <div className="flex items-center justify-center gap-1.5 rtl:flex-row-reverse sm:gap-2.5">
         {Array.from({ length: DIGIT_COUNT }).map((_, index) => (
           <input
             key={index}
@@ -73,7 +73,7 @@ export function OtpInput({ value, onChange, error, disabled }: OtpInputProps) {
             disabled={disabled}
             aria-label={`Digit ${index + 1}`}
             className={cn(
-              'h-12 w-10 rounded-input border text-center font-cairo text-lg font-bold outline-none transition-all duration-200',
+              'h-11 w-8 rounded-input border text-center font-cairo text-lg font-bold outline-none transition-all duration-200 sm:h-12 sm:w-10',
               'focus:border-accent focus:ring-2 focus:ring-accent/30',
               error
                 ? 'border-danger focus:border-danger focus:ring-danger/30'

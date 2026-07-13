@@ -435,7 +435,7 @@ export function AiQuizPublishPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-medium text-navy-900">
                     {t('teacher:publish.timeLimit')}
@@ -668,7 +668,7 @@ export function AiQuizPublishPage() {
       </div>
 
       {/* ── Bottom navigation bar ── */}
-      <div className="sticky bottom-0 z-20 -mx-1 mt-4 flex items-center justify-between gap-3 border-t border-border bg-surface/95 px-1 py-3 backdrop-blur">
+      <div className="sticky bottom-0 z-20 -mx-1 mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border bg-surface/95 px-1 py-3 backdrop-blur">
         <Button
           variant="ghost"
           onClick={() => navigate(`/teacher/quizzes/generator/review/${quizId}`)}
@@ -680,7 +680,7 @@ export function AiQuizPublishPage() {
           onClick={handleOpenConfirm}
           disabled={isPublishDisabled}
           className={cn(
-            'min-w-[200px] h-12 rounded-btn font-bold text-white bg-cyan-gradient',
+            'h-12 min-w-[140px] rounded-btn font-bold text-white bg-cyan-gradient sm:min-w-[200px]',
             isPublishDisabled && 'opacity-50 cursor-not-allowed',
           )}
         >

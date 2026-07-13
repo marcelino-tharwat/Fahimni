@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/shared/hooks/useDirection';
 import { Search, AlertCircle, Banknote, Eye, Wallet, ArrowDownToLine, Clock, CreditCard } from 'lucide-react';
 import { Spinner, Badge, EmptyState, Modal, Button } from '@/shared/components/ui';
 import { useAppDispatch } from '@/shared/store/hooks';
@@ -56,6 +57,7 @@ function DetailDrawer({
   onClose: () => void;
 }) {
   const { t, i18n } = useTranslation();
+  const dir = useDirection();
   const dispatch = useAppDispatch();
   const updateStatus = useUpdateWithdrawalStatus();
   const [adminNote, setAdminNote] = useState(withdrawal.adminNote ?? '');
@@ -91,7 +93,7 @@ function DetailDrawer({
       title={t('adminTeacherWithdrawals.detail.title', 'تفاصيل طلب السحب')}
       size="lg"
     >
-      <div className="flex flex-col gap-4" dir="rtl">
+      <div className="flex flex-col gap-4" dir={dir}>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label={t('adminTeacherWithdrawals.col.teacher', 'المدرس')} value={`${withdrawal.teacher.fullName} · ${withdrawal.teacher.email}`} />
           <Field label={t('adminTeacherWithdrawals.col.amount', 'المبلغ')} value={`${Math.round(withdrawal.amount).toLocaleString(locale)} ${withdrawal.currency}`} />

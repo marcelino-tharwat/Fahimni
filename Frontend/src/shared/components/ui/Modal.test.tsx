@@ -80,3 +80,42 @@ describe('Modal — focus stability while typing', () => {
     expect(textarea).toHaveFocus();
   });
 });
+
+describe('Modal — responsive fit on short/mobile viewports', () => {
+  it('caps the dialog height and makes it independently scrollable', () => {
+    render(
+      <Modal isOpen onClose={vi.fn()} title="Test modal">
+        <p>content</p>
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog');
+    expect(dialog.className).toMatch(/max-h-\[85vh\]/);
+    expect(dialog.className).toMatch(/overflow-y-auto/);
+  });
+
+  it('still closes when the backdrop (not the dialog) is clicked, despite the extra centering wrapper', () => {
+    const onClose = vi.fn();
+    render(
+      <Modal isOpen onClose={onClose} title="Test modal">
+        <button type="button">action</button>
+      </Modal>,
+    );
+    // The centering wrapper sits between the backdrop and the dialog; a click
+    // there must still bubble up to the backdrop's close handler.
+    const dialog = screen.getByRole('dialog');
+    const centeringWrapper = dialog.parentElement!;
+    fireEvent.click(centeringWrapper);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not close when clicking inside the dialog itself', () => {
+    const onClose = vi.fn();
+    render(
+      <Modal isOpen onClose={onClose} title="Test modal">
+        <button type="button">action</button>
+      </Modal>,
+    );
+    fireEvent.click(screen.getByRole('dialog'));
+    expect(onClose).not.toHaveBeenCalled();
+  });
+});

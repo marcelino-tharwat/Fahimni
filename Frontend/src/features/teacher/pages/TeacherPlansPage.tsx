@@ -286,7 +286,7 @@ export function TeacherPlansPage() {
               }`}
             >
               {plan.isRecommended && (
-                <span className="absolute -top-3 start-1/2 z-10 -translate-x-1/2 rounded-badge bg-cyan-500 px-3 py-0.5 text-xs font-bold text-white">
+                <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-badge bg-cyan-500 px-3 py-0.5 text-xs font-bold text-white">
                   {t('plans.recommended', 'مقترح')}
                 </span>
               )}

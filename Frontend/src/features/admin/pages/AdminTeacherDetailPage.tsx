@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDirection } from '@/shared/hooks/useDirection';
 import {
   ArrowRight, GraduationCap, Users, BookOpen, FileText, ClipboardList, Layers,
   DollarSign, Wallet, Sparkles, CreditCard, AlertTriangle, CheckCircle, Clock,
@@ -520,6 +521,7 @@ function TeacherHeader({ detail }: { detail: AdminTeacherDetail }) {
 
 export function AdminTeacherDetailPage() {
   const { t } = useTranslation();
+  const dir = useDirection();
   const { teacherId = '' } = useParams<{ teacherId: string }>();
   const [tab, setTab] = useState<TabKey>('students');
   const { data, isLoading, isError, refetch } = useAdminTeacherDetail(teacherId);
@@ -541,7 +543,7 @@ export function AdminTeacherDetailPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1200px] flex-col gap-5" dir="rtl">
+    <div className="mx-auto flex max-w-[1200px] flex-col gap-5" dir={dir}>
       {backLink}
 
       {isLoading ? (

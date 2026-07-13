@@ -202,7 +202,7 @@ export function AdminPlansPage() {
           <span className="font-cairo text-sm font-medium text-text-primary">
             {t('adminPlansMutations.reorderTitle')}
           </span>
-          <div className="mr-auto flex gap-2">
+          <div className="ms-auto flex gap-2">
             <Button size="sm" onClick={saveReorder} loading={reorderMutation.isPending}>
               <Save size={16} />
               {t('adminPlansMutations.reorderSave')}
