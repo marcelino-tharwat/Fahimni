@@ -4,7 +4,6 @@ import { TeachingStatsCard } from '@/components/profile/TeachingStatsCard';
 import { RecentActivityCard } from '@/components/profile/RecentActivityCard';
 import { StudentEngagementCard } from '@/components/profile/StudentEngagementCard';
 import { ProfileInfoCard } from '@/components/profile/ProfileInfoCard';
-import { AcademicIdentityCard } from '@/components/profile/AcademicIdentityCard';
 import { SupportSettingsCard } from '@/components/profile/SupportSettingsCard';
 import type { TeacherProfile } from '@/features/teacher/types/teacher';
 import type { RecentActivity } from '@/features/teacher/types/dashboard';
@@ -137,10 +136,6 @@ export function ProfilePage() {
           isLoading={isLoading}
           profile={mapped.profile}
           reviewCount={mapped.reviewCount}
-        />
-        <AcademicIdentityCard
-          isLoading={isLoading}
-          profile={mapped.profile}
         />
       </div>
       <div className="flex flex-col gap-6">

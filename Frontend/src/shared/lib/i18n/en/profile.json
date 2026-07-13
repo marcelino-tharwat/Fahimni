@@ -71,12 +71,5 @@
     "phoneLabel": "Phone Number",
     "phonePlaceholder": "01012345678",
     "saving": "Saving..."
-  },
-  "academicIdentity": {
-    "title": "Academic Identity",
-    "academyName": "Chemistry Academy — Mr. Mohamed",
-    "editLink": "Edit Identity",
-    "fontLabel": "Cairo",
-    "colorsLabel": "Academy Colors"
   }
 }

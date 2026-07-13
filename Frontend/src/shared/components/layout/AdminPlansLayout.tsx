@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { Outlet, NavLink, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  LogOut, GraduationCap, LayoutDashboard, Building2, Ticket,
+  LogOut, GraduationCap, LayoutDashboard, Ticket,
   Users, ClipboardCheck, CreditCard, Wallet, TrendingUp, Receipt,
   ScrollText, Banknote,
 } from 'lucide-react';
@@ -27,7 +27,6 @@ export function AdminPlansLayout() {
     { label: t('nav.teachers'), icon: GraduationCap, path: '/admin/teachers' },
     { label: t('nav.students'), icon: Users, path: '/admin/students' },
     { label: t('nav.teacherRequests'), icon: ClipboardCheck, path: '/admin/teacher-requests' },
-    { label: t('nav.tenants'), icon: Building2, path: '/admin/tenants' },
     { label: t('nav.promoCodes'), icon: Ticket, path: '/admin/promo-codes' },
     { label: t('nav.plans'), icon: CreditCard, path: '/admin/plans' },
     { label: t('nav.subscriptions'), icon: Wallet, path: '/admin/subscriptions' },

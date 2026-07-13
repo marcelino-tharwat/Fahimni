@@ -30,7 +30,6 @@ const pageTitleByPath: Record<string, string> = {
   '/student/courses': 'nav.courses',
   '/student/ai-tutor': 'nav.aiTutor',
   '/student/profile': 'nav.profile',
-  '/admin/tenants': 'nav.tenants',
   '/admin/promo-codes': 'nav.promoCodes',
   '/support/students': 'nav.studentLookup',
 };

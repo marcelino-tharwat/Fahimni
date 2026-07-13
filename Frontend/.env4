@@ -1,5 +1,0 @@
-# Base URL of the Fahimni backend API (no trailing slash).
-# The app reads import.meta.env.VITE_API_BASE_URL and defaults to
-# http://localhost:3000/api when unset. Override here if your backend differs.
-VITE_API_BASE_URL=http://localhost:3000/api
-VITE_WHATSAPP_SUPPORT_NUMBER=
