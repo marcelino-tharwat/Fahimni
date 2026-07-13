@@ -85,10 +85,22 @@ export class PromoCodeService {
           ? { teacherId: ownerTeacherId }
           : {}),
       },
-      select: { id: true },
+      select: { id: true, price: true },
     });
     if (!chapter) {
       throw new AppError("Chapter not found", 404, "CHAPTER_NOT_FOUND");
+    }
+
+    // Promo codes grant free access to a chapter — meaningless for a chapter
+    // that's already free. Re-derived from the DB (never trust a client flag),
+    // same free/paid rule as enrollment.service.ts / payment.service.ts.
+    const isFree = chapter.price === null || Number(chapter.price) <= 0;
+    if (isFree) {
+      throw new AppError(
+        "Promo codes can only target paid chapters",
+        400,
+        "PROMO_TARGET_MUST_BE_PAID",
+      );
     }
 
     const code = await this.generateCode();

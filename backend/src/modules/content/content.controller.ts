@@ -128,6 +128,7 @@ export class ContentController {
             imageUrl: chapter.imageUrl ?? null,
             term: chapter.term,
             isVisible: chapter.isVisible,
+            price: chapter.price !== null ? Number(chapter.price) : null,
           },
           lessons: chapter.lessons.map((lesson) => ({
             id: lesson.id,

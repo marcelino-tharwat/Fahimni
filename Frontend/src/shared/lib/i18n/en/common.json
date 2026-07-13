@@ -490,11 +490,13 @@
     "retry": "Retry",
     "errorGenerating": "Failed to generate code",
     "errorChapterNotFound": "The selected chapter was not found. Choose a chapter from your content.",
+    "errorFreeChapter": "This chapter is free — promo codes can only be created for paid chapters.",
     "successToast": "Code generated successfully",
     "stageLabel": "Stage",
     "stagePlaceholder": "Select stage",
     "chapterLabel": "Chapter",
     "chapterPlaceholder": "Select a chapter",
+    "chapterFreeLabel": "Free",
     "noChapters": "No chapters available. Create a chapter in Content Manager first."
   },
   "adminPlans": {

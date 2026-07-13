@@ -489,11 +489,13 @@
     "retry": "إعادة المحاولة",
     "errorGenerating": "حدث خطأ أثناء إنشاء الكود",
     "errorChapterNotFound": "الفصل المحدد غير موجود. اختر فصلاً من قائمة المحتوى.",
+    "errorFreeChapter": "هذا الفصل مجاني، لا يمكن إنشاء كود تفعيل له. اختر فصلاً مدفوعًا.",
     "successToast": "تم إنشاء الكود بنجاح",
     "stageLabel": "المرحلة",
     "stagePlaceholder": "اختر المرحلة",
     "chapterLabel": "الفصل",
     "chapterPlaceholder": "اختر الفصل",
+    "chapterFreeLabel": "مجاني",
     "noChapters": "لا توجد فصول متاحة. أنشئ فصلاً من إدارة المحتوى أولاً."
   },
   "adminPlans": {

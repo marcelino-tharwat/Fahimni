@@ -34,6 +34,9 @@ export function GenerateConfirmModal({
     return stage.chapters.map((chapter) => ({
       id: chapter.id,
       label: chapter.name,
+      // Promo codes grant free access — meaningless for an already-free
+      // chapter, so it stays visible (for context) but disabled.
+      isFree: chapter.price === null || Number(chapter.price) <= 0,
     }));
   }, [stages, stageId]);
 
@@ -49,15 +52,21 @@ export function GenerateConfirmModal({
   }, [isOpen, stages]);
 
   useEffect(() => {
-    if (chapterOptions.length === 1) {
-      setChapterId(chapterOptions[0]!.id);
+    // Only auto-select when there's exactly one *selectable* (paid) option —
+    // never auto-select a free chapter, since it can't be submitted anyway.
+    const selectable = chapterOptions.filter((option) => !option.isFree);
+    if (selectable.length === 1) {
+      setChapterId(selectable[0]!.id);
       return;
     }
     setChapterId('');
   }, [chapterOptions]);
 
+  const selectedChapter = chapterOptions.find((option) => option.id === chapterId);
+  const isSelectedChapterFree = selectedChapter?.isFree ?? false;
+
   const handleConfirm = () => {
-    if (!chapterId.trim()) return;
+    if (!chapterId.trim() || isSelectedChapterFree) return;
     onConfirm(chapterId.trim());
   };
 
@@ -130,8 +139,10 @@ export function GenerateConfirmModal({
                   >
                     <option value="">{t('promoCodes.chapterPlaceholder')}</option>
                     {chapterOptions.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.label}
+                      <option key={option.id} value={option.id} disabled={option.isFree}>
+                        {option.isFree
+                          ? `${option.label} (${t('promoCodes.chapterFreeLabel')})`
+                          : option.label}
                       </option>
                     ))}
                   </select>
@@ -149,7 +160,7 @@ export function GenerateConfirmModal({
           <button
             type="button"
             onClick={handleConfirm}
-            disabled={isLoading || !chapterId.trim() || !hasChapters}
+            disabled={isLoading || !chapterId.trim() || !hasChapters || isSelectedChapterFree}
             className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-cyan-gradient font-cairo text-sm font-semibold text-white shadow-glow transition-all duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? (
