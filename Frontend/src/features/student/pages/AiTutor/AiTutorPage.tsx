@@ -378,7 +378,7 @@ export function AiTutorPage() {
           <div className={styles.messagesInner}>
             {messagesError && <p className="text-center text-sm text-danger">{t('aiTutor.historyError')}</p>}
             {showWelcome || showConversationWelcome ? (
-              <WelcomeMessage onSuggest={setInput} />
+              <WelcomeMessage />
             ) : (
               <>
                 {displayMessages.map((m) => (
