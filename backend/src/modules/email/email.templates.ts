@@ -186,9 +186,19 @@ export function renderEmailTemplate(
   }
 
   if (template === "passwordReset") {
-    return locale === "ar"
-      ? renderEmail(locale, "إعادة تعيين كلمة المرور", "رابط إعادة تعيين كلمة المرور", ["استخدم الرابط التالي لإعادة تعيين كلمة المرور.", "إذا لم تطلب ذلك، تجاهل هذه الرسالة."], "إعادة تعيين كلمة المرور", value(data, "resetUrl", "/reset-password"))
-      : renderEmail(locale, "Reset your password", "Password reset link", ["Use the link below to reset your password.", "If you did not request this, ignore this message."], "Reset password", value(data, "resetUrl", "/reset-password"));
+    const otp = value(data, "otp", "------");
+    const expiresIn = value(data, "expiresIn", "5 minutes");
+    const otpBox = `display:inline-block;background:${brand.navy900};color:${brand.white};font-size:28px;font-weight:800;letter-spacing:6px;padding:14px 28px;border-radius:8px;font-family:monospace`;
+
+    if (locale === "ar") {
+      const body = `<p style="margin:0 0 12px">استخدم الرمز التالي لإعادة تعيين كلمة المرور:</p><p style="margin:0 0 12px;text-align:center"><span style="${otpBox}">${escapeHtml(otp)}</span></p><p style="margin:0 0 12px;color:${brand.gray600};font-size:13px">صالح لمدة ${escapeHtml(expiresIn)}</p><p style="margin:18px 0 0;color:${brand.gray600};font-size:13px">إذا لم تطلب ذلك، تجاهل هذه الرسالة.</p>`;
+      const text = `الرمز: ${otp}\nصالح لمدة ${expiresIn}\nإذا لم تطلب ذلك، تجاهل هذه الرسالة.\n\n${FOOTER[locale]}`;
+      return { subject: "إعادة تعيين كلمة المرور", html: layout(locale, "إعادة تعيين كلمة المرور", body), text };
+    }
+
+    const body = `<p style="margin:0 0 12px">Use the following code to reset your password:</p><p style="margin:0 0 12px;text-align:center"><span style="${otpBox}">${escapeHtml(otp)}</span></p><p style="margin:0 0 12px;color:${brand.gray600};font-size:13px">Expires in ${escapeHtml(expiresIn)}</p><p style="margin:18px 0 0;color:${brand.gray600};font-size:13px">If you did not request this, ignore this message.</p>`;
+    const text = `Code: ${otp}\nExpires in ${expiresIn}\nIf you did not request this, ignore this message.\n\n${FOOTER[locale]}`;
+    return { subject: "Reset your password", html: layout(locale, "Reset your password", body), text };
   }
 
   return locale === "ar"

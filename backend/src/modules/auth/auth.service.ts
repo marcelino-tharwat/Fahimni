@@ -407,9 +407,7 @@ export class AuthService {
       },
     });
 
-    // 6. MVP: console.log — SMS/email integration in v2
-    console.log(`[OTP] ${input.email}: ${otp}`);
-
+    // 6. Send OTP via email
     await sendTransactionalEmail({
       to: input.email,
       template: "passwordReset",
