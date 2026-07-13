@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   allocateQuestionCounts,
+  pickQuizLevelDifficulty,
   resolveQuizDifficulty,
   validateDifficultyDistribution,
 } from "./quiz-difficulty.js";
@@ -96,5 +97,36 @@ describe("resolveQuizDifficulty", () => {
         questionCount: 10,
       }),
     ).toThrow(AppError);
+  });
+});
+
+describe("pickQuizLevelDifficulty — persisted Quiz.difficulty derivation", () => {
+  it("SINGLE mode: returns the teacher's own chosen level", () => {
+    const resolved = resolveQuizDifficulty({
+      difficultyMode: "SINGLE",
+      difficulty: "hard",
+      questionCount: 5,
+    });
+    expect(pickQuizLevelDifficulty(resolved)).toBe("hard");
+  });
+
+  it("MIXED mode: returns the plurality (most-allocated) level", () => {
+    const resolved = resolveQuizDifficulty({
+      difficultyMode: "MIXED",
+      difficultyDistribution: { easy: 20, medium: 30, hard: 50 },
+      questionCount: 10,
+    });
+    expect(pickQuizLevelDifficulty(resolved)).toBe("hard");
+  });
+
+  it("MIXED mode: ties break by enum order (easy first)", () => {
+    const resolved = resolveQuizDifficulty({
+      difficultyMode: "MIXED",
+      difficultyDistribution: { easy: 34, medium: 33, hard: 33 },
+      questionCount: 3,
+    });
+    // Allocation gives easy=1, medium=1, hard=1 for 3 questions split evenly —
+    // a genuine 3-way tie, so the enum-order tie-break must pick "easy".
+    expect(pickQuizLevelDifficulty(resolved)).toBe("easy");
   });
 });

@@ -287,11 +287,13 @@ export class AuthService {
           status: Status.INACTIVE,
           teacherApprovalState: "PENDING_REVIEW",
           locale: normalizeLocale(input.locale),
-          // Self-registered (the teacher entered their own email) — requires
-          // verification exactly like a student. Admin-created teacher accounts
-          // (AdminUsersService.createUser) are a separate, trusted path and are
-          // exempt (emailVerified: true there).
-          emailVerified: false,
+          // Teachers are gated by admin review (teacherApprovalState), not by
+          // email verification — the admin approval step is itself a stronger
+          // check than an email click. Matches AdminUsersService.createUser's
+          // trusted-path convention (emailVerified: true there too), so the
+          // loginUser email-verification gate (role !== ADMIN) never blocks a
+          // legitimately pending/approved/rejected teacher.
+          emailVerified: true,
         },
         select: userPublicFields,
       });
@@ -340,24 +342,9 @@ export class AuthService {
       }
     }
 
-    const verificationToken = await this.generateEmailVerificationToken(user.created.id);
-
-    console.log(`[EmailVerification] ${input.email}: /verify-email?token=${verificationToken}`);
-
-    await sendTransactionalEmail({
-      to: input.email,
-      template: "emailVerification",
-      locale: input.locale,
-      data: {
-        studentName: input.fullName,
-        token: verificationToken,
-      },
-      metadata: { userId: user.created.id },
-      entityType: "User",
-      entityId: user.created.id,
-      dedupeKey: `${user.created.id}:emailVerification:register`,
-    });
-
+    // No email-verification token/email here — teachers are gated by admin
+    // review (emailVerified is already true; see the user.create above), so
+    // only the "registration submitted" notification is sent.
     await sendTransactionalEmail({
       to: input.email,
       template: "teacherRegistrationSubmitted",
