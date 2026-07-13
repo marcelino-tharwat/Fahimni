@@ -178,7 +178,7 @@ export function ResetPasswordPage() {
         <div className="relative rounded-t-[14px] bg-gradient-to-r from-[#1d1145] via-[#2a1758] to-[#3d2170] px-8 pb-6 pt-10">
           <div className="relative flex flex-col items-center gap-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm">
-              <img src="/images/2.png" alt="Fahimni" className="h-6 w-6 object-contain" />
+              <img src="/images/2.png" alt="Fahimni" className="h-10 w-10 object-contain" />
             </div>
             <div className="text-center">
               <h1 className="font-cairo text-xl font-bold text-white">
