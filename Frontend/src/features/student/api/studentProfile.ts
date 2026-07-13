@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/lib/api/client';
 import type { StudentApiResponse } from '@/features/student/types/student';
-import type { StudentProfileResponse } from '@/features/student/types/studentProfile';
+import type { StudentProfileResponse, StageChangePolicy } from '@/features/student/types/studentProfile';
 
 /**
  * Aggregated profile overview for the authenticated student. The backend
@@ -13,5 +13,16 @@ export const studentProfileOverviewApi = {
       '/students/me/profile',
     );
     return data.data;
+  },
+
+  getStageChangePolicy: async (): Promise<StageChangePolicy> => {
+    const { data } = await apiClient.get<StudentApiResponse<StageChangePolicy>>(
+      '/students/me/stage-change-policy',
+    );
+    return data.data;
+  },
+
+  changeStage: async (stageId: string): Promise<void> => {
+    await apiClient.patch<StudentApiResponse<unknown>>('/students/me/stage', { stageId });
   },
 };

@@ -8,6 +8,11 @@ import { userPublicFields } from "../users/user.types.js";
 import { studentPublicFields } from "./student.types.js";
 import { getStudentProfileOverview } from "./student-profile.service.js";
 import {
+  getStageChangePolicy,
+  changeStudentStage,
+} from "./student-stage-change.service.js";
+import type { ChangeStageInput } from "./student-stage-change.validation.js";
+import {
   assertStudentVisibleToTeacher,
   assertStageExistsAndActive,
 } from "../teacher-access/teacher-access.service.js";
@@ -237,4 +242,40 @@ export class StudentController {
       next(error as Error);
     }
   };
+
+  /**
+   * GET /api/students/me/stage-change-policy
+   * Returns the stage change policy for the authenticated student.
+   */
+  public getStageChangePolicy = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const studentId = req.user?.id;
+      if (!studentId) {
+        return next(new AppError("Unauthorized", 401));
+      }
+      const policy = await getStageChangePolicy(studentId);
+      res
+        .status(200)
+        .json(okResponse("Stage change policy fetched successfully", policy));
+    },
+  );
+
+  /**
+   * PATCH /api/students/me/stage
+   * Allows the authenticated student to change their stage (once per academic
+   * year, during the July 1 – August 31 window, forward only).
+   */
+  public changeStage = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const studentId = req.user?.id;
+      if (!studentId) {
+        return next(new AppError("Unauthorized", 401));
+      }
+      const { stageId } = req.body as ChangeStageInput;
+      await changeStudentStage(studentId, stageId);
+      res
+        .status(200)
+        .json(okResponse("Stage changed successfully"));
+    },
+  );
 }

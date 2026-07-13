@@ -90,6 +90,11 @@ async function main(): Promise<void> {
     "Stages are active, platform-owned (teacherId null), and bilingual",
     stageRows.every((s) => s.isActive && s.teacherId === null && !!s.nameAr && !!s.nameEn),
   );
+  check(
+    "Stages have sortOrder 1, 2, 3 (required for step-back prevention)",
+    stageRows.map((s) => s.sortOrder).join(",") === "1,2,3",
+    `sortOrders=${stageRows.map((s) => s.sortOrder).join(",")}`,
+  );
 
   const chapters = await prisma.chapter.findMany({
     where: { stageId: { in: stageRows.map((s) => s.id) } },

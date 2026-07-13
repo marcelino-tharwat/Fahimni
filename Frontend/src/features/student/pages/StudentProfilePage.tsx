@@ -10,10 +10,13 @@ import {
   Lock,
   AlertCircle,
   GraduationCap,
+  ArrowUp,
+  ChevronDown,
 } from 'lucide-react';
 import { useAppDispatch } from '@/shared/store/hooks';
 import { useUpdateStudentProfile } from '@/features/student/hooks/useStudentProfile';
 import { useStudentProfileOverview } from '@/features/student/hooks/useStudentProfileOverview';
+import { useStageChangePolicy, useChangeStage } from '@/features/student/hooks/useStageChange';
 import type {
   StudentProfileIdentity,
   StudentAcademicProgress,
@@ -541,7 +544,7 @@ function AchievementsCard({ achievements }: { achievements: StudentAchievement[]
               >
                 <span className="text-lg">{meta.emoji}</span>
                 {locked && (
-                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center rounded-full bg-black/40">
                     <Lock size={16} className="text-white" />
                   </div>
                 )}
@@ -553,6 +556,153 @@ function AchievementsCard({ achievements }: { achievements: StudentAchievement[]
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function StageChangeCard() {
+  const { t, i18n } = useTranslation('student');
+  const dispatch = useAppDispatch();
+  const { data: policy, isLoading } = useStageChangePolicy();
+  const changeStage = useChangeStage();
+  const [selectedStageId, setSelectedStageId] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const locale = i18n.language === 'ar' ? 'ar-EG' : 'en';
+
+  if (isLoading) {
+    return (
+      <div className="rounded-card bg-white p-4 shadow-card md:p-5">
+        <div className="mb-4 h-6 w-40 animate-pulse rounded bg-gray-200" />
+        <div className="h-14 w-full animate-pulse rounded bg-gray-200" />
+      </div>
+    );
+  }
+
+  if (!policy) return null;
+
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+
+  const selectedStage = policy.availableStages.find((s) => s.id === selectedStageId);
+
+  const handleConfirm = () => {
+    if (!selectedStageId) return;
+    changeStage.mutate(selectedStageId, {
+      onSuccess: () => {
+        dispatch(addToast({ type: 'success', message: t('profile.stageChange.success') }));
+        setConfirmOpen(false);
+        setSelectedStageId(null);
+      },
+      onError: () => {
+        dispatch(addToast({ type: 'error', message: t('profile.stageChange.error') }));
+      },
+    });
+  };
+
+  return (
+    <div className="rounded-card bg-white p-4 shadow-card md:p-5">
+      <h2 className="mb-3 font-cairo text-h3 font-bold text-navy-900">
+        {t('profile.stageChange.title')}
+      </h2>
+
+      {policy.currentStage && (
+        <div className="mb-3 flex items-center justify-between rounded-md bg-gray-100 p-3">
+          <span className="font-cairo text-caption text-gray-600">
+            {t('profile.stageChange.currentStage')}
+          </span>
+          <span className="font-cairo text-body font-semibold text-navy-900">
+            {policy.currentStage.name}
+          </span>
+        </div>
+      )}
+
+      <p className="mb-3 font-cairo text-caption text-gray-500">
+        {t('profile.stageChange.windowInfo', {
+          start: formatDate(policy.windowStart),
+          end: formatDate(policy.windowEnd),
+        })}
+      </p>
+
+      {policy.alreadyChangedThisYear ? (
+        <p className="font-cairo text-small text-warning-500">
+          {t('profile.stageChange.alreadyChanged')}
+        </p>
+      ) : policy.availableStages.length === 0 ? (
+        <p className="font-cairo text-small text-gray-500">
+          {t('profile.stageChange.noStages')}
+        </p>
+      ) : (
+        <>
+          <div className="relative mb-3">
+            <select
+              value={selectedStageId ?? ''}
+              onChange={(e) => setSelectedStageId(e.target.value || null)}
+              disabled={changeStage.isPending}
+              className="w-full appearance-none rounded-input border border-gray-300 bg-white px-3 py-2 pe-8 font-cairo text-body outline-none focus:border-cyan-500 disabled:opacity-50"
+            >
+              <option value="">{t('profile.stageChange.changeTo')}</option>
+              {policy.availableStages.map((stage) => (
+                <option key={stage.id} value={stage.id}>
+                  {stage.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={16}
+              className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-gray-500"
+            />
+          </div>
+
+          <button
+            type="button"
+            disabled={!selectedStageId || changeStage.isPending}
+            onClick={() => setConfirmOpen(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-btn bg-cyan-500 px-4 py-2 font-cairo font-bold text-navy-900 transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            <ArrowUp size={16} />
+            <span>
+              {changeStage.isPending
+                ? t('profile.stageChange.changing')
+                : t('profile.stageChange.changeButton')}
+            </span>
+          </button>
+        </>
+      )}
+
+      {confirmOpen && selectedStage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-card bg-white p-6 shadow-card">
+            <h3 className="mb-2 font-cairo text-h3 font-bold text-navy-900">
+              {t('profile.stageChange.confirmTitle')}
+            </h3>
+            <p className="mb-4 font-cairo text-body text-gray-700">
+              {t('profile.stageChange.confirmBody', {
+                from: policy.currentStage?.name ?? '',
+                to: selectedStage.name,
+              })}
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleConfirm}
+                disabled={changeStage.isPending}
+                className="flex-1 rounded-btn bg-cyan-500 px-4 py-2 font-cairo font-bold text-navy-900 transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {t('common:actions.confirm')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                disabled={changeStage.isPending}
+                className="flex-1 rounded-btn border border-gray-300 px-4 py-2 font-cairo text-gray-600 transition-colors hover:bg-gray-50"
+              >
+                {t('common:actions.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -629,6 +779,7 @@ export function StudentProfilePage() {
 
         <div className="flex flex-col gap-6">
           <AcademicProgressCard progress={data.academicProgress} />
+          <StageChangeCard />
           <MyCoursesCard courses={data.courses} />
           <SubscriptionHistoryCard subscriptions={data.subscriptions} />
         </div>

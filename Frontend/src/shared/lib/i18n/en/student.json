@@ -263,6 +263,21 @@
     "twentyFiveLessons": "25 Lessons",
     "perfectScore": "Perfect Score",
     "freeDays": "14 Days Free",
+    "stageChange": {
+      "title": "Change Study Stage",
+      "currentStage": "Current Stage",
+      "changeTo": "Change to",
+      "windowInfo": "Available from {{start}} to {{end}}",
+      "windowClosed": "Change window is currently closed",
+      "changeButton": "Change Stage",
+      "confirmTitle": "Confirm Stage Change",
+      "confirmBody": "Are you sure you want to change your stage from {{from}} to {{to}}? This action cannot be undone.",
+      "success": "Study stage changed successfully",
+      "error": "Failed to change stage, please try again",
+      "alreadyChanged": "You have already changed your stage this year",
+      "noStages": "No stages available to change to",
+      "changing": "Changing stage..."
+    },
     "enrollmentLoadError": "Failed to load enrollment history",
     "noEnrollments": "Not enrolled in any courses yet",
     "noEnrollmentsDesc": "Browse available courses and start your learning journey"
